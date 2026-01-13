@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import threading
 
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce_cache
 from googlecloudsdk.core.credentials import gce_read
@@ -69,6 +70,7 @@ def _ReadNoProxyWithCleanFailures(
           'for more information about metadata server concealment.')
     raise MetadataServerException(e)
   except urllib.error.URLError as e:
+    log.debug('Failed to connect to metadata server: %s', e)
     raise CannotConnectToMetadataServerException(e)
 
 
@@ -92,7 +94,8 @@ def _HandleMissingMetadataServer(return_list=False):
     def Inner(self, *args, **kwargs):
       try:
         return f(self, *args, **kwargs)
-      except CannotConnectToMetadataServerException:
+      except CannotConnectToMetadataServerException as e:
+        log.debug('Metadata server not reachable (%s); refreshing cache.', e)
         with _metadata_lock:
           self.connected = gce_cache.ForceCacheRefresh()
         return [] if return_list else None

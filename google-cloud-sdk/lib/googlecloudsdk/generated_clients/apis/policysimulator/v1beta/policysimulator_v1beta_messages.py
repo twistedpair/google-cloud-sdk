@@ -2378,7 +2378,7 @@ class GoogleCloudPolicysimulatorV1betaIamV3PolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
-      TRUST_BOUNDARY: <no description>
+      TRUST_BOUNDARY: Trust boundary policy kind
       REGIONAL_ACCESS_BOUNDARY: Regional access boundary policy kind
     """
     POLICY_KIND_UNSPECIFIED = 0
@@ -2572,9 +2572,9 @@ class GoogleCloudPolicysimulatorV1betaIamV3PrincipalAccessBoundaryPolicyRule(_me
   resources = _messages.StringField(3, repeated=True)
 
 
-class GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicy(_messages.Message):
-  r"""The google.iam.v3.TrustBoundaryPolicy being simulated. See the original
-  proto for documentation.
+class GoogleCloudPolicysimulatorV1betaIamV3RegionalAccessBoundaryPolicy(_messages.Message):
+  r"""The google.iam.v3.RegionalAccessBoundaryPolicy being simulated. See the
+  original proto for documentation.
 
   Messages:
     AnnotationsValue: Optional. User defined annotations. See
@@ -2585,14 +2585,15 @@ class GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicy(_messages.Message
     annotations: Optional. User defined annotations. See
       https://google.aip.dev/148#annotations for more details such as format
       and size limitations
-    details: Optional. The details for the trust boundary policy.
-    displayName: Optional. The display name of the trust boundary policy. Must
-      be less than or equal to 63 characters.
-    etag: Optional. The etag for the trust boundary policy. If this is
-      provided on update, it must match the etag of the policy on the server.
-    name: Identifier. The name of the trust boundary policy. The following
-      format is supported: `organizations/{organization_id}/locations/{locatio
-      n}/trustBoundaryPolicies/{policy_id}`
+    details: Optional. The details for the regional access boundary policy.
+    displayName: Optional. The display name of the regional access boundary
+      policy. Must be less than or equal to 63 characters.
+    etag: Optional. The etag for the regional access boundary policy. If this
+      is provided on update, it must match the etag of the policy on the
+      server.
+    name: Identifier. The name of the regional access boundary policy. The
+      following format is supported: `organizations/{organization_id}/location
+      s/{location}/regionalAccessBoundaryPolicies/{policy_id}`
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2623,38 +2624,38 @@ class GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicy(_messages.Message
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  details = _messages.MessageField('GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicyDetails', 2)
+  details = _messages.MessageField('GoogleCloudPolicysimulatorV1betaIamV3RegionalAccessBoundaryPolicyDetails', 2)
   displayName = _messages.StringField(3)
   etag = _messages.StringField(4)
   name = _messages.StringField(5)
 
 
-class GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicyDetails(_messages.Message):
-  r"""The google.iam.v3.TrustBoundaryPolicyDetails being simulated. See the
-  original proto for documentation.
+class GoogleCloudPolicysimulatorV1betaIamV3RegionalAccessBoundaryPolicyDetails(_messages.Message):
+  r"""The google.iam.v3.RegionalAccessBoundaryPolicyDetails being simulated.
+  See the original proto for documentation.
 
   Fields:
     enforcementVersion: Optional. The version identifier (e.g., 1) specifying
-      the enforcement behavior of the Trust Boundary policy. This allows the
-      TB Platform to introduce changes to enforcement logic through new
-      versions, mitigating potential breaking changes. If left unspecified,
-      the version will default to the latest launched version.
-    rules: Required. The trust boundary policy rules. Only one rule is
-      supported at this time, requests with more than one will be rejected as
-      invalid.
+      the enforcement behavior of the Regional Access Boundary policy. This
+      allows the TB Platform to introduce changes to enforcement logic through
+      new versions, mitigating potential breaking changes. If left
+      unspecified, the version will default to the latest launched version.
+    rules: Required. The regional access boundary policy rules. Only one rule
+      is supported at this time, requests with more than one will be rejected
+      as invalid.
   """
 
   enforcementVersion = _messages.StringField(1)
-  rules = _messages.MessageField('GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicyRule', 2, repeated=True)
+  rules = _messages.MessageField('GoogleCloudPolicysimulatorV1betaIamV3RegionalAccessBoundaryPolicyRule', 2, repeated=True)
 
 
-class GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicyRule(_messages.Message):
-  r"""A copy of google.iam.v3.TrustBoundaryPolicyRule. See the original proto
-  for documentation.
+class GoogleCloudPolicysimulatorV1betaIamV3RegionalAccessBoundaryPolicyRule(_messages.Message):
+  r"""A copy of google.iam.v3.RegionalAccessBoundaryPolicyRule. See the
+  original proto for documentation.
 
   Fields:
-    description: Optional. The description of the trust boundary policy rule.
-      Must be less than or equal to 256 characters.
+    description: Optional. The description of the regional access boundary
+      policy rule. Must be less than or equal to 256 characters.
     locations: Describes the list of authorized locations. It is in the format
       of value groups with the following syntax:
       "//GoogleValueGroups/Locations/LOCATION" Where LOCATION can either be
@@ -3503,8 +3504,8 @@ class GoogleCloudPolicysimulatorV1betaProposedChange(_messages.Message):
     updateIamV3PolicyBinding: Test an update to an IamV3PolicyBinding.
     updateIamV3PrincipalAccessBoundaryPolicy: Test an update to an
       IamV3PrincipalAccessBoundaryPolicy.
-    updateIamV3TrustBoundaryPolicy: Test an update to an
-      IamV3TrustBoundaryPolicy.
+    updateIamV3RegionalAccessBoundaryPolicy: Test an update to an
+      IamV3RegionalAccessBoundaryPolicy.
   """
 
   createIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1betaCreateIamV2Policy', 1)
@@ -3515,7 +3516,7 @@ class GoogleCloudPolicysimulatorV1betaProposedChange(_messages.Message):
   updateIamV2Policy = _messages.MessageField('GoogleCloudPolicysimulatorV1betaUpdateIamV2Policy', 6)
   updateIamV3PolicyBinding = _messages.MessageField('GoogleCloudPolicysimulatorV1betaUpdateIamV3PolicyBinding', 7)
   updateIamV3PrincipalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1betaUpdateIamV3PrincipalAccessBoundaryPolicy', 8)
-  updateIamV3TrustBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1betaUpdateIamV3TrustBoundaryPolicy', 9)
+  updateIamV3RegionalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1betaUpdateIamV3RegionalAccessBoundaryPolicy', 9)
 
 
 class GoogleCloudPolicysimulatorV1betaReplay(_messages.Message):
@@ -3844,18 +3845,18 @@ class GoogleCloudPolicysimulatorV1betaUpdateIamV3PrincipalAccessBoundaryPolicy(_
   updateMask = _messages.StringField(2)
 
 
-class GoogleCloudPolicysimulatorV1betaUpdateIamV3TrustBoundaryPolicy(_messages.Message):
-  r"""Test a change that updates an IamV3TrustBoundaryPolicy using the
-  google.iam.v3.UpdateTrustBoundaryPolicyRequest.
+class GoogleCloudPolicysimulatorV1betaUpdateIamV3RegionalAccessBoundaryPolicy(_messages.Message):
+  r"""Test a change that updates an IamV3RegionalAccessBoundaryPolicy using
+  the google.iam.v3.UpdateRegionalAccessBoundaryPolicyRequest.
 
   Fields:
-    trustBoundaryPolicy: Required. The TrustBoundaryPolicy to update. The
-      TrustBoundaryPolicy's `name` field is used to identify the policy to
-      update.
+    regionalAccessBoundaryPolicy: Required. The RegionalAccessBoundaryPolicy
+      to update. The RegionalAccessBoundaryPolicy's `name` field is used to
+      identify the policy to update.
     updateMask: Optional. The list of fields to update.
   """
 
-  trustBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1betaIamV3TrustBoundaryPolicy', 1)
+  regionalAccessBoundaryPolicy = _messages.MessageField('GoogleCloudPolicysimulatorV1betaIamV3RegionalAccessBoundaryPolicy', 1)
   updateMask = _messages.StringField(2)
 
 

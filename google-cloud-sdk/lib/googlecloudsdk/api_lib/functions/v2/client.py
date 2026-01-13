@@ -15,6 +15,7 @@
 """Cloud Functions (2nd gen) API Client."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -137,6 +138,22 @@ class FunctionsClient(object):
     )
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
+  def CommitFunctionUpgradeAsGen2(self, name: str) -> types.Operation:
+    """Commits the function upgrade for the given function as 2nd Gen.
+
+    Args:
+      name: str, GCFv2 function resource relative name.
+
+    Returns:
+      A long-running operation.
+    """
+    return self.client.projects_locations_functions.CommitFunctionUpgradeAsGen2(
+        self.messages.CloudfunctionsProjectsLocationsFunctionsCommitFunctionUpgradeAsGen2Request(
+            name=name
+        )
+    )
+
+  @util_v1.CatchHTTPErrorRaiseHTTPException
   def RedirectFunctionUpgradeTraffic(self, name: str) -> types.Operation:
     """Redirects function upgrade traffic for the given function.
 
@@ -170,23 +187,39 @@ class FunctionsClient(object):
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
   def SetupFunctionUpgradeConfig(
-      self, name: str, trigger_service_account: str
+      self,
+      name: str,
+      trigger_service_account: Optional[str] = None,
+      runtime: Optional[str] = None,
+      max_instances: Optional[int] = None,
   ) -> types.Operation:
     """Sets up the function upgrade config for the given function.
 
     Args:
       name: str, GCFv2 function resource relative name.
       trigger_service_account: str, The service account to use for the trigger.
+      runtime: str, The runtime to use for the new function.
+      max_instances: int, The max instances to use for the new function.
 
     Returns:
       A long-running operation.
     """
+    setup_request = self.messages.SetupFunctionUpgradeConfigRequest()
+    if trigger_service_account:
+      setup_request.triggerServiceAccount = trigger_service_account
+    if runtime:
+      setup_request.buildConfigOverrides = self.messages.BuildConfigOverrides(
+          runtime=runtime
+      )
+    if max_instances:
+      setup_request.serviceConfigOverrides = (
+          self.messages.ServiceConfigOverrides(maxInstanceCount=max_instances)
+      )
+
     return self.client.projects_locations_functions.SetupFunctionUpgradeConfig(
         self.messages.CloudfunctionsProjectsLocationsFunctionsSetupFunctionUpgradeConfigRequest(
             name=name,
-            setupFunctionUpgradeConfigRequest=self.messages.SetupFunctionUpgradeConfigRequest(
-                triggerServiceAccount=trigger_service_account
-            ),
+            setupFunctionUpgradeConfigRequest=setup_request,
         )
     )
 

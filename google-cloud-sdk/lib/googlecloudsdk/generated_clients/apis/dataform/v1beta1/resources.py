@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FOLDERS = (
+      'projects.locations.folders',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/folders/'
+              '{foldersId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -114,6 +125,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}/workspaces/{workspacesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TEAMFOLDERS = (
+      'projects.locations.teamFolders',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/teamFolders/'
+              '{teamFoldersId}',
       },
       ['name'],
       True

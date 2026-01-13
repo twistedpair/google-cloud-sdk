@@ -1146,6 +1146,8 @@ class Observation(_messages.Message):
       OBSERVATION_TYPE_KNOWLEDGE: Text that provides knowledge about a
         particular user's problem. For example, error catalog
         instructions/external links, RAG etc.
+      OBSERVATION_TYPE_INVESTIGATION_RECAP: Provides a recap or summary of the
+        investigation.
     """
     OBSERVATION_TYPE_UNSPECIFIED = 0
     OBSERVATION_TYPE_CLOUD_LOG = 1
@@ -1164,6 +1166,7 @@ class Observation(_messages.Message):
     OBSERVATION_TYPE_CONFIG_ANALYSIS = 14
     OBSERVATION_TYPE_OUTAGE = 15
     OBSERVATION_TYPE_KNOWLEDGE = 16
+    OBSERVATION_TYPE_INVESTIGATION_RECAP = 17
 
   class ObserverTypeValueValuesEnum(_messages.Enum):
     r"""Required. The type of observer that produced this observation.

@@ -500,6 +500,33 @@ class DesigncenterV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Generate(self, request, global_params=None):
+      r"""Generates Terraform files for an application template revision.
+
+      Args:
+        request: (DesigncenterProjectsLocationsSpacesApplicationTemplatesRevisionsGenerateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateApplicationTemplateRevisionIaCResponse) The response message.
+      """
+      config = self.GetMethodConfig('Generate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Generate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/spaces/{spacesId}/applicationTemplates/{applicationTemplatesId}/revisions/{revisionsId}:generate',
+        http_method='POST',
+        method_id='designcenter.projects.locations.spaces.applicationTemplates.revisions.generate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:generate',
+        request_field='generateApplicationTemplateRevisionIaCRequest',
+        request_type_name='DesigncenterProjectsLocationsSpacesApplicationTemplatesRevisionsGenerateRequest',
+        response_type_name='GenerateApplicationTemplateRevisionIaCResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details about an application template revision.
 

@@ -726,7 +726,7 @@ class NetappV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of host groups in a location. Use '-' as location to list host groups across all locations.
+      r"""Returns a list of host groups in a `location`. Use `-` as location to list host groups across all locations.
 
       Args:
         request: (NetappProjectsLocationsHostGroupsListRequest) input message
@@ -1925,6 +1925,33 @@ class NetappV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='NetappProjectsLocationsVolumesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def EstablishPeering(self, request, global_params=None):
+      r"""Establish volume peering. This is used to establish cluster and svm peerings between the GCNV and OnPrem clusters.
+
+      Args:
+        request: (NetappProjectsLocationsVolumesEstablishPeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EstablishPeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EstablishPeering.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}:establishPeering',
+        http_method='POST',
+        method_id='netapp.projects.locations.volumes.establishPeering',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:establishPeering',
+        request_field='establishVolumePeeringRequest',
+        request_type_name='NetappProjectsLocationsVolumesEstablishPeeringRequest',
         response_type_name='Operation',
         supports_download=False,
     )

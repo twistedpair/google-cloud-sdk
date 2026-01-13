@@ -8047,6 +8047,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   r"""InfoType description.
 
   Enums:
+    LaunchStatusValueValuesEnum: The launch status of the infoType.
     SupportedByValueListEntryValuesEnum:
 
   Fields:
@@ -8055,6 +8056,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
       provided in the request.
     displayName: Human readable form of the infoType name.
     example: A sample that is a true positive for this infoType.
+    launchStatus: The launch status of the infoType.
     locationSupport: Locations at which this feature can be used. May change
       over time.
     name: Internal name of the infoType.
@@ -8067,6 +8069,20 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     supportedBy: Which parts of the API supports this InfoType.
     versions: A list of available versions for the infotype.
   """
+
+  class LaunchStatusValueValuesEnum(_messages.Enum):
+    r"""The launch status of the infoType.
+
+    Values:
+      INFO_TYPE_LAUNCH_STATUS_UNSPECIFIED: Unspecified.
+      GENERAL_AVAILABILITY: InfoType is generally available.
+      PUBLIC_PREVIEW: InfoType is in public preview.
+      PRIVATE_PREVIEW: InfoType is in private preview.
+    """
+    INFO_TYPE_LAUNCH_STATUS_UNSPECIFIED = 0
+    GENERAL_AVAILABILITY = 1
+    PUBLIC_PREVIEW = 2
+    PRIVATE_PREVIEW = 3
 
   class SupportedByValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedByValueListEntryValuesEnum enum type.
@@ -8084,12 +8100,13 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   example = _messages.StringField(4)
-  locationSupport = _messages.MessageField('GooglePrivacyDlpV2LocationSupport', 5)
-  name = _messages.StringField(6)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 7)
-  specificInfoTypes = _messages.StringField(8, repeated=True)
-  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 9, repeated=True)
-  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 10, repeated=True)
+  launchStatus = _messages.EnumField('LaunchStatusValueValuesEnum', 5)
+  locationSupport = _messages.MessageField('GooglePrivacyDlpV2LocationSupport', 6)
+  name = _messages.StringField(7)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 8)
+  specificInfoTypes = _messages.StringField(9, repeated=True)
+  supportedBy = _messages.EnumField('SupportedByValueListEntryValuesEnum', 10, repeated=True)
+  versions = _messages.MessageField('GooglePrivacyDlpV2VersionDescription', 11, repeated=True)
 
 
 class GooglePrivacyDlpV2InfoTypeLikelihood(_messages.Message):

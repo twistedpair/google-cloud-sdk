@@ -866,9 +866,6 @@ class BuildOptions(_messages.Message):
       E2_HIGHCPU_8: Highcpu e2 machine with 8 CPUs.
       E2_HIGHCPU_32: Highcpu e2 machine with 32 CPUs.
       E2_MEDIUM: E2 machine with 1 CPU.
-      C3_STANDARD_4: C3 machine with 4 CPUs.
-      C3_HIGHCPU_8: Highcpu C3 machine with 8 CPUs.
-      C3_HIGHCPU_44: Highcpu C3 machine with 44 CPUs.
     """
     UNSPECIFIED = 0
     N1_HIGHCPU_8 = 1
@@ -876,9 +873,6 @@ class BuildOptions(_messages.Message):
     E2_HIGHCPU_8 = 3
     E2_HIGHCPU_32 = 4
     E2_MEDIUM = 5
-    C3_STANDARD_4 = 6
-    C3_HIGHCPU_8 = 7
-    C3_HIGHCPU_44 = 8
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
     r"""Requested verifiability options.

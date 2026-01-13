@@ -446,6 +446,33 @@ class StorageV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteRecursive(self, request, global_params=None):
+      r"""Deletes a folder recursively. This operation is only applicable to a hierarchical namespace enabled bucket.
+
+      Args:
+        request: (StorageProjectsBucketsFoldersDeleteRecursiveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteRecursive')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteRecursive.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/buckets/{bucketsId}/folders/{foldersId}:deleteRecursive',
+        http_method='DELETE',
+        method_id='storage.projects.buckets.folders.deleteRecursive',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'requestId'],
+        relative_path='v2/{+name}:deleteRecursive',
+        request_field='',
+        request_type_name='StorageProjectsBucketsFoldersDeleteRecursiveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns metadata for the specified folder. This operation is only applicable to a hierarchical namespace enabled bucket.
 

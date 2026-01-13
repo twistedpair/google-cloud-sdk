@@ -46,21 +46,18 @@ def Describe(cluster_ref, client=None, msgs=None):
 
 def Update(
     cluster_ref,
+    enable,
     client=None,
     msgs=None,
-    *,
-    storage_size_gib=None,
-    max_request_units_per_second=None,
 ):
   """Update a memory layer.
 
   Args:
     cluster_ref: A resource reference to the cluster to update.
+    enable: Whether to enable or disable the memory layer. If true, enable the
+      memory layer. Otherwise, disable the memory layer.
     client: The API client.
     msgs: The API messages.
-    storage_size_gib: The storage size of the memory layer in gibibytes.
-    max_request_units_per_second: The maximum number of request units per second
-      that can be used by the memory layer.
 
   Returns:
     Long running operation.
@@ -70,46 +67,11 @@ def Update(
   if msgs is None:
     msgs = util.GetAdminMessages()
   memory_layer = msgs.MemoryLayer()
-  fixed_capacity = msgs.FixedCapacity()
-  changed_fields = []
-
-  if storage_size_gib is not None:
-    fixed_capacity.storageSizeGib = storage_size_gib
-    changed_fields.append('memory_config.fixed_capacity.storage_size_gib')
-  if max_request_units_per_second is not None:
-    fixed_capacity.maxRequestUnitsPerSecond = max_request_units_per_second
-    changed_fields.append(
-        'memory_config.fixed_capacity.max_request_units_per_second'
+  if enable:
+    memory_layer.memoryConfig = (
+        msgs.GoogleBigtableAdminV2MemoryLayerMemoryConfig()
     )
 
-  memory_layer.memoryConfig = msgs.MemoryConfig(fixedCapacity=fixed_capacity)
-  memory_layer_name = cluster_ref.RelativeName() + MEMORY_LAYER_SUFFIX
-
-  msg = msgs.BigtableadminProjectsInstancesClustersUpdateMemoryLayerRequest(
-      memoryLayer=memory_layer,
-      name=memory_layer_name,
-      updateMask=','.join(changed_fields),
-  )
-
-  return client.projects_instances_clusters.UpdateMemoryLayer(msg)
-
-
-def Disable(cluster_ref, client=None, msgs=None):
-  """Disable a memory layer.
-
-  Args:
-    cluster_ref: A resource reference to the cluster to disable memory layer on.
-    client: The API client.
-    msgs: The API messages.
-
-  Returns:
-    Long running operation.
-  """
-  if client is None:
-    client = util.GetAdminClient()
-  if msgs is None:
-    msgs = util.GetAdminMessages()
-  memory_layer = msgs.MemoryLayer()
   memory_layer_name = cluster_ref.RelativeName() + MEMORY_LAYER_SUFFIX
 
   msg = msgs.BigtableadminProjectsInstancesClustersUpdateMemoryLayerRequest(

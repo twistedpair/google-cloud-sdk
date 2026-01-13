@@ -680,6 +680,32 @@ patch format and processing rules.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeAutoscalersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.autoscalers.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/autoscalers/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeAutoscalersTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates an autoscaler in the specified project using the data.
 included in the request.
@@ -4722,6 +4748,32 @@ patch format and processing rules.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.healthChecks.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/healthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates a HealthCheck resource in the specified project using the data.
 included in the request.
@@ -4894,6 +4946,32 @@ patch format and processing rules.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeHttpHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.httpHealthChecks.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/httpHealthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeHttpHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates a HttpHealthCheck resource in the specified project using the data.
 included in the request.
@@ -5063,6 +5141,32 @@ patch format and processing rules.
         request_field='httpsHealthCheckResource',
         request_type_name='ComputeHttpsHealthChecksPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeHttpsHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.httpsHealthChecks.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/httpsHealthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeHttpsHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -14527,6 +14631,32 @@ patch format and processing rules.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionAutoscalersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionAutoscalers.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/autoscalers/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionAutoscalersTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates an autoscaler in the specified project using.
 the data included in the request.
@@ -15858,6 +15988,32 @@ patch format and processing rules.
         request_field='healthCheckResource',
         request_type_name='ComputeRegionHealthChecksPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionHealthChecksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionHealthChecks.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/healthChecks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionHealthChecksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -17959,6 +18115,32 @@ using the parameters that are included in the request.
         request_field='',
         request_type_name='ComputeRegionNotificationEndpointsListRequest',
         response_type_name='NotificationEndpointList',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionNotificationEndpointsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNotificationEndpoints.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/notificationEndpoints/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionNotificationEndpointsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -20942,6 +21124,32 @@ in the request.
         request_field='',
         request_type_name='ComputeRoutesListRequest',
         response_type_name='RouteList',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRoutesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routes.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/routes/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRoutesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -24344,6 +24552,32 @@ connection between the load balancer and the backends.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetSslProxiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetSslProxies.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/targetSslProxies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetSslProxiesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class TargetTcpProxiesService(base_api.BaseApiService):
     """Service class for the targetTcpProxies resource."""
 
@@ -24539,6 +24773,32 @@ available to the specified project.
         request_field='targetTcpProxiesSetProxyHeaderRequest',
         request_type_name='ComputeTargetTcpProxiesSetProxyHeaderRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeTargetTcpProxiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetTcpProxies.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/targetTcpProxies/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeTargetTcpProxiesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -24916,6 +25176,32 @@ patch format and processing rules.
         request_field='urlMapResource',
         request_type_name='ComputeUrlMapsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeUrlMapsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.urlMaps.testIamPermissions',
+        ordered_params=['project', 'resource'],
+        path_params=['project', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/global/urlMaps/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeUrlMapsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 

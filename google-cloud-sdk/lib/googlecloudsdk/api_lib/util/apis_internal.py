@@ -224,6 +224,7 @@ def _GetGapicClientInstance(
     redact_request_body_reason=None,
     custom_interceptors=None,
     region=None,
+    channel_options=None,
 ):
   """Returns an instance of the GAPIC API client specified in the args.
 
@@ -247,6 +248,8 @@ def _GetGapicClientInstance(
     custom_interceptors: list[grpc interceptor], a list of custom interceptors
     to add to the channel.
     region: str, Region (or multi-region) for regionalized endpoints (REP).
+    channel_options: dict, optional channel arguments to pass to the underlying
+      gRPC channel.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -284,6 +287,7 @@ def _GetGapicClientInstance(
       attempt_direct_path=attempt_direct_path,
       redact_request_body_reason=redact_request_body_reason,
       custom_interceptors=custom_interceptors,
+      channel_options=channel_options,
   )
 
 

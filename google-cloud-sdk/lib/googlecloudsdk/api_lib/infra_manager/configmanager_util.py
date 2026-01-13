@@ -578,3 +578,23 @@ def SetEnableAutoMigrationInRequest(ref, args, req):
   )
   req.updateMask = 'auto_migration_enabled'
   return req
+
+
+def GetTfVersion(name):
+  """Calls into the GetTerraformVersion API.
+
+  Args:
+    name: the fully qualified name of the terraform version, e.g.
+      "projects/p/locations/l/terraformVersions/1.2.3".
+
+  Returns:
+    A messages.TerraformVersion.
+
+  Raises:
+    HttpNotFoundError: if the terraform version doesn't exist.
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_terraformVersions.Get(
+      messages.ConfigProjectsLocationsTerraformVersionsGetRequest(name=name)
+  )

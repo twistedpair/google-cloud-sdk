@@ -2755,21 +2755,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class FixedCapacity(_messages.Message):
-  r"""Configuration of a memory layer with a fixed capacity.
-
-  Fields:
-    maxRequestUnitsPerSecond: Required. The maximum request units per second
-      that the memory layer can serve before being throttled. A request unit
-      is approximately equivalent to a 1 KiB point read.
-    storageSizeGib: Required. The provisioned storage size of the memory layer
-      in GiB.
-  """
-
-  maxRequestUnitsPerSecond = _messages.IntegerField(1)
-  storageSizeGib = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
 class GcRule(_messages.Message):
   r"""Rule for determining which cells to delete during garbage collection.
 
@@ -2930,6 +2915,34 @@ class GoogleBigtableAdminV2MaterializedViewClusterState(_messages.Message):
     READY = 2
 
   replicationState = _messages.EnumField('ReplicationStateValueValuesEnum', 1)
+
+
+class GoogleBigtableAdminV2MemoryLayerMemoryConfig(_messages.Message):
+  r"""Configuration of a memory layer.
+
+  Fields:
+    fixedCapacity: Deprecated: Do not set any field in `capacity`. A memory
+      layer with a fixed capacity.
+  """
+
+  fixedCapacity = _messages.MessageField('GoogleBigtableAdminV2MemoryLayerMemoryConfigFixedCapacity', 1)
+
+
+class GoogleBigtableAdminV2MemoryLayerMemoryConfigFixedCapacity(_messages.Message):
+  r"""Deprecated: Do not set any field in `capacity`. Configuration of a
+  memory layer with a fixed capacity.
+
+  Fields:
+    maxRequestUnitsPerSecond: Required. Deprecated: FixedCapacity is
+      deprecated. The maximum request units per second that the memory layer
+      can serve before being throttled. A request unit is approximately
+      equivalent to a 1 KiB point read.
+    storageSizeGib: Required. Deprecated: FixedCapacity is deprecated. The
+      provisioned storage size of the memory layer in GiB.
+  """
+
+  maxRequestUnitsPerSecond = _messages.IntegerField(1)
+  storageSizeGib = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleBigtableAdminV2TypeAggregate(_messages.Message):
@@ -3887,13 +3900,13 @@ class MaterializedView(_messages.Message):
 
 
 class MemoryConfig(_messages.Message):
-  r"""Configuration of a memory layer.
-
-  Fields:
-    fixedCapacity: A memory layer with a fixed capacity.
+  r"""If set, eligible single-row requests (currently limited to ReadRows)
+  using this app profile will be routed to the memory layer. All eligible
+  writes populate the memory layer. MemoryConfig can only be set if the
+  AppProfile uses single cluster routing and the configured cluster has a
+  memory layer enabled.
   """
 
-  fixedCapacity = _messages.MessageField('FixedCapacity', 1)
 
 
 class MemoryLayer(_messages.Message):
@@ -3908,8 +3921,9 @@ class MemoryLayer(_messages.Message):
       on update requests to ensure that the client has an up-to-date value
       before proceeding. The server returns an ABORTED error on a mismatched
       etag.
-    memoryConfig: The configuration of this memory layer. Set this to enable
-      the memory layer. Unset this to disable the memory layer.
+    memoryConfig: The configuration of this memory layer. Set an empty
+      `memory_config` to enable the memory layer. Unset this to disable the
+      memory layer.
     name: Identifier. Name of the memory layer. This is always:
       "projects/{project}/instances/{instance}/clusters/{cluster}/memoryLayer"
       .
@@ -3942,7 +3956,7 @@ class MemoryLayer(_messages.Message):
     DISABLED = 4
 
   etag = _messages.StringField(1)
-  memoryConfig = _messages.MessageField('MemoryConfig', 2)
+  memoryConfig = _messages.MessageField('GoogleBigtableAdminV2MemoryLayerMemoryConfig', 2)
   name = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
@@ -4455,6 +4469,8 @@ class StandardIsolation(_messages.Message):
       profile.
 
   Fields:
+    memoryConfig: The memory config to use for requests sent using this app
+      profile.
     priority: The priority of requests sent using this app profile.
   """
 
@@ -4473,7 +4489,8 @@ class StandardIsolation(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
+  memoryConfig = _messages.MessageField('MemoryConfig', 1)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):

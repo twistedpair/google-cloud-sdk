@@ -861,16 +861,22 @@ def MakeProxyFromEnvironmentVariables():
   return None
 
 
-def MakeChannelOptions():
+def MakeChannelOptions(channel_options=None):
   """Returns channel arguments for the underlying gRPC channel.
 
   See https://grpc.github.io/grpc/python/glossary.html#term-channel_arguments.
+
+  Args:
+    channel_options: dict, optional channel arguments to pass to the underlying
+      gRPC channel.
   """
   # Default options from transport class
   options = {
       'grpc.max_send_message_length': -1,
       'grpc.max_receive_message_length': -1,
   }
+  if channel_options:
+    options.update(channel_options)
 
   proxy = MakeProxyFromProperties()
   if not proxy:
@@ -899,6 +905,7 @@ def MakeTransport(
     attempt_direct_path=False,
     redact_request_body_reason=None,
     custom_interceptors=None,
+    channel_options=None,
 ):
   """Instantiates a grpc transport."""
   transport_class = client_class.get_transport_class()
@@ -908,7 +915,7 @@ def MakeTransport(
       host=address,
       credentials=credentials,
       ssl_credentials=GetSSLCredentials(mtls_enabled),
-      options=MakeChannelOptions(),
+      options=MakeChannelOptions(channel_options),
       attempt_direct_path=attempt_direct_path,
   )
 
@@ -941,6 +948,7 @@ def MakeAsyncTransport(
     address_override_func,
     mtls_enabled=False,
     attempt_direct_path=False,
+    channel_options=None,
 ):
   """Instantiates a grpc transport."""
   transport_class = client_class.get_transport_class('grpc_asyncio')
@@ -957,7 +965,7 @@ def MakeAsyncTransport(
       host=address,
       credentials=credentials,
       ssl_credentials=GetSSLCredentials(mtls_enabled),
-      options=MakeChannelOptions(),
+      options=MakeChannelOptions(channel_options),
       attempt_direct_path=attempt_direct_path,
       interceptors=interceptors,
   )

@@ -51,7 +51,8 @@ class CloudapiregistryProjectsLocationsMcpServersGetRequest(_messages.Message):
   r"""A CloudapiregistryProjectsLocationsMcpServersGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource Format:
+      projects/{project}/locations/{location}/mcpServers/{mcp_server}
   """
 
   name = _messages.StringField(1, required=True)
@@ -61,10 +62,14 @@ class CloudapiregistryProjectsLocationsMcpServersListRequest(_messages.Message):
   r"""A CloudapiregistryProjectsLocationsMcpServersListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. An expression that filters the results. For syntax, see
+      https://google.aip.dev/160.
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. For
+      syntax, see https://google.aip.dev/132#ordering.
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+      than requested. If unspecified, at most 50 items will be returned. The
+      maximum value is 100; values above 100 will be coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListMcpServersRequest
@@ -81,7 +86,8 @@ class CloudapiregistryProjectsLocationsMcpServersMcpToolsGetRequest(_messages.Me
   r"""A CloudapiregistryProjectsLocationsMcpServersMcpToolsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource Format: projects/{project}/locations/
+      {location}/mcpServers/{mcp_server}/mcpTools/{mcp_tool}
   """
 
   name = _messages.StringField(1, required=True)
@@ -91,10 +97,14 @@ class CloudapiregistryProjectsLocationsMcpServersMcpToolsListRequest(_messages.M
   r"""A CloudapiregistryProjectsLocationsMcpServersMcpToolsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. An expression that filters the results. For syntax, see
+      https://google.aip.dev/160.
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. For
+      syntax, see https://google.aip.dev/132#ordering.
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+      than requested. If unspecified, at most 50 items will be returned. The
+      maximum value is 100; values above 100 will be coerced to 100.
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListMcpToolsRequest
@@ -127,7 +137,7 @@ class ListMcpServersResponse(_messages.Message):
     mcpServers: The list of McpServer
     nextPageToken: A token identifying a page of results the server should
       return.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   mcpServers = _messages.MessageField('McpServer', 1, repeated=True)
@@ -142,7 +152,7 @@ class ListMcpToolsResponse(_messages.Message):
     mcpTools: The list of McpTool
     nextPageToken: A token identifying a page of results the server should
       return.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   mcpTools = _messages.MessageField('McpTool', 1, repeated=True)
@@ -460,33 +470,6 @@ class McpTool(_messages.Message):
   mcpServerUrls = _messages.StringField(5, repeated=True)
   name = _messages.StringField(6)
   outputSchema = _messages.MessageField('OutputSchemaValue', 7)
-
-
-class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have been
-      cancelled successfully have google.longrunning.Operation.error value
-      with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
 
 
 class StandardQueryParameters(_messages.Message):

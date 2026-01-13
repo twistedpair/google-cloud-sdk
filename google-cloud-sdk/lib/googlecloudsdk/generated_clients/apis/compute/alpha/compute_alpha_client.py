@@ -17661,6 +17661,33 @@ To prevent failure, it is recommended that you set the
         supports_download=False,
     )
 
+    def GetHealth(self, request, global_params=None):
+      r"""Gets the most recent health check results for this.
+regional CompositeHealthCheck.
+
+      Args:
+        request: (ComputeRegionCompositeHealthChecksGetHealthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CompositeHealthChecksGetHealthResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetHealth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHealth.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionCompositeHealthChecks.getHealth',
+        ordered_params=['project', 'region', 'compositeHealthCheck'],
+        path_params=['compositeHealthCheck', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/compositeHealthChecks/{compositeHealthCheck}/getHealth',
+        request_field='',
+        request_type_name='ComputeRegionCompositeHealthChecksGetHealthRequest',
+        response_type_name='CompositeHealthChecksGetHealthResponse',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Create a CompositeHealthCheck in the specified project in the given region.
 using the parameters that are included in the request.

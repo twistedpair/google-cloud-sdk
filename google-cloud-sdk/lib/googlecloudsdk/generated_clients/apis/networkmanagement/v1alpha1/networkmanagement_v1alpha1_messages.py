@@ -2033,11 +2033,16 @@ class GkeNetworkPolicySkippedInfo(_messages.Message):
         the same Node is always allowed.
       EGRESS_FROM_NODE_NETWORK_NAMESPACE_POD: Egress traffic from a Pod that
         uses the Node's network namespace is not subject to Network Policy.
+      NETWORK_POLICY_NOT_APPLIED_TO_RESPONSE_TRAFFIC: Network Policy is not
+        applied to response traffic. This is because GKE Network Policy
+        evaluation is stateful in both GKE Dataplane V2 (eBPF) and legacy
+        (iptables) implementations.
     """
     REASON_UNSPECIFIED = 0
     NETWORK_POLICY_DISABLED = 1
     INGRESS_SOURCE_ON_SAME_NODE = 2
     EGRESS_FROM_NODE_NETWORK_NAMESPACE_POD = 3
+    NETWORK_POLICY_NOT_APPLIED_TO_RESPONSE_TRAFFIC = 4
 
   reason = _messages.EnumField('ReasonValueValuesEnum', 1)
 

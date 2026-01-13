@@ -45,12 +45,18 @@ class CloudquotasV1beta(base_api.BaseApiClient):
     self.folders_locations_services = self.FoldersLocationsServicesService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
+    self.organizations_locations_gdcZones_gdcServices_gdcQuotaInfos = self.OrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosService(self)
+    self.organizations_locations_gdcZones_gdcServices = self.OrganizationsLocationsGdcZonesGdcServicesService(self)
+    self.organizations_locations_gdcZones = self.OrganizationsLocationsGdcZonesService(self)
     self.organizations_locations_quotaAdjusterSettings = self.OrganizationsLocationsQuotaAdjusterSettingsService(self)
     self.organizations_locations_quotaPreferences = self.OrganizationsLocationsQuotaPreferencesService(self)
     self.organizations_locations_services_quotaInfos = self.OrganizationsLocationsServicesQuotaInfosService(self)
     self.organizations_locations_services = self.OrganizationsLocationsServicesService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_locations_gdcZones_gdcServices_gdcQuotaInfos = self.ProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosService(self)
+    self.projects_locations_gdcZones_gdcServices = self.ProjectsLocationsGdcZonesGdcServicesService(self)
+    self.projects_locations_gdcZones = self.ProjectsLocationsGdcZonesService(self)
     self.projects_locations_quotaAdjusterSettings = self.ProjectsLocationsQuotaAdjusterSettingsService(self)
     self.projects_locations_quotaPreferences = self.ProjectsLocationsQuotaPreferencesService(self)
     self.projects_locations_services_quotaInfos = self.ProjectsLocationsServicesQuotaInfosService(self)
@@ -334,6 +340,90 @@ class CloudquotasV1beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class OrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosService(base_api.BaseApiService):
+    """Service class for the organizations_locations_gdcZones_gdcServices_gdcQuotaInfos resource."""
+
+    _NAME = 'organizations_locations_gdcZones_gdcServices_gdcQuotaInfos'
+
+    def __init__(self, client):
+      super(CloudquotasV1beta.OrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single GdcQuotaInfo.
+
+      Args:
+        request: (CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GdcQuotaInfo) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/gdcZones/{gdcZonesId}/gdcServices/{gdcServicesId}/gdcQuotaInfos/{gdcQuotaInfosId}',
+        http_method='GET',
+        method_id='cloudquotas.organizations.locations.gdcZones.gdcServices.gdcQuotaInfos.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest',
+        response_type_name='GdcQuotaInfo',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""This option block is needed for CCFE to recognize your service. You can leave this block empty but do not remove it. option (google.internal.cloud.control2.frontend) = { public_operation_metadata_type: "google.api.cloudquotas.v1beta.OperationMetadata" }; Lists GdcQuotaInfos in a given project and location.
+
+      Args:
+        request: (CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGdcQuotaInfosResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/gdcZones/{gdcZonesId}/gdcServices/{gdcServicesId}/gdcQuotaInfos',
+        http_method='GET',
+        method_id='cloudquotas.organizations.locations.gdcZones.gdcServices.gdcQuotaInfos.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/gdcQuotaInfos',
+        request_field='',
+        request_type_name='CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest',
+        response_type_name='ListGdcQuotaInfosResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsGdcZonesGdcServicesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_gdcZones_gdcServices resource."""
+
+    _NAME = 'organizations_locations_gdcZones_gdcServices'
+
+    def __init__(self, client):
+      super(CloudquotasV1beta.OrganizationsLocationsGdcZonesGdcServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsGdcZonesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_gdcZones resource."""
+
+    _NAME = 'organizations_locations_gdcZones'
+
+    def __init__(self, client):
+      super(CloudquotasV1beta.OrganizationsLocationsGdcZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class OrganizationsLocationsQuotaAdjusterSettingsService(base_api.BaseApiService):
     """Service class for the organizations_locations_quotaAdjusterSettings resource."""
 
@@ -607,6 +697,90 @@ class CloudquotasV1beta(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(CloudquotasV1beta.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosService(base_api.BaseApiService):
+    """Service class for the projects_locations_gdcZones_gdcServices_gdcQuotaInfos resource."""
+
+    _NAME = 'projects_locations_gdcZones_gdcServices_gdcQuotaInfos'
+
+    def __init__(self, client):
+      super(CloudquotasV1beta.ProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single GdcQuotaInfo.
+
+      Args:
+        request: (CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GdcQuotaInfo) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/gdcZones/{gdcZonesId}/gdcServices/{gdcServicesId}/gdcQuotaInfos/{gdcQuotaInfosId}',
+        http_method='GET',
+        method_id='cloudquotas.projects.locations.gdcZones.gdcServices.gdcQuotaInfos.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest',
+        response_type_name='GdcQuotaInfo',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""This option block is needed for CCFE to recognize your service. You can leave this block empty but do not remove it. option (google.internal.cloud.control2.frontend) = { public_operation_metadata_type: "google.api.cloudquotas.v1beta.OperationMetadata" }; Lists GdcQuotaInfos in a given project and location.
+
+      Args:
+        request: (CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGdcQuotaInfosResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/gdcZones/{gdcZonesId}/gdcServices/{gdcServicesId}/gdcQuotaInfos',
+        http_method='GET',
+        method_id='cloudquotas.projects.locations.gdcZones.gdcServices.gdcQuotaInfos.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/gdcQuotaInfos',
+        request_field='',
+        request_type_name='CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest',
+        response_type_name='ListGdcQuotaInfosResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGdcZonesGdcServicesService(base_api.BaseApiService):
+    """Service class for the projects_locations_gdcZones_gdcServices resource."""
+
+    _NAME = 'projects_locations_gdcZones_gdcServices'
+
+    def __init__(self, client):
+      super(CloudquotasV1beta.ProjectsLocationsGdcZonesGdcServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsGdcZonesService(base_api.BaseApiService):
+    """Service class for the projects_locations_gdcZones resource."""
+
+    _NAME = 'projects_locations_gdcZones'
+
+    def __init__(self, client):
+      super(CloudquotasV1beta.ProjectsLocationsGdcZonesService, self).__init__(client)
       self._upload_configs = {
           }
 

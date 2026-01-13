@@ -45,8 +45,6 @@ from googlecloudsdk.core.credentials import exceptions as c_exceptions
 from googlecloudsdk.core.credentials import introspect as c_introspect
 from googlecloudsdk.core.util import files
 from oauth2client import client
-from oauth2client import service_account
-from oauth2client.contrib import gce as oauth2client_gce
 import six
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
@@ -144,14 +142,9 @@ def IsImpersonatedAccountCredentials(creds):
 def HasDefaultUniverseDomain(credentials):
   """Check if the given credential has default universe domain.
 
-  For google-auth credential, we check its universe_domain property. The
-  deprecated oauth2client credentials only work in default universe domain so
-  we return True (Note that they are no longer used in gcloud, but not yet
-  removed from the code base).
-
   Args:
-    credentials: google.auth.credentials.Credentials or
-      client.OAuth2Credentials, the credentials to be checked.
+    credentials: google.auth.credentials.Credentials,
+      the credentials to be checked.
 
   Returns:
     bool, Whether or not the given credential has default universe domain.
@@ -469,8 +462,7 @@ class SqliteCredentialStore(CredentialStore):
       account_id: str, The account_id of the credential to load.
 
     Returns:
-      google.auth.credentials.Credentials or client.OAuth2Credentials, The
-        loaded credentials.
+      google.auth.credentials.Credentials. The loaded credentials.
 
     Raises:
       googlecloudsdk.core.credentials.creds.InvalidCredentialsError: If problem
@@ -522,8 +514,8 @@ class SqliteCredentialStore(CredentialStore):
 
     Args:
       account_id: string, the account ID of the input credentials.
-      credentials: google.auth.credentials.Credentials or
-        client.OAuth2Credentials, the credentials to be stored.
+      credentials: google.auth.credentials.Credentials,
+        the credentials to be stored.
     """
     value = ToJsonGoogleAuth(credentials)
     formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
@@ -664,61 +656,6 @@ class AccessTokenCache(object):
       log.warning('Could not delete access token from cache: {}'.format(str(e)))
 
 
-class AccessTokenStore(client.Storage):
-  """Oauth2client adapted for access token cache.
-
-  This class works with Oauth2client model where access token is part of
-  credential serialization format and get captured as part of that.
-  By extending client.Storage this class pretends to serialize credentials, but
-  only serializes access token.
-
-  When fetching the more recent credentials from the cache, this does not return
-  token_response, as it is now out of date.
-  """
-
-  def __init__(self, access_token_cache, account_id, credentials):
-    """Sets up token store for given acount.
-
-    Args:
-      access_token_cache: AccessTokenCache, cache for access tokens.
-      account_id: str, account for which token is stored.
-      credentials: oauth2client.client.OAuth2Credentials, they are auto-updated
-        with cached access token.
-    """
-    super(AccessTokenStore, self).__init__(lock=None)
-    self._access_token_cache = access_token_cache
-    self._account_id = account_id
-    self._credentials = credentials
-
-  def locked_get(self):
-    token_data = self._access_token_cache.Load(self._account_id)
-    if token_data:
-      access_token, token_expiry, rapt_token, id_token = token_data
-      self._credentials.access_token = access_token
-      self._credentials.token_expiry = token_expiry
-      if rapt_token is not None:
-        self._credentials.rapt_token = rapt_token
-      self._credentials.id_tokenb64 = id_token
-      self._credentials.token_response = None
-    return self._credentials
-
-  def locked_put(self, credentials):
-    if getattr(self._credentials, 'token_response'):
-      id_token = self._credentials.token_response.get('id_token', None)
-    else:
-      id_token = None
-
-    self._access_token_cache.Store(
-        self._account_id,
-        self._credentials.access_token,
-        self._credentials.token_expiry,
-        getattr(self._credentials, 'rapt_token', None),
-        id_token)
-
-  def locked_delete(self):
-    self._access_token_cache.Remove(self._account_id)
-
-
 class AccessTokenStoreGoogleAuth(object):
   """google-auth adapted for access token cache.
 
@@ -803,35 +740,6 @@ class AccessTokenStoreGoogleAuth(object):
   def Delete(self):
     """Removes the tokens of the account from the internal cache."""
     self._access_token_cache.Remove(self._formatted_account_id)
-
-
-def MaybeAttachAccessTokenCacheStore(credentials,
-                                     access_token_file=None):
-  """Attaches access token cache to given credentials if no store set.
-
-  Note that credentials themselves will not be persisted only access token. Use
-  this whenever access token caching is desired, yet credentials themselves
-  should not be persisted.
-
-  Args:
-    credentials: oauth2client.client.OAuth2Credentials.
-    access_token_file: str, optional path to use for access token storage.
-  Returns:
-    oauth2client.client.OAuth2Credentials, reloaded credentials.
-  """
-  if credentials.store is not None:
-    return credentials
-  account_id = getattr(credentials, 'service_account_email', None)
-  if not account_id:
-    account_id = hashlib.sha256(six.ensure_binary(
-        credentials.refresh_token)).hexdigest()
-
-  access_token_cache = AccessTokenCache(
-      access_token_file or config.Paths().access_token_db_path)
-  store = AccessTokenStore(access_token_cache, account_id, credentials)
-  credentials.set_store(store)
-  # Return from the store, which will reload credentials with access token info.
-  return store.get()
 
 
 def MaybeAttachAccessTokenCacheStoreGoogleAuth(
@@ -975,8 +883,8 @@ class CredentialStoreWithCache(CredentialStore):
     Args:
       account_id: string, the account that will be associated with credentials
         in the cache.
-      credentials: google.auth.credentials.Credentials or
-        client.OAuth2Credentials, the credentials to be stored.
+      credentials: google.auth.credentials.Credentials,
+        the credentials to be stored.
     """
     # Stores short lived tokens to self._access_token_cache.
     store = AccessTokenStoreGoogleAuth(self._access_token_cache, account_id,
@@ -1015,44 +923,6 @@ def GetCredentialStore(
   return _GetSqliteStoreWithCache(
       store_file, access_token_file, cache_only_rapt
   )
-
-
-class CredentialType(enum.Enum):
-  """Enum of oauth2client credential types managed by gcloud."""
-
-  UNKNOWN = (0, UNKNOWN_CREDS_NAME, False, False)
-  USER_ACCOUNT = (1, USER_ACCOUNT_CREDS_NAME, True, True)
-  SERVICE_ACCOUNT = (2, SERVICE_ACCOUNT_CREDS_NAME, True, False)
-  P12_SERVICE_ACCOUNT = (3, P12_SERVICE_ACCOUNT_CREDS_NAME, True, False)
-  DEVSHELL = (4, DEVSHELL_CREDS_NAME, False, True)
-  GCE = (5, GCE_CREDS_NAME, False, False)
-
-  def __init__(self, type_id, key, is_serializable, is_user):
-    self.type_id = type_id
-    self.key = key
-    self.is_serializable = is_serializable
-    # True if this corresponds to a "user" or 3LO credential as opposed to a
-    # service account of some kind.
-    self.is_user = is_user
-
-  @staticmethod
-  def FromTypeKey(key):
-    for cred_type in CredentialType:
-      if cred_type.key == key:
-        return cred_type
-    return CredentialType.UNKNOWN
-
-  @staticmethod
-  def FromCredentials(creds):
-    if isinstance(creds, oauth2client_gce.AppAssertionCredentials):
-      return CredentialType.GCE
-    if isinstance(creds, service_account.ServiceAccountCredentials):
-      if getattr(creds, '_private_key_pkcs12', None) is not None:
-        return CredentialType.P12_SERVICE_ACCOUNT
-      return CredentialType.SERVICE_ACCOUNT
-    if getattr(creds, 'refresh_token', None) is not None:
-      return CredentialType.USER_ACCOUNT
-    return CredentialType.UNKNOWN
 
 
 class CredentialTypeGoogleAuth(enum.Enum):
@@ -1128,8 +998,7 @@ class CredentialTypeGoogleAuth(enum.Enum):
     if (isinstance(creds,
                    google_auth_external_account_authorized_user.Credentials)):
       return CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_AUTHORIZED_USER
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
+    # Import only when necessary to decrease the startup time.
     # pylint: disable=g-import-not-at-top
     from google.oauth2 import service_account as google_auth_service_account
     from googlecloudsdk.core.credentials import p12_service_account as google_auth_p12_service_account
@@ -1293,45 +1162,6 @@ def ToDictGoogleAuth(credentials):
   return creds_dict
 
 
-def FromJson(json_value):
-  """Returns Oauth2client credentials from library independent json format."""
-  json_key = json.loads(json_value)
-  cred_type = CredentialType.FromTypeKey(json_key['type'])
-  json_key['token_uri'] = GetEffectiveTokenUriFromCreds(json_key)
-  if cred_type == CredentialType.SERVICE_ACCOUNT:
-    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(
-        json_key, scopes=config.CLOUDSDK_SCOPES)
-    cred.user_agent = cred._user_agent = config.CLOUDSDK_USER_AGENT
-  elif cred_type == CredentialType.USER_ACCOUNT:
-    cred = client.OAuth2Credentials(
-        access_token=None,
-        client_id=json_key['client_id'],
-        client_secret=json_key['client_secret'],
-        refresh_token=json_key['refresh_token'],
-        token_expiry=None,
-        token_uri=json_key.get('token_uri'),
-        user_agent=json_key.get('user_agent'),
-        revoke_uri=json_key.get('revoke_uri'),
-        id_token=json_key.get('id_token'),
-        token_response=json_key.get('token_response'),
-        scopes=json_key.get('scopes'),
-        token_info_uri=json_key.get('token_info_uri'),
-        rapt_token=json_key.get('rapt_token'),
-    )
-  elif cred_type == CredentialType.P12_SERVICE_ACCOUNT:
-    # pylint: disable=protected-access
-    cred = service_account.ServiceAccountCredentials._from_p12_keyfile_contents(
-        service_account_email=json_key['client_email'],
-        private_key_pkcs12=base64.b64decode(json_key['private_key']),
-        private_key_password=json_key['password'],
-        token_uri=json_key['token_uri'],
-        scopes=config.CLOUDSDK_SCOPES)
-    cred.user_agent = cred._user_agent = config.CLOUDSDK_USER_AGENT
-  else:
-    raise UnknownCredentialsType(json_key['type'])
-  return cred
-
-
 def FromJsonGoogleAuth(json_value):
   """Returns google-auth credentials from library independent json format.
 
@@ -1356,8 +1186,7 @@ def FromJsonGoogleAuth(json_value):
   cred_type = CredentialTypeGoogleAuth.FromTypeKey(json_key['type'])
   if cred_type == CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
     json_key['token_uri'] = GetEffectiveTokenUriFromCreds(json_key)
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
+    # Import only when necessary to decrease the startup time.
     # pylint: disable=g-import-not-at-top
     from google.oauth2 import service_account as google_auth_service_account
     # pylint: enable=g-import-not-at-top
@@ -1451,8 +1280,7 @@ def FromJsonGoogleAuth(json_value):
 
   if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
     json_key['token_uri'] = GetEffectiveTokenUriFromCreds(json_key)
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
+    # Import only when necessary to decrease the startup time.
     # pylint: disable=g-import-not-at-top
     from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
     # pylint: enable=g-import-not-at-top
@@ -1636,22 +1464,6 @@ def _DumpADCJsonToFile(adc, file_path):
     raise CredentialFileSaveError(
         'Error saving Application Default Credentials: ' + six.text_type(e))
   return os.path.abspath(file_path)
-
-
-def _ConvertOauth2ClientCredentialsToADC(credentials):
-  """Converts an oauth2client credentials to application default credentials."""
-  creds_type = CredentialType.FromCredentials(credentials)
-  if creds_type not in (CredentialType.USER_ACCOUNT,
-                        CredentialType.SERVICE_ACCOUNT):
-    raise ADCError('Cannot convert credentials of type {} to application '
-                   'default credentials.'.format(type(credentials)))
-  if creds_type == CredentialType.USER_ACCOUNT:
-    credentials = client.GoogleCredentials(
-        credentials.access_token, credentials.client_id,
-        credentials.client_secret, credentials.refresh_token,
-        credentials.token_expiry, credentials.token_uri, credentials.user_agent,
-        credentials.revoke_uri)
-  return credentials.serialization_data
 
 
 IMPERSONATION_TOKEN_URL = 'https://iamcredentials.{}/v1/projects/-/serviceAccounts/{}:generateAccessToken'

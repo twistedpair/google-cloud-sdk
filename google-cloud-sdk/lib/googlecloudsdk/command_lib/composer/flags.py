@@ -729,15 +729,16 @@ SCHEDULER_STORAGE = base.Argument(
     '--scheduler-storage',
     type=arg_parsers.BinarySize(
         lower_bound='5MB',
-        upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
-        default_unit='G'),
+        default_unit='G',
+    ),
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Storage allocated to Airflow scheduler, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
-    """)
+    """,
+)
 
 DAG_PROCESSOR_STORAGE = base.Argument(
     '--dag-processor-storage',
@@ -759,29 +760,31 @@ WORKER_STORAGE = base.Argument(
     '--worker-storage',
     type=arg_parsers.BinarySize(
         lower_bound='0',
-        upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
-        default_unit='G'),
+        default_unit='G',
+    ),
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Storage allocated to Airflow worker, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
-    """)
+    """,
+)
 
 WEB_SERVER_STORAGE = base.Argument(
     '--web-server-storage',
     type=arg_parsers.BinarySize(
         lower_bound='0',
-        upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
-        default_unit='G'),
+        default_unit='G',
+    ),
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Storage allocated to Airflow web server, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
-    """)
+    """,
+)
 
 MIN_WORKERS = base.Argument(
     '--min-workers',

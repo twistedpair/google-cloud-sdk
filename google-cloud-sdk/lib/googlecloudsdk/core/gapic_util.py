@@ -145,6 +145,7 @@ def MakeClient(
     attempt_direct_path=False,
     redact_request_body_reason=None,
     custom_interceptors=None,
+    channel_options=None,
 ):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
@@ -165,6 +166,8 @@ def MakeClient(
       redacted if --log-http is used. If None, the body is not redacted.
     custom_interceptors: list[grpc interceptor], a list of custom
       interceptors to add to the channel.
+    channel_options: dict, optional channel arguments to pass to the underlying
+      gRPC channel.
 
   Returns:
     A gapic API client.
@@ -181,6 +184,7 @@ def MakeClient(
           attempt_direct_path,
           redact_request_body_reason,
           custom_interceptors=custom_interceptors,
+          channel_options=channel_options,
       )
   )
 
@@ -191,6 +195,7 @@ def MakeAsyncClient(
     address_override_func=None,
     mtls_enabled=False,
     attempt_direct_path=False,
+    channel_options=None,
 ):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
@@ -207,6 +212,8 @@ def MakeAsyncClient(
     mtls_enabled: bool, True if mTLS is enabled for this client.
     attempt_direct_path: bool, True if we want to attempt direct path gRPC where
       possible
+    channel_options: dict, optional channel arguments to pass to the underlying
+      gRPC channel.
 
   Returns:
     A gapic API client.
@@ -221,5 +228,6 @@ def MakeAsyncClient(
           address_override_func,
           mtls_enabled,
           attempt_direct_path,
+          channel_options=channel_options,
       )
   )

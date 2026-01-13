@@ -600,9 +600,10 @@ class ApphubProjectsLocationsExtendedMetadataSchemasGetRequest(_messages.Message
   r"""A ApphubProjectsLocationsExtendedMetadataSchemasGetRequest object.
 
   Fields:
-    name: Required. Schema resource name Format:
-      projects//locations//extendedMetadataSchemas/ could be
-      "apphub.googleapis.com/Name"
+    name: Required. Schema resource name Format: `projects/{project}/locations
+      /{location}/extendedMetadataSchemas/{extended_metadata_schema}`.
+      `{extended_metadata_schema}` has the format
+      `"apphub.googleapis.com/{SchemaName}"`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -630,7 +631,7 @@ class ApphubProjectsLocationsGetBoundaryRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the boundary to retrieve. Format:
-      projects/{project}/locations/{location}/boundary
+      `projects/{project}/locations/{location}/boundary`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1090,7 +1091,7 @@ class Boundary(_messages.Message):
   Fields:
     createTime: Output only. Create time.
     crmNode: Optional. The resource name of the CRM node being attached to the
-      boundary. Format: `projects/{project-number}`
+      boundary. Format: `projects/{project-number}` or `projects/{project-id}`
     name: Identifier. The resource name of the boundary. Format:
       "projects/{project}/locations/{location}/boundary"
     type: Output only. Boundary type.

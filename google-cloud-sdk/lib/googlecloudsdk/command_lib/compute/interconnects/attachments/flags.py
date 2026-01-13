@@ -164,7 +164,7 @@ def AddBandwidth(parser, required, release_track=base.ReleaseTrack.GA):
       Provisioned capacity of the attachment.
       """
   choices = copy.deepcopy(_BANDWIDTH_CHOICES)
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
     choices['400g'] = '400 Gbit/s'
 
   base.ChoiceArgument(
@@ -624,32 +624,21 @@ def AddTunnelEndpointIpAddress(parser, required=True):
   )
 
 
-def AddEnableMulticast(parser, update=False):
+def AddEnableMulticast(parser):
   """Adds enableMulticast flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.
-    update: A boolean indicates whether the incoming request is an update.
   """
-  if update:
-    # Update command.
-    help_text = """\
-      When enabled, the attachment will be able to carry multicast traffic.
-      Use --no-enable-multicast to disable it.
-      """
-  else:
-    # Create command for partner attachments, backend default behavior is to
-    # disabled if not specified.
-    help_text = """\
-      If supplied, the attachment will be able to carry multicast traffic.
-      If not provided on creation, defaults to disabled. Use
-      --no-enable-multicast to disable it.
-      """
   parser.add_argument(
       '--enable-multicast',
       default=None,
       action='store_true',
-      help=help_text,
+      help="""\
+      If supplied, the attachment will be able to carry multicast traffic.
+      Defaults to disabled. This property can only be set during attachment
+      creation and cannot be modified later.
+      """,
   )
 
 

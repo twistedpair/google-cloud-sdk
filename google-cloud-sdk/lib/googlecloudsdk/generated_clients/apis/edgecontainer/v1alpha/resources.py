@@ -102,6 +102,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_APIKEYS = (
+      'projects.locations.apiKeys',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/apiKeys/'
+              '{apiKeysId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CLUSTERS = (
       'projects.locations.clusters',
       '{+name}',
@@ -181,9 +192,12 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_ZONES = (
       'projects.locations.zones',
-      'projects/{projectsId}/locations/{locationsId}/zones/{zonesId}',
-      {},
-      ['projectsId', 'locationsId', 'zonesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/zones/{zonesId}',
+      },
+      ['name'],
       True
   )
 

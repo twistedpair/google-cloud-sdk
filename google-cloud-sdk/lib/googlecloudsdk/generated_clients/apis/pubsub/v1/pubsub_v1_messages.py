@@ -2877,7 +2877,7 @@ class Subscription(_messages.Message):
       call to the push endpoint. If the subscriber never acknowledges the
       message, the Pub/Sub system will eventually redeliver the message.
     analyticsHubSubscriptionInfo: Output only. Information about the
-      associated Analytics Hub subscription. Only set if the subscritpion is
+      associated Analytics Hub subscription. Only set if the subscription is
       created by Analytics Hub.
     bigqueryConfig: Optional. If delivery to BigQuery is used with this
       subscription, this field is used to configure it.

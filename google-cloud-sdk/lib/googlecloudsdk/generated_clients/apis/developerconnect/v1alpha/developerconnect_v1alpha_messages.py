@@ -181,6 +181,30 @@ class ArtifactDeployment(_messages.Message):
   undeployTime = _messages.StringField(7)
 
 
+class BasicAuthentication(_messages.Message):
+  r"""Basic authentication with username and password.
+
+  Fields:
+    passwordSecretVersion: The password SecretManager secret version to
+      authenticate as.
+    username: Required. The username to authenticate as.
+  """
+
+  passwordSecretVersion = _messages.StringField(1)
+  username = _messages.StringField(2)
+
+
+class BearerTokenAuthentication(_messages.Message):
+  r"""Bearer token authentication with a token.
+
+  Fields:
+    tokenSecretVersion: Optional. The token SecretManager secret version to
+      authenticate as.
+  """
+
+  tokenSecretVersion = _messages.StringField(1)
+
+
 class BitbucketCloudConfig(_messages.Message):
   r"""Configuration for connections to an instance of Bitbucket Cloud.
 
@@ -281,6 +305,8 @@ class Connection(_messages.Message):
     gitlabConfig: Configuration for connections to gitlab.com.
     gitlabEnterpriseConfig: Configuration for connections to an instance of
       GitLab Enterprise.
+    httpConfig: Optional. Configuration for connections to an HTTP service
+      provider.
     installationState: Output only. Installation state of the Connection.
     labels: Optional. Labels as key value pairs
     name: Identifier. The resource name of the connection, in the format
@@ -353,12 +379,13 @@ class Connection(_messages.Message):
   githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 11)
   gitlabConfig = _messages.MessageField('GitLabConfig', 12)
   gitlabEnterpriseConfig = _messages.MessageField('GitLabEnterpriseConfig', 13)
-  installationState = _messages.MessageField('InstallationState', 14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  name = _messages.StringField(16)
-  reconciling = _messages.BooleanField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  httpConfig = _messages.MessageField('GenericHTTPEndpointConfig', 14)
+  installationState = _messages.MessageField('InstallationState', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  name = _messages.StringField(17)
+  reconciling = _messages.BooleanField(18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class CryptoKeyConfig(_messages.Message):
@@ -390,8 +417,8 @@ class DeploymentEvent(_messages.Message):
     deployTime: Output only. The time at which the DeploymentEvent was
       deployed. This would be the min of all ArtifactDeployment deploy_times.
     name: Identifier. The name of the DeploymentEvent. This name is provided
-      by DCI. Format: projects/{project}/locations/{location}/insightsConfigs/
-      {insights_config}/deploymentEvents/{uuid}
+      by Developer Connect insights. Format: projects/{project}/locations/{loc
+      ation}/insightsConfigs/{insights_config}/deploymentEvents/{uuid}
     runtimeConfig: Output only. The runtime configurations where the
       DeploymentEvent happened.
     runtimeDeploymentUri: Output only. The runtime assigned URI of the
@@ -1407,6 +1434,31 @@ class GKEWorkload(_messages.Message):
   deployment = _messages.StringField(2)
 
 
+class GenericHTTPEndpointConfig(_messages.Message):
+  r"""Defines the configuration for connections to an HTTP service provider.
+
+  Fields:
+    basicAuthentication: Optional. Basic authentication with username and
+      password.
+    bearerTokenAuthentication: Optional. Bearer token authentication with a
+      token.
+    hostUri: Required. Immutable. The service provider's https endpoint.
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a HTTP service provider. This should
+      only be set if the Http service provider is hosted on-premises and not
+      reachable by public internet. If this field is left empty, calls to the
+      HTTP service provider will be made over the public internet.
+    sslCaCertificate: Optional. The SSL certificate to use for requests to the
+      HTTP service provider.
+  """
+
+  basicAuthentication = _messages.MessageField('BasicAuthentication', 1)
+  bearerTokenAuthentication = _messages.MessageField('BearerTokenAuthentication', 2)
+  hostUri = _messages.StringField(3)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 4)
+  sslCaCertificate = _messages.StringField(5)
+
+
 class GitHubConfig(_messages.Message):
   r"""Configuration for connections to github.com.
 
@@ -1458,6 +1510,8 @@ class GitHubEnterpriseConfig(_messages.Message):
       is for.
     installationUri: Output only. The URI to navigate to in order to manage
       the installation associated with this GitHubEnterpriseConfig.
+    organization: Optional. Immutable. GitHub Enterprise organization in which
+      the GitHub App is created.
     privateKeySecretVersion: Optional. SecretManager resource containing the
       private key of the GitHub App, formatted as
       `projects/*/secrets/*/versions/*` or
@@ -1484,11 +1538,12 @@ class GitHubEnterpriseConfig(_messages.Message):
   appSlug = _messages.StringField(3)
   hostUri = _messages.StringField(4)
   installationUri = _messages.StringField(5)
-  privateKeySecretVersion = _messages.StringField(6)
-  serverVersion = _messages.StringField(7)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 8)
-  sslCaCertificate = _messages.StringField(9)
-  webhookSecretSecretVersion = _messages.StringField(10)
+  organization = _messages.StringField(6)
+  privateKeySecretVersion = _messages.StringField(7)
+  serverVersion = _messages.StringField(8)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 9)
+  sslCaCertificate = _messages.StringField(10)
+  webhookSecretSecretVersion = _messages.StringField(11)
 
 
 class GitLabConfig(_messages.Message):
@@ -1766,7 +1821,7 @@ class HttpBody(_messages.Message):
 class InsightsConfig(_messages.Message):
   r"""The InsightsConfig resource is the core configuration object to capture
   events from your Software Development Lifecycle. It acts as the central hub
-  for managing how Developer connect understands your application, its runtime
+  for managing how Developer Connect understands your application, its runtime
   environments, and the artifacts deployed within them.
 
   Enums:
@@ -1795,7 +1850,7 @@ class InsightsConfig(_messages.Message):
     labels: Optional. Set of labels associated with an InsightsConfig.
     name: Identifier. The name of the InsightsConfig. Format:
       projects/{project}/locations/{location}/insightsConfigs/{insightsConfig}
-    projects: Optional. The GCP projects to track with the InsightsConfig.
+    projects: Optional. The projects to track with the InsightsConfig.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of InsightsConfig does not match the user's intended state, and
@@ -2253,7 +2308,7 @@ class Projects(_messages.Message):
   r"""Projects represents the projects to track with the InsightsConfig.
 
   Fields:
-    projectIds: Optional. The GCP Project IDs. Format: projects/{project}
+    projectIds: Optional. The project IDs. Format: {project}
   """
 
   projectIds = _messages.StringField(1, repeated=True)
@@ -2436,9 +2491,9 @@ class StartOAuthResponse(_messages.Message):
     authUri: The authorization server URL to the OAuth flow of the service
       provider.
     clientId: The client ID to the OAuth App of the service provider.
-    codeChallenge: https://datatracker.ietf.org/doc/html/rfc7636#section-4.1
-      Follow http://shortn/_WFYl6U0NyC to include it in the AutoCodeURL.
-    codeChallengeMethod:
+    codeChallenge: Please refer to
+      https://datatracker.ietf.org/doc/html/rfc7636#section-4.1
+    codeChallengeMethod: Please refer to
       https://datatracker.ietf.org/doc/html/rfc7636#section-4.2
     scopes: The list of scopes requested by the application.
     systemProviderId: The ID of the system provider.

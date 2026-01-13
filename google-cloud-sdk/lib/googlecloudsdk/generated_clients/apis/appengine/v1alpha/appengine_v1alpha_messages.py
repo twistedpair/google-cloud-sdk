@@ -1218,6 +1218,22 @@ class AppengineProjectsLocationsApplicationsServicesVersionsExportAppImageReques
   name = _messages.StringField(2, required=True)
 
 
+class AppengineProjectsLocationsApplicationsServicesVersionsInstancesDebugRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsServicesVersionsInstancesDebugRequest
+  object.
+
+  Fields:
+    debugInstanceRequest: A DebugInstanceRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default/versions/v1/instances/instance-1.
+  """
+
+  debugInstanceRequest = _messages.MessageField('DebugInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest(_messages.Message):
   r"""A AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest
   object.
@@ -4451,8 +4467,10 @@ class Version(_messages.Message):
     versionUrl: Output only. Serving URL for this version. Example:
       "https://myversion-dot-myservice-dot-myapp.appspot.com"@OutputOnly
     vm: Whether to deploy this version in a container on a virtual machine.
+    vpcAccess: Enables VPC access connectivity for standard apps.
     vpcAccessConnector: Enables VPC connectivity for standard apps.
-    vpcEgress: Enables VPC egress connectivity for standard apps.
+    vpcEgress: Deprecated: Use vpc_access instead. Enables VPC egress
+      connectivity for standard apps.
     zones: The Google Compute Engine zones that are supported by this version
       in the App Engine flexible environment. Deprecated.
   """
@@ -4703,9 +4721,10 @@ class Version(_messages.Message):
   threadsafe = _messages.BooleanField(41)
   versionUrl = _messages.StringField(42)
   vm = _messages.BooleanField(43)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 44)
-  vpcEgress = _messages.MessageField('VpcEgress', 45)
-  zones = _messages.StringField(46, repeated=True)
+  vpcAccess = _messages.MessageField('VpcAccess', 44)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 45)
+  vpcEgress = _messages.MessageField('VpcEgress', 46)
+  zones = _messages.StringField(47, repeated=True)
 
 
 class Volume(_messages.Message):
@@ -4721,6 +4740,39 @@ class Volume(_messages.Message):
   name = _messages.StringField(1)
   sizeGb = _messages.FloatField(2)
   volumeType = _messages.StringField(3)
+
+
+class VpcAccess(_messages.Message):
+  r"""VPC Access settings
+
+  Enums:
+    VpcEgressValueValuesEnum: The traffic egress setting for the VPC network
+      interface, controlling what traffic is diverted through it.
+
+  Fields:
+    networkInterfaces: The Direct VPC configuration. Currently only single
+      network interface is supported.
+    vpcEgress: The traffic egress setting for the VPC network interface,
+      controlling what traffic is diverted through it.
+  """
+
+  class VpcEgressValueValuesEnum(_messages.Enum):
+    r"""The traffic egress setting for the VPC network interface, controlling
+    what traffic is diverted through it.
+
+    Values:
+      VPC_EGRESS_UNSPECIFIED: No value set; apply default behavior
+      ALL_TRAFFIC: Force all traffic to egress through the NetworkInterface
+        (and configured VPC Network)
+      PRIVATE_IP_RANGES: Force all Private IP Space traffic to egress through
+        NetworkInterface (and configured VPC Network)
+    """
+    VPC_EGRESS_UNSPECIFIED = 0
+    ALL_TRAFFIC = 1
+    PRIVATE_IP_RANGES = 2
+
+  networkInterfaces = _messages.MessageField('VpcNetworkInterface', 1, repeated=True)
+  vpcEgress = _messages.EnumField('VpcEgressValueValuesEnum', 2)
 
 
 class VpcAccessConnector(_messages.Message):
@@ -4757,7 +4809,7 @@ class VpcAccessConnector(_messages.Message):
 
 
 class VpcEgress(_messages.Message):
-  r"""Vpc Egress configuration.
+  r"""Deprecated: Use VpcAccess instead. Vpc Egress configuration.
 
   Enums:
     EgressSettingValueValuesEnum: The egress setting for the subnetwork,
@@ -4788,6 +4840,33 @@ class VpcEgress(_messages.Message):
   egressSetting = _messages.EnumField('EgressSettingValueValuesEnum', 1)
   networkTags = _messages.MessageField('VpcNetworkTag', 2, repeated=True)
   subnetworkKey = _messages.MessageField('SubnetworkKey', 3)
+
+
+class VpcNetworkInterface(_messages.Message):
+  r"""Network interface key message.
+
+  Fields:
+    network: Optional. The VPC network that the App Engine resource will be
+      able to send traffic to. At least one of network or subnetwork must be
+      specified. If both network and subnetwork are specified, the given VPC
+      subnetwork must belong to the given VPC network. If network is not
+      specified, it will be looked up from the subnetwork. Could be either a
+      short name or a full path. e.g. {VPC_NETWORK} or
+      projects/{HOST_PROJECT_ID}/global/networks/{VPC_NETWORK}
+    subnet: Optional. The VPC subnetwork that the App Engine resource will get
+      IPs from. At least one of network or subnetwork must be specified. If
+      both network and subnetwork are specified, the given VPC subnetwork must
+      belong to the given VPC network. If subnetwork is not specified, the
+      subnetwork with the same name with the network will be used. Could be
+      either a short name or a full path. e.g. {SUBNET_NAME} or
+      projects/{HOST_PROJECT_ID}/regions/{REGION}/subnetworks/{SUBNET_NAME}
+    tags: Optional. The network tags that will be applied to this App Engine
+      resource.
+  """
+
+  network = _messages.StringField(1)
+  subnet = _messages.StringField(2)
+  tags = _messages.StringField(3, repeated=True)
 
 
 class VpcNetworkTag(_messages.Message):

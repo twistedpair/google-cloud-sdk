@@ -3317,12 +3317,12 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/build-base-image`: Service. *
       `run.googleapis.com/build-enable-automatic-updates`: Service. *
       `run.googleapis.com/build-environment-variables`: Service. *
-      `run.googleapis.com/build-function-target`: Service. *
-      `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-
-      image-uri`: Service. * `run.googleapis.com/build-name`: Service. *
-      `run.googleapis.com/build-service-account`: Service. *
-      `run.googleapis.com/build-source-location`: Service. *
-      `run.googleapis.com/build-worker-pool`: Service. *
+      `run.googleapis.com/build-function-target`: Service, Revision. *
+      `run.googleapis.com/build-id`: Service, Revision. *
+      `run.googleapis.com/build-image-uri`: Service. *
+      `run.googleapis.com/build-name`: Service. * `run.googleapis.com/build-
+      service-account`: Service. * `run.googleapis.com/build-source-location`:
+      Service, Revision. * `run.googleapis.com/build-worker-pool`: Service. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
       `run.googleapis.com/container-dependencies`: Revision . *
@@ -3368,12 +3368,12 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/build-base-image`: Service. *
       `run.googleapis.com/build-enable-automatic-updates`: Service. *
       `run.googleapis.com/build-environment-variables`: Service. *
-      `run.googleapis.com/build-function-target`: Service. *
-      `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-
-      image-uri`: Service. * `run.googleapis.com/build-name`: Service. *
-      `run.googleapis.com/build-service-account`: Service. *
-      `run.googleapis.com/build-source-location`: Service. *
-      `run.googleapis.com/build-worker-pool`: Service. *
+      `run.googleapis.com/build-function-target`: Service, Revision. *
+      `run.googleapis.com/build-id`: Service, Revision. *
+      `run.googleapis.com/build-image-uri`: Service. *
+      `run.googleapis.com/build-name`: Service. * `run.googleapis.com/build-
+      service-account`: Service. * `run.googleapis.com/build-source-location`:
+      Service, Revision. * `run.googleapis.com/build-worker-pool`: Service. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
       `run.googleapis.com/container-dependencies`: Revision . *
@@ -3446,12 +3446,12 @@ class ObjectMeta(_messages.Message):
     Service, Job, Execution. * `run.googleapis.com/build-base-image`: Service.
     * `run.googleapis.com/build-enable-automatic-updates`: Service. *
     `run.googleapis.com/build-environment-variables`: Service. *
-    `run.googleapis.com/build-function-target`: Service. *
-    `run.googleapis.com/build-id`: Service. * `run.googleapis.com/build-image-
-    uri`: Service. * `run.googleapis.com/build-name`: Service. *
-    `run.googleapis.com/build-service-account`: Service. *
-    `run.googleapis.com/build-source-location`: Service. *
-    `run.googleapis.com/build-worker-pool`: Service. *
+    `run.googleapis.com/build-function-target`: Service, Revision. *
+    `run.googleapis.com/build-id`: Service, Revision. *
+    `run.googleapis.com/build-image-uri`: Service. *
+    `run.googleapis.com/build-name`: Service. * `run.googleapis.com/build-
+    service-account`: Service. * `run.googleapis.com/build-source-location`:
+    Service, Revision. * `run.googleapis.com/build-worker-pool`: Service. *
     `run.googleapis.com/client-name`: All resources. *
     `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
     `run.googleapis.com/container-dependencies`: Revision . *

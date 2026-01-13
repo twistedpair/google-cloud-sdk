@@ -364,8 +364,10 @@ class ParametermanagerProjectsLocationsParametersListRequest(_messages.Message):
     orderBy: Optional. Hint for how to order the results
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
+    pageToken: Optional. A page token, received from a previous
+      `ListParameters` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListParameters` must
+      match the call that provided the page token.
     parent: Required. Parent value for ListParametersRequest in the format
       `projects/*/locations/*`.
   """
@@ -484,7 +486,7 @@ class ParametermanagerProjectsLocationsParametersVersionsGetRequest(_messages.Me
 
     Values:
       VIEW_UNSPECIFIED: The default / unset value. The API will default to the
-        FULL view..
+        FULL view.
       BASIC: Include only the metadata for the resource.
       FULL: Include metadata & other relevant payload data as well. This is
         the default view.
@@ -505,8 +507,11 @@ class ParametermanagerProjectsLocationsParametersVersionsListRequest(_messages.M
     orderBy: Optional. Hint for how to order the results
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
+    pageToken: Optional. A page token, received from a previous
+      `ListParameterVersions` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListParameterVersions` must match the call that provided the page
+      token.
     parent: Required. Parent value for ListParameterVersionsRequest in the
       format `projects/*/locations/*/parameters/*`.
   """

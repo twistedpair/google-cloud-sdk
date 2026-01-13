@@ -3129,6 +3129,8 @@ class Instance(_messages.Message):
       PROMOTING: The instance is being promoted.
       SWITCHOVER: The instance has entered switchover state. All updates on
         instance are restricted while the instance is in this state.
+      STOPPING: The instance is being stopped.
+      STARTING: The instance is being started.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -3140,6 +3142,8 @@ class Instance(_messages.Message):
     BOOTSTRAPPING = 7
     PROMOTING = 8
     SWITCHOVER = 9
+    STOPPING = 10
+    STARTING = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -4801,36 +4805,6 @@ class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
-class StorageDatabasecenterPartnerapiV1mainBigQueryResourceMetadata(_messages.Message):
-  r"""BigQueryResourceMetadata contains information about the BigQuery
-  resource. Next ID: 9
-
-  Fields:
-    createTime: The creation time of the resource, i.e. the time when resource
-      is created and recorded in partner service.
-    fullResourceName: Required. Full resource name of this instance.
-    location: Required. location of the resource
-    product: The product this resource represents.
-    resourceContainer: Closest parent Cloud Resource Manager container of this
-      resource. It must be resource name of a Cloud Resource Manager project
-      with the format of "/", such as "projects/123". For GCP provided
-      resources, number should be project number.
-    resourceId: Required. Database resource id.
-    updateTime: The time at which the resource was updated and recorded at
-      partner service.
-    userLabelSet: User-provided labels associated with the resource
-  """
-
-  createTime = _messages.StringField(1)
-  fullResourceName = _messages.StringField(2)
-  location = _messages.StringField(3)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 4)
-  resourceContainer = _messages.StringField(5)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 6)
-  updateTime = _messages.StringField(7)
-  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 8)
-
-
 class StorageDatabasecenterPartnerapiV1mainCompliance(_messages.Message):
   r"""Contains compliance information about a security standard indicating
   unmet recommendations.
@@ -4921,7 +4895,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
   Fields:
     backupdrMetadata: BackupDR metadata is used to ingest metadata from
       BackupDR.
-    bigqueryResourceMetadata: For BigQuery resource metadata.
     configBasedSignalData: Config based signal data is used to ingest signals
       that are generated based on the configuration of the database resource.
     databaseResourceSignalData: Database resource signal data is used to
@@ -4958,7 +4931,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       CONFIG_BASED_SIGNAL_DATA: Database config based signal data
       BACKUPDR_METADATA: Database resource metadata from BackupDR
       DATABASE_RESOURCE_SIGNAL_DATA: Database resource signal data
-      BIGQUERY_RESOURCE_METADATA: BigQuery resource metadata
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
@@ -4968,20 +4940,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
     CONFIG_BASED_SIGNAL_DATA = 5
     BACKUPDR_METADATA = 6
     DATABASE_RESOURCE_SIGNAL_DATA = 7
-    BIGQUERY_RESOURCE_METADATA = 8
 
   backupdrMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupDRMetadata', 1)
-  bigqueryResourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBigQueryResourceMetadata', 2)
-  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 3)
-  databaseResourceSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData', 4)
-  feedTimestamp = _messages.StringField(5)
-  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 6)
-  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 7)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 8)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 9)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 10)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 11)
-  skipIngestion = _messages.BooleanField(12)
+  configBasedSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainConfigBasedSignalData', 2)
+  databaseResourceSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceSignalData', 3)
+  feedTimestamp = _messages.StringField(4)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 5)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 6)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 7)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 8)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 10)
+  skipIngestion = _messages.BooleanField(11)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -5339,6 +5309,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES: Recommended maintenance
         policy.
       SIGNAL_TYPE_EXTENDED_SUPPORT: Resource version is in extended support.
+      SIGNAL_TYPE_PERFORMANCE_KPI_CHANGE: Change in performance KPIs.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -5445,6 +5416,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_DATABOOST_DISABLED = 102
     SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES = 103
     SIGNAL_TYPE_EXTENDED_SUPPORT = 104
+    SIGNAL_TYPE_PERFORMANCE_KPI_CHANGE = 105
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -5518,8 +5490,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
       PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
       go/keep-sorted start alloydb.googleapis.com/Cluster,
-      alloydb.googleapis.com/Instance, bigquery.googleapis.com/Dataset,
-      bigtableadmin.googleapis.com/Cluster,
+      alloydb.googleapis.com/Instance, bigtableadmin.googleapis.com/Cluster,
       bigtableadmin.googleapis.com/Instance compute.googleapis.com/Instance
       firestore.googleapis.com/Database, redis.googleapis.com/Instance,
       redis.googleapis.com/Cluster,
@@ -6062,6 +6033,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES: Recommended maintenance
         policy.
       SIGNAL_TYPE_EXTENDED_SUPPORT: Resource version is in extended support.
+      SIGNAL_TYPE_PERFORMANCE_KPI_CHANGE: Change in performance KPIs.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -6168,6 +6140,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_DATABOOST_DISABLED = 102
     SIGNAL_TYPE_RECOMMENDED_MAINTENANCE_POLICIES = 103
     SIGNAL_TYPE_EXTENDED_SUPPORT = 104
+    SIGNAL_TYPE_PERFORMANCE_KPI_CHANGE = 105
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -6365,8 +6338,12 @@ class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Messag
   to Database Resource.
 
   Fields:
+    baselineSlots: Optional. Baseline slots for BigQuery Reservations.
+      Baseline slots are in increments of 50.
     cpuCount: The number of CPUs. Deprecated. Use vcpu_count instead.
       TODO(b/342344482) add proto validations again after bug fix.
+    maxReservationSlots: Optional. Max slots for BigQuery Reservations. Max
+      slots are in increments of 50.
     memorySizeInBytes: Memory size in bytes. TODO(b/342344482) add proto
       validations again after bug fix.
     shardCount: Optional. Number of shards (if applicable).
@@ -6374,10 +6351,12 @@ class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Messag
       validations again after bug fix.
   """
 
-  cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  memorySizeInBytes = _messages.IntegerField(2)
-  shardCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  vcpuCount = _messages.FloatField(4)
+  baselineSlots = _messages.IntegerField(1)
+  cpuCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxReservationSlots = _messages.IntegerField(3)
+  memorySizeInBytes = _messages.IntegerField(4)
+  shardCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  vcpuCount = _messages.FloatField(6)
 
 
 class StorageDatabasecenterPartnerapiV1mainObservabilityMetricData(_messages.Message):

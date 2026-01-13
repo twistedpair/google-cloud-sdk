@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import symlink_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
+from googlecloudsdk.core import properties
 
 SYMLINK_TEMPORARY_PLACEHOLDER_SUFFIX = '_sym'
 
@@ -145,3 +146,37 @@ def return_and_report_if_nothing_to_download(cloud_resource, progress_callback):
       progress_callback(0)
     return True
   return False
+
+
+def get_crc32c_hash_for_resource(resource):
+  """Returns the crc32c hash for the given resource."""
+
+  enable_zonal_buckets_bidi_streaming = (
+      properties.VALUES.storage.enable_zonal_buckets_bidi_streaming.GetBool()
+  )
+  if not enable_zonal_buckets_bidi_streaming:
+    return resource.crc32c_hash
+
+  try:
+    # pylint: disable=g-import-not-at-top,redefined-outer-name
+    from googlecloudsdk.api_lib.storage import api_factory
+    from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import client as gcs_grpc_bidi_streaming_client
+    # pylint: enable=g-import-not-at-top,redefined-outer-name
+
+    provider = resource.storage_url.scheme
+    bucket_name = resource.storage_url.bucket_name
+    api = api_factory.get_api(provider, bucket_name=bucket_name)
+    if isinstance(
+        api, gcs_grpc_bidi_streaming_client.GcsGrpcBidiStreamingClient
+    ):
+      return api.get_grpc_bidi_object_metadata(
+          bucket_name=resource.storage_url.bucket_name,
+          object_name=resource.storage_url.resource_name,
+          source_resource=resource,
+          generation=resource.generation,
+      ).crc32c_hash
+  except ImportError:
+    # Non Zonal buckets not necesarily need to import gRPC dependent libraries.
+    # For Non Zonal buckets, we will continue to use the existing flow.
+    pass
+  return resource.crc32c_hash

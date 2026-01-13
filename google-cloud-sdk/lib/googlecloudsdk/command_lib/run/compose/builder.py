@@ -32,7 +32,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import parallel
@@ -109,7 +108,9 @@ def handle(
           build_log_url,
           image_tag,
       )
-      for container, build_config, build_op_ref, build_log_url, image_tag in build_ops
+      for container, build_config, build_op_ref, build_log_url, image_tag in (
+          build_ops
+      )
   ]
 
   num_threads = min(len(task_args), 10)
@@ -281,39 +282,6 @@ def _handle_no_build(
     except Exception as e:
       tracker.FailStage(stage_key, e, 'Image retrieval failed.')
       raise
-
-
-def _write_cloudbuild_config(context: str, image_tag: str) -> str:
-  """Writes a cloudbuild.yaml file to the service source directory.
-
-  Args:
-    context: The build context directory.
-    image_tag: The full tag for the image to be built.
-
-  Returns:
-    The path to the written cloudbuild.yaml file.
-  """
-  config_data = {
-      'steps': [{
-          'id': f'Build Docker Image: {image_tag}',
-          'name': 'gcr.io/cloud-builders/docker',
-          'args': ['buildx', 'build', '--load', '-t', image_tag, '.'],
-      }],
-      'images': [image_tag],
-  }
-
-  out_dir = os.path.join(context, 'out')
-  file_path = os.path.join(out_dir, 'cloudbuild.yaml')
-  try:
-    files.MakeDir(out_dir)
-    with files.FileWriter(file_path) as f:
-      yaml.dump(config_data, f)
-    log.debug(f"Wrote Cloud Build config to '{file_path}'")
-    return file_path
-  except Exception as e:
-    raise exceptions.Error(
-        f"Failed to write Cloud Build config to '{file_path}': {e}"
-    )
 
 
 def _build_from_source(

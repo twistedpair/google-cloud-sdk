@@ -1697,6 +1697,90 @@ class FirewallPolicyRuleOperationMetadata(_messages.Message):
   allocatedPriority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GetVersionOperationMetadata(_messages.Message):
+  r"""A GetVersionOperationMetadata object.
+
+  Fields:
+    inlineSbomInfo: A GetVersionOperationMetadataSbomInfo attribute.
+  """
+
+  inlineSbomInfo = _messages.MessageField('GetVersionOperationMetadataSbomInfo', 1)
+
+
+class GetVersionOperationMetadataSbomInfo(_messages.Message):
+  r"""A GetVersionOperationMetadataSbomInfo object.
+
+  Messages:
+    CurrentComponentVersionsValue: SBOM versions currently applied to the
+      resource. The key is the component name and the value is the version.
+    TargetComponentVersionsValue: SBOM versions scheduled for the next
+      maintenance. The key is the component name and the value is the version.
+
+  Fields:
+    currentComponentVersions: SBOM versions currently applied to the resource.
+      The key is the component name and the value is the version.
+    targetComponentVersions: SBOM versions scheduled for the next maintenance.
+      The key is the component name and the value is the version.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CurrentComponentVersionsValue(_messages.Message):
+    r"""SBOM versions currently applied to the resource. The key is the
+    component name and the value is the version.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        CurrentComponentVersionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        CurrentComponentVersionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CurrentComponentVersionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TargetComponentVersionsValue(_messages.Message):
+    r"""SBOM versions scheduled for the next maintenance. The key is the
+    component name and the value is the version.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        TargetComponentVersionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        TargetComponentVersionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TargetComponentVersionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  currentComponentVersions = _messages.MessageField('CurrentComponentVersionsValue', 1)
+  targetComponentVersions = _messages.MessageField('TargetComponentVersionsValue', 2)
+
+
 class GlobalSetPolicyRequest(_messages.Message):
   r"""A GlobalSetPolicyRequest object.
 
@@ -1932,6 +2016,7 @@ class Operation(_messages.Message):
       operation, this field will be populated.
     firewallPolicyRuleOperationMetadata: A FirewallPolicyRuleOperationMetadata
       attribute.
+    getVersionOperationMetadata: A GetVersionOperationMetadata attribute.
     httpErrorMessage: [Output Only] If the operation fails, this field
       contains the HTTP error message that was returned, such as `NOT FOUND`.
     httpErrorStatusCode: [Output Only] If the operation fails, this field
@@ -2235,29 +2320,30 @@ class Operation(_messages.Message):
   endTime = _messages.StringField(4)
   error = _messages.MessageField('ErrorValue', 5)
   firewallPolicyRuleOperationMetadata = _messages.MessageField('FirewallPolicyRuleOperationMetadata', 6)
-  httpErrorMessage = _messages.StringField(7)
-  httpErrorStatusCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(10)
-  instancesBulkInsertOperationMetadata = _messages.MessageField('InstancesBulkInsertOperationMetadata', 11)
-  kind = _messages.StringField(12, default='compute#operation')
-  name = _messages.StringField(13)
-  operationGroupId = _messages.StringField(14)
-  operationType = _messages.StringField(15)
-  progress = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  selfLinkWithId = _messages.StringField(19)
-  setAutoscalerLinkOperationMetadata = _messages.MessageField('SetAutoscalerLinkOperationMetadata', 20)
-  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 21)
-  startTime = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  statusMessage = _messages.StringField(24)
-  targetId = _messages.IntegerField(25, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(26)
-  user = _messages.StringField(27)
-  warnings = _messages.MessageField('WarningsValueListEntry', 28, repeated=True)
-  zone = _messages.StringField(29)
+  getVersionOperationMetadata = _messages.MessageField('GetVersionOperationMetadata', 7)
+  httpErrorMessage = _messages.StringField(8)
+  httpErrorStatusCode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(11)
+  instancesBulkInsertOperationMetadata = _messages.MessageField('InstancesBulkInsertOperationMetadata', 12)
+  kind = _messages.StringField(13, default='compute#operation')
+  name = _messages.StringField(14)
+  operationGroupId = _messages.StringField(15)
+  operationType = _messages.StringField(16)
+  progress = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  region = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  selfLinkWithId = _messages.StringField(20)
+  setAutoscalerLinkOperationMetadata = _messages.MessageField('SetAutoscalerLinkOperationMetadata', 21)
+  setCommonInstanceMetadataOperationMetadata = _messages.MessageField('SetCommonInstanceMetadataOperationMetadata', 22)
+  startTime = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusMessage = _messages.StringField(25)
+  targetId = _messages.IntegerField(26, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(27)
+  user = _messages.StringField(28)
+  warnings = _messages.MessageField('WarningsValueListEntry', 29, repeated=True)
+  zone = _messages.StringField(30)
 
 
 class OperationsListResponse(_messages.Message):

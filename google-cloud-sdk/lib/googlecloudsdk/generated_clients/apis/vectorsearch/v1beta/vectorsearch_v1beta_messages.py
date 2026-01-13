@@ -451,8 +451,9 @@ class GoogleCloudVectorsearchV1betaCreateDataObjectRequest(_messages.Message):
   Fields:
     dataObject: Required. The DataObject to create.
     dataObjectId: Required. The id of the dataObject to create. The id must be
-      1-63 characters long, and comply with RFC1035. Specifically, it must be
-      1-63 characters long and match the regular expression
+      1-63 characters long, and comply with
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Specifically, it must
+      be 1-63 characters long and match the regular expression
       `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`.
     parent: Required. The resource name of the Collection to create the
       DataObject in. Format:
@@ -1242,7 +1243,7 @@ class GoogleCloudVectorsearchV1betaVertexEmbeddingConfig(_messages.Message):
     taskType: Required. Required: Task type for the embeddings.
     textTemplate: Required. Required: Text template for the input to the
       model. The template must contain one or more references to fields in the
-      DataObject, e.g.: "Movie Title: {title} ---- Movie Plot: {plot}"".
+      DataObject, e.g.: "Movie Title: {title} ---- Movie Plot: {plot}".
   """
 
   class TaskTypeValueValuesEnum(_messages.Enum):
@@ -1670,8 +1671,9 @@ class VectorsearchProjectsLocationsCollectionsDataObjectsCreateRequest(_messages
 
   Fields:
     dataObjectId: Required. The id of the dataObject to create. The id must be
-      1-63 characters long, and comply with RFC1035. Specifically, it must be
-      1-63 characters long and match the regular expression
+      1-63 characters long, and comply with
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Specifically, it must
+      be 1-63 characters long and match the regular expression
       `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`.
     googleCloudVectorsearchV1betaDataObject: A
       GoogleCloudVectorsearchV1betaDataObject resource to be passed as the

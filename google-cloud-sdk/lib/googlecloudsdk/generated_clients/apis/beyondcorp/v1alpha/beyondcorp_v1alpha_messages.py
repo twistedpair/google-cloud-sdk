@@ -187,76 +187,6 @@ class ApplicationEndpoint(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the PartnerTenant using the form: `or
-      ganizations/{organization_id}/locations/global/partnerTenants/{partner_t
-      enant_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest(_messages.Message):
-  r"""A BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest
-  object.
-
-  Fields:
-    filter: Optional. A filter specifying constraints of a list operation. All
-      fields in the PartnerTenant message are supported. For example, the
-      following query will return the PartnerTenants with displayName "test-
-      tenant" organizations/${ORG_ID}/locations/${LOCATION}/partnerTenants?fil
-      ter=displayName="test-tenant" Nested fields are also supported. The
-      follow query will return PartnerTenants with internal_tenant_id "1234" o
-      rganizations/${ORG_ID}/locations/${LOCATION}/partnerTenants?filter=partn
-      erMetadata.internalTenantId="1234" For more information, please refer to
-      https://google.aip.dev/160.
-    orderBy: Optional. Specifies the ordering of results. See [Sorting
-      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
-      r) for more information.
-    pageSize: Optional. The maximum number of items to return. If not
-      specified, a default value of 50 will be used by the service. Regardless
-      of the page_size value, the response may include a partial list and a
-      caller should only rely on response's next_page_token to determine if
-      there are more instances left to be queried.
-    pageToken: Optional. The next_page_token value returned from a previous
-      ListPartnerTenantsResponse, if any.
-    parent: Required. The parent organization to which the PartnerTenants
-      belong. Format: `organizations/{organization_id}/locations/global`
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest(_messages.Message):
   r"""A BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest
   object.
@@ -3636,45 +3566,6 @@ class GoogleCloudBeyondcorpAppgatewaysV1AppGatewayOperationMetadata(_messages.Me
   verb = _messages.StringField(7)
 
 
-class GoogleCloudBeyondcorpPartnerservicesV1alphaGroup(_messages.Message):
-  r"""Message to capture group information
-
-  Fields:
-    email: The group email id
-    id: Google group id
-  """
-
-  email = _messages.StringField(1)
-  id = _messages.StringField(2)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse(_messages.Message):
-  r"""Message for response to listing PartnerTenants.
-
-  Fields:
-    nextPageToken: A token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    partnerTenants: The list of PartnerTenant objects.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  partnerTenants = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 2, repeated=True)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata(_messages.Message):
-  r"""Metadata associated with PartnerTenant and is provided by the Partner.
-
-  Fields:
-    internalTenantId: Optional. UUID used by the Partner to refer to the
-      PartnerTenant in their internal systems.
-    partnerTenantId: Optional. UUID used by the Partner to refer to the
-      PartnerTenant in their internal systems.
-  """
-
-  internalTenantId = _messages.StringField(1)
-  partnerTenantId = _messages.StringField(2)
-
-
 class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerServiceOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -3700,31 +3591,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerServiceOperationMetadata
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant(_messages.Message):
-  r"""Information about a BeyoncCorp Enterprise PartnerTenant.
-
-  Fields:
-    createTime: Output only. Timestamp when the resource was created.
-    displayName: Optional. An arbitrary caller-provided name for the
-      PartnerTenant. Cannot exceed 64 characters.
-    group: Optional. Group information for the users enabled to use the
-      partnerTenant. If the group information is not provided then the
-      partnerTenant will be enabled for all users.
-    name: Output only. Unique resource name of the PartnerTenant. The name is
-      ignored when creating PartnerTenant.
-    partnerMetadata: Optional. Metadata provided by the Partner associated
-      with PartnerTenant.
-    updateTime: Output only. Timestamp when the resource was last modified.
-  """
-
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  group = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaGroup', 3)
-  name = _messages.StringField(4)
-  partnerMetadata = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata', 5)
-  updateTime = _messages.StringField(6)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1mainPartnerServiceOperationMetadata(_messages.Message):

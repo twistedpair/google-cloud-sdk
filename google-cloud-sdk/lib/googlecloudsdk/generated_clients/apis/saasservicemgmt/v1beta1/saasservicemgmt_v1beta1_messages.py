@@ -28,6 +28,39 @@ class Aggregate(_messages.Message):
   group = _messages.StringField(2)
 
 
+class Allocation(_messages.Message):
+  r"""Allocation defines a set of weighted flag variants, specifying how
+  traffic is split based on the randomization unit.
+
+  Fields:
+    description: Optional. Description of the allocation. Max length: 500
+      bytes.
+    id: Required. Allocation ID. Max length: 128 bytes.
+    randomizedOn: Required. Key of the context attribute that is used for
+      traffic splitting.
+    slots: Required. Slots defines the weighted distribution of variants.
+  """
+
+  description = _messages.StringField(1)
+  id = _messages.StringField(2)
+  randomizedOn = _messages.StringField(3)
+  slots = _messages.MessageField('AllocationSlot', 4, repeated=True)
+
+
+class AllocationSlot(_messages.Message):
+  r"""AllocationSlot specifies a variant and the proportion of traffic
+  allocated to it.
+
+  Fields:
+    variant: Required. Variant of the allocation slot.
+    weight: Required. Weight defines the proportion of traffic to allocate to
+      the variant, relative to other slots in the same allocation.
+  """
+
+  variant = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Blueprint(_messages.Message):
   r"""Blueprints are OCI Images that contain all of the artifacts needed to
   provision a unit. Metadata such as, type of the engine used to actuate the
@@ -95,16 +128,45 @@ class ErrorBudget(_messages.Message):
   allowedPercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class EvaluationRule(_messages.Message):
+  r"""EvaluationRule defines a single rule for evaluating a feature flag. A
+  rule consists of a condition that, if met, assigns a specific variant or
+  allocation to the user.
+
+  Fields:
+    condition: Required. A Common Expression Language (CEL) expression that
+      evaluates to a boolean. The expression is evaluated against the provided
+      context. If it returns true, the rule's target is applied.
+    id: Required. Evaluation rule ID. Max length: 128 bytes.
+    target: Required. The target variant or allocation to apply if the
+      condition is met. This should match the name of a defined variant or
+      allocation's ID.
+  """
+
+  condition = _messages.StringField(1)
+  id = _messages.StringField(2)
+  target = _messages.StringField(3)
+
+
 class EvaluationSpec(_messages.Message):
   r"""EvaluationSpec holds rules for evaluating the value of a flag.
 
   Fields:
+    allocations: Optional. A list of allocations.
+    attributes: Optional. Names of the context attributes that are used in the
+      evaluation rules and allocations.
     defaultTarget: Required. Default variant or allocation of the flag.
+    rules: Optional. Evaluation rules define the logic for evaluating the flag
+      against a given context. The rules are evaluated sequentially in their
+      specified order.
     variants: Optional. A list of variants.
   """
 
-  defaultTarget = _messages.StringField(1)
-  variants = _messages.MessageField('Variant', 2, repeated=True)
+  allocations = _messages.MessageField('Allocation', 1, repeated=True)
+  attributes = _messages.StringField(2, repeated=True)
+  defaultTarget = _messages.StringField(3)
+  rules = _messages.MessageField('EvaluationRule', 4, repeated=True)
+  variants = _messages.MessageField('Variant', 5, repeated=True)
 
 
 class Flag(_messages.Message):
@@ -138,6 +200,7 @@ class Flag(_messages.Message):
       specified, two default variants, "Enabled" (with bool_value = true) and
       "Disabled" (with bool_value = false), are created by default, and
       "Disabled" is set as the default_target.
+    flagSet: Optional. Flag set this flag belongs to.
     key: Required. Immutable. Flag key used in runtime evaluation APIs
       (OpenFeature). Max length: 256 bytes.
     labels: Optional. The labels on the resource, which can be used for
@@ -232,14 +295,15 @@ class Flag(_messages.Message):
   description = _messages.StringField(3)
   etag = _messages.StringField(4)
   evaluationSpec = _messages.MessageField('EvaluationSpec', 5)
-  key = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  unitKind = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 12)
-  variants = _messages.MessageField('FlagVariant', 13, repeated=True)
+  flagSet = _messages.StringField(6)
+  key = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  uid = _messages.StringField(10)
+  unitKind = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 13)
+  variants = _messages.MessageField('FlagVariant', 14, repeated=True)
 
 
 class FlagAttribute(_messages.Message):
@@ -381,18 +445,26 @@ class FlagRelease(_messages.Message):
       categorization. similar to Kubernetes resource labels.
 
   Fields:
+    allFlags: Optional. Immutable. Rollout all flags in the provided UnitKind.
+      Only one of flag_revisions, all_flags, or flag_sets can be set.
     annotations: Optional. Annotations is an unstructured key-value map stored
       with a resource that may be set by external tools to store and retrieve
       arbitrary metadata. They are not queryable and should be preserved when
       modifying objects. More info: https://kubernetes.io/docs/user-
       guide/annotations
     createTime: Output only. The timestamp when the resource was created.
+    effectiveFlagRevisions: Output only. An OUTPUT_ONLY field that contains
+      FlagRevisions to be rolled out. This is the ultimate source of truth of
+      what a Rollout or a UnitOperation carries.
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
-    flagRevisions: Optional. Immutable. FlagRevisions to be rolled out. This
-      is the ultimate source of truth of what a Rollout or a UnitOperation
-      carries.
+    flagRevisions: Optional. Immutable. FlagRevisions to be rolled out. Only
+      one of flag_revisions, all_flags, or flag_sets can be set. It used to be
+      the ultimate source to truth and has been moved to
+      effective_flag_revisions.
+    flagSets: Optional. Immutable. Flag sets to be rolled out. Only one of
+      flag_revisions, all_flags, or flag_sets can be set.
     labels: Optional. The labels on the resource, which can be used for
       categorization. similar to Kubernetes resource labels.
     name: Identifier. The resource name (full URI of the resource) following
@@ -465,16 +537,19 @@ class FlagRelease(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  flagRevisions = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  obsoleteFlags = _messages.StringField(7, repeated=True)
-  uid = _messages.StringField(8)
-  unitKind = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  allFlags = _messages.BooleanField(1)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  createTime = _messages.StringField(3)
+  effectiveFlagRevisions = _messages.StringField(4, repeated=True)
+  etag = _messages.StringField(5)
+  flagRevisions = _messages.StringField(6, repeated=True)
+  flagSets = _messages.StringField(7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  obsoleteFlags = _messages.StringField(10, repeated=True)
+  uid = _messages.StringField(11)
+  unitKind = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class FlagRevision(_messages.Message):

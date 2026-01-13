@@ -46,7 +46,9 @@ def _CreateRepoStage():
 
 
 def _ValidateServiceStage():
-  return progress_tracker.Stage('Validating Service...', key=VALIDATE_SERVICE)
+  return progress_tracker.Stage(
+      'Validating configuration...', key=VALIDATE_SERVICE
+  )
 
 
 def _UploadSourceStage():

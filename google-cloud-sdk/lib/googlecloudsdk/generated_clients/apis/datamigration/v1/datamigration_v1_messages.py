@@ -4168,7 +4168,8 @@ class MigrationJob(_messages.Message):
     DumpTypeValueValuesEnum: Optional. The type of the data dump. Supported
       for MySQL to CloudSQL for MySQL migrations only.
     PhaseValueValuesEnum: Output only. The current migration job phase.
-    PurposeValueValuesEnum: Output only. The purpose of the migration job.
+    PurposeValueValuesEnum: Output only. Migration job mode. Migration jobs
+      can be standard forward jobs or failback migration jobs.
     StateValueValuesEnum: The current migration job state.
     TypeValueValuesEnum: Required. The migration job type.
 
@@ -4231,9 +4232,10 @@ class MigrationJob(_messages.Message):
     phase: Output only. The current migration job phase.
     postgresHomogeneousConfig: Optional. Configuration for PostgreSQL
       homogeneous migration.
-    postgresToSqlserverConfig: Configuration for heterogeneous
-      **\u2248PostgreSQL to SQL Server** migrations.
-    purpose: Output only. The purpose of the migration job.
+    postgresToSqlserverConfig: Configuration for heterogeneous failback
+      migrations from **PostgreSQL to SQL Server**.
+    purpose: Output only. Migration job mode. Migration jobs can be standard
+      forward jobs or failback migration jobs.
     reverseSshConnectivity: The details needed to communicate to the source
       over Reverse SSH tunnel connectivity.
     satisfiesPzi: Output only. Reserved for future use.
@@ -4293,7 +4295,8 @@ class MigrationJob(_messages.Message):
     READY_FOR_PROMOTE = 6
 
   class PurposeValueValuesEnum(_messages.Enum):
-    r"""Output only. The purpose of the migration job.
+    r"""Output only. Migration job mode. Migration jobs can be standard
+    forward jobs or failback migration jobs.
 
     Values:
       PURPOSE_UNSPECIFIED: Unknown purpose. Will be defaulted to MIGRATE.
@@ -5256,8 +5259,8 @@ class PostgresSourceConfig(_messages.Message):
 
 
 class PostgresToSqlServerConfig(_messages.Message):
-  r"""Configuration for heterogeneous **\u2248PostgreSQL to SQL Server**
-  migrations.
+  r"""Configuration for heterogeneous failback migrations from **PostgreSQL to
+  SQL Server**.
 
   Fields:
     postgresSourceConfig: Optional. Configuration for PostgreSQL source.

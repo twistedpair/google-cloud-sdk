@@ -856,6 +856,7 @@ class CreateClusterOptions(object):
       workload_vulnerability_scanning=None,
       enable_runtime_vulnerability_insight=None,
       workload_policies=None,
+      autopilot_cluster_policies=None,
       enable_fqdn_network_policy=None,
       host_maintenance_interval=None,
       in_transit_encryption=None,
@@ -1158,6 +1159,7 @@ class CreateClusterOptions(object):
         enable_runtime_vulnerability_insight
     )
     self.workload_policies = workload_policies
+    self.autopilot_cluster_policies = autopilot_cluster_policies
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
     self.host_maintenance_interval = host_maintenance_interval
     self.in_transit_encryption = in_transit_encryption
@@ -1364,6 +1366,8 @@ class UpdateClusterOptions(object):
       enable_runtime_vulnerability_insight=None,
       workload_policies=None,
       remove_workload_policies=None,
+      autopilot_cluster_policies=None,
+      remove_autopilot_cluster_policies=None,
       enable_fqdn_network_policy=None,
       host_maintenance_interval=None,
       in_transit_encryption=None,
@@ -1582,6 +1586,8 @@ class UpdateClusterOptions(object):
     )
     self.workload_policies = workload_policies
     self.remove_workload_policies = remove_workload_policies
+    self.autopilot_cluster_policies = autopilot_cluster_policies
+    self.remove_autopilot_cluster_policies = remove_autopilot_cluster_policies
     self.enable_fqdn_network_policy = enable_fqdn_network_policy
     self.host_maintenance_interval = host_maintenance_interval
     self.in_transit_encryption = in_transit_encryption
@@ -2939,17 +2945,6 @@ class APIAdapter(object):
           options, self.messages
       )
 
-    if options.autopilot_general_profile:
-      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
-          options, self.messages
-      )
-      if autopilot_general_profile_enum:
-        if cluster.autoscaling is None:
-          cluster.autoscaling = self.messages.ClusterAutoscaling()
-        cluster.autoscaling.autopilotGeneralProfile = (
-            autopilot_general_profile_enum
-        )
-
     if options.autopilot:
       cluster.autopilot = self.messages.Autopilot()
       cluster.autopilot.enabled = options.autopilot
@@ -2987,6 +2982,17 @@ class APIAdapter(object):
         )
       if options.workload_policies == 'allow-net-admin':
         cluster.autopilot.workloadPolicyConfig.allowNetAdmin = True
+
+    if options.autopilot_cluster_policies:
+      if cluster.autopilot is None:
+        cluster.autopilot = self.messages.Autopilot()
+        cluster.autopilot.enabled = False
+      cluster.autopilot.clusterPolicyConfig = _ParseAutopilotClusterPolicies(
+          self.messages,
+          options.autopilot_cluster_policies,
+          cluster.autopilot.clusterPolicyConfig,
+          True,
+      )
 
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
@@ -4271,6 +4277,7 @@ class APIAdapter(object):
         options.enable_autoprovisioning is not None
         or options.autoscaling_profile is not None
         or options.enable_default_compute_class is not None
+        or options.autopilot_general_profile is not None
     ):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, False
@@ -4460,6 +4467,13 @@ class APIAdapter(object):
       autoscaling.autoscalingProfile = self.CreateAutoscalingProfileCommon(
           options
       )
+
+    if options.autopilot_general_profile is not None:
+      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
+          options, self.messages
+      )
+      if autopilot_general_profile_enum:
+        autoscaling.autopilotGeneralProfile = autopilot_general_profile_enum
 
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
@@ -4937,6 +4951,7 @@ class APIAdapter(object):
         options.enable_autoprovisioning is not None
         or options.autoscaling_profile is not None
         or options.enable_default_compute_class is not None
+        or options.autopilot_general_profile is not None
     ):
       autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, True
@@ -5470,6 +5485,19 @@ class APIAdapter(object):
           desiredAutopilotWorkloadPolicyConfig=workload_policies
       )
 
+    if (
+        options.autopilot_cluster_policies is not None
+        or options.remove_autopilot_cluster_policies is not None
+    ):
+      # If the cluster already has autopilot cluster policy config, use it to
+      # preserve other enabled policies.
+      old_cluster = self.GetCluster(cluster_ref)
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotClusterPolicyConfig=_GetAutopilotClusterPoliciesConfig(
+              self.messages, old_cluster, options
+          )
+      )
+
     if options.host_maintenance_interval is not None:
       update = self.messages.ClusterUpdate(
           desiredHostMaintenancePolicy=_GetHostMaintenancePolicy(
@@ -5845,17 +5873,6 @@ class APIAdapter(object):
       config = self.messages.DesiredControlPlaneEgress()
       config.mode = modes[options.control_plane_egress_mode]
       update = self.messages.ClusterUpdate(desiredControlPlaneEgress=config)
-
-    if options.autopilot_general_profile:
-      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
-          options, self.messages
-      )
-      if autopilot_general_profile_enum:
-        update = self.messages.ClusterUpdate(
-            desiredClusterAutoscaling=self.messages.ClusterAutoscaling(
-                autopilotGeneralProfile=autopilot_general_profile_enum
-            )
-        )
 
     return update
 
@@ -8529,6 +8546,7 @@ class V1Beta1Adapter(V1Adapter):
         or options.autoprovisioning_min_cpu_platform is not None
         or options.autoscaling_profile is not None
         or options.enable_default_compute_class is not None
+        or options.autopilot_general_profile is not None
     ):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           None, options, False
@@ -8931,6 +8949,7 @@ class V1Beta1Adapter(V1Adapter):
         or options.autoprovisioning_min_cpu_platform is not None
         or options.autoscaling_profile is not None
         or options.enable_default_compute_class is not None
+        or options.autopilot_general_profile is not None
     ):
       autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, True
@@ -9453,6 +9472,19 @@ class V1Beta1Adapter(V1Adapter):
           desiredAutopilotWorkloadPolicyConfig=workload_policies
       )
 
+    if (
+        options.autopilot_cluster_policies is not None
+        or options.remove_autopilot_cluster_policies is not None
+    ):
+      # If the cluster already has autopilot cluster policy config, use it to
+      # preserve other enabled policies.
+      old_cluster = self.GetCluster(cluster_ref)
+      update = self.messages.ClusterUpdate(
+          desiredAutopilotClusterPolicyConfig=_GetAutopilotClusterPoliciesConfig(
+              self.messages, old_cluster, options
+          )
+      )
+
     if options.host_maintenance_interval is not None:
       update = self.messages.ClusterUpdate(
           desiredHostMaintenancePolicy=_GetHostMaintenancePolicy(
@@ -9816,17 +9848,6 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredNetworkTierConfig=_GetNetworkTierConfig(options, self.messages)
       )
-
-    if options.autopilot_general_profile:
-      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
-          options, self.messages
-      )
-      if autopilot_general_profile_enum:
-        update = self.messages.ClusterUpdate(
-            desiredClusterAutoscaling=self.messages.ClusterAutoscaling(
-                autopilotGeneralProfile=autopilot_general_profile_enum
-            )
-        )
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -10203,6 +10224,13 @@ class V1Beta1Adapter(V1Adapter):
           options
       )
 
+    if options.autopilot_general_profile is not None:
+      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
+          options, self.messages
+      )
+      if autopilot_general_profile_enum:
+        autoscaling.autopilotGeneralProfile = autopilot_general_profile_enum
+
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
 
@@ -10369,6 +10397,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         or options.autoprovisioning_min_cpu_platform is not None
         or options.autoscaling_profile is not None
         or options.enable_default_compute_class is not None
+        or options.autopilot_general_profile is not None
     ):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           None, options, False
@@ -10977,6 +11006,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               enabled=options.enable_default_compute_class
           )
       )
+
+    if options.autopilot_general_profile is not None:
+      autopilot_general_profile_enum = _GetAutopilotGeneralProfileEnum(
+          options, self.messages
+      )
+      if autopilot_general_profile_enum:
+        autoscaling.autopilotGeneralProfile = autopilot_general_profile_enum
 
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
@@ -12196,6 +12232,53 @@ def _GetAutopilotGeneralProfileEnum(options, messages):
             profile=user_input, choices=list(profile_map.keys())
         )
     )
+
+
+def _GetAutopilotClusterPoliciesConfig(messages, old_cluster, options):
+  """Gets the AutopilotClusterPoliciesConfig from options and old cluster."""
+  # If no policy options are specified, return None.
+  if (
+      options.autopilot_cluster_policies is None
+      and options.remove_autopilot_cluster_policies is None
+  ):
+    return None
+
+  add_policies = options.autopilot_cluster_policies is not None
+  policies_str = (
+      options.autopilot_cluster_policies
+      or options.remove_autopilot_cluster_policies
+  )
+  autopilot_cluster_policy_config = None
+  # If the cluster already has autopilot cluster policy config, use it to
+  # preserve other enabled policies.
+  if old_cluster is not None and old_cluster.autopilot is not None:
+    autopilot_cluster_policy_config = old_cluster.autopilot.clusterPolicyConfig
+  autopilot_cluster_policy_config = _ParseAutopilotClusterPolicies(
+      messages,
+      policies_str,
+      autopilot_cluster_policy_config,
+      add_policies,
+  )
+  return autopilot_cluster_policy_config
+
+
+def _ParseAutopilotClusterPolicies(
+    messages, policies_str, policy_config, set_val
+):
+  """Parses autopilot cluster policies string and updates policy_config."""
+  if policy_config is None:
+    policy_config = messages.ClusterPolicyConfig()
+  # Split options by comma and set each policy in the config.
+  policies = policies_str.split(',')
+  if 'no-system-mutation' in policies:
+    policy_config.noSystemMutation = set_val
+  if 'no-system-impersonation' in policies:
+    policy_config.noSystemImpersonation = set_val
+  if 'no-unsafe-webhooks' in policies:
+    policy_config.noUnsafeWebhooks = set_val
+  if 'no-standard-node-pools' in policies:
+    policy_config.noStandardNodePools = set_val
+  return policy_config
 
 
 def _GetNodeDrainConfig(options, messages):

@@ -998,7 +998,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Data Asset.
+      r"""Creates a data asset.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsDataAssetsCreateRequest) input message
@@ -1025,7 +1025,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Data Asset.
+      r"""Deletes a data asset.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsDataAssetsDeleteRequest) input message
@@ -1052,7 +1052,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a Data Asset.
+      r"""Gets a data asset.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsDataAssetsGetRequest) input message
@@ -1079,7 +1079,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Data Assets for a given Data Product.
+      r"""Lists data assets for a given data product.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsDataAssetsListRequest) input message
@@ -1106,7 +1106,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Data Asset.
+      r"""Updates a data asset.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsDataAssetsPatchRequest) input message
@@ -1143,7 +1143,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Data Product.
+      r"""Creates a data product.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsCreateRequest) input message
@@ -1170,7 +1170,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Data Product. The deletion will fail if the Data Product is not empty (i.e. contains at least one Data Asset).
+      r"""Deletes a data product. The deletion will fail if the data product is not empty (i.e. contains at least one data asset).
 
       Args:
         request: (DataplexProjectsLocationsDataProductsDeleteRequest) input message
@@ -1197,7 +1197,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a Data Product.
+      r"""Gets a data product.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsGetRequest) input message
@@ -1251,7 +1251,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Data Products for a given project.
+      r"""Lists data products for a given project.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsListRequest) input message
@@ -1278,7 +1278,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Data Product.
+      r"""Updates a data product.
 
       Args:
         request: (DataplexProjectsLocationsDataProductsPatchRequest) input message

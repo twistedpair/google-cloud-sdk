@@ -18,9 +18,10 @@
 from __future__ import annotations
 
 import collections
+from collections.abc import Mapping
 import os
 import re
-from typing import Any, Dict, List, Set
+from typing import Any, Set
 
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import exceptions
@@ -52,7 +53,7 @@ def AddClusterNameArgToParser(parser, api_version=None):
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def GetClusterFlagType(api_version=None) -> dict[str, Any]:
+def GetClusterFlagType(api_version=None) -> dict[str, Any]:  # pylint: disable=g-bare-generic
   """Returns the cluster spec for the given API version."""
   if (
       not api_version
@@ -60,6 +61,35 @@ def GetClusterFlagType(api_version=None) -> dict[str, Any]:
   ):
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   return flag_types.API_VERSION_TO_CLUSTER_FLAG_TYPE[api_version]
+
+
+def _SetDefaultLoginNodeDiskSizesInDict(login_nodes: Mapping[str, Any]) -> None:
+  """Sets default boot disk size for Slurm login nodes in a dict."""
+  boot_disk = login_nodes.get("bootDisk")
+  if boot_disk and boot_disk.get("sizeGb") is None:
+    boot_disk["sizeGb"] = 100
+  if disks := login_nodes.get("disks"):
+    for disk in disks:
+      if disk.get("boot") and disk.get("sizeGb") is None:
+        disk["sizeGb"] = 100
+
+
+def _SetDefaultNodeSetDiskSizesInDict(
+    node_sets: list[Mapping[str, Any]],
+) -> None:
+  """Sets default boot disk size for Slurm node sets in a dict."""
+  for nodeset in node_sets:
+    boot_disk = nodeset.get("bootDisk")
+    if boot_disk and boot_disk.get("boot") and boot_disk.get("sizeGb") is None:
+      boot_disk["sizeGb"] = 100
+
+
+def _SetDefaultSlurmDiskSizesInDict(slurm: Mapping[str, Any]) -> None:
+  """Sets default disk sizes for Slurm login nodes and node sets in a dict."""
+  if login_nodes := slurm.get("loginNodes"):
+    _SetDefaultLoginNodeDiskSizesInDict(login_nodes)
+  if node_sets := slurm.get("nodeSets"):
+    _SetDefaultNodeSetDiskSizesInDict(node_sets)
 
 
 class ClusterUtil:
@@ -81,8 +111,14 @@ class ClusterUtil:
 
   def MakeClusterFromConfig(self):
     """Returns a cluster message from the config JSON string."""
+    config_dict = self.args.config
+    orchestrator = config_dict.get("orchestrator")
+    if orchestrator:
+      slurm = orchestrator.get("slurm")
+      if slurm:
+        _SetDefaultSlurmDiskSizesInDict(slurm)
     return messages_util.DictToMessageWithErrorCheck(
-        self.args.config, self.message_module.Cluster
+        config_dict, self.message_module.Cluster
     )
 
   def MakeCluster(self):
@@ -347,7 +383,7 @@ class ClusterUtil:
   def MakeClusterSlurmOrchestrator(self, cluster):
     """Makes a cluster message with slurm orchestrator fields."""
     slurm = self.message_module.SlurmOrchestrator()
-    storage_configs: List[self.message_module.StorageConfig] = (
+    storage_configs: list[self.message_module.StorageConfig] = (
         self._GetStorageConfigs(cluster)
     )
     if self.args.IsSpecified("slurm_node_sets"):
@@ -1127,7 +1163,7 @@ class ClusterUtil:
     )
 
   def _GetComputeMachineType(
-      self, compute_id: str, compute_resources: Dict[str, Any]
+      self, compute_id: str, compute_resources: dict[str, Any]
   ):
     """Returns the compute machine type from compute resources."""
     compute_resource = compute_resources[compute_id]
@@ -1145,7 +1181,7 @@ class ClusterUtil:
 
   def _GetStorageConfigs(self, cluster):
     """Returns the storage configs."""
-    storage_configs: List[self.message_module.StorageConfig] = []
+    storage_configs: list[self.message_module.StorageConfig] = []
     sorted_storages = sorted(
         cluster.storageResources.additionalProperties,
         key=lambda storage: storage.key,
@@ -1248,7 +1284,7 @@ class ClusterUtil:
       self,
       key: str,
       dict_spec: dict[str, Any],
-      attrs: List[str],
+      attrs: list[str],
       key_exception_message: str,
       attr_exception_message: str,
   ) -> None | exceptions.ToolException:
@@ -1262,7 +1298,7 @@ class ClusterUtil:
     dict_spec.pop(key)
 
   def _GetValueFromDictSpec(
-      self, key: str, dict_spec: dict[str, Any], exception_message: str
+      self, key: str, dict_spec: Mapping[str, Any], exception_message: str
   ) -> Any | exceptions.ToolException:
     """Returns the value message by cluster identifier (key) from a dict spec."""
     if key not in dict_spec:

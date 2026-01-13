@@ -582,7 +582,21 @@ def _CreateMutualTlsOffloadAdapter(
         certificate_config_file_path=ca_config.certificate_config_file_path,
     )
   else:
-    return _MutualTlsOffloadAdapter(ca_config.certificate_config_file_path)
+    try:
+      return _MutualTlsOffloadAdapter(ca_config.certificate_config_file_path)
+    except ImportError as e:
+      raise ECPProxyError(
+          (
+              '{error}\nFailed to load the mTLS offload adapter. '
+              'This is due to a missing module required for mTLS support.\n'
+              'Please try one of the following solutions:\n'
+              '1. Reinstall the Google Cloud CLI\n'
+              '2. Initialize the gcloud virtualenv by running:\n'
+              '\tgcloud config virtualenv create\n'
+              '3. Install the missing module using pip and set the environment'
+              ' variable CLOUDSDK_PYTHON_SITEPACKAGES=1'
+          ).format(error=e)
+      )
 
 
 def _LinuxNonbundledPythonAndGooglerCheck():

@@ -186,8 +186,6 @@ def GetRequestedFeature(messages, feature_arg):
     return messages.Interconnect.RequestedFeaturesValueListEntryValuesEnum(
         'IF_CROSS_SITE_NETWORK'
     )
-  # TODO(b/346583638): Update the enum value to 'IF_L2_FORWARDING' once the
-  # API is ready.
   if feature_arg == 'L2_FORWARDING':
     return messages.Interconnect.RequestedFeaturesValueListEntryValuesEnum(
         'IF_L2_FORWARDING'

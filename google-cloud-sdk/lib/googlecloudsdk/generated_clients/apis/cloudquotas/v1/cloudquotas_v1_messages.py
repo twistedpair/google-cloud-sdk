@@ -217,6 +217,46 @@ class CloudquotasFoldersLocationsServicesQuotaInfosListRequest(_messages.Message
   parent = _messages.StringField(3, required=True)
 
 
+class CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest(_messages.Message):
+  r"""A
+  CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the GdcQuotaInfo. An example name:
+      `projects/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com/gdcQuotaInfos/gdc-quota-1`
+      `organizations/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com/gdcQuotaInfos/gdc-quota-1`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest(_messages.Message):
+  r"""A
+  CloudquotasOrganizationsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, the default page size is 50. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value of GdcQuotaInfo resources. Listing across
+      different resource containers (such as 'projects/-') is not allowed.
+      Example parents: `projects/123/locations/us-west2/gdcZones/us-
+      west2-edge-lga1/gdcServices/edgecontainer.googleapis.com`
+      `organizations/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest(_messages.Message):
   r"""A CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjuster
   SettingsRequest object.
@@ -412,6 +452,45 @@ class CloudquotasOrganizationsLocationsServicesQuotaInfosListRequest(_messages.M
       `projects/123/locations/global/services/compute.googleapis.com`
       `folders/234/locations/global/services/compute.googleapis.com`
       `organizations/345/locations/global/services/compute.googleapis.com`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest(_messages.Message):
+  r"""A CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the GdcQuotaInfo. An example name:
+      `projects/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com/gdcQuotaInfos/gdc-quota-1`
+      `organizations/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com/gdcQuotaInfos/gdc-quota-1`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest(_messages.Message):
+  r"""A
+  CloudquotasProjectsLocationsGdcZonesGdcServicesGdcQuotaInfosListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, the default page size is 50. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value of GdcQuotaInfo resources. Listing across
+      different resource containers (such as 'projects/-') is not allowed.
+      Example parents: `projects/123/locations/us-west2/gdcZones/us-
+      west2-edge-lga1/gdcServices/edgecontainer.googleapis.com`
+      `organizations/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -687,6 +766,153 @@ class DimensionsInfo(_messages.Message):
   applicableLocations = _messages.StringField(1, repeated=True)
   details = _messages.MessageField('QuotaDetails', 2)
   dimensions = _messages.MessageField('DimensionsValue', 3)
+
+
+class GdcDimensionsInfo(_messages.Message):
+  r"""The detailed quota information such as effective quota value for a
+  combination of dimensions.
+
+  Messages:
+    DimensionsValue: The map of dimensions in key-value pairs. The key of a
+      map entry is "region", "zone", or the name of a service-specific
+      dimension, and the value of a map entry is the value of the dimension.
+      If a dimension does not appear in the map of dimensions, the dimensions
+      info applies to all the dimension values except for those that have
+      another DimensionInfo instance configured for the specific value. For
+      example: `{"provider" : "Example Organization"}` where `provider` is a
+      service-specific quota dimension and `Example Organization` is the
+      provider name.
+
+  Fields:
+    details: Quota details for the specified dimensions.
+    dimensions: The map of dimensions in key-value pairs. The key of a map
+      entry is "region", "zone", or the name of a service-specific dimension,
+      and the value of a map entry is the value of the dimension. If a
+      dimension does not appear in the map of dimensions, the dimensions info
+      applies to all the dimension values except for those that have another
+      DimensionInfo instance configured for the specific value. For example:
+      `{"provider" : "Example Organization"}` where `provider` is a service-
+      specific quota dimension and `Example Organization` is the provider
+      name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DimensionsValue(_messages.Message):
+    r"""The map of dimensions in key-value pairs. The key of a map entry is
+    "region", "zone", or the name of a service-specific dimension, and the
+    value of a map entry is the value of the dimension. If a dimension does
+    not appear in the map of dimensions, the dimensions info applies to all
+    the dimension values except for those that have another DimensionInfo
+    instance configured for the specific value. For example: `{"provider" :
+    "Example Organization"}` where `provider` is a service-specific quota
+    dimension and `Example Organization` is the provider name.
+
+    Messages:
+      AdditionalProperty: An additional property for a DimensionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DimensionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DimensionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  details = _messages.MessageField('GdcQuotaDetails', 1)
+  dimensions = _messages.MessageField('DimensionsValue', 2)
+
+
+class GdcQuotaDetails(_messages.Message):
+  r"""The quota details for a map of dimensions.
+
+  Fields:
+    resetValue: The Google Cloud defined quota value that the quota will be
+      reset to if a quota decrease preference is deleted
+    value: The value currently in effect and being enforced.
+  """
+
+  resetValue = _messages.IntegerField(1)
+  value = _messages.IntegerField(2)
+
+
+class GdcQuotaInfo(_messages.Message):
+  r"""GdcQuotaInfo represents information about a particular quota for a given
+  project, folder or organization in GDC.
+
+  Enums:
+    ContainerTypeValueValuesEnum: Output only. The type of a cloud resource
+      container that the quota is defined for.
+
+  Fields:
+    containerType: Output only. The type of a cloud resource container that
+      the quota is defined for.
+    dimensions: Output only. The dimensions the quota is defined on.
+    gdcDimensionsInfos: Output only. The collection of dimensions info ordered
+      by their dimensions from more specific ones to less specific ones.
+    metric: Output only. The metric of the quota. It specifies the resources
+      consumption the quota is defined for. For example,
+      `compute.googleapis.com/cpus`
+    name: Output only. Identifier. Resource name of this GdcQuotaInfo. For
+      example, `projects/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com/gdcQuotaInfos/gdc-quota-1`
+      `organizations/123/locations/us-west2/gdcZones/us-west2-edge-
+      lga1/gdcServices/edgecontainer.googleapis.com/gdcQuotaInfos/gdc-quota-1`
+    precise: Output only. Whether this is a precise quota. A precise quota is
+      tracked with absolute precision. In contrast, an imprecise quota is not
+      tracked with precision.
+    quotaId: Output only. The id of the quota, which is unique within the
+      service. For example, `CpusPerProjectPerRegion`
+    refreshInterval: Output only. The reset time interval for the quota.
+      Refresh interval applies to rate quota only. For example, "minute" for
+      per minute, "day" for per day, or "10 seconds" for every 10 seconds.
+    service: Output only. The name of the service in which the quota is
+      defined. For example, `compute.googleapis.com`
+  """
+
+  class ContainerTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of a cloud resource container that the quota is
+    defined for.
+
+    Values:
+      GDC_CONTAINER_TYPE_UNSPECIFIED: Unspecified container type.
+      GDC_PROJECT: consumer project
+      GDC_ORGANIZATION: organization
+    """
+    GDC_CONTAINER_TYPE_UNSPECIFIED = 0
+    GDC_PROJECT = 1
+    GDC_ORGANIZATION = 2
+
+  containerType = _messages.EnumField('ContainerTypeValueValuesEnum', 1)
+  dimensions = _messages.StringField(2, repeated=True)
+  gdcDimensionsInfos = _messages.MessageField('GdcDimensionsInfo', 3, repeated=True)
+  metric = _messages.StringField(4)
+  name = _messages.StringField(5)
+  precise = _messages.BooleanField(6)
+  quotaId = _messages.StringField(7)
+  refreshInterval = _messages.StringField(8)
+  service = _messages.StringField(9)
+
+
+class ListGdcQuotaInfosResponse(_messages.Message):
+  r"""Message for response to listing GdcQuotaInfos
+
+  Fields:
+    gdcQuotaInfos: The list of GdcQuotaInfo
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  gdcQuotaInfos = _messages.MessageField('GdcQuotaInfo', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListQuotaInfosResponse(_messages.Message):

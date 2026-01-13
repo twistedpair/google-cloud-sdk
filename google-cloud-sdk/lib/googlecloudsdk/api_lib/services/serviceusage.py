@@ -73,6 +73,23 @@ _MCP_LIST_WAVE_0_SERVICES = frozenset({
     'services/mapstools.googleapis.com',
 })
 
+# Set of wave 1 services to be listed in --available
+_MCP_LIST_WAVE_1_SERVICES = frozenset({
+    'services/run.googleapis.com',
+    'services/alloydb.googleapis.com',
+    'services/sqladmin.googleapis.com',
+    'services/spanner.googleapis.com',
+    'services/androidmanagement.googleapis.com',
+    'services/developerknowledge.googleapis.com',
+    'services/chronicle.googleapis.com',
+    'services/monitoring.googleapis.com',
+    'services/logging.googleapis.com',
+    'services/cloudresourcemanager.googleapis.com',
+    'services/discoveryengine.googleapis.com',
+    'services/bigquerymigration.googleapis.com',
+    'services/aiplatform.googleapis.com',
+})
+
 
 class ContainerType(enum.Enum):
   """Return the container type."""
@@ -1723,10 +1740,11 @@ def ListMcpServicesV2Beta(
           limit -= 1
 
     else:
+      allowed_services = _MCP_LIST_WAVE_0_SERVICES | _MCP_LIST_WAVE_1_SERVICES
       for public_service in _ListPublicServices(
           page_size, _MCP_LIST_FILTER, limit
       ):
-        if public_service.name in _MCP_LIST_WAVE_0_SERVICES:
+        if public_service.name in allowed_services:
           service_to_endpoint[public_service.name] = (
               public_service.mcpServer.urls[0]
           )

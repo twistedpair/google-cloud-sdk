@@ -231,7 +231,6 @@ class InterconnectAttachment(object):
       customer_router_ipv6_interface_id=None,
       labels=None,
       label_fingerprint=None,
-      multicast_enabled=None,
       candidate_cloud_router_ipv6_address=None,
       candidate_customer_router_ipv6_address=None,
       geneve_vni=None,
@@ -266,8 +265,6 @@ class InterconnectAttachment(object):
       interconnect_attachment.customerRouterIpv6InterfaceId = (
           customer_router_ipv6_interface_id
       )
-    if multicast_enabled is not None:
-      interconnect_attachment.multicastEnabled = multicast_enabled
     if candidate_cloud_router_ipv6_address is not None:
       interconnect_attachment.candidateCloudRouterIpv6Address = (
           candidate_cloud_router_ipv6_address
@@ -582,7 +579,6 @@ class InterconnectAttachment(object):
       customer_router_ipv6_interface_id=None,
       only_generate_request=False,
       mtu=None,
-      multicast_enabled=None,
       candidate_cloud_router_ipv6_address=None,
       candidate_customer_router_ipv6_address=None,
       geneve_vni=None,
@@ -622,7 +618,6 @@ class InterconnectAttachment(object):
             customer_router_ipv6_interface_id,
             labels,
             label_fingerprint,
-            multicast_enabled,
             candidate_cloud_router_ipv6_address,
             candidate_customer_router_ipv6_address,
             geneve_vni,

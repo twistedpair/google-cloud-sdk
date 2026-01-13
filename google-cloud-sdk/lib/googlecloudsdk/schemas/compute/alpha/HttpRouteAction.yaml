@@ -25,6 +25,11 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  cachePolicy:
+    description: |-
+      Cache policy for this URL Map's route. Available only for Global
+      EXTERNAL_MANAGED load balancer schemes.
+    $ref: CachePolicy.yaml
   corsPolicy:
     description: |-
       The specification for allowing client-side cross-origin requests. For more

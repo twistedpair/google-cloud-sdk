@@ -240,9 +240,11 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       if self._component_number is None:
         calculated_digest = crc32c.get_hash(
             digesters[hash_util.HashAlgorithm.CRC32C])
+        crc32c_hash = download_util.get_crc32c_hash_for_resource(
+            self._source_resource)
         download_util.validate_download_hash_and_delete_corrupt_files(
             self._destination_resource.storage_url.resource_name,
-            self._source_resource.crc32c_hash, calculated_digest)
+            crc32c_hash, calculated_digest)
 
     return api_download_result
 

@@ -573,7 +573,16 @@ class Binding(_messages.Message):
 
 
 class CreateIcebergTableRequest(_messages.Message):
-  r"""The request message for the `CreateIcebergTable` API."""
+  r"""The request message for the `CreateIcebergTable` API.
+
+  Fields:
+    httpBody: Required. The raw HTTP body is bound to this field. Our handler
+      will validate that content_type is `application/json` and that data
+      adheres to the Apache Iceberg Rest Catalog Spec OpenAPI schema: #
+      /components/schemas/CreateTableRequest
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
 
 
 class Empty(_messages.Message):
@@ -733,6 +742,9 @@ class IcebergCatalog(_messages.Message):
       catalog.
 
   Fields:
+    additional_locations: Optional. Additional Google Cloud Storage buckets
+      and locations (e.g., `gs://my-other-bucket/...`) that are permitted for
+      use by resources within a catalog.
     biglake_service_account: Output only. The service account used for
       credential vending, output only. Might be empty if Credential vending
       was never enabled for the catalog.
@@ -749,6 +761,9 @@ class IcebergCatalog(_messages.Message):
       not specified at the namespace or table level. The full path is formed
       by appending the namespace and table identifiers to the default
       location.
+    description: Optional. A user-provided description of the catalog. The
+      description must be a UTF-8 string with a maximum length of 1024
+      characters.
     name: Identifier. The catalog name, `projects/my-project/catalogs/my-
       catalog`. This field is immutable. This field is ignored for
       CreateIcebergCatalog.
@@ -766,9 +781,13 @@ class IcebergCatalog(_messages.Message):
     Values:
       CATALOG_TYPE_UNSPECIFIED: Default value. This value is unused.
       CATALOG_TYPE_GCS_BUCKET: Catalog type for Google Cloud Storage Buckets.
+      CATALOG_TYPE_FLEXIBLE: BigLake flexible catalog. Catalog type which
+        allows namespaces and tables within a catalog to be mapped to
+        locations beyond the catalog's designated default.
     """
     CATALOG_TYPE_UNSPECIFIED = 0
     CATALOG_TYPE_GCS_BUCKET = 1
+    CATALOG_TYPE_FLEXIBLE = 2
 
   class CredentialModeValueValuesEnum(_messages.Enum):
     r"""Optional. The credential mode for the catalog.
@@ -793,15 +812,17 @@ class IcebergCatalog(_messages.Message):
     CREDENTIAL_MODE_END_USER = 1
     CREDENTIAL_MODE_VENDED_CREDENTIALS = 2
 
-  biglake_service_account = _messages.StringField(1)
-  catalog_type = _messages.EnumField('CatalogTypeValueValuesEnum', 2)
-  create_time = _messages.StringField(3)
-  credential_mode = _messages.EnumField('CredentialModeValueValuesEnum', 4)
-  default_location = _messages.StringField(5)
-  name = _messages.StringField(6)
-  replicas = _messages.MessageField('Replica', 7, repeated=True)
-  storage_regions = _messages.StringField(8, repeated=True)
-  update_time = _messages.StringField(9)
+  additional_locations = _messages.StringField(1, repeated=True)
+  biglake_service_account = _messages.StringField(2)
+  catalog_type = _messages.EnumField('CatalogTypeValueValuesEnum', 3)
+  create_time = _messages.StringField(4)
+  credential_mode = _messages.EnumField('CredentialModeValueValuesEnum', 5)
+  default_location = _messages.StringField(6)
+  description = _messages.StringField(7)
+  name = _messages.StringField(8)
+  replicas = _messages.MessageField('Replica', 9, repeated=True)
+  storage_regions = _messages.StringField(10, repeated=True)
+  update_time = _messages.StringField(11)
 
 
 class IcebergCatalogConfig(_messages.Message):
@@ -1108,8 +1129,7 @@ class RegisterIcebergTableRequest(_messages.Message):
     metadata_location: Required. The metadata location of the table.
     name: Required. The name of the table to register.
     overwrite: Optional. Whether to overwrite the table if it already exists.
-      Default is false. Currently this field is ignored and an error is
-      returned if the table already exists.
+      Default is false.
   """
 
   metadata_location = _messages.StringField(1)
@@ -1302,9 +1322,20 @@ class UpdateIcebergNamespaceResponse(_messages.Message):
 
 
 class UpdateIcebergTableRequest(_messages.Message):
-  r"""The update message for the `UpdateIcebergTable` API."""
+  r"""The update message for the `UpdateIcebergTable` API.
+
+  Fields:
+    httpBody: Required. The raw HTTP body is bound to this field. Our handler
+      will validate that content_type is `application/json` and that data
+      adheres to the Apache Iceberg Rest Catalog Spec OpenAPI schema: #
+      /components/schemas/CommitTableRequest
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
 
 
+encoding.AddCustomJsonFieldMapping(
+    IcebergCatalog, 'additional_locations', 'additional-locations')
 encoding.AddCustomJsonFieldMapping(
     IcebergCatalog, 'biglake_service_account', 'biglake-service-account')
 encoding.AddCustomJsonFieldMapping(

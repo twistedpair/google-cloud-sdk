@@ -192,6 +192,16 @@ class AllocationAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class AlloyDBClusterBackupPlanAssociationProperties(_messages.Message):
+  r"""Properties for an AlloyDB cluster backup plan association.
+
+  Fields:
+    clusterUid: Output only. The cluster UID of the AlloyDB cluster.
+  """
+
+  clusterUid = _messages.StringField(1)
+
+
 class AlloyDBClusterDataSourceProperties(_messages.Message):
   r"""AlloyDBClusterDataSourceProperties represents the properties of a
   AlloyDB cluster resource that are stored in the DataSource. .
@@ -713,8 +723,10 @@ class BackupConfigDetails(_messages.Message):
       /{resourcePolicyId}".
     backupConfigSourceDisplayName: Output only. The display name of the backup
       config source resource.
-    backupDrPlanConfig: Backup and DR's Backup Plan specific data.
-    backupDrTemplateConfig: Backup and DR's Template specific data.
+    backupDrPlanConfig: Google Cloud Backup and DR's Backup Plan specific
+      data.
+    backupDrTemplateConfig: Google Cloud Backup and DR's Template specific
+      data.
     backupLocations: The locations where the backups are to be stored.
     backupVault: Output only. The [full resource
       name](https://cloud.google.com/asset-inventory/docs/resource-name-
@@ -756,8 +768,10 @@ class BackupConfigDetails(_messages.Message):
         automated backup config.
       COMPUTE_ENGINE_RESOURCE_POLICY: Backup config is Compute Engine Resource
         Policy.
-      BACKUPDR_BACKUP_PLAN: Backup config is Backup and DR's Backup Plan.
-      BACKUPDR_TEMPLATE: Backup config is Backup and DR's Template.
+      BACKUPDR_BACKUP_PLAN: Backup config is Google Cloud Backup and DR's
+        Backup Plan.
+      BACKUPDR_TEMPLATE: Backup config is Google Cloud Backup and DR's
+        Template.
     """
     TYPE_UNSPECIFIED = 0
     CLOUD_SQL_INSTANCE_BACKUP_CONFIG = 1
@@ -823,8 +837,8 @@ class BackupConfigInfo(_messages.Message):
 
 
 class BackupDrPlanConfig(_messages.Message):
-  r"""BackupDrPlanConfig has additional information about Backup and DR's Plan
-  backup configuration.
+  r"""BackupDrPlanConfig has additional information about Google Cloud Backup
+  and DR's Plan backup configuration.
 
   Fields:
     backupDrPlanRules: Backup rules of the backup plan resource.
@@ -848,7 +862,7 @@ class BackupDrPlanRule(_messages.Message):
 
 
 class BackupDrTemplateConfig(_messages.Message):
-  r"""BackupDrTemplateConfig has additional information about Backup and DR's
+  r"""Provides additional information about Google Cloud Backup and DR's
   Template backup configuration.
 
   Fields:
@@ -943,9 +957,9 @@ class BackupPlan(_messages.Message):
     backupVault: Required. Resource name of backup vault which will be used as
       storage location for backups. Format:
       projects/{project}/locations/{location}/backupVaults/{backupvault}
-    backupVaultServiceAccount: Output only. The Google Cloud Platform Service
-      Account to be used by the BackupVault for taking backups. Specify the
-      email address of the Backup Vault Service Account.
+    backupVaultServiceAccount: Output only. The Google Cloud service account
+      to be used by the BackupVault for taking backups. Specify the email
+      address of the Backup Vault Service Account.
     createTime: Output only. When the `BackupPlan` was created.
     description: Optional. The description of the `BackupPlan` resource. The
       description allows for additional details about `BackupPlan` and its use
@@ -957,7 +971,7 @@ class BackupPlan(_messages.Message):
       prevent stale resources.
     labels: Optional. This collection of key/value pairs allows for custom
       labels to be supplied by the user. Example, {"tag": "Weekly"}.
-    logRetentionDays: Optional. Applicable only for CloudSQL resource_type.
+    logRetentionDays: Optional. Applicable only for Cloud SQL resource_type.
       Configures how long logs will be stored. It is defined in "days". This
       value should be greater than or equal to minimum enforced log retention
       duration of the backup vault.
@@ -1052,6 +1066,8 @@ class BackupPlanAssociation(_messages.Message):
       state.
 
   Fields:
+    alloydbClusterBackupPlanAssociationProperties: Output only. AlloyDB
+      cluster's backup plan association properties.
     backupPlan: Required. Resource name of backup plan which needs to be
       applied on workload. Format:
       projects/{project}/locations/{location}/backupPlans/{backupPlanId}
@@ -1102,19 +1118,20 @@ class BackupPlanAssociation(_messages.Message):
     INACTIVE = 4
     UPDATING = 5
 
-  backupPlan = _messages.StringField(1)
-  backupPlanRevisionId = _messages.StringField(2)
-  backupPlanRevisionName = _messages.StringField(3)
-  cloudSqlInstanceBackupPlanAssociationProperties = _messages.MessageField('CloudSqlInstanceBackupPlanAssociationProperties', 4)
-  createTime = _messages.StringField(5)
-  dataSource = _messages.StringField(6)
-  filestoreInstanceBackupPlanAssociationProperties = _messages.MessageField('FilestoreInstanceBackupPlanAssociationProperties', 7)
-  name = _messages.StringField(8)
-  resource = _messages.StringField(9)
-  resourceType = _messages.StringField(10)
-  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 11, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  alloydbClusterBackupPlanAssociationProperties = _messages.MessageField('AlloyDBClusterBackupPlanAssociationProperties', 1)
+  backupPlan = _messages.StringField(2)
+  backupPlanRevisionId = _messages.StringField(3)
+  backupPlanRevisionName = _messages.StringField(4)
+  cloudSqlInstanceBackupPlanAssociationProperties = _messages.MessageField('CloudSqlInstanceBackupPlanAssociationProperties', 5)
+  createTime = _messages.StringField(6)
+  dataSource = _messages.StringField(7)
+  filestoreInstanceBackupPlanAssociationProperties = _messages.MessageField('FilestoreInstanceBackupPlanAssociationProperties', 8)
+  name = _messages.StringField(9)
+  resource = _messages.StringField(10)
+  resourceType = _messages.StringField(11)
+  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 12, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class BackupPlanRevision(_messages.Message):
@@ -1416,13 +1433,13 @@ class BackupWindow(_messages.Message):
 
   Fields:
     endHourOfDay: Required. The hour of day (1-24) when the window end for
-      e.g. if value of end hour of day is 10 that mean backup window end time
-      is 10:00. End hour of day should be greater than start hour of day. 0 <=
-      start_hour_of_day < end_hour_of_day <= 24 End hour of day is not include
-      in backup window that mean if end_hour_of_day= 10 jobs should start
-      before 10:00.
+      example if value of end hour of day is 10 that mean backup window end
+      time is 10:00. End hour of day should be greater than start hour of day.
+      0 <= start_hour_of_day < end_hour_of_day <= 24 End hour of day is not
+      include in backup window that mean if end_hour_of_day= 10 jobs should
+      start before 10:00.
     startHourOfDay: Required. The hour of day (0-23) when the window starts
-      for e.g. if value of start hour of day is 6 that mean backup window
+      for example if value of start hour of day is 6 that mean backup window
       start at 6:00.
   """
 
@@ -1440,8 +1457,8 @@ class BackupdrProjectsLocationsBackupPlanAssociationsCreateRequest(_messages.Mes
       to create. The name must be unique for the specified project and
       location.
     parent: Required. The backup plan association project and location in the
-      format `projects/{project_id}/locations/{location}`. In Cloud BackupDR
-      locations map to GCP regions, for example **us-central1**.
+      format `projects/{project_id}/locations/{location}`. In Backup and DR
+      locations map to Google Cloud regions, for example **us-central1**.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1510,7 +1527,7 @@ class BackupdrProjectsLocationsBackupPlanAssociationsFetchForResourceTypeRequest
       provided the page token.
     parent: Required. The parent resource name. Format:
       projects/{project}/locations/{location}
-    resourceType: Required. The type of the GCP resource. Ex:
+    resourceType: Required. The type of the Google Cloud resource. Ex:
       sql.googleapis.com/Instance
   """
 
@@ -1545,10 +1562,10 @@ class BackupdrProjectsLocationsBackupPlanAssociationsListRequest(_messages.Messa
       should return.
     parent: Required. The project and location for which to retrieve backup
       Plan Associations information, in the format
-      `projects/{project_id}/locations/{location}`. In Cloud BackupDR,
-      locations map to GCP regions, for example **us-central1**. To retrieve
-      backup plan associations for all locations, use "-" for the `{location}`
-      value.
+      `projects/{project_id}/locations/{location}`. In Backup and DR,
+      locations map to Google Cloud regions, for example **us-central1**. To
+      retrieve backup plan associations for all locations, use "-" for the
+      `{location}` value.
   """
 
   filter = _messages.StringField(1)
@@ -1618,8 +1635,8 @@ class BackupdrProjectsLocationsBackupPlansCreateRequest(_messages.Message):
       start with a lowercase letter followed by up to 62 lowercase letters,
       numbers, or hyphens. Pattern, /a-z{,62}/.
     parent: Required. The `BackupPlan` project and location in the format
-      `projects/{project}/locations/{location}`. In Cloud BackupDR locations
-      map to GCP regions, for example **us-central1**.
+      `projects/{project}/locations/{location}`. In Google Cloud Backup and DR
+      locations map to Google Cloud regions, for example **us-central1**.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1691,9 +1708,10 @@ class BackupdrProjectsLocationsBackupPlansListRequest(_messages.Message):
       token.
     parent: Required. The project and location for which to retrieve
       `BackupPlans` information. Format:
-      `projects/{project}/locations/{location}`. In Cloud BackupDR, locations
-      map to GCP regions, for e.g. **us-central1**. To retrieve backup plans
-      for all locations, use "-" for the `{location}` value.
+      `projects/{project}/locations/{location}`. In Google Cloud Backup and
+      DR, locations map to Google Cloud regions, for example **us-central1**.
+      To retrieve backup plans for all locations, use "-" for the `{location}`
+      value.
   """
 
   filter = _messages.StringField(1)
@@ -1766,7 +1784,8 @@ class BackupdrProjectsLocationsBackupPlansRevisionsListRequest(_messages.Message
     parent: Required. The project and location for which to retrieve
       `BackupPlanRevisions` information. Format:
       `projects/{project}/locations/{location}/backupPlans/{backup_plan}`. In
-      Cloud BackupDR, locations map to GCP regions, for e.g. **us-central1**.
+      Google Cloud Backup and DR, locations map to Google Cloud regions, for
+      example **us-central1**.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1874,7 +1893,7 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsFetchForResourceTyp
     parent: Required. Datasources are the parent resource for the backups.
       Format: projects/{project}/locations/{location}/backupVaults/{backupVaul
       tId}/dataSources/{datasourceId}
-    resourceType: Required. The type of the GCP resource. Ex:
+    resourceType: Required. The type of the Google Cloud resource. Ex:
       sqladmin.googleapis.com/Instance
     view: Optional. This parameter is used to specify the view of the backup.
       If not specified, the default view is BASIC.
@@ -2425,7 +2444,7 @@ class BackupdrProjectsLocationsDataSourceReferencesFetchForResourceTypeRequest(_
       provided the page token.
     parent: Required. The parent resource name. Format:
       projects/{project}/locations/{location}
-    resourceType: Required. The type of the GCP resource. Ex:
+    resourceType: Required. The type of the Google Cloud resource. Ex:
       sql.googleapis.com/Instance
   """
 
@@ -2630,9 +2649,9 @@ class BackupdrProjectsLocationsManagementServersListRequest(_messages.Message):
       should return.
     parent: Required. The project and location for which to retrieve
       management servers information, in the format
-      'projects/{project_id}/locations/{location}'. In Cloud BackupDR,
-      locations map to Google Cloud regions, for example **us-central1**. To
-      retrieve management servers for all locations, use "-" for the
+      'projects/{project_id}/locations/{location}'. In Google Cloud Backup and
+      DR, locations map to Google Cloud regions, for example **us-central1**.
+      To retrieve management servers for all locations, use "-" for the
       '{location}' value.
   """
 
@@ -2652,8 +2671,8 @@ class BackupdrProjectsLocationsManagementServersMsComplianceMetadataRequest(_mes
       resource to be passed as the request body.
     parent: Required. The project and location to be used to check CSS
       metadata for target project information, in the format
-      'projects/{project_id}/locations/{location}'. In Cloud BackupDR,
-      locations map to Google Cloud regions, for example **us-central1**.
+      'projects/{project_id}/locations/{location}'. In Google Cloud Backup and
+      DR, locations map to Google Cloud regions, for example **us-central1**.
   """
 
   fetchMsComplianceMetadataRequest = _messages.MessageField('FetchMsComplianceMetadataRequest', 1)
@@ -2763,8 +2782,8 @@ class BackupdrProjectsLocationsResourceBackupConfigsListRequest(_messages.Messag
       should return.
     parent: Required. The project and location for which to retrieve resource
       backup configs. Format: 'projects/{project_id}/locations/{location}'. In
-      Cloud Backup and DR, locations map to Google Cloud regions, for example
-      **us-central1**.
+      Google Cloud Backup and DR, locations map to Google Cloud regions, for
+      example **us-central1**.
   """
 
   filter = _messages.StringField(1)
@@ -3568,7 +3587,7 @@ class DataSourceGcpResource(_messages.Message):
 
 
 class DataSourceGcpResourceInfo(_messages.Message):
-  r"""The GCP resource that the DataSource is associated with.
+  r"""The Google Cloud resource that the DataSource is associated with.
 
   Fields:
     alloyDbClusterProperties: Output only. The properties of the AlloyDB
@@ -3577,11 +3596,11 @@ class DataSourceGcpResourceInfo(_messages.Message):
       instance.
     filestoreInstanceProperties: Output only. The properties of the Filestore
       instance.
-    gcpResourcename: Output only. The resource name of the GCP resource. Ex:
-      projects/{project}/zones/{zone}/instances/{instance}
-    location: Output only. The location of the GCP resource. Ex:
+    gcpResourcename: Output only. The resource name of the Google Cloud
+      resource. Ex: projects/{project}/zones/{zone}/instances/{instance}
+    location: Output only. The location of the Google Cloud resource. Ex:
       //"global"/"unspecified"
-    type: Output only. The type of the GCP resource. Ex:
+    type: Output only. The type of the Google Cloud resource. Ex:
       compute.googleapis.com/Instance
   """
 
@@ -3611,7 +3630,7 @@ class DataSourceReference(_messages.Message):
     dataSourceBackupConfigState: Output only. The backup configuration state
       of the DataSource.
     dataSourceBackupCount: Output only. Number of backups in the DataSource.
-    dataSourceGcpResourceInfo: Output only. The GCP resource that the
+    dataSourceGcpResourceInfo: Output only. The Google Cloud resource that the
       DataSource is associated with.
     name: Identifier. The resource name of the DataSourceReference. Format: pr
       ojects/{project}/locations/{location}/dataSourceReferences/{data_source_
@@ -4133,7 +4152,7 @@ class FetchMsComplianceMetadataResponse(_messages.Message):
 
   Fields:
     isAssuredWorkload: The ms compliance metadata of the target project, if
-      the project is an assured workloads project, values will be true,
+      the project is an Assured Workloads project, values will be true,
       otherwise false.
   """
 
@@ -4364,7 +4383,7 @@ class InitializeServiceRequest(_messages.Message):
       will know to ignore the request if it has already been completed. The
       server will guarantee that for at least 60 minutes since the first
       request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
+      request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
       same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
@@ -4801,10 +4820,10 @@ class ManagementServer(_messages.Message):
       connected. For this version, only a single network is supported. This
       field is optional if MS is created without PSA
     oauth2ClientId: Output only. The OAuth 2.0 client id is required to make
-      API calls to the BackupDR instance API of this ManagementServer. This is
-      the value that should be provided in the 'aud' field of the OIDC ID
-      Token (see openid specification https://openid.net/specs/openid-connect-
-      core-1_0.html#IDToken).
+      API calls to the Backup and DR instance API of this ManagementServer.
+      This is the value that should be provided in the 'aud' field of the OIDC
+      ID Token (see openid specification https://openid.net/specs/openid-
+      connect-core-1_0.html#IDToken).
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The ManagementServer state.
@@ -4943,7 +4962,8 @@ class NetworkConfig(_messages.Message):
       PEERING_MODE_UNSPECIFIED: Peering mode not set.
       PRIVATE_SERVICE_ACCESS: Connect using Private Service Access to the
         Management Server. Private services access provides an IP address
-        range for multiple Google Cloud services, including Cloud BackupDR.
+        range for multiple Google Cloud services, including Google Cloud
+        Backup and DR.
     """
     PEERING_MODE_UNSPECIFIED = 0
     PRIVATE_SERVICE_ACCESS = 1
@@ -5902,7 +5922,7 @@ class StandardSchedule(_messages.Message):
       schedule. The value of this field must be a time zone name from the IANA
       tz database. See
       https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for the
-      list of valid timezone names. For e.g., Europe/Paris.
+      list of valid timezone names. For example, Europe/Paris.
     weekDayOfMonth: Optional. Specifies a week day of the month like, FIRST
       SUNDAY or LAST MONDAY, on which jobs will run. This will be specified by
       two fields in `WeekDayOfMonth`, one for the day, e.g. `MONDAY`, and one

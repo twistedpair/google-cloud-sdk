@@ -151,6 +151,15 @@ def process_encryption_enforcement_config(
         f' --encryption-enforcement-file flag.\nError: {e}'
     ) from e
 
+  allowed_keys = set(_ENCRYPTION_ENFORCEMENT_API_KEY_BY_JSON_KEY_MAP.keys())
+  invalid_keys = set(enforcement_dict.keys()) - allowed_keys
+  if invalid_keys:
+    raise errors.InvalidUrlError(
+        f'Invalid key(s) {", ".join(invalid_keys)} found in encryption'
+        f' enforcement file {file_path}. Allowed keys are:'
+        f' {", ".join(allowed_keys)}'
+    )
+
   messages = get_messages_module('storage', 'v1')
   encryption_msg = messages.Bucket.EncryptionValue()
   has_changes = False
@@ -165,8 +174,10 @@ def process_encryption_enforcement_config(
     has_changes = True
     config_data = enforcement_dict[json_key]
     if config_data is None:
-      # Setting to None effectively clears it in the PATCH request
-      setattr(encryption_msg, msg_attr, None)
+      raise errors.InvalidUrlError(
+          f'Invalid value found for {json_key!r} in encryption enforcement file'
+          f' {file_path}. Expected an object with "restrictionMode".'
+      )
     elif isinstance(config_data, dict) and 'restrictionMode' in config_data:
       config_class = _ENCRYPTION_ENFORCEMENT_API_FIELD_BY_JSON_KEY_MAP[json_key]
       try:
@@ -183,7 +194,7 @@ def process_encryption_enforcement_config(
     else:
       raise errors.InvalidUrlError(
           f'Invalid structure for {json_key} in encryption enforcement file.'
-          ' Expected an object with "restrictionMode" or null.'
+          ' Expected an object with "restrictionMode".'
       )
 
   return encryption_msg if has_changes else None

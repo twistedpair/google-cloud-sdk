@@ -26,8 +26,6 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 
-import httplib2
-
 
 def ChangeGcloudProxySettings():
   """Displays proxy information and helps user set up gcloud proxy properties.
@@ -123,9 +121,9 @@ def EffectiveProxyInfo():
   """Returns ProxyInfo effective in gcloud and if it is from gloud properties.
 
   Returns:
-    A tuple of two elements in which the first element is an httplib2.ProxyInfo
-      object and the second is a bool that is True if the proxy info came from
-      previously set Cloud SDK proxy properties.
+    A tuple of two elements in which the first element is as
+    http_proxy.ProxyInfo object and the second is a bool that is True if the
+    proxy info came from previously set Cloud SDK proxy properties.
 
   Raises:
     properties.InvalidValueError: If the properties did not include a valid set.
@@ -138,9 +136,9 @@ def EffectiveProxyInfo():
 
   # googlecloudsdk.core.http_proxy.GetHttpProxyInfo() will return a function
   # if there are no valid proxy settings in gcloud properties. Otherwise, it
-  # will return an instantiated httplib2.ProxyInfo object.
+  # will return an instantiated http_proxy.ProxyInfo object.
   from_gcloud_properties = True
-  if not isinstance(proxy_info, httplib2.ProxyInfo):
+  if not isinstance(proxy_info, http_proxy.ProxyInfo):
     from_gcloud_properties = False
     # All Google Cloud SDK network calls use https.
     proxy_info = proxy_info('https')

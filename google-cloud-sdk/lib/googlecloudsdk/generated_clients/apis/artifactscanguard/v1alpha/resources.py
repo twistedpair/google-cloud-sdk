@@ -41,17 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  FOLDERS_LOCATIONS_CONNECTORS = (
-      'folders.locations.connectors',
-      '{+name}',
-      {
-          '':
-              'folders/{foldersId}/locations/{locationsId}/connectors/'
-              '{connectorsId}',
-      },
-      ['name'],
-      True
-  )
   FOLDERS_LOCATIONS_OPERATIONS = (
       'folders.locations.operations',
       '{+name}',
@@ -152,6 +141,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ARTIFACTEVALUATIONS = (
+      'projects.locations.artifactEvaluations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'artifactEvaluations/{artifactEvaluationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ARTIFACTPOLICIESEVALUATIONS = (
+      'projects.locations.artifactPoliciesEvaluations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'artifactPoliciesEvaluations/{artifactPoliciesEvaluationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CONNECTORS = (
       'projects.locations.connectors',
       '{+name}',
@@ -170,6 +181,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_POLICIES = (
+      'projects.locations.policies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/policies/'
+              '{policiesId}',
       },
       ['name'],
       True

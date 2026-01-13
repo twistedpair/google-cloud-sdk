@@ -57,7 +57,12 @@ class ConditionPoller(waiter.OperationPoller):
   """
 
   def __init__(
-      self, resource_getter, tracker, dependencies=None, ready_message='Done.'
+      self,
+      resource_getter,
+      tracker,
+      dependencies=None,
+      ready_message='Done.',
+      skip_stage_updates=False,
   ):
     """Initialize the ConditionPoller.
 
@@ -80,6 +85,8 @@ class ConditionPoller(waiter.OperationPoller):
         dependencies.
       ready_message: str, message to display in header of tracker when
         conditions are ready.
+      skip_stage_updates: bool, if true, only the header message will be
+        updated.
     """
     # _dependencies is a map of condition -> {preceding conditions}
     # It is meant to be checked off as we finish things.
@@ -97,6 +104,7 @@ class ConditionPoller(waiter.OperationPoller):
     self._tracker = tracker
     self._resource_fail_type = exceptions.Error
     self._ready_message = ready_message
+    self._skip_stage_updates = skip_stage_updates
     self._StartUnblocked()
 
   def _IsBlocked(self, condition):
@@ -179,6 +187,8 @@ class ConditionPoller(waiter.OperationPoller):
       conditions_message: str, The message from the conditions object we're
         displaying..
     """
+    if self._skip_stage_updates:
+      return
     if condition not in self._tracker or self._tracker.IsComplete(condition):
       return
 
@@ -285,8 +295,17 @@ class ConditionPoller(waiter.OperationPoller):
 class ServiceConditionPoller(ConditionPoller):
   """A ConditionPoller for services."""
 
-  def __init__(self, getter, tracker, dependencies=None, serv=None):
-    super().__init__(getter, tracker, dependencies)
+  def __init__(
+      self,
+      getter,
+      tracker,
+      dependencies=None,
+      serv=None,
+      skip_stage_updates=False,
+  ):
+    super().__init__(
+        getter, tracker, dependencies, skip_stage_updates=skip_stage_updates
+    )
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
 
 

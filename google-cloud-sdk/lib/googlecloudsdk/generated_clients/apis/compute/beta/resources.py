@@ -588,6 +588,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'instantSnapshot'],
       True
   )
+  REGIONMULTIMIGMEMBERS = (
+      'regionMultiMigMembers',
+      'projects/{project}/regions/{region}/multiMigs/{multiMig}/'
+      'multiMigMembers/{multiMigMember}',
+      {},
+      ['project', 'region', 'multiMig', 'multiMigMember'],
+      True
+  )
   REGIONMULTIMIGS = (
       'regionMultiMigs',
       'projects/{project}/regions/{region}/multiMigs/{multiMig}',

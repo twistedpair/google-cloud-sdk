@@ -11605,9 +11605,13 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       Apigee hybrid.
     billingType: Optional. Billing type of the Apigee organization. See
       [Apigee pricing](https://cloud.google.com/apigee/pricing).
-    caCertificate: Output only. Base64-encoded public certificate for the root
-      CA of the Apigee organization. Valid only when
-      [RuntimeType](#RuntimeType) is `CLOUD`.
+    caCertificate: Output only. Deprecated: Use `ca_certificates` instead.
+      Base64-encoded public certificate for the root CA of the Apigee
+      organization. Valid only when [RuntimeType](#RuntimeType) is `CLOUD`.
+    caCertificates: Output only. Base64-encoded public certificates for the
+      root CA of the Apigee organization. Valid only when
+      [RuntimeType](#RuntimeType) is `CLOUD`. Multiple certificates are used
+      to support certificate rotation.
     controlPlaneEncryptionKeyName: Optional. Cloud KMS key name used for
       encrypting control plane data that is stored in a multi region. Only
       used for the data residency region "US" or "EU". If not specified or
@@ -11801,27 +11805,28 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   authorizedNetwork = _messages.StringField(7)
   billingType = _messages.EnumField('BillingTypeValueValuesEnum', 8)
   caCertificate = _messages.BytesField(9)
-  controlPlaneEncryptionKeyName = _messages.StringField(10)
-  createdAt = _messages.IntegerField(11)
-  customerName = _messages.StringField(12)
-  description = _messages.StringField(13)
-  disableVpcPeering = _messages.BooleanField(14)
-  displayName = _messages.StringField(15)
-  environments = _messages.StringField(16, repeated=True)
-  expiresAt = _messages.IntegerField(17)
-  lastModifiedAt = _messages.IntegerField(18)
-  name = _messages.StringField(19)
-  networkEgressRestricted = _messages.BooleanField(20)
-  portalDisabled = _messages.BooleanField(21)
-  projectId = _messages.StringField(22)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 23)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 24)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(25)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  subscriptionPlan = _messages.EnumField('SubscriptionPlanValueValuesEnum', 28)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 29)
-  type = _messages.EnumField('TypeValueValuesEnum', 30)
+  caCertificates = _messages.BytesField(10, repeated=True)
+  controlPlaneEncryptionKeyName = _messages.StringField(11)
+  createdAt = _messages.IntegerField(12)
+  customerName = _messages.StringField(13)
+  description = _messages.StringField(14)
+  disableVpcPeering = _messages.BooleanField(15)
+  displayName = _messages.StringField(16)
+  environments = _messages.StringField(17, repeated=True)
+  expiresAt = _messages.IntegerField(18)
+  lastModifiedAt = _messages.IntegerField(19)
+  name = _messages.StringField(20)
+  networkEgressRestricted = _messages.BooleanField(21)
+  portalDisabled = _messages.BooleanField(22)
+  projectId = _messages.StringField(23)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 24)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 25)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(26)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  subscriptionPlan = _messages.EnumField('SubscriptionPlanValueValuesEnum', 29)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 30)
+  type = _messages.EnumField('TypeValueValuesEnum', 31)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):

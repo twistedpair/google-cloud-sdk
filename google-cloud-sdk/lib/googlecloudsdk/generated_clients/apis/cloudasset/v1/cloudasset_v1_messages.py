@@ -2724,10 +2724,10 @@ class GoogleCloudAssetV1Constraint(_messages.Message):
     Values:
       CONSTRAINT_DEFAULT_UNSPECIFIED: This is only used for distinguishing
         unset values and should never be used.
-      ALLOW: Indicate that all values are allowed for list constraints.
-        Indicate that enforcement is off for boolean constraints.
-      DENY: Indicate that all values are denied for list constraints. Indicate
-        that enforcement is on for boolean constraints.
+      ALLOW: Indicates that all values are allowed for list constraints.
+        Indicates that enforcement is off for boolean constraints.
+      DENY: Indicates that all values are denied for list constraints.
+        Indicates that enforcement is on for boolean constraints.
     """
     CONSTRAINT_DEFAULT_UNSPECIFIED = 0
     ALLOW = 1

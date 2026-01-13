@@ -55,6 +55,7 @@ class AppengineV1(base_api.BaseApiClient):
     self.projects_locations_applications_authorizedDomains = self.ProjectsLocationsApplicationsAuthorizedDomainsService(self)
     self.projects_locations_applications_domainMappings = self.ProjectsLocationsApplicationsDomainMappingsService(self)
     self.projects_locations_applications_services_migration = self.ProjectsLocationsApplicationsServicesMigrationService(self)
+    self.projects_locations_applications_services_versions_instances = self.ProjectsLocationsApplicationsServicesVersionsInstancesService(self)
     self.projects_locations_applications_services_versions = self.ProjectsLocationsApplicationsServicesVersionsService(self)
     self.projects_locations_applications_services = self.ProjectsLocationsApplicationsServicesService(self)
     self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
@@ -1756,6 +1757,43 @@ class AppengineV1(base_api.BaseApiClient):
         request_field='migrateConfigYamlRequest',
         request_type_name='AppengineProjectsLocationsApplicationsServicesMigrationMigrateConfigYamlRequest',
         response_type_name='MigrateConfigYamlResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsApplicationsServicesVersionsInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_services_versions_instances resource."""
+
+    _NAME = 'projects_locations_applications_services_versions_instances'
+
+    def __init__(self, client):
+      super(AppengineV1.ProjectsLocationsApplicationsServicesVersionsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Debug(self, request, global_params=None):
+      r"""Enables debugging on a VM instance. This allows you to use the SSH command to connect to the virtual machine where the instance lives. While in "debug mode", the instance continues to serve live traffic. You should delete the instance when you are done debugging and then allow the system to take over and determine if another instance should be started.Only applicable for instances in App Engine flexible environment.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsServicesVersionsInstancesDebugRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Debug')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Debug.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/services/{servicesId}/versions/{versionsId}/instances/{instancesId}:debug',
+        http_method='POST',
+        method_id='appengine.projects.locations.applications.services.versions.instances.debug',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:debug',
+        request_field='debugInstanceRequest',
+        request_type_name='AppengineProjectsLocationsApplicationsServicesVersionsInstancesDebugRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

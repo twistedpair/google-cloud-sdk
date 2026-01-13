@@ -349,6 +349,8 @@ class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationB
       activated.
     notifyGrantActivationFailed: Output only. Notification delivery for grant
       activation failed.
+    notifyGrantActivationScheduled: Output only. Notification delivery for
+      grant activation scheduled.
     notifyGrantEnded: Output only. Notification delivery for grant ended.
     notifyGrantExternallyModified: Output only. Notification delivery for
       grant externally modified.
@@ -356,8 +358,9 @@ class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationB
 
   notifyGrantActivated = _messages.BooleanField(1)
   notifyGrantActivationFailed = _messages.BooleanField(2)
-  notifyGrantEnded = _messages.BooleanField(3)
-  notifyGrantExternallyModified = _messages.BooleanField(4)
+  notifyGrantActivationScheduled = _messages.BooleanField(3)
+  notifyGrantEnded = _messages.BooleanField(4)
+  notifyGrantExternallyModified = _messages.BooleanField(5)
 
 
 class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationBehaviorApproverNotifications(_messages.Message):
@@ -381,6 +384,8 @@ class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationB
       activated.
     notifyGrantActivationFailed: Output only. Notification delivery for grant
       activation failed.
+    notifyGrantActivationScheduled: Output only. Notification delivery for
+      grant activation scheduled.
     notifyGrantDenied: Output only. Notification delivery for grant denied.
     notifyGrantEnded: Output only. Notification delivery for grant ended.
     notifyGrantExpired: Output only. Notification delivery for grant request
@@ -393,11 +398,12 @@ class FetchEffectiveSettingsResponseEmailNotificationSettingsCustomNotificationB
   notifyEntitlementAssigned = _messages.BooleanField(1)
   notifyGrantActivated = _messages.BooleanField(2)
   notifyGrantActivationFailed = _messages.BooleanField(3)
-  notifyGrantDenied = _messages.BooleanField(4)
-  notifyGrantEnded = _messages.BooleanField(5)
-  notifyGrantExpired = _messages.BooleanField(6)
-  notifyGrantExternallyModified = _messages.BooleanField(7)
-  notifyGrantRevoked = _messages.BooleanField(8)
+  notifyGrantActivationScheduled = _messages.BooleanField(4)
+  notifyGrantDenied = _messages.BooleanField(5)
+  notifyGrantEnded = _messages.BooleanField(6)
+  notifyGrantExpired = _messages.BooleanField(7)
+  notifyGrantExternallyModified = _messages.BooleanField(8)
+  notifyGrantRevoked = _messages.BooleanField(9)
 
 
 class FetchEffectiveSettingsResponseEmailNotificationSettingsDisableAllNotifications(_messages.Message):
@@ -2560,6 +2566,8 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorAdminNotificati
       activated.
     GrantActivationFailedValueValuesEnum: Optional. Notification mode for
       grant activation failed.
+    GrantActivationScheduledValueValuesEnum: Optional. Notification mode for
+      grant activation scheduled.
     GrantEndedValueValuesEnum: Optional. Notification mode for grant ended.
     GrantExternallyModifiedValueValuesEnum: Optional. Notification mode for
       grant externally modified.
@@ -2568,6 +2576,8 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorAdminNotificati
     grantActivated: Optional. Notification mode for grant activated.
     grantActivationFailed: Optional. Notification mode for grant activation
       failed.
+    grantActivationScheduled: Optional. Notification mode for grant activation
+      scheduled.
     grantEnded: Optional. Notification mode for grant ended.
     grantExternallyModified: Optional. Notification mode for grant externally
       modified.
@@ -2588,6 +2598,19 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorAdminNotificati
 
   class GrantActivationFailedValueValuesEnum(_messages.Enum):
     r"""Optional. Notification mode for grant activation failed.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantActivationScheduledValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant activation scheduled.
 
     Values:
       NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
@@ -2627,8 +2650,9 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorAdminNotificati
 
   grantActivated = _messages.EnumField('GrantActivatedValueValuesEnum', 1)
   grantActivationFailed = _messages.EnumField('GrantActivationFailedValueValuesEnum', 2)
-  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 3)
-  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 4)
+  grantActivationScheduled = _messages.EnumField('GrantActivationScheduledValueValuesEnum', 3)
+  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 4)
+  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 5)
 
 
 class SettingsEmailNotificationSettingsCustomNotificationBehaviorApproverNotifications(_messages.Message):
@@ -2668,6 +2692,8 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
       activated.
     GrantActivationFailedValueValuesEnum: Optional. Notification mode for
       grant activation failed.
+    GrantActivationScheduledValueValuesEnum: Optional. Notification mode for
+      grant activation scheduled.
     GrantDeniedValueValuesEnum: Optional. Notification mode for grant denied.
     GrantEndedValueValuesEnum: Optional. Notification mode for grant ended.
     GrantExpiredValueValuesEnum: Optional. Notification mode for grant request
@@ -2682,6 +2708,8 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
     grantActivated: Optional. Notification mode for grant activated.
     grantActivationFailed: Optional. Notification mode for grant activation
       failed.
+    grantActivationScheduled: Optional. Notification mode for grant activation
+      scheduled.
     grantDenied: Optional. Notification mode for grant denied.
     grantEnded: Optional. Notification mode for grant ended.
     grantExpired: Optional. Notification mode for grant request expired.
@@ -2718,6 +2746,19 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
 
   class GrantActivationFailedValueValuesEnum(_messages.Enum):
     r"""Optional. Notification mode for grant activation failed.
+
+    Values:
+      NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
+        PAM's standard settings.
+      ENABLED: Notifications are enabled.
+      DISABLED: Notifications are disabled.
+    """
+    NOTIFICATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  class GrantActivationScheduledValueValuesEnum(_messages.Enum):
+    r"""Optional. Notification mode for grant activation scheduled.
 
     Values:
       NOTIFICATION_MODE_UNSPECIFIED: Default notification behavior following
@@ -2797,11 +2838,12 @@ class SettingsEmailNotificationSettingsCustomNotificationBehaviorRequesterNotifi
   entitlementAssigned = _messages.EnumField('EntitlementAssignedValueValuesEnum', 1)
   grantActivated = _messages.EnumField('GrantActivatedValueValuesEnum', 2)
   grantActivationFailed = _messages.EnumField('GrantActivationFailedValueValuesEnum', 3)
-  grantDenied = _messages.EnumField('GrantDeniedValueValuesEnum', 4)
-  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 5)
-  grantExpired = _messages.EnumField('GrantExpiredValueValuesEnum', 6)
-  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 7)
-  grantRevoked = _messages.EnumField('GrantRevokedValueValuesEnum', 8)
+  grantActivationScheduled = _messages.EnumField('GrantActivationScheduledValueValuesEnum', 4)
+  grantDenied = _messages.EnumField('GrantDeniedValueValuesEnum', 5)
+  grantEnded = _messages.EnumField('GrantEndedValueValuesEnum', 6)
+  grantExpired = _messages.EnumField('GrantExpiredValueValuesEnum', 7)
+  grantExternallyModified = _messages.EnumField('GrantExternallyModifiedValueValuesEnum', 8)
+  grantRevoked = _messages.EnumField('GrantRevokedValueValuesEnum', 9)
 
 
 class SettingsEmailNotificationSettingsDisableAllNotifications(_messages.Message):

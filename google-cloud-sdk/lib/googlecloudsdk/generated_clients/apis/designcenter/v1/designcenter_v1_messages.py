@@ -116,6 +116,8 @@ class Application(_messages.Message):
       STANDARD OR COMPOSITE.
     connectionConfigs: Optional. Connection configuration for the application.
     createTime: Output only. Create timestamp.
+    deploymentGroupMetadata: Output only. The deployment group metadata of the
+      application. This is applicable only for composite applications.
     deploymentMetadata: Output only. Deployment metadata of the application.
     deploymentProject: Optional. Deployment project of the application.
     deploymentRegion: Optional. The region where the application is deployed.
@@ -208,25 +210,26 @@ class Application(_messages.Message):
   compositionType = _messages.EnumField('CompositionTypeValueValuesEnum', 7)
   connectionConfigs = _messages.MessageField('ConnectionConfig', 8, repeated=True)
   createTime = _messages.StringField(9)
-  deploymentMetadata = _messages.MessageField('DeploymentMetadata', 10)
-  deploymentProject = _messages.StringField(11)
-  deploymentRegion = _messages.StringField(12)
-  deploymentRevision = _messages.StringField(13)
-  deploymentTarget = _messages.MessageField('DeploymentTarget', 14)
-  description = _messages.StringField(15)
-  displayName = _messages.StringField(16)
-  importExistingResources = _messages.BooleanField(17)
-  name = _messages.StringField(18)
-  previewReference = _messages.StringField(19)
-  projectParameters = _messages.MessageField('ProjectParameters', 20, repeated=True)
-  scope = _messages.MessageField('Scope', 21)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 22)
-  serviceAccount = _messages.StringField(23)
-  source = _messages.MessageField('DeploymentSource', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  type = _messages.EnumField('TypeValueValuesEnum', 26)
-  updateTime = _messages.StringField(27)
-  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 28)
+  deploymentGroupMetadata = _messages.MessageField('DeploymentGroupMetadata', 10)
+  deploymentMetadata = _messages.MessageField('DeploymentMetadata', 11)
+  deploymentProject = _messages.StringField(12)
+  deploymentRegion = _messages.StringField(13)
+  deploymentRevision = _messages.StringField(14)
+  deploymentTarget = _messages.MessageField('DeploymentTarget', 15)
+  description = _messages.StringField(16)
+  displayName = _messages.StringField(17)
+  importExistingResources = _messages.BooleanField(18)
+  name = _messages.StringField(19)
+  previewReference = _messages.StringField(20)
+  projectParameters = _messages.MessageField('ProjectParameters', 21, repeated=True)
+  scope = _messages.MessageField('Scope', 22)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 23)
+  serviceAccount = _messages.StringField(24)
+  source = _messages.MessageField('DeploymentSource', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  type = _messages.EnumField('TypeValueValuesEnum', 27)
+  updateTime = _messages.StringField(28)
+  updatedTemplateRevision = _messages.MessageField('UpdatedTemplateRevision', 29)
 
 
 class ApplicationOperationMetadata(_messages.Message):
@@ -258,9 +261,10 @@ class ApplicationTemplate(_messages.Message):
   r"""Application template resource.
 
   Enums:
-    CompositionTypeValueValuesEnum: Optional. The composition type of the
-      applicationTemplate: STANDARD OR COMPOSITE. This is a create time only
-      param. In future, we may support conversion from STANDARD to COMPOSITE.
+    CompositionTypeValueValuesEnum: Optional. Immutable. The composition type
+      of the applicationTemplate: STANDARD OR COMPOSITE. This is a create time
+      only param. In future, we may support conversion from STANDARD to
+      COMPOSITE.
     IacFormatValueValuesEnum: Output only. The IaC format of the application
       template.
 
@@ -269,7 +273,7 @@ class ApplicationTemplate(_messages.Message):
       an application. You can specify projectID and region.
     artifactLocation: Output only. Details of the location where the IaC for
       this ApplicationTemplate was last successfully exported.
-    compositionType: Optional. The composition type of the
+    compositionType: Optional. Immutable. The composition type of the
       applicationTemplate: STANDARD OR COMPOSITE. This is a create time only
       param. In future, we may support conversion from STANDARD to COMPOSITE.
     createTime: Output only. Application template creation timestamp.
@@ -282,15 +286,17 @@ class ApplicationTemplate(_messages.Message):
       application template.
     rootOutputVariables: Optional. Root level output variables of the
       application template.
+    saasRuntimeContext: Optional. SaaS runtime context for the application
+      template.
     serializedApplicationTemplate: Output only. The serialized application
       template.
     updateTime: Output only. Application template update timestamp.
   """
 
   class CompositionTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The composition type of the applicationTemplate: STANDARD OR
-    COMPOSITE. This is a create time only param. In future, we may support
-    conversion from STANDARD to COMPOSITE.
+    r"""Optional. Immutable. The composition type of the applicationTemplate:
+    STANDARD OR COMPOSITE. This is a create time only param. In future, we may
+    support conversion from STANDARD to COMPOSITE.
 
     Values:
       APPLICATION_COMPOSITION_TYPE_UNSPECIFIED: ApplicationCompositionType is
@@ -330,23 +336,27 @@ class ApplicationTemplate(_messages.Message):
   name = _messages.StringField(9)
   rootInputVariables = _messages.MessageField('ComponentVariable', 10, repeated=True)
   rootOutputVariables = _messages.MessageField('ComponentVariable', 11, repeated=True)
-  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 12)
-  updateTime = _messages.StringField(13)
+  saasRuntimeContext = _messages.MessageField('SaaSRuntimeContext', 12)
+  serializedApplicationTemplate = _messages.MessageField('SerializedApplicationTemplate', 13)
+  updateTime = _messages.StringField(14)
 
 
 class ApplicationTemplateRevision(_messages.Message):
   r"""Application template revision resource.
 
   Fields:
+    artifactLocation: Output only. Details of the location where the IaC for
+      this ApplicationTemplate Revision was last successfully exported.
     createTime: Output only. The application template revision creation
       timestamp.
     name: Identifier. The application template revision name.
     snapshot: Output only. The serialized application template.
   """
 
-  createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  snapshot = _messages.MessageField('SerializedApplicationTemplate', 3)
+  artifactLocation = _messages.MessageField('ArtifactLocation', 1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  snapshot = _messages.MessageField('SerializedApplicationTemplate', 4)
 
 
 class ArtifactLocation(_messages.Message):
@@ -650,7 +660,13 @@ class CatalogTemplateRevision(_messages.Message):
     TypeValueValuesEnum: Optional. The Application Design Center assembly
       template type.
 
+  Messages:
+    AnnotationsValue: Optional. The annotations of the template revision. Key
+      is the annotation name. Value is the annotation value.
+
   Fields:
+    annotations: Optional. The annotations of the template revision. Key is
+      the annotation name. Value is the annotation value.
     applicationTemplateRevision: Output only. The application template
       revision.
     applicationTemplateRevisionSource: Optional. The application template
@@ -742,24 +758,51 @@ class CatalogTemplateRevision(_messages.Message):
     COMPOSITE_APPLICATION_TEMPLATE = 9
     HELM_CHART = 10
 
-  applicationTemplateRevision = _messages.MessageField('SerializedApplicationTemplate', 1)
-  applicationTemplateRevisionSource = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  developerConnectSourceConfig = _messages.MessageField('DeveloperConnectSourceConfig', 5)
-  gcsSourceUri = _messages.StringField(6)
-  gitSource = _messages.MessageField('GitSource', 7)
-  helmChartMetadata = _messages.MessageField('HelmChartMetadata', 8)
-  logicalProducts = _messages.MessageField('LogicalProduct', 9, repeated=True)
-  metadataInput = _messages.MessageField('MetadataInput', 10)
-  name = _messages.StringField(11)
-  ociRepo = _messages.MessageField('OciRepo', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 14)
-  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
-  uuid = _messages.StringField(18)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. The annotations of the template revision. Key is the
+    annotation name. Value is the annotation value.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  applicationTemplateRevision = _messages.MessageField('SerializedApplicationTemplate', 2)
+  applicationTemplateRevisionSource = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  developerConnectSourceConfig = _messages.MessageField('DeveloperConnectSourceConfig', 6)
+  gcsSourceUri = _messages.StringField(7)
+  gitSource = _messages.MessageField('GitSource', 8)
+  helmChartMetadata = _messages.MessageField('HelmChartMetadata', 9)
+  logicalProducts = _messages.MessageField('LogicalProduct', 10, repeated=True)
+  metadataInput = _messages.MessageField('MetadataInput', 11)
+  name = _messages.StringField(12)
+  ociRepo = _messages.MessageField('OciRepo', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 15)
+  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  updateTime = _messages.StringField(18)
+  uuid = _messages.StringField(19)
 
 
 class Channel(_messages.Message):
@@ -808,6 +851,7 @@ class Component(_messages.Message):
   Fields:
     apis: Output only. APIs required to be enabled to deploy the component, in
       the form of "*.googleapis.com".
+    applicationInfo: Optional. The application associated with the component.
     componentParameterSchema: Output only. The component parameter schema,
       which includes possible parameter values. values.
     connectionsParameters: Output only. The connection parameters of the
@@ -824,15 +868,40 @@ class Component(_messages.Message):
   """
 
   apis = _messages.StringField(1, repeated=True)
-  componentParameterSchema = _messages.MessageField('ComponentParameterSchema', 2, repeated=True)
-  connectionsParameters = _messages.MessageField('ConnectionParameters', 3, repeated=True)
-  createTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  name = _messages.StringField(6)
-  parameters = _messages.MessageField('Parameter', 7, repeated=True)
-  roles = _messages.StringField(8, repeated=True)
-  sharedTemplateRevisionUri = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  applicationInfo = _messages.MessageField('ComponentApplicationInfo', 2)
+  componentParameterSchema = _messages.MessageField('ComponentParameterSchema', 3, repeated=True)
+  connectionsParameters = _messages.MessageField('ConnectionParameters', 4, repeated=True)
+  createTime = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  name = _messages.StringField(7)
+  parameters = _messages.MessageField('Parameter', 8, repeated=True)
+  roles = _messages.StringField(9, repeated=True)
+  sharedTemplateRevisionUri = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class ComponentApplicationInfo(_messages.Message):
+  r"""This captures the apphub application details associated with the
+  component.
+
+  Fields:
+    apphubApplicationId: Required. The application ID of the apphub
+      application. The ID must be 1-63 characters long and should match the
+      regular expression `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    attributes: Optional. Attributes of apphub application.
+    deploymentRegion: Optional. Deployment region for the component. If the
+      scope is set to REGIONAL, then the apphub application is created in this
+      region, e.g. `us-central1`.
+    displayName: Optional. Display name for the application. The number of
+      characters should be less than 64 characters.
+    scope: Optional. Scope of apphub application.
+  """
+
+  apphubApplicationId = _messages.StringField(1)
+  attributes = _messages.MessageField('Attributes', 2)
+  deploymentRegion = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  scope = _messages.MessageField('Scope', 5)
 
 
 class ComponentOutputParameters(_messages.Message):
@@ -871,10 +940,13 @@ class ComponentParameters(_messages.Message):
     StateValueValuesEnum: Output only. Deployment state of the component.
 
   Fields:
+    applicationInfo: Optional. The application associated with the component.
     component: Required. The name of the component parameter.
     componentParameterSchema: Output only. The component parameter schema,
       which includes possible parameter values.
     connectionsParameters: Output only.
+    effectiveApplicationInfo: Output only. The effective application
+      associated with the component. This is the server set application field.
     parameters: Optional. A list of parameters associated with the component.
     state: Output only. Deployment state of the component.
   """
@@ -901,11 +973,13 @@ class ComponentParameters(_messages.Message):
     DELETED = 6
     FAILED = 7
 
-  component = _messages.StringField(1)
-  componentParameterSchema = _messages.MessageField('ComponentParameterSchema', 2, repeated=True)
-  connectionsParameters = _messages.MessageField('ConnectionParameters', 3, repeated=True)
-  parameters = _messages.MessageField('Parameter', 4, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  applicationInfo = _messages.MessageField('ComponentApplicationInfo', 1)
+  component = _messages.StringField(2)
+  componentParameterSchema = _messages.MessageField('ComponentParameterSchema', 3, repeated=True)
+  connectionsParameters = _messages.MessageField('ConnectionParameters', 4, repeated=True)
+  effectiveApplicationInfo = _messages.MessageField('ComponentApplicationInfo', 5)
+  parameters = _messages.MessageField('Parameter', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class ComponentVariable(_messages.Message):
@@ -1293,6 +1367,58 @@ class DeploymentFailureResolutionInfo(_messages.Message):
   resolutionLink = _messages.StringField(1)
   resolutionLinkText = _messages.StringField(2)
   resolutionMessage = _messages.StringField(3)
+
+
+class DeploymentGroupMetadata(_messages.Message):
+  r"""Metadata for the infra manager deployment group. A deployment group in
+  Infrastructure Manager is a logical grouping of one or more deployments.
+
+  Messages:
+    DeploymentMetadataMapValue: Output only. Map of component name to
+      deployment metadata for the component. Key format: projects/{project}/lo
+      cations/{location}/spaces/{space}/applicationTemplates/{application_temp
+      late}/components/{component}
+
+  Fields:
+    deploymentGroup: Output only. The deployment group name. Format:
+      projects/{project}/locations/{location}/deploymentGroup/{deployment_grou
+      p}
+    deploymentMetadataMap: Output only. Map of component name to deployment
+      metadata for the component. Key format: projects/{project}/locations/{lo
+      cation}/spaces/{space}/applicationTemplates/{application_template}/compo
+      nents/{component}
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DeploymentMetadataMapValue(_messages.Message):
+    r"""Output only. Map of component name to deployment metadata for the
+    component. Key format: projects/{project}/locations/{location}/spaces/{spa
+    ce}/applicationTemplates/{application_template}/components/{component}
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        DeploymentMetadataMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DeploymentMetadataMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DeploymentMetadataMapValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DeploymentMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DeploymentMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  deploymentGroup = _messages.StringField(1)
+  deploymentMetadataMap = _messages.MessageField('DeploymentMetadataMapValue', 2)
 
 
 class DeploymentMetadata(_messages.Message):
@@ -1779,6 +1905,21 @@ class DesigncenterProjectsLocationsSpacesApplicationTemplatesRevisionsDeleteRequ
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DesigncenterProjectsLocationsSpacesApplicationTemplatesRevisionsGenerateRequest(_messages.Message):
+  r"""A DesigncenterProjectsLocationsSpacesApplicationTemplatesRevisionsGenera
+  teRequest object.
+
+  Fields:
+    generateApplicationTemplateRevisionIaCRequest: A
+      GenerateApplicationTemplateRevisionIaCRequest resource to be passed as
+      the request body.
+    name: Required. The name of the application template revision.
+  """
+
+  generateApplicationTemplateRevisionIaCRequest = _messages.MessageField('GenerateApplicationTemplateRevisionIaCRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DesigncenterProjectsLocationsSpacesApplicationTemplatesRevisionsGetRequest(_messages.Message):
@@ -2781,10 +2922,9 @@ class GenerateApplicationIaCResponse(_messages.Message):
   r"""Response message for GenerateApplicationIaC method.
 
   Fields:
-    artifactLocation: Output only. The destination where the generated IaC was
-      written.
-    gcsUri: Output only. The Cloud Storage URI of the generated IaC.
-      DEPRECATED: Use the 'artifact_location' field instead.
+    artifactLocation: The destination where the generated IaC was written.
+    gcsUri: The Cloud Storage URI of the generated IaC. DEPRECATED: Use the
+      'artifact_location' field instead.
   """
 
   artifactLocation = _messages.MessageField('ArtifactLocation', 1)
@@ -2826,14 +2966,51 @@ class GenerateApplicationTemplateIaCResponse(_messages.Message):
   r"""Response message for GenerateApplicationTemplateIaC method.
 
   Fields:
-    artifactLocation: Output only. The destination where the generated IaC was
-      written.
-    gcsUri: Output only. The Cloud Storage URI of the generated IaC.
-      DEPRECATED: Use the 'artifact_location' field instead.
+    artifactLocation: The destination where the generated IaC was written.
+    gcsUri: The Cloud Storage URI of the generated IaC. DEPRECATED: Use the
+      'artifact_location' field instead.
   """
 
   artifactLocation = _messages.MessageField('ArtifactLocation', 1)
   gcsUri = _messages.StringField(2)
+
+
+class GenerateApplicationTemplateRevisionIaCRequest(_messages.Message):
+  r"""Request message for GenerateApplicationTemplateRevisionIaC method.
+
+  Enums:
+    IacFormatValueValuesEnum: Optional. The IaC format to generate.
+
+  Fields:
+    artifactLocation: Optional. Specifies the destination for the generated
+      IaC, which can be Cloud Storage or a Developer Connect repository.
+    iacFormat: Optional. The IaC format to generate.
+  """
+
+  class IacFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The IaC format to generate.
+
+    Values:
+      IAC_FORMAT_UNSPECIFIED: IaC format is unspecified.
+      TERRAFORM: IaC format is Terraform.
+      HELM: IaC format is HELM.
+    """
+    IAC_FORMAT_UNSPECIFIED = 0
+    TERRAFORM = 1
+    HELM = 2
+
+  artifactLocation = _messages.MessageField('ArtifactLocation', 1)
+  iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 2)
+
+
+class GenerateApplicationTemplateRevisionIaCResponse(_messages.Message):
+  r"""Response message for GenerateApplicationTemplateRevisionIaC method.
+
+  Fields:
+    artifactLocation: The destination where the generated IaC was written.
+  """
+
+  artifactLocation = _messages.MessageField('ArtifactLocation', 1)
 
 
 class GitReference(_messages.Message):
@@ -3020,17 +3197,16 @@ class ImportApplicationIaCResponse(_messages.Message):
   r"""Response message for ImportApplicationIaC method.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the import.
+    StateValueValuesEnum: The state of the import.
 
   Fields:
-    application: Output only. Application template corresponding to the
-      imported IaC.
-    errors: Output only. Errors encountered during import.
-    state: Output only. The state of the import.
+    application: Application template corresponding to the imported IaC.
+    errors: Errors encountered during import.
+    state: The state of the import.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the import.
+    r"""The state of the import.
 
     Values:
       STATE_UNSPECIFIED: Default.
@@ -3069,17 +3245,17 @@ class ImportApplicationTemplateIaCResponse(_messages.Message):
   r"""Response message for ImportApplicationTemplateIaC method.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the import.
+    StateValueValuesEnum: The state of the import.
 
   Fields:
-    applicationTemplate: Output only. Application template corresponding to
-      the imported IaC.
-    errors: Output only. Errors encountered during import.
-    state: Output only. The state of the import.
+    applicationTemplate: Application template corresponding to the imported
+      IaC.
+    errors: Errors encountered during import.
+    state: The state of the import.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the import.
+    r"""The state of the import.
 
     Values:
       STATE_UNSPECIFIED: Default.
@@ -3875,6 +4051,17 @@ class Resource(_messages.Message):
   type = _messages.StringField(3)
 
 
+class SaaSRuntimeContext(_messages.Message):
+  r"""SaaS runtime context.
+
+  Fields:
+    saas: Optional. The SaaS name. Format:
+      projects/{project}/locations/{location}/saas/{saas}
+  """
+
+  saas = _messages.StringField(1)
+
+
 class Scope(_messages.Message):
   r"""Scope of an application.
 
@@ -3925,6 +4112,8 @@ class SerializedApplicationTemplate(_messages.Message):
       application template.
     rootOutputVariables: Output only. Root level output variables of the
       application template.
+    saasRuntimeContext: Optional. SaaS runtime context for the application
+      template.
     uri: Optional. The application template URI.
   """
 
@@ -3969,7 +4158,8 @@ class SerializedApplicationTemplate(_messages.Message):
   iacFormat = _messages.EnumField('IacFormatValueValuesEnum', 8)
   rootInputVariables = _messages.MessageField('ComponentVariable', 9, repeated=True)
   rootOutputVariables = _messages.MessageField('ComponentVariable', 10, repeated=True)
-  uri = _messages.StringField(11)
+  saasRuntimeContext = _messages.MessageField('SaaSRuntimeContext', 11)
+  uri = _messages.StringField(12)
 
 
 class SerializedComponent(_messages.Message):
@@ -3978,6 +4168,7 @@ class SerializedComponent(_messages.Message):
   Fields:
     apis: Optional. APIs required to be enabled to deploy the component, in
       the form of "*.googleapis.com".
+    applicationInfo: Optional. The application associated with the component.
     componentParameterSchema: Output only. The component parameter schema,
       which includes possible parameter values.
     connections: Optional. The component connections.
@@ -3993,14 +4184,15 @@ class SerializedComponent(_messages.Message):
   """
 
   apis = _messages.StringField(1, repeated=True)
-  componentParameterSchema = _messages.MessageField('ComponentParameterSchema', 2, repeated=True)
-  connections = _messages.MessageField('SerializedConnection', 3, repeated=True)
-  connectionsParameters = _messages.MessageField('ConnectionParameters', 4, repeated=True)
-  displayName = _messages.StringField(5)
-  parameters = _messages.MessageField('Parameter', 6, repeated=True)
-  roles = _messages.StringField(7, repeated=True)
-  sharedTemplateRevisionUri = _messages.StringField(8)
-  uri = _messages.StringField(9)
+  applicationInfo = _messages.MessageField('ComponentApplicationInfo', 2)
+  componentParameterSchema = _messages.MessageField('ComponentParameterSchema', 3, repeated=True)
+  connections = _messages.MessageField('SerializedConnection', 4, repeated=True)
+  connectionsParameters = _messages.MessageField('ConnectionParameters', 5, repeated=True)
+  displayName = _messages.StringField(6)
+  parameters = _messages.MessageField('Parameter', 7, repeated=True)
+  roles = _messages.StringField(8, repeated=True)
+  sharedTemplateRevisionUri = _messages.StringField(9)
+  uri = _messages.StringField(10)
 
 
 class SerializedConnection(_messages.Message):
@@ -4162,7 +4354,13 @@ class SharedTemplateRevision(_messages.Message):
     TypeValueValuesEnum: Optional. The Application Design Center assembly
       template type.
 
+  Messages:
+    AnnotationsValue: Optional. The annotations of the shared template
+      revision. Key is the annotation name. Value is the annotation value.
+
   Fields:
+    annotations: Optional. The annotations of the shared template revision.
+      Key is the annotation name. Value is the annotation value.
     applicationTemplateRevision: Output only. The serialized application
       template revision.
     applicationTemplateRevisionSource: Optional. The application template
@@ -4237,21 +4435,48 @@ class SharedTemplateRevision(_messages.Message):
     COMPOSITE_APPLICATION_TEMPLATE = 9
     HELM_CHART = 10
 
-  applicationTemplateRevision = _messages.MessageField('SerializedApplicationTemplate', 1)
-  applicationTemplateRevisionSource = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  developerConnectSourceConfig = _messages.MessageField('DeveloperConnectSourceConfig', 5)
-  gcsSourceUri = _messages.StringField(6)
-  gitSource = _messages.MessageField('GitSource', 7)
-  helmChartMetadata = _messages.MessageField('HelmChartMetadata', 8)
-  logicalProducts = _messages.MessageField('LogicalProduct', 9, repeated=True)
-  name = _messages.StringField(10)
-  ociRepo = _messages.MessageField('OciRepo', 11)
-  originTemplateRevision = _messages.StringField(12)
-  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 13)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. The annotations of the shared template revision. Key is the
+    annotation name. Value is the annotation value.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  applicationTemplateRevision = _messages.MessageField('SerializedApplicationTemplate', 2)
+  applicationTemplateRevisionSource = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  developerConnectSourceConfig = _messages.MessageField('DeveloperConnectSourceConfig', 6)
+  gcsSourceUri = _messages.StringField(7)
+  gitSource = _messages.MessageField('GitSource', 8)
+  helmChartMetadata = _messages.MessageField('HelmChartMetadata', 9)
+  logicalProducts = _messages.MessageField('LogicalProduct', 10, repeated=True)
+  name = _messages.StringField(11)
+  ociRepo = _messages.MessageField('OciRepo', 12)
+  originTemplateRevision = _messages.StringField(13)
+  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 14)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
 
 
 class Space(_messages.Message):

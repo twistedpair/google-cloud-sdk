@@ -2597,5 +2597,5 @@ canonical_surfaces:
     hidden: true
   vectorsearch:
     name: vectorsearch
-    command: vectorsearch
+    command: vector-search
     hidden: true

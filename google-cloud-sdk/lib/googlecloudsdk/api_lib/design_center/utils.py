@@ -193,3 +193,14 @@ def ParseIaCModuleData(client, iac_module_data):
       iac_files.append(iac_file)
 
     return client.messages.IaCModule(files=iac_files)
+
+
+def GetP4saHost()-> str:
+  """Returns the P4SA host based on the API endpoint."""
+  endpoint = properties.VALUES.api_endpoint_overrides.designcenter.Get()
+  if endpoint and 'staging' in endpoint:
+    return 'gcp-sa-staging-designcenter.iam.gserviceaccount.com'
+  elif endpoint and 'autopush' in endpoint:
+    return 'gcp-sa-autopush-designcenter.iam.gserviceaccount.com'
+  else:
+    return 'gcp-sa-designcenter.iam.gserviceaccount.com'

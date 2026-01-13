@@ -24,6 +24,7 @@ import threading
 import time
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
@@ -108,17 +109,20 @@ class _OnGCECache(object):
     """
     on_gce = self._CheckMemory(check_age=check_age)
     if on_gce is not None:
+      log.debug('On GCE from memory cache: %s', on_gce)
       return on_gce
 
     self._WriteMemory(*self._CheckDisk())
     on_gce = self._CheckMemory(check_age=check_age)
     if on_gce is not None:
+      log.debug('On GCE from disk cache: %s', on_gce)
       return on_gce
 
     return self.CheckServerRefreshAllCaches()
 
   def CheckServerRefreshAllCaches(self):
     on_gce = self._CheckServerWithRetry()
+    log.debug('On GCE from server: %s', on_gce)
     self._WriteDisk(on_gce)
     self._WriteMemory(on_gce, time.time() + _GCE_CACHE_MAX_AGE)
     return on_gce
@@ -143,12 +147,11 @@ class _OnGCECache(object):
         expiration_time = mtime + _GCE_CACHE_MAX_AGE
         gcecache_file_value = files.ReadFileContents(gce_cache_path)
         return gcecache_file_value == six.text_type(True), expiration_time
-      except (OSError, IOError, files.Error):
+      except (OSError, IOError, files.Error) as e:
         # Failed to read Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet
         # exist.
-        # Can't log here because the log module depends (indirectly) on this
-        # one.
+        log.debug('Failed to read GCE cache file: %s', e)
         return None, None
 
   def _WriteDisk(self, on_gce):
@@ -158,18 +161,17 @@ class _OnGCECache(object):
       try:
         files.WriteFileContents(
             gce_cache_path, six.text_type(on_gce), private=True)
-      except (OSError, IOError, files.Error):
+      except (OSError, IOError, files.Error) as e:
         # Failed to write Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet
         # exist.
-        # Can't log here because the log module depends (indirectly) on this
-        # one.
-        pass
+        log.debug('Failed to write GCE cache file: %s', e)
 
   def _CheckServerWithRetry(self):
     try:
       return self._CheckServer()
-    except _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION:  # pylint: disable=catching-non-exception
+    except _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION as e:  # pylint: disable=catching-non-exception
+      log.debug('Failed to check metadata server: %s', e)
       return False
 
   @retry.RetryOnException(

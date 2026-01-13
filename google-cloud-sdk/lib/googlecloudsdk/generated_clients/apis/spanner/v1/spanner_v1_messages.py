@@ -804,6 +804,52 @@ class ChildLink(_messages.Message):
   variable = _messages.StringField(3)
 
 
+class ClientContext(_messages.Message):
+  r"""Container for various pieces of client-owned context attached to a
+  request.
+
+  Messages:
+    SecureContextValue: Optional. Map of parameter name to value for this
+      request. These values will be returned by any SECURE_CONTEXT() calls
+      invoked by this request (e.g., by queries against Parameterized Secure
+      Views).
+
+  Fields:
+    secureContext: Optional. Map of parameter name to value for this request.
+      These values will be returned by any SECURE_CONTEXT() calls invoked by
+      this request (e.g., by queries against Parameterized Secure Views).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SecureContextValue(_messages.Message):
+    r"""Optional. Map of parameter name to value for this request. These
+    values will be returned by any SECURE_CONTEXT() calls invoked by this
+    request (e.g., by queries against Parameterized Secure Views).
+
+    Messages:
+      AdditionalProperty: An additional property for a SecureContextValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SecureContextValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SecureContextValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  secureContext = _messages.MessageField('SecureContextValue', 1)
+
+
 class ColumnMetadata(_messages.Message):
   r"""Metadata for a column.
 
@@ -5062,6 +5108,8 @@ class RequestOptions(_messages.Message):
     PriorityValueValuesEnum: Priority for the request.
 
   Fields:
+    clientContext: Optional. Optional context that may be needed for some
+      requests.
     priority: Priority for the request.
     requestTag: A per-request tag which can be applied to queries or reads,
       used for statistics collection. Both `request_tag` and `transaction_tag`
@@ -5098,9 +5146,10 @@ class RequestOptions(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
-  requestTag = _messages.StringField(2)
-  transactionTag = _messages.StringField(3)
+  clientContext = _messages.MessageField('ClientContext', 1)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 2)
+  requestTag = _messages.StringField(3)
+  transactionTag = _messages.StringField(4)
 
 
 class RestoreDatabaseEncryptionConfig(_messages.Message):

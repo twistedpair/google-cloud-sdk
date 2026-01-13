@@ -21,6 +21,7 @@ from googlecloudsdk.command_lib.run.config_changes import GenerateVolumeName
 from googlecloudsdk.command_lib.run.v2 import config_changes
 from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.core import config
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -507,32 +508,40 @@ def _GetEnvChanges(args, **kwargs):
 def _HasWorkerPoolScalingChanges(args):
   """Returns true iff any worker pool scaling changes are specified."""
   scaling_flags = [
-      'min',
-      'max',
+      'instances',
       'scaling',
   ]
   return flags.HasChanges(args, scaling_flags)
 
 
-def _GetWorkerPoolScalingChange(args, release_track):
-  """Return the changes for engine-level scaling for Worker Pools for the given args."""
-  # Catch the case where user sets scaling mode to auto for BETA.
-  if release_track == base.ReleaseTrack.BETA:
-    if args.scaling and args.scaling.auto_scaling:
-      raise exceptions.ConfigurationError(
-          'Automatic scaling is not supported in BETA.'
-      )
-  return config_changes.WorkerPoolScalingChange(
-      min_instance_count=args.min
-      if 'min' in args and args.min is not None
-      else None,
-      max_instance_count=args.max
-      if 'max' in args and args.max is not None
-      else None,
-      scaling=args.scaling
-      if 'scaling' in args and args.scaling is not None
-      else None,
-  )
+def _GetWorkerPoolInstancesChange(args):
+  """Return the changes for instances for Worker Pools for the given args."""
+  # --scaling flag is deprecated for Worker Pools in favor of --instances. We
+  # will allow the --scaling flag to be used for instance counts,
+  # to minimize disruption to existing users. However, if the user specifies
+  # the automatic scaling parameter, we will throw an error.
+  if (
+      'scaling' in args
+      and args.scaling is not None
+      and args.scaling.auto_scaling
+  ):
+    raise exceptions.ConfigurationError(
+        'automtatic scaling is deprecated for Worker Pools. Please use a'
+        ' positive number for --instances flag instead to specify a fixed'
+        ' instance count.'
+    )
+  # If the newer --instances flag is specified, use that.
+  # Otherwise, check for --scaling flag for existing users.
+  instances = None
+  if 'instances' in args and args.instances is not None:
+    instances = args.instances
+  elif 'scaling' in args and args.scaling is not None:
+    log.warning(
+        'The --scaling flag is deprecated for Worker Pools. Please use the'
+        ' --instances flag instead to specify a fixed instance count.'
+    )
+    instances = flags.InstanceValue(value=args.scaling.instance_count)
+  return config_changes.WorkerPoolInstancesChange(instances=instances)
 
 
 def _HasBinaryAuthorizationChanges(args):
@@ -659,7 +668,7 @@ def GetWorkerPoolConfigurationChanges(args, release_track):
   )
   # Worker pool scaling
   if _HasWorkerPoolScalingChanges(args):
-    changes.append(_GetWorkerPoolScalingChange(args, release_track))
+    changes.append(_GetWorkerPoolInstancesChange(args))
   if flags.HasInstanceSplitChanges(args):
     changes.append(_GetInstanceSplitChanges(args))
   if 'no_promote' in args and args.no_promote:

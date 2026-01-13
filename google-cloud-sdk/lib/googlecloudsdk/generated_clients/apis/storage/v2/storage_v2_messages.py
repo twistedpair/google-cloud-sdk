@@ -776,6 +776,9 @@ class Folder(_messages.Message):
       Used for preconditions and for detecting changes in metadata.
     name: Identifier. The name of this folder. Format:
       `projects/{project}/buckets/{bucket}/folders/{folder}`
+    pendingDeleteFolderRecursiveInfo: Output only. Only present if the folder
+      is part of an ongoing DeleteFolderRecursive operation. Contains
+      information which can be used to query the operation status.
     pendingRenameInfo: Output only. Only present if the folder is part of an
       ongoing RenameFolder operation. Contains information which can be used
       to query the operation status. The presence of this field also indicates
@@ -787,8 +790,9 @@ class Folder(_messages.Message):
   createTime = _messages.StringField(1)
   metageneration = _messages.IntegerField(2)
   name = _messages.StringField(3)
-  pendingRenameInfo = _messages.MessageField('PendingRenameInfo', 4)
-  updateTime = _messages.StringField(5)
+  pendingDeleteFolderRecursiveInfo = _messages.MessageField('PendingDeleteFolderRecursiveInfo', 4)
+  pendingRenameInfo = _messages.MessageField('PendingRenameInfo', 5)
+  updateTime = _messages.StringField(6)
 
 
 class GoogleManagedEncryptionEnforcementConfig(_messages.Message):
@@ -1893,6 +1897,16 @@ class Owner(_messages.Message):
   entityId = _messages.StringField(2)
 
 
+class PendingDeleteFolderRecursiveInfo(_messages.Message):
+  r"""Contains information about a pending recursive delete operation.
+
+  Fields:
+    operation: Output only. The name of the recursive delete operation.
+  """
+
+  operation = _messages.StringField(1)
+
+
 class PendingRenameInfo(_messages.Message):
   r"""Contains information about a pending rename operation.
 
@@ -2504,6 +2518,29 @@ class StorageProjectsBucketsFoldersCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
   recursive = _messages.BooleanField(4)
   requestId = _messages.StringField(5)
+
+
+class StorageProjectsBucketsFoldersDeleteRecursiveRequest(_messages.Message):
+  r"""A StorageProjectsBucketsFoldersDeleteRecursiveRequest object.
+
+  Fields:
+    ifMetagenerationMatch: Optional. Makes the operation only succeed
+      conditional on whether the root folder's current metageneration matches
+      the given value.
+    ifMetagenerationNotMatch: Optional. Makes the operation only succeed
+      conditional on whether the root folder's current metageneration does not
+      match the given value.
+    name: Required. Name of the folder being deleted, however all of its
+      contents will be deleted too. Format:
+      `projects/{project}/buckets/{bucket}/folders/{folder}`
+    requestId: Optional. A unique identifier for this request. UUID is the
+      recommended format, but other formats are still accepted.
+  """
+
+  ifMetagenerationMatch = _messages.IntegerField(1)
+  ifMetagenerationNotMatch = _messages.IntegerField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class StorageProjectsBucketsFoldersDeleteRequest(_messages.Message):

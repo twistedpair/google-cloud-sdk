@@ -4139,30 +4139,33 @@ class IncrementalResultStats(_messages.Message):
   JobStatistics2. This feature is not yet available.
 
   Enums:
-    DisabledReasonValueValuesEnum: Reason why incremental query results
-      are/were not written by the query.
+    DisabledReasonValueValuesEnum: Output only. Reason why incremental query
+      results are/were not written by the query.
 
   Fields:
-    disabledReason: Reason why incremental query results are/were not written
-      by the query.
-    resultSetLastModifyTime: The time at which the result table's contents
-      were modified. May be absent if no results have been written or the
-      query has completed.
-    resultSetLastReplaceTime: The time at which the result table's contents
-      were completely replaced. May be absent if no results have been written
-      or the query has completed.
+    disabledReason: Output only. Reason why incremental query results are/were
+      not written by the query.
+    resultSetLastModifyTime: Output only. The time at which the result table's
+      contents were modified. May be absent if no results have been written or
+      the query has completed.
+    resultSetLastReplaceTime: Output only. The time at which the result
+      table's contents were completely replaced. May be absent if no results
+      have been written or the query has completed.
   """
 
   class DisabledReasonValueValuesEnum(_messages.Enum):
-    r"""Reason why incremental query results are/were not written by the
-    query.
+    r"""Output only. Reason why incremental query results are/were not written
+    by the query.
 
     Values:
       DISABLED_REASON_UNSPECIFIED: Disabled reason not specified.
-      OTHER: Some other reason.
+      OTHER: Incremental results are/were disabled for reasons not covered by
+        the other enum values, e.g. runtime issues.
+      UNSUPPORTED_OPERATOR: Query includes an operation that is not supported.
     """
     DISABLED_REASON_UNSPECIFIED = 0
     OTHER = 1
+    UNSUPPORTED_OPERATOR = 2
 
   disabledReason = _messages.EnumField('DisabledReasonValueValuesEnum', 1)
   resultSetLastModifyTime = _messages.StringField(2)
@@ -5076,10 +5079,10 @@ class JobConfigurationQuery(_messages.Message):
       should be specified.
     useLegacySql: Optional. Specifies whether to use BigQuery's legacy SQL
       dialect for this query. The default value is true. If set to false, the
-      query will use BigQuery's GoogleSQL:
-      https://cloud.google.com/bigquery/sql-reference/ When useLegacySql is
-      set to false, the value of flattenResults is ignored; query will be run
-      as if flattenResults is false.
+      query uses BigQuery's
+      [GoogleSQL](https://docs.cloud.google.com/bigquery/docs/introduction-
+      sql). When useLegacySql is set to false, the value of flattenResults is
+      ignored; query will be run as if flattenResults is false.
     useQueryCache: Optional. Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. Moreover, the query cache is
@@ -7071,11 +7074,11 @@ class QueryRequest(_messages.Message):
       query to complete by calling the getQueryResults method until the
       jobComplete field in the getQueryResults response is true.
     useLegacySql: Specifies whether to use BigQuery's legacy SQL dialect for
-      this query. The default value is true. If set to false, the query will
-      use BigQuery's GoogleSQL: https://cloud.google.com/bigquery/sql-
-      reference/ When useLegacySql is set to false, the value of
-      flattenResults is ignored; query will be run as if flattenResults is
-      false.
+      this query. The default value is true. If set to false, the query uses
+      BigQuery's
+      [GoogleSQL](https://docs.cloud.google.com/bigquery/docs/introduction-
+      sql). When useLegacySql is set to false, the value of flattenResults is
+      ignored; query will be run as if flattenResults is false.
     useQueryCache: Optional. Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. The default value is true.
@@ -10676,10 +10679,11 @@ class ViewDefinition(_messages.Message):
       For example by using the 'CREATE VIEW v(c1, c2) AS ...' syntax. Can only
       be set for GoogleSQL views.
     useLegacySql: Specifies whether to use BigQuery's legacy SQL for this
-      view. The default value is true. If set to false, the view will use
-      BigQuery's GoogleSQL: https://cloud.google.com/bigquery/sql-reference/
-      Queries and views that reference this view must use the same flag value.
-      A wrapper is used here because the default value is True.
+      view. The default value is true. If set to false, the view uses
+      BigQuery's
+      [GoogleSQL](https://docs.cloud.google.com/bigquery/docs/introduction-
+      sql). Queries and views that reference this view must use the same flag
+      value. A wrapper is used here because the default value is True.
     userDefinedFunctionResources: Describes user-defined function resources
       used in the query.
   """

@@ -610,6 +610,32 @@ class DataPreparationAction(_messages.Message):
   jobId = _messages.StringField(4)
 
 
+class DataformProjectsLocationsFoldersCreateRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersCreateRequest object.
+
+  Fields:
+    folder: A Folder resource to be passed as the request body.
+    folderId: The ID to use for the Folder, which will become the final
+      component of the Folder's resource name.
+    parent: Required. The location in which to create the Folder. Must be in
+      the format `projects/*/locations/*`.
+  """
+
+  folder = _messages.MessageField('Folder', 1)
+  folderId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataformProjectsLocationsFoldersDeleteRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersDeleteRequest object.
+
+  Fields:
+    name: Required. The Folder's name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DataformProjectsLocationsFoldersGetIamPolicyRequest(_messages.Message):
   r"""A DataformProjectsLocationsFoldersGetIamPolicyRequest object.
 
@@ -634,6 +660,77 @@ class DataformProjectsLocationsFoldersGetIamPolicyRequest(_messages.Message):
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataformProjectsLocationsFoldersGetRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersGetRequest object.
+
+  Fields:
+    name: Required. The Folder's name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataformProjectsLocationsFoldersMoveRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersMoveRequest object.
+
+  Fields:
+    moveFolderRequest: A MoveFolderRequest resource to be passed as the
+      request body.
+    name: Required. The full resource name of the Folder to move.
+  """
+
+  moveFolderRequest = _messages.MessageField('MoveFolderRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataformProjectsLocationsFoldersPatchRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersPatchRequest object.
+
+  Fields:
+    folder: A Folder resource to be passed as the request body.
+    name: Identifier. The Folder's name.
+    updateMask: Optional. Specifies the fields to be updated in the Folder. If
+      left unset, all fields that can be updated, will be updated. A few
+      fields cannot be updated and will be ignored if specified in the
+      update_mask (e.g. parent_name, team_folder_name).
+  """
+
+  folder = _messages.MessageField('Folder', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DataformProjectsLocationsFoldersQueryFolderContentsRequest(_messages.Message):
+  r"""A DataformProjectsLocationsFoldersQueryFolderContentsRequest object.
+
+  Fields:
+    filter: Optional. Optional filtering for the returned list. Filtering is
+      currently only supported on the `display_name` field. Example: -
+      `filter="display_name="MyFolder""`
+    folder: Required. Name of the folder whose contents to list. Format:
+      projects/*/locations/*/folders/*
+    orderBy: Optional. Field to additionally sort results by. Will order
+      Folders before Repositories, and then by `order_by` in ascending order.
+      Supported keywords: display_name (default), create_time,
+      last_modified_time. Examples: - `orderBy="display_name"` -
+      `orderBy="display_name desc"`
+    pageSize: Optional. Maximum number of paths to return. The server may
+      return fewer items than requested. If unspecified, the server will pick
+      an appropriate default.
+    pageToken: Optional. Page token received from a previous
+      `QueryFolderContents` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `QueryFolderContents`, with the exception of `page_size`, must match the
+      call that provided the page token.
+  """
+
+  filter = _messages.StringField(1)
+  folder = _messages.StringField(2, required=True)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DataformProjectsLocationsFoldersSetIamPolicyRequest(_messages.Message):
@@ -767,6 +864,37 @@ class DataformProjectsLocationsOperationsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   returnPartialSuccess = _messages.BooleanField(5)
+
+
+class DataformProjectsLocationsQueryUserRootContentsRequest(_messages.Message):
+  r"""A DataformProjectsLocationsQueryUserRootContentsRequest object.
+
+  Fields:
+    filter: Optional. Optional filtering for the returned list. Filtering is
+      currently only supported on the `display_name` field. Example: -
+      `filter="display_name="MyFolder""`
+    location: Required. Location of the user root folder whose contents to
+      list. Format: projects/*/locations/*
+    orderBy: Optional. Field to additionally sort results by. Will order
+      Folders before Repositories, and then by `order_by` in ascending order.
+      Supported keywords: display_name (default), created_at,
+      last_modified_at. Examples: - `orderBy="display_name"` -
+      `orderBy="display_name desc"`
+    pageSize: Optional. Maximum number of paths to return. The server may
+      return fewer items than requested. If unspecified, the server will pick
+      an appropriate default.
+    pageToken: Optional. Page token received from a previous
+      `QueryUserRootContents` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `QueryUserRootFolderContents`, with the exception of `page_size`, must
+      match the call that provided the page token.
+  """
+
+  filter = _messages.StringField(1)
+  location = _messages.StringField(2, required=True)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DataformProjectsLocationsRepositoriesCommitRequest(_messages.Message):
@@ -996,6 +1124,19 @@ class DataformProjectsLocationsRepositoriesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DataformProjectsLocationsRepositoriesMoveRequest(_messages.Message):
+  r"""A DataformProjectsLocationsRepositoriesMoveRequest object.
+
+  Fields:
+    moveRepositoryRequest: A MoveRepositoryRequest resource to be passed as
+      the request body.
+    name: Required. The full resource name of the repository to move.
+  """
+
+  moveRepositoryRequest = _messages.MessageField('MoveRepositoryRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DataformProjectsLocationsRepositoriesPatchRequest(_messages.Message):
@@ -1725,6 +1866,32 @@ class DataformProjectsLocationsRepositoriesWorkspacesWriteFileRequest(_messages.
   writeFileRequest = _messages.MessageField('WriteFileRequest', 2)
 
 
+class DataformProjectsLocationsTeamFoldersCreateRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersCreateRequest object.
+
+  Fields:
+    parent: Required. The location in which to create the TeamFolder. Must be
+      in the format `projects/*/locations/*`.
+    teamFolder: A TeamFolder resource to be passed as the request body.
+    teamFolderId: The ID to use for the TeamFolder, which will become the
+      final component of the TeamFolder's resource name.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  teamFolder = _messages.MessageField('TeamFolder', 2)
+  teamFolderId = _messages.StringField(3)
+
+
+class DataformProjectsLocationsTeamFoldersDeleteRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersDeleteRequest object.
+
+  Fields:
+    name: Required. The TeamFolder's name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DataformProjectsLocationsTeamFoldersGetIamPolicyRequest(_messages.Message):
   r"""A DataformProjectsLocationsTeamFoldersGetIamPolicyRequest object.
 
@@ -1749,6 +1916,91 @@ class DataformProjectsLocationsTeamFoldersGetIamPolicyRequest(_messages.Message)
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataformProjectsLocationsTeamFoldersGetRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersGetRequest object.
+
+  Fields:
+    name: Required. The TeamFolder's name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataformProjectsLocationsTeamFoldersPatchRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersPatchRequest object.
+
+  Fields:
+    name: Identifier. The TeamFolder's name.
+    teamFolder: A TeamFolder resource to be passed as the request body.
+    updateMask: Optional. Specifies the fields to be updated in the Folder. If
+      left unset, all fields will be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  teamFolder = _messages.MessageField('TeamFolder', 2)
+  updateMask = _messages.StringField(3)
+
+
+class DataformProjectsLocationsTeamFoldersQueryContentsRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersQueryContentsRequest object.
+
+  Fields:
+    filter: Optional. Optional filtering for the returned list. Filtering is
+      currently only supported on the `display_name` field. Example: -
+      `filter="display_name="MyFolder""`
+    orderBy: Optional. Field to additionally sort results by. Will order
+      Folders before Repositories, and then by `order_by` in ascending order.
+      Supported keywords: `display_name` (default), `create_time`,
+      last_modified_time. Examples: - `orderBy="display_name"` -
+      `orderBy="display_name desc"`
+    pageSize: Optional. Maximum number of paths to return. The server may
+      return fewer items than requested. If unspecified, the server will pick
+      an appropriate default.
+    pageToken: Optional. Page token received from a previous
+      `QueryTeamFolderContents` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `QueryTeamFolderContents`, with the exception of `page_size`, must match
+      the call that provided the page token.
+    teamFolder: Required. Name of the team_folder whose contents to list.
+      Format: `projects/*/locations/*/teamFolders/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  teamFolder = _messages.StringField(5, required=True)
+
+
+class DataformProjectsLocationsTeamFoldersSearchRequest(_messages.Message):
+  r"""A DataformProjectsLocationsTeamFoldersSearchRequest object.
+
+  Fields:
+    filter: Optional. Optional filtering for the returned list. Filtering is
+      currently only supported on the `display_name` field. Example: -
+      `filter="display_name="MyFolder""`
+    location: Required. Location in which to query TeamFolders. Format:
+      `projects/*/locations/*`.
+    orderBy: Optional. Field to additionally sort results by. Supported
+      keywords: `display_name` (default), `create_time`, `last_modified_time`.
+      Examples: - `orderBy="display_name"` - `orderBy="display_name desc"`
+    pageSize: Optional. Maximum number of TeamFolders to return. The server
+      may return fewer items than requested. If unspecified, the server will
+      pick an appropriate default.
+    pageToken: Optional. Page token received from a previous
+      `SearchTeamFolders` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `SearchTeamFolders`,
+      with the exception of `page_size`, must match the call that provided the
+      page token.
+  """
+
+  filter = _messages.StringField(1)
+  location = _messages.StringField(2, required=True)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class DataformProjectsLocationsTeamFoldersSetIamPolicyRequest(_messages.Message):
@@ -1972,6 +2224,56 @@ class FileSearchResult(_messages.Message):
   """
 
   path = _messages.StringField(1)
+
+
+class Folder(_messages.Message):
+  r"""Represents a Dataform Folder. This is a resource that is used to
+  organize Files and other Folders and provide hierarchical access controls.
+
+  Fields:
+    containingFolder: Optional. The containing Folder resource name. This
+      should take the format:
+      projects/{project}/locations/{location}/folders/{folder},
+      projects/{project}/locations/{location}/teamFolders/{teamFolder}, or
+      just projects/{project}/locations/{location} if this is a root Folder.
+      This field can only be updated through MoveFolder.
+    createTime: Output only. The timestamp of when the Folder was created.
+    creatorIamPrincipal: Output only. The IAM principal identifier of the
+      creator of the Folder.
+    displayName: Required. The Folder's user-friendly name.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
+    name: Identifier. The Folder's name.
+    teamFolderName: Output only. The resource name of the TeamFolder that this
+      Folder is associated with. This should take the format:
+      projects/{project}/locations/{location}/teamFolders/{teamFolder}. If
+      this is not set, the Folder is not associated with a TeamFolder and is a
+      UserFolder.
+    updateTime: Output only. The timestamp of when the Folder was last
+      updated.
+  """
+
+  containingFolder = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  creatorIamPrincipal = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  internalMetadata = _messages.StringField(5)
+  name = _messages.StringField(6)
+  teamFolderName = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class FolderContentsEntry(_messages.Message):
+  r"""Represents a single content entry.
+
+  Fields:
+    folder: A subfolder.
+    repository: A repository.
+  """
+
+  folder = _messages.MessageField('Folder', 1)
+  repository = _messages.MessageField('Repository', 2)
 
 
 class GitRemoteSettings(_messages.Message):
@@ -2427,6 +2729,33 @@ class MoveFileResponse(_messages.Message):
   r"""`MoveFile` response message."""
 
 
+class MoveFolderRequest(_messages.Message):
+  r"""`MoveFolder` request message.
+
+  Fields:
+    destinationContainingFolder: Required. The name of the Folder, TeamFolder,
+      or root location to move the Folder to. Can be in the format of: - "" to
+      move into the root User folder - `projects/*/locations/*/folders/*` -
+      `projects/*/locations/*/teamFolders/*`
+  """
+
+  destinationContainingFolder = _messages.StringField(1)
+
+
+class MoveRepositoryRequest(_messages.Message):
+  r"""`MoveRepository` request message.
+
+  Fields:
+    destinationContainingFolder: Required. The name of the Folder, TeamFolder,
+      or root location to move the repository to. Can be in the format of: -
+      "" to move into the root User folder -
+      `projects/*/locations/*/folders/*` -
+      `projects/*/locations/*/teamFolders/*`
+  """
+
+  destinationContainingFolder = _messages.StringField(1)
+
+
 class Notebook(_messages.Message):
   r"""Represents a notebook.
 
@@ -2802,6 +3131,19 @@ class QueryDirectoryContentsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class QueryFolderContentsResponse(_messages.Message):
+  r"""`QueryFolderContents` response message.
+
+  Fields:
+    entries: List of entries in the folder.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  entries = _messages.MessageField('FolderContentsEntry', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class QueryRepositoryDirectoryContentsResponse(_messages.Message):
   r"""`QueryRepositoryDirectoryContents` response message.
 
@@ -2812,6 +3154,32 @@ class QueryRepositoryDirectoryContentsResponse(_messages.Message):
   """
 
   directoryEntries = _messages.MessageField('DirectoryEntry', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class QueryTeamFolderContentsResponse(_messages.Message):
+  r"""`QueryTeamFolderContents` response message.
+
+  Fields:
+    entries: List of entries in the TeamFolder.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  entries = _messages.MessageField('TeamFolderContentsEntry', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class QueryUserRootContentsResponse(_messages.Message):
+  r"""`QueryUserRootContents` response message.
+
+  Fields:
+    entries: List of entries in the folder.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  entries = _messages.MessageField('RootContentsEntry', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3110,6 +3478,10 @@ class Repository(_messages.Message):
     LabelsValue: Optional. Repository user labels.
 
   Fields:
+    containingFolder: Optional. The name of the containing folder of the
+      repository. The field is immutable and it can be modified via a
+      MoveRepository operation. Format: `projects/*/locations/*/folders/*`. or
+      `projects/*/locations/*/teamFolders/*`.
     createTime: Output only. The timestamp of when the repository was created.
     dataEncryptionState: Output only. A data encryption state of a Git
       repository if this Repository is protected by a KMS key.
@@ -3139,6 +3511,10 @@ class Repository(_messages.Message):
       apply setIamPolicy from
       https://cloud.google.com/dataform/reference/rest#rest-
       resource:-v1beta1.projects.locations.repositories
+    teamFolderName: Output only. The resource name of the TeamFolder that this
+      Repository is associated with. This should take the format:
+      projects/{project}/locations/{location}/teamFolders/{teamFolder}. If
+      this is not set, the Repository is not associated with a TeamFolder.
     workspaceCompilationOverrides: Optional. If set, fields of
       `workspace_compilation_overrides` override the default compilation
       settings that are specified in dataform.json when creating workspace-
@@ -3170,18 +3546,20 @@ class Repository(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  dataEncryptionState = _messages.MessageField('DataEncryptionState', 2)
-  displayName = _messages.StringField(3)
-  gitRemoteSettings = _messages.MessageField('GitRemoteSettings', 4)
-  internalMetadata = _messages.StringField(5)
-  kmsKeyName = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  npmrcEnvironmentVariablesSecretVersion = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
-  setAuthenticatedUserAdmin = _messages.BooleanField(11)
-  workspaceCompilationOverrides = _messages.MessageField('WorkspaceCompilationOverrides', 12)
+  containingFolder = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  dataEncryptionState = _messages.MessageField('DataEncryptionState', 3)
+  displayName = _messages.StringField(4)
+  gitRemoteSettings = _messages.MessageField('GitRemoteSettings', 5)
+  internalMetadata = _messages.StringField(6)
+  kmsKeyName = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  npmrcEnvironmentVariablesSecretVersion = _messages.StringField(10)
+  serviceAccount = _messages.StringField(11)
+  setAuthenticatedUserAdmin = _messages.BooleanField(12)
+  teamFolderName = _messages.StringField(13)
+  workspaceCompilationOverrides = _messages.MessageField('WorkspaceCompilationOverrides', 14)
 
 
 class ResetWorkspaceChangesRequest(_messages.Message):
@@ -3200,6 +3578,18 @@ class ResetWorkspaceChangesRequest(_messages.Message):
 
 class ResetWorkspaceChangesResponse(_messages.Message):
   r"""`ResetWorkspaceChanges` response message."""
+
+
+class RootContentsEntry(_messages.Message):
+  r"""Represents a single content entry.
+
+  Fields:
+    folder: A subfolder.
+    repository: A repository.
+  """
+
+  folder = _messages.MessageField('Folder', 1)
+  repository = _messages.MessageField('Repository', 2)
 
 
 class ScheduledExecutionRecord(_messages.Message):
@@ -3262,6 +3652,19 @@ class SearchResult(_messages.Message):
 
   directory = _messages.MessageField('DirectorySearchResult', 1)
   file = _messages.MessageField('FileSearchResult', 2)
+
+
+class SearchTeamFoldersResponse(_messages.Message):
+  r"""`SearchTeamFolders` response message.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    results: List of TeamFolders that match the search query.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  results = _messages.MessageField('TeamFolderSearchResult', 2, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -3439,6 +3842,55 @@ class Target(_messages.Message):
   database = _messages.StringField(1)
   name = _messages.StringField(2)
   schema = _messages.StringField(3)
+
+
+class TeamFolder(_messages.Message):
+  r"""Represents a Dataform TeamFolder. This is a resource that sits at the
+  project level and is used to organize Repositories and Folders with
+  hierarchical access controls. They provide a team context and stricter
+  access controls.
+
+  Fields:
+    createTime: Output only. The timestamp of when the TeamFolder was created.
+    creatorIamPrincipal: Output only. The IAM principal identifier of the
+      creator of the TeamFolder.
+    displayName: Required. The TeamFolder's user-friendly name.
+    internalMetadata: Output only. All the metadata information that is used
+      internally to serve the resource. For example: timestamps, flags, status
+      fields, etc. The format of this field is a JSON string.
+    name: Identifier. The TeamFolder's name.
+    updateTime: Output only. The timestamp of when the TeamFolder was last
+      updated.
+  """
+
+  createTime = _messages.StringField(1)
+  creatorIamPrincipal = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  internalMetadata = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class TeamFolderContentsEntry(_messages.Message):
+  r"""Represents a single content entry.
+
+  Fields:
+    folder: A subfolder.
+    repository: A repository.
+  """
+
+  folder = _messages.MessageField('Folder', 1)
+  repository = _messages.MessageField('Repository', 2)
+
+
+class TeamFolderSearchResult(_messages.Message):
+  r"""Represents a single content entry.
+
+  Fields:
+    teamFolder: A TeamFolder resource that is in the project / location.
+  """
+
+  teamFolder = _messages.MessageField('TeamFolder', 1)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -3673,6 +4125,8 @@ class Workspace(_messages.Message):
     createTime: Output only. The timestamp of when the workspace was created.
     dataEncryptionState: Output only. A data encryption state of a Git
       repository if this Workspace is protected by a KMS key.
+    disableMoves: Optional. If set to true, workspaces will not be moved if
+      its linked Repository is moved. Instead, it will be deleted.
     internalMetadata: Output only. All the metadata information that is used
       internally to serve the resource. For example: timestamps, flags, status
       fields, etc. The format of this field is a JSON string.
@@ -3684,9 +4138,10 @@ class Workspace(_messages.Message):
 
   createTime = _messages.StringField(1)
   dataEncryptionState = _messages.MessageField('DataEncryptionState', 2)
-  internalMetadata = _messages.StringField(3)
-  name = _messages.StringField(4)
-  privateResourceMetadata = _messages.MessageField('PrivateResourceMetadata', 5)
+  disableMoves = _messages.BooleanField(3)
+  internalMetadata = _messages.StringField(4)
+  name = _messages.StringField(5)
+  privateResourceMetadata = _messages.MessageField('PrivateResourceMetadata', 6)
 
 
 class WorkspaceCompilationOverrides(_messages.Message):

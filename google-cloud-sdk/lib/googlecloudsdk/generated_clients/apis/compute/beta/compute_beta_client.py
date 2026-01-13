@@ -116,6 +116,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionInstanceTemplates = self.RegionInstanceTemplatesService(self)
     self.regionInstances = self.RegionInstancesService(self)
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
+    self.regionMultiMigMembers = self.RegionMultiMigMembersService(self)
     self.regionMultiMigs = self.RegionMultiMigsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
@@ -19548,6 +19549,68 @@ Resources documentation.
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionInstantSnapshotsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionMultiMigMembersService(base_api.BaseApiService):
+    """Service class for the regionMultiMigMembers resource."""
+
+    _NAME = 'regionMultiMigMembers'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionMultiMigMembersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified multi-MIG member.
+
+      Args:
+        request: (ComputeRegionMultiMigMembersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MultiMigMember) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionMultiMigMembers.get',
+        ordered_params=['project', 'region', 'multiMig', 'multiMigMember'],
+        path_params=['multiMig', 'multiMigMember', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}/multiMigMembers/{multiMigMember}',
+        request_field='',
+        request_type_name='ComputeRegionMultiMigMembersGetRequest',
+        response_type_name='MultiMigMember',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of members of a specific multi-MIG.
+
+      Args:
+        request: (ComputeRegionMultiMigMembersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MultiMigMemberList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionMultiMigMembers.list',
+        ordered_params=['project', 'region', 'multiMig'],
+        path_params=['multiMig', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}/multiMigMembers',
+        request_field='',
+        request_type_name='ComputeRegionMultiMigMembersListRequest',
+        response_type_name='MultiMigMemberList',
         supports_download=False,
     )
 

@@ -2147,15 +2147,20 @@ class EdgeCluster(_messages.Message):
   r"""EdgeCluster contains information specific to Google Edge Clusters.
 
   Fields:
+    clusterType: Output only. The type of the cluster.
     clusterVersion: Output only. The product version of the Edge Cluster, e.g.
       "1.8.0".
+    managedClusterResourceLink: Output only. Link of the Google Cloud resource
+      for the managed cluster.
     resourceLink: Immutable. Self-link of the Google Cloud resource for the
       Edge Cluster. For example: //edgecontainer.googleapis.com/projects/my-
       project/locations/us-west1-a/clusters/my-cluster
   """
 
-  clusterVersion = _messages.StringField(1)
-  resourceLink = _messages.StringField(2)
+  clusterType = _messages.StringField(1)
+  clusterVersion = _messages.StringField(2)
+  managedClusterResourceLink = _messages.StringField(3)
+  resourceLink = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -7408,7 +7413,12 @@ class RolloutStage(_messages.Message):
     StateValueValuesEnum: Output only. The state of the wave.
 
   Fields:
+    clusterSelector: Output only. The selector from the sequence that was used
+      to create this stage. Example CEL expression: resource.labels.canary ==
+      'true'
     endTime: Optional. Output only. The time at which the wave ended.
+    fleetProjects: Output only. The fleet projects from the sequence that was
+      used to create this stage. Expected format: projects/{project_number}
     soakDuration: Optional. Duration to soak after this wave before starting
       the next wave.
     stageNumber: Output only. The wave number to which this status applies.
@@ -7434,11 +7444,13 @@ class RolloutStage(_messages.Message):
     COMPLETED = 4
     FORCED_SOAKING = 5
 
-  endTime = _messages.StringField(1)
-  soakDuration = _messages.StringField(2)
-  stageNumber = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  clusterSelector = _messages.MessageField('ClusterSelector', 1)
+  endTime = _messages.StringField(2)
+  fleetProjects = _messages.StringField(3, repeated=True)
+  soakDuration = _messages.StringField(4)
+  stageNumber = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class RolloutTarget(_messages.Message):

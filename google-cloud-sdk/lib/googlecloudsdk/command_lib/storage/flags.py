@@ -1466,6 +1466,16 @@ def add_batch_jobs_flags(parser, track=base.ReleaseTrack.GA):
       help='Description for the batch job.',
       type=str,
   )
+  parser.add_argument(
+      '--dry-run',
+      help=(
+          'If true, the job will run in dry run mode, returning the total'
+          ' object count and, if the object configuration is a prefix list,'
+          ' the bytes found from source. No transformations will be'
+          ' performed.'
+      ),
+      action='store_true',
+  )
   logging_config = parser.add_group(
       category='LOGGING_CONFIG',
       help=(
@@ -1498,19 +1508,4 @@ def add_batch_jobs_flags(parser, track=base.ReleaseTrack.GA):
           ' logged. Separate multiple states with a comma, omitting the space'
           ' after the comma (e.g., --log-action-states=succeeded,failed).'
       ),
-  )
-
-
-def add_batch_jobs_dry_run_flag(parser):
-  """Adds the dry run flag for the batch-operations jobs create command."""
-  parser.add_argument(
-      '--dry-run',
-      help=(
-          'If true, the job will run in dry run mode, returning the total'
-          ' object count and, if the object configuration is a prefix list,'
-          ' the bytes found from source. No transformations will be'
-          ' performed.'
-      ),
-      action='store_true',
-      hidden=True,
   )

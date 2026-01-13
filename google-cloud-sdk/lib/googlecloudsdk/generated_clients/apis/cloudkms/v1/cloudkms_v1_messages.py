@@ -551,7 +551,8 @@ class CloudkmsFoldersGetAutokeyConfigRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the AutokeyConfig resource, e.g.
-      `folders/{FOLDER_NUMBER}/autokeyConfig`.
+      `folders/{FOLDER_NUMBER}/autokeyConfig` or
+      `projects/{PROJECT_NUMBER}/autokeyConfig`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -627,6 +628,18 @@ class CloudkmsOrganizationsUpdateKajPolicyConfigRequest(_messages.Message):
   keyAccessJustificationsPolicyConfig = _messages.MessageField('KeyAccessJustificationsPolicyConfig', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudkmsProjectsGetAutokeyConfigRequest(_messages.Message):
+  r"""A CloudkmsProjectsGetAutokeyConfigRequest object.
+
+  Fields:
+    name: Required. Name of the AutokeyConfig resource, e.g.
+      `folders/{FOLDER_NUMBER}/autokeyConfig` or
+      `projects/{PROJECT_NUMBER}/autokeyConfig`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class CloudkmsProjectsGetKajPolicyConfigRequest(_messages.Message):
@@ -1904,6 +1917,22 @@ class CloudkmsProjectsShowEffectiveKeyAccessJustificationsPolicyConfigRequest(_m
   """
 
   project = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsUpdateAutokeyConfigRequest(_messages.Message):
+  r"""A CloudkmsProjectsUpdateAutokeyConfigRequest object.
+
+  Fields:
+    autokeyConfig: A AutokeyConfig resource to be passed as the request body.
+    name: Identifier. Name of the AutokeyConfig resource, e.g.
+      `folders/{FOLDER_NUMBER}/autokeyConfig`
+    updateMask: Required. Masks which fields of the AutokeyConfig to update,
+      e.g. `keyProject`.
+  """
+
+  autokeyConfig = _messages.MessageField('AutokeyConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CloudkmsProjectsUpdateKajPolicyConfigRequest(_messages.Message):

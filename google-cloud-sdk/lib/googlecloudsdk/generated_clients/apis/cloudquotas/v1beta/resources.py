@@ -81,6 +81,34 @@ class Collections(enum.Enum):
       ['organizationsId', 'locationsId'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_GDCZONES = (
+      'organizations.locations.gdcZones',
+      'organizations/{organizationsId}/locations/{locationsId}/gdcZones/'
+      '{gdcZonesId}',
+      {},
+      ['organizationsId', 'locationsId', 'gdcZonesId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GDCZONES_GDCSERVICES = (
+      'organizations.locations.gdcZones.gdcServices',
+      'organizations/{organizationsId}/locations/{locationsId}/gdcZones/'
+      '{gdcZonesId}/gdcServices/{gdcServicesId}',
+      {},
+      ['organizationsId', 'locationsId', 'gdcZonesId', 'gdcServicesId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_GDCZONES_GDCSERVICES_GDCQUOTAINFOS = (
+      'organizations.locations.gdcZones.gdcServices.gdcQuotaInfos',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'gdcZones/{gdcZonesId}/gdcServices/{gdcServicesId}/'
+              'gdcQuotaInfos/{gdcQuotaInfosId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_QUOTAPREFERENCES = (
       'organizations.locations.quotaPreferences',
       '{+name}',
@@ -123,6 +151,33 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}',
       {},
       ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_GDCZONES = (
+      'projects.locations.gdcZones',
+      'projects/{projectsId}/locations/{locationsId}/gdcZones/{gdcZonesId}',
+      {},
+      ['projectsId', 'locationsId', 'gdcZonesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_GDCZONES_GDCSERVICES = (
+      'projects.locations.gdcZones.gdcServices',
+      'projects/{projectsId}/locations/{locationsId}/gdcZones/{gdcZonesId}/'
+      'gdcServices/{gdcServicesId}',
+      {},
+      ['projectsId', 'locationsId', 'gdcZonesId', 'gdcServicesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_GDCZONES_GDCSERVICES_GDCQUOTAINFOS = (
+      'projects.locations.gdcZones.gdcServices.gdcQuotaInfos',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/gdcZones/'
+              '{gdcZonesId}/gdcServices/{gdcServicesId}/gdcQuotaInfos/'
+              '{gdcQuotaInfosId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_QUOTAPREFERENCES = (

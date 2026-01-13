@@ -1208,91 +1208,35 @@ class ContainerDependenciesChange(config_changes.TemplateConfigChanger):
 
 # Worker pool specific config changes starts.
 @dataclasses.dataclass(frozen=True)
-class WorkerPoolScalingChange(config_changes.NonTemplateConfigChanger):
-  """Represents the user intent to adjust worker pool scaling.
+class WorkerPoolInstancesChange(config_changes.NonTemplateConfigChanger):
+  """Represents the user intent to adjust worker pool instances.
 
   Attributes:
-    min_instance_count: The minimum count of instances to set.
-    max_instance_count: The maximum count of instances to set.
-    scaling: Scaling flag value that either contains manual instance count or
-      auto scaling mode.
+    instances: Instances flag value that either contains manual instance count.
   """
 
-  min_instance_count: flags.ScaleValue | None = None
-  max_instance_count: flags.ScaleValue | None = None
-  scaling: flags.ScalingValue | None = None
+  instances: flags.InstanceValue | None = None
 
   def Adjust(self, worker_pool_resource: worker_pool_objects.WorkerPool):
-    """Adjusts worker pool scaling.
+    """Adjusts worker pool instances.
 
     Args:
       worker_pool_resource: The worker pool resource to modify.
 
-    Raises:
-      ConfigurationError: If the user attempts to set min or max instance count
-      without setting --scaling=auto when the current scaling mode is manual.
-      ConfigurationError: If the user attempts to set min or max instance count
-      along with a manual instance count using --scaling flag.
-
     Returns:
       The adjusted worker pool resource.
     """
-    # Catch the case where user sets min or max without setting --scaling=auto
-    # when the current scaling mode is manual.
-    current_scaling_mode = worker_pool_resource.scaling.scaling_mode
-    if (
-        (self.min_instance_count or self.max_instance_count)
-        and not self.scaling
-        and current_scaling_mode
-        == vendor_settings.WorkerPoolScaling.ScalingMode.MANUAL
-    ):
-      raise exceptions.ConfigurationError(
-          'Need to specify --scaling=auto to swtich mode from manual to auto.'
-      )
-    # Min instance count
-    if self.min_instance_count:
-      if self.scaling and not self.scaling.auto_scaling:
-        raise exceptions.ConfigurationError(
-            'Cannot set --min when --scaling is set to a manual instance count.'
-        )
-      if self.min_instance_count.restore_default:
-        worker_pool_resource.scaling.min_instance_count = 1
-      else:
-        worker_pool_resource.scaling.min_instance_count = (
-            self.min_instance_count.instance_count
-        )
-    # Max instance count
-    if self.max_instance_count:
-      if self.scaling and not self.scaling.auto_scaling:
-        raise exceptions.ConfigurationError(
-            'Cannot set --max when --scaling is set to a manual instance count.'
-        )
-      if self.max_instance_count.restore_default:
-        worker_pool_resource.scaling.max_instance_count = 100
-      else:
-        worker_pool_resource.scaling.max_instance_count = (
-            self.max_instance_count.instance_count
-        )
     # Scaling mode & manual instance count
-    if self.scaling:
-      # Auto scaling mode
-      if self.scaling.auto_scaling:
-        # Remove manual instance count if auto scaling is set.
-        worker_pool_resource.scaling.manual_instance_count = None
-        worker_pool_resource.scaling.scaling_mode = (
-            vendor_settings.WorkerPoolScaling.ScalingMode.AUTOMATIC
-        )
-      # Manual scaling mode
-      else:
-        # Remove min and max instance count if manual instance count is set.
-        worker_pool_resource.scaling.min_instance_count = None
-        worker_pool_resource.scaling.max_instance_count = None
-        worker_pool_resource.scaling.scaling_mode = (
-            vendor_settings.WorkerPoolScaling.ScalingMode.MANUAL
-        )
-        worker_pool_resource.scaling.manual_instance_count = (
-            self.scaling.instance_count
-        )
+    if self.instances:
+      # Remove min and max instance count if manual instance count is set.
+      worker_pool_resource.scaling.min_instance_count = None
+      worker_pool_resource.scaling.max_instance_count = None
+      worker_pool_resource.scaling.scaling_mode = (
+          vendor_settings.WorkerPoolScaling.ScalingMode.MANUAL
+      )
+      worker_pool_resource.scaling.manual_instance_count = (
+          self.instances.instance_count
+      )
     return worker_pool_resource
 
 

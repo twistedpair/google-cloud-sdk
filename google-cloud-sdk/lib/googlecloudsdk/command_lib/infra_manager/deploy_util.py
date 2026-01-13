@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+import re
 import sys
 import uuid
 
@@ -422,7 +423,7 @@ def Apply(
   deployment_id = deployment_ref.Name()
 
   location = deployment_ref.Parent().Name()
-
+  project = deployment_ref.Parent().Parent().Name()
   # Check if a deployment with the given name already exists. If it does, we'll
   # update that deployment. If not, we'll create it.
   try:
@@ -470,6 +471,26 @@ def Apply(
 
   is_creating_deployment = existing_deployment is None
   op = None
+
+  if deployment.tfVersionConstraint is not None:
+    tf_version = _GetTerraformVersionFromTfConstraint(
+        deployment.tfVersionConstraint
+    )
+  elif (
+      existing_deployment is not None
+      and existing_deployment.tfVersionConstraint is not None
+  ):
+    tf_version = _GetTerraformVersionFromTfConstraint(
+        existing_deployment.tfVersionConstraint
+    )
+  else:
+    tf_version = None
+
+  if tf_version is not None:
+    tf_version_full_name = (
+        f'projects/{project}/locations/{location}/terraformVersions/{tf_version}'
+    )
+    _DisplayObsoleteTfVersionMessage(messages, tf_version_full_name, tf_version)
 
   if is_creating_deployment:
     op = _CreateDeploymentOp(deployment, deployment_full_name)
@@ -1212,3 +1233,39 @@ def _GeneratesLabelsAnnotations(resource, labels=None, annotations=None):
         ]
     )
   return labels_message, annotations_message
+
+
+def _GetTerraformVersionName(parent, tf_version):
+  """Returns the Terraform version name.
+  """
+  return f'{parent}/terraformVersions/{tf_version}'
+
+
+def _GetTerraformVersionFromTfConstraint(tf_version_constraint):
+  """Returns the Terraform version from the Terraform version constraint.
+  """
+  m = re.match(
+      r'^=?\s*(\d+\.\d+\.\d+)$',
+      tf_version_constraint,
+  )
+  if m:
+    return m.group(1)
+  return None
+
+
+def _DisplayObsoleteTfVersionMessage(
+    messages, tf_version_full_name, tf_version
+):
+  """Checks if TF version is obsolete/deprecated and displays a warning."""
+  try:
+    tf_version_obj = configmanager_util.GetTfVersion(tf_version_full_name)
+    if tf_version_obj.state in [
+        messages.TerraformVersion.StateValueValuesEnum.DEPRECATED,
+        messages.TerraformVersion.StateValueValuesEnum.OBSOLETE,
+    ]:
+      log.warning(
+          'Terraform version %s is %s.', tf_version, tf_version_obj.state
+      )
+  except apitools_exceptions.HttpError:
+    pass
+

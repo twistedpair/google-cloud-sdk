@@ -1199,6 +1199,22 @@ class AppengineProjectsLocationsApplicationsServicesVersionsExportAppImageReques
   name = _messages.StringField(2, required=True)
 
 
+class AppengineProjectsLocationsApplicationsServicesVersionsInstancesDebugRequest(_messages.Message):
+  r"""A
+  AppengineProjectsLocationsApplicationsServicesVersionsInstancesDebugRequest
+  object.
+
+  Fields:
+    debugInstanceRequest: A DebugInstanceRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource requested. Example:
+      apps/myapp/services/default/versions/v1/instances/instance-1.
+  """
+
+  debugInstanceRequest = _messages.MessageField('DebugInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest(_messages.Message):
   r"""A AppengineProjectsLocationsApplicationsServicesVersionsPatchRequest
   object.

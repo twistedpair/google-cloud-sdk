@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -506,6 +509,70 @@ def AddImportIacFlags(parser):
   )
 
 
+def AddDeployApplicationFlags(parser):
+  """Adds all flags for the deploy application command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  parser.add_argument(
+      '--replace',
+      action='store_true',
+      default=False,
+      help=(
+          'Flag to update the existing deployment. If not set or false, deploy'
+          ' will fail if application state is in the DEPLOYED state.'
+      ),
+  )
+  parser.add_argument(
+      '--worker-pool',
+      type=arg_parsers.RegexpValidator(
+          r'projects/[^/]+/locations/[^/]+/workerPools/[^/]+',
+          'The worker pool resource name must be in the format: '
+          '`projects/{project}/locations/{location}/workerPools/{workerPoolId}`',
+      ),
+      help=textwrap.dedent("""\
+          The user-specified Worker Pool resource in which the Cloud Build job
+          will execute. Format:
+          projects/{project}/locations/{location}/workerPools/{workerPoolId}
+          If this flag is omitted, the worker pool already defined on the
+          application will be used. If no worker pool is defined on the
+          application, the default Cloud Build worker pool is used. The
+          worker pool must exist in the same region as the application.\
+      """),
+  )
+
+  parser.add_argument(
+      '--service-account',
+      help=textwrap.dedent('''\
+          The service account to use for this deployment.
+
+          * If provided, this service account will be used to execute the
+            deployment process, taking precedence over any service_account
+            specified on the Application resource.
+          * The caller must have the "iam.serviceAccounts.actAs" permission on
+            this service account.
+          * If this field is omitted, the system will use the "service_account"
+            defined within the Application resource.
+          * If this field is omitted with --create-sa flag, the system will create a new and unique service_account
+            and use it for the deployment.
+          * We recommend that you provide a service account here or on the
+            Application resource. If you don't provide a service account, the
+            deployment will fail.
+          * If the `--create-sa` flag is also provided, this value is the ID of
+            a new service account to be created (e.g., `my-new-sa`).
+
+          Format: `projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}` (when not
+          using `--create-sa`)
+          '''),
+  )
+  parser.add_argument(
+      '--create-sa',
+      action='store_true',
+      help='Create a new service account for the deployment.',
+  )
+
+
 def ParseIacModuleFile(file_contents):
   """Parses YAML or JSON file contents into a Python dict."""
   try:
@@ -513,3 +580,58 @@ def ParseIacModuleFile(file_contents):
   except Exception as e:
     raise arg_parsers.ArgumentTypeError(
         'Failed to parse IaC module file: {}'.format(e))
+
+
+def AddPreviewApplicationFlags(parser):
+  """Adds all flags for the preview application command.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in tests.
+  """
+  parser.add_argument(
+      '--worker-pool',
+      type=arg_parsers.RegexpValidator(
+          r'projects/[^/]+/locations/[^/]+/workerPools/[^/]+',
+          'The worker pool resource name must be in the format: '
+          '`projects/{project}/locations/{location}/workerPools/{workerPoolId}`',
+      ),
+      help=textwrap.dedent("""\
+          The user-specified Worker Pool resource in which the Cloud Build job
+          will execute. Format:
+          projects/{project}/locations/{location}/workerPools/{workerPoolId}
+          If this flag is omitted, the worker pool already defined on the
+          application will be used. If no worker pool is defined on the
+          application, the default Cloud Build worker pool is used. The
+          worker pool must exist in the same region as the application.\
+      """),
+  )
+
+  parser.add_argument(
+      '--service-account',
+      help=textwrap.dedent('''\
+          The service account to use for this preview.
+
+          * If provided, this service account will be used to execute the
+            preview process, taking precedence over any service_account
+            specified on the Application resource.
+          * The caller must have the "iam.serviceAccounts.actAs" permission on
+            this service account.
+          * If this field is omitted, the system will use the "service_account"
+            defined within the Application resource.
+          * If this field is omitted with --create-sa flag, the system will create a new and unique service_account
+            and use it for the preview.
+          * We recommend that you provide a service account here or on the
+            Application resource. If you don't provide a service account, the
+            preview will fail.
+          * If the `--create-sa` flag is also provided, this value is the ID of
+            a new service account to be created (e.g., `my-new-sa`).
+
+          Format: `projects/{PROJECT}/serviceAccounts/{EMAIL_ADDRESS}` (when not
+          using `--create-sa`)
+          '''),
+  )
+  parser.add_argument(
+      '--create-sa',
+      action='store_true',
+      help='Create a new service account for the preview.',
+  )

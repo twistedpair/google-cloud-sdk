@@ -710,3 +710,19 @@ def AddEncryptedInterconnectRouter(parser):
           'interconnect attachments (VLAN attachments).'
       ),
   )
+
+
+def AddLinkedCustomHardwareArg(parser):
+  """Adds linked custom hardware argument for BGP peer."""
+  parser.add_argument(
+      '--linked-custom-hardware',
+      type=str,
+      default=None,
+      required=False,
+      help=(
+          'The linked custom hardware resource. The URI of the custom '
+          'hardware link attachment is where you will establish the BGP '
+          'session from the Cloud Router. This link attachment must reside '
+          'in the same subnetwork as the associated router interface.'
+      ),
+  )

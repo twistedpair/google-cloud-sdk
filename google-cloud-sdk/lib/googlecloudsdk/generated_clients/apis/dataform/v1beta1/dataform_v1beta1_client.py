@@ -61,6 +61,87 @@ class DataformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new Folder in a given project and location.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Folder) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders',
+        http_method='POST',
+        method_id='dataform.projects.locations.folders.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['folderId'],
+        relative_path='v1beta1/{+parent}/folders',
+        request_field='folder',
+        request_type_name='DataformProjectsLocationsFoldersCreateRequest',
+        response_type_name='Folder',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Folder.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}',
+        http_method='DELETE',
+        method_id='dataform.projects.locations.folders.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='DataformProjectsLocationsFoldersDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Fetches a single Folder.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Folder) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}',
+        http_method='GET',
+        method_id='dataform.projects.locations.folders.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='DataformProjectsLocationsFoldersGetRequest',
+        response_type_name='Folder',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -85,6 +166,87 @@ class DataformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataformProjectsLocationsFoldersGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves a Folder to a new Folder, TeamFolder, or the root location.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}:move',
+        http_method='POST',
+        method_id='dataform.projects.locations.folders.move',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:move',
+        request_field='moveFolderRequest',
+        request_type_name='DataformProjectsLocationsFoldersMoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single Folder.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Folder) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}',
+        http_method='PATCH',
+        method_id='dataform.projects.locations.folders.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='folder',
+        request_type_name='DataformProjectsLocationsFoldersPatchRequest',
+        response_type_name='Folder',
+        supports_download=False,
+    )
+
+    def QueryFolderContents(self, request, global_params=None):
+      r"""Returns the contents of a given Folder.
+
+      Args:
+        request: (DataformProjectsLocationsFoldersQueryFolderContentsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryFolderContentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryFolderContents')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryFolderContents.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}:queryFolderContents',
+        http_method='GET',
+        method_id='dataform.projects.locations.folders.queryFolderContents',
+        ordered_params=['folder'],
+        path_params=['folder'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+folder}:queryFolderContents',
+        request_field='',
+        request_type_name='DataformProjectsLocationsFoldersQueryFolderContentsRequest',
+        response_type_name='QueryFolderContentsResponse',
         supports_download=False,
     )
 
@@ -1751,6 +1913,33 @@ class DataformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Move(self, request, global_params=None):
+      r"""Moves a Repository to a new location.
+
+      Args:
+        request: (DataformProjectsLocationsRepositoriesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:move',
+        http_method='POST',
+        method_id='dataform.projects.locations.repositories.move',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:move',
+        request_field='moveRepositoryRequest',
+        request_type_name='DataformProjectsLocationsRepositoriesMoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates a single Repository. **Note:** *This method does not fully implement [AIP/134](https://google.aip.dev/134). The wildcard entry (\*) is treated as a bad request, and when the `field_mask` is omitted, the request is treated as a full update on all modifiable fields.*.
 
@@ -1896,6 +2085,87 @@ class DataformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new TeamFolder in a given project and location.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TeamFolder) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders',
+        http_method='POST',
+        method_id='dataform.projects.locations.teamFolders.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['teamFolderId'],
+        relative_path='v1beta1/{+parent}/teamFolders',
+        request_field='teamFolder',
+        request_type_name='DataformProjectsLocationsTeamFoldersCreateRequest',
+        response_type_name='TeamFolder',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single TeamFolder.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}',
+        http_method='DELETE',
+        method_id='dataform.projects.locations.teamFolders.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='DataformProjectsLocationsTeamFoldersDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Fetches a single TeamFolder.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TeamFolder) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}',
+        http_method='GET',
+        method_id='dataform.projects.locations.teamFolders.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='DataformProjectsLocationsTeamFoldersGetRequest',
+        response_type_name='TeamFolder',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1920,6 +2190,87 @@ class DataformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataformProjectsLocationsTeamFoldersGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single TeamFolder.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TeamFolder) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}',
+        http_method='PATCH',
+        method_id='dataform.projects.locations.teamFolders.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='teamFolder',
+        request_type_name='DataformProjectsLocationsTeamFoldersPatchRequest',
+        response_type_name='TeamFolder',
+        supports_download=False,
+    )
+
+    def QueryContents(self, request, global_params=None):
+      r"""Returns the contents of a given TeamFolder.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersQueryContentsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryTeamFolderContentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryContents')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryContents.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}:queryContents',
+        http_method='GET',
+        method_id='dataform.projects.locations.teamFolders.queryContents',
+        ordered_params=['teamFolder'],
+        path_params=['teamFolder'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+teamFolder}:queryContents',
+        request_field='',
+        request_type_name='DataformProjectsLocationsTeamFoldersQueryContentsRequest',
+        response_type_name='QueryTeamFolderContentsResponse',
+        supports_download=False,
+    )
+
+    def Search(self, request, global_params=None):
+      r"""Returns all TeamFolders in a given location that the caller has access to and match the provided filter.
+
+      Args:
+        request: (DataformProjectsLocationsTeamFoldersSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchTeamFoldersResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/teamFolders:search',
+        http_method='GET',
+        method_id='dataform.projects.locations.teamFolders.search',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+location}/teamFolders:search',
+        request_field='',
+        request_type_name='DataformProjectsLocationsTeamFoldersSearchRequest',
+        response_type_name='SearchTeamFoldersResponse',
         supports_download=False,
     )
 
@@ -2065,6 +2416,33 @@ class DataformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataformProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def QueryUserRootContents(self, request, global_params=None):
+      r"""Returns the contents of a caller's root folder in a given location. The root folder contains all resources that are created by the user and not contained in any other folder.
+
+      Args:
+        request: (DataformProjectsLocationsQueryUserRootContentsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryUserRootContentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryUserRootContents')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryUserRootContents.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}:queryUserRootContents',
+        http_method='GET',
+        method_id='dataform.projects.locations.queryUserRootContents',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+location}:queryUserRootContents',
+        request_field='',
+        request_type_name='DataformProjectsLocationsQueryUserRootContentsRequest',
+        response_type_name='QueryUserRootContentsResponse',
         supports_download=False,
     )
 

@@ -899,9 +899,12 @@ workforce_pool_provider:
       Use `enabled-for-groups` to enable SCIM-managed groups.
       Use `scim-usage-unspecified` to disable SCIM-managed groups.
 
-  attribute_sync_interval:
+  attribute_sync_interval: &attribute_sync_interval
     arg_name: attribute-sync-interval
     api_field: workforcePoolProvider.attributeSyncInterval
+    hidden: true
+    type: googlecloudsdk.core.util.times:ParseDuration
+    processor: googlecloudsdk.core.util.times:FormatDurationForJson
     help_text: |-
       An interval that determines how often user attributes are synced from the
       IdP. Must be between 30 minutes (1800s) and 12 hours (43200s). This
@@ -909,6 +912,20 @@ workforce_pool_provider:
       configured. When Google Cloud session length policy is configured and
       `attribute_sync_interval` is not configured, attributes are synced after a
       default interval of 12 hours (43200 seconds)
+
+  clearable_attribute_sync_interval:
+    group:
+      hidden: true
+      mutex: true
+      params:
+      - api_field: workforcePoolProvider.attributeSyncInterval
+        arg_name: clear-attribute-sync-interval
+        hidden: true
+        action: store_true
+        processor: googlecloudsdk.command_lib.iam.hooks:ClearFlag
+        help_text: |-
+          Clear the attribute sync interval.
+      - *attribute_sync_interval
 
 workforce_pool_provider_key:
   use:

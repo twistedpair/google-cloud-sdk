@@ -5888,14 +5888,14 @@ def AddEnableConfidentialNodesFlag(
   help_text = """\
 Enable confidential nodes for the {}. Enabling Confidential Nodes
 will create nodes using Confidential VM
-https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
+https://docs.cloud.google.com/compute/docs/about-confidential-vm.""".format(
       target
   )
 
   if is_update:
     help_text = """\
     Recreate all the nodes in the node pool to be confidential VM
-    https://cloud.google.com/compute/confidential-vm/docs/about-cvm."""
+    https://docs.cloud.google.com/compute/docs/about-confidential-vm."""
 
   parser.add_argument(
       '--enable-confidential-nodes',
@@ -5913,14 +5913,14 @@ def AddConfidentialNodeTypeFlag(parser, for_node_pool=False, is_update=False):
   help_text = """\
 Enable confidential nodes for the {}. Enabling Confidential Nodes
 will create nodes using Confidential VM
-https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
+https://docs.cloud.google.com/compute/docs/about-confidential-vm.""".format(
       target
   )
 
   if is_update:
     help_text = """\
     Recreate all the nodes in the node pool to be confidential VM
-    https://cloud.google.com/compute/confidential-vm/docs/about-cvm."""
+    https://docs.cloud.google.com/compute/docs/about-confidential-vm."""
 
   choices = ['sev', 'sev_snp', 'tdx']
   # This feature can only be disabled on node pool level.
@@ -6905,6 +6905,13 @@ workload_policies_validator = arg_parsers.RegexpValidator(
     'Workload policy only supports "allow-net-admin"',
 )
 
+autopilot_cluster_policies_validator = arg_parsers.RegexpValidator(
+    r'^(no-system-mutation|no-system-impersonation|no-unsafe-webhooks|no-standard-node-pools)(,(no-system-mutation|no-system-impersonation|no-unsafe-webhooks|no-standard-node-pools))*$',
+    'Autopilot cluster policies must only include "no-system-mutation",'
+    ' "no-system-impersonation", "no-unsafe-webhooks",'
+    ' "no-standard-node-pools"',
+)
+
 
 def AddWorkloadPoliciesFlag(parser, hidden=False):
   """Adds workload policies related flags to parser."""
@@ -6999,6 +7006,60 @@ The only supported workload policy is 'allow-net-admin'.
       '--remove-autopilot-workload-policies',
       dest='remove_workload_policies',
       type=workload_policies_validator,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddAutopilotClusterPoliciesFlag(parser, hidden=False):
+  """Adds autopilot cluster policies related flags to parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  help_text = """\
+Add Autopilot cluster policies to the cluster.
+
+Examples:
+
+  $ {command} example-cluster --autopilot-cluster-policies=no-system-mutation,no-system-impersonation
+
+The only supported policies are 'no-system-mutation', 'no-system-impersonation', 'no-unsafe-webhooks', 'no-standard-node-pools'. Policies should be specified in comma separated list.
+"""
+
+  parser.add_argument(
+      '--autopilot-cluster-policies',
+      dest='autopilot_cluster_policies',
+      type=autopilot_cluster_policies_validator,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddRemoveAutopilotClusterPoliciesFlag(parser, hidden=False):
+  """Adds Remove autopilot cluster policies related flags to parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  help_text = """\
+Remove Autopilot cluster policies from the cluster.
+
+Examples:
+
+  $ {command} example-cluster --remove-autopilot-cluster-policies=no-system-mutation,no-system-impersonation
+
+The only supported policies are 'no-system-mutation', 'no-system-impersonation', 'no-unsafe-webhooks', 'no-standard-node-pools'. Policies should be specified in comma separated list.
+"""
+
+  parser.add_argument(
+      '--remove-autopilot-cluster-policies',
+      dest='remove_autopilot_cluster_policies',
+      type=autopilot_cluster_policies_validator,
       help=help_text,
       hidden=hidden,
   )

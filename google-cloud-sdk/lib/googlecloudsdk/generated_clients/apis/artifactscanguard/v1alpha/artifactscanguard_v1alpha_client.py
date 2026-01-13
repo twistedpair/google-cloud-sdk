@@ -39,7 +39,6 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.folders_locations_connectors = self.FoldersLocationsConnectorsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
@@ -53,155 +52,16 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
     self.organizations_locations_reports = self.OrganizationsLocationsReportsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_locations_artifactEvaluations = self.ProjectsLocationsArtifactEvaluationsService(self)
+    self.projects_locations_artifactPoliciesEvaluations = self.ProjectsLocationsArtifactPoliciesEvaluationsService(self)
     self.projects_locations_connectors = self.ProjectsLocationsConnectorsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_policies = self.ProjectsLocationsPoliciesService(self)
+    self.projects_locations_reports_connectorEvaluations = self.ProjectsLocationsReportsConnectorEvaluationsService(self)
+    self.projects_locations_reports_policyEvaluationSummaries = self.ProjectsLocationsReportsPolicyEvaluationSummariesService(self)
+    self.projects_locations_reports = self.ProjectsLocationsReportsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class FoldersLocationsConnectorsService(base_api.BaseApiService):
-    """Service class for the folders_locations_connectors resource."""
-
-    _NAME = 'folders_locations_connectors'
-
-    def __init__(self, client):
-      super(ArtifactscanguardV1alpha.FoldersLocationsConnectorsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new Connector in a given project and location.
-
-      Args:
-        request: (ArtifactscanguardFoldersLocationsConnectorsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors',
-        http_method='POST',
-        method_id='artifactscanguard.folders.locations.connectors.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['connectorId'],
-        relative_path='v1alpha/{+parent}/connectors',
-        request_field='connector',
-        request_type_name='ArtifactscanguardFoldersLocationsConnectorsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Connector.
-
-      Args:
-        request: (ArtifactscanguardFoldersLocationsConnectorsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method='DELETE',
-        method_id='artifactscanguard.folders.locations.connectors.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ArtifactscanguardFoldersLocationsConnectorsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Connector.
-
-      Args:
-        request: (ArtifactscanguardFoldersLocationsConnectorsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Connector) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method='GET',
-        method_id='artifactscanguard.folders.locations.connectors.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ArtifactscanguardFoldersLocationsConnectorsGetRequest',
-        response_type_name='Connector',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Connectors in a given project and location.
-
-      Args:
-        request: (ArtifactscanguardFoldersLocationsConnectorsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConnectorsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors',
-        http_method='GET',
-        method_id='artifactscanguard.folders.locations.connectors.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/connectors',
-        request_field='',
-        request_type_name='ArtifactscanguardFoldersLocationsConnectorsListRequest',
-        response_type_name='ListConnectorsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Connector.
-
-      Args:
-        request: (ArtifactscanguardFoldersLocationsConnectorsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/connectors/{connectorsId}',
-        http_method='PATCH',
-        method_id='artifactscanguard.folders.locations.connectors.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='connector',
-        request_type_name='ArtifactscanguardFoldersLocationsConnectorsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
 
   class FoldersLocationsOperationsService(base_api.BaseApiService):
     """Service class for the folders_locations_operations resource."""
@@ -1116,6 +976,161 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class ProjectsLocationsArtifactEvaluationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_artifactEvaluations resource."""
+
+    _NAME = 'projects_locations_artifactEvaluations'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.ProjectsLocationsArtifactEvaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def DataGateway(self, request, global_params=None):
+      r"""ArtifactEvaluationDataGateway returns the datastore details where the input for ArtifactEvaluation is stored.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DataGateway')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DataGateway.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/artifactEvaluations:dataGateway',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.artifactEvaluations.dataGateway',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['artifactMetadata_buildTime', 'artifactMetadata_imageDigest', 'artifactMetadata_imageId', 'artifactMetadata_imageName', 'artifactMetadata_imageTag', 'artifactMetadata_purlUri', 'artifactMetadata_sbomUri'],
+        relative_path='v1alpha/{+parent}/artifactEvaluations:dataGateway',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ArtifacEvaluation.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsArtifactEvaluationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ArtifactEvaluation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/artifactEvaluations/{artifactEvaluationsId}',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.artifactEvaluations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsArtifactEvaluationsGetRequest',
+        response_type_name='ArtifactEvaluation',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Creates a new Execution in a given project and location.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsArtifactEvaluationsRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/artifactEvaluations:run',
+        http_method='POST',
+        method_id='artifactscanguard.projects.locations.artifactEvaluations.run',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/artifactEvaluations:run',
+        request_field='runArtifactEvaluationRequest',
+        request_type_name='ArtifactscanguardProjectsLocationsArtifactEvaluationsRunRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsArtifactPoliciesEvaluationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_artifactPoliciesEvaluations resource."""
+
+    _NAME = 'projects_locations_artifactPoliciesEvaluations'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.ProjectsLocationsArtifactPoliciesEvaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns details of ArtifactPoliciesEvaluation resource.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ArtifactPoliciesEvaluation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/artifactPoliciesEvaluations/{artifactPoliciesEvaluationsId}',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.artifactPoliciesEvaluations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsGetRequest',
+        response_type_name='ArtifactPoliciesEvaluation',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""RunArtifactPoliciesEvaluation initiates a new policy evaluation. This is an asynchronous operation that returns a Long Running Operation (LRO). The LRO's response will contain the created ArtifactPoliciesEvaluation object upon completion. The LRO's metadata will contain OperationMetadata for progress tracking.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/artifactPoliciesEvaluations:run',
+        http_method='POST',
+        method_id='artifactscanguard.projects.locations.artifactPoliciesEvaluations.run',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/artifactPoliciesEvaluations:run',
+        request_field='runArtifactPoliciesEvaluationRequest',
+        request_type_name='ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsRunRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsConnectorsService(base_api.BaseApiService):
     """Service class for the projects_locations_connectors resource."""
 
@@ -1378,6 +1393,235 @@ class ArtifactscanguardV1alpha(base_api.BaseApiClient):
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_policies resource."""
+
+    _NAME = 'projects_locations_policies'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.ProjectsLocationsPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreatePolicy creates a new policy. This is an asynchronous operation that returns an LRO specifying the status of the policy creation.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/policies',
+        http_method='POST',
+        method_id='artifactscanguard.projects.locations.policies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['policyId', 'validateOnly'],
+        relative_path='v1alpha/{+parent}/policies',
+        request_field='policy',
+        request_type_name='ArtifactscanguardProjectsLocationsPoliciesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeletePolicy deletes an existing policy by its full name. This is an asynchronous operation that returns an LRO specifying the status of the policy deletion.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/policies/{policiesId}',
+        http_method='DELETE',
+        method_id='artifactscanguard.projects.locations.policies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetPolicy retrieves an existing policy by its full name. This is a synchronous operation that returns the requested Policy object.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/policies/{policiesId}',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.policies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsPoliciesGetRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListPolicies lists all policies for a given parent resource. This is a synchronous operation that returns a list of Policy objects.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/policies',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.policies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/policies',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsPoliciesListRequest',
+        response_type_name='ListPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""UpdatePolicy updates an existing policy. It updates the fields specified in the update_mask. This is an asynchronous operation that returns an LRO specifying the status of the policy update.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/policies/{policiesId}',
+        http_method='PATCH',
+        method_id='artifactscanguard.projects.locations.policies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='policy',
+        request_type_name='ArtifactscanguardProjectsLocationsPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsReportsConnectorEvaluationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_reports_connectorEvaluations resource."""
+
+    _NAME = 'projects_locations_reports_connectorEvaluations'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.ProjectsLocationsReportsConnectorEvaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists aggregated summaries of policy evaluations for a connector.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsReportsConnectorEvaluationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConnectorEvaluationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/reports/connectorEvaluations',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.reports.connectorEvaluations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/reports/connectorEvaluations',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsReportsConnectorEvaluationsListRequest',
+        response_type_name='ListConnectorEvaluationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsReportsPolicyEvaluationSummariesService(base_api.BaseApiService):
+    """Service class for the projects_locations_reports_policyEvaluationSummaries resource."""
+
+    _NAME = 'projects_locations_reports_policyEvaluationSummaries'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.ProjectsLocationsReportsPolicyEvaluationSummariesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists aggregated summaries of policy evaluations.
+
+      Args:
+        request: (ArtifactscanguardProjectsLocationsReportsPolicyEvaluationSummariesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPolicyEvaluationSummariesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/reports/policyEvaluationSummaries',
+        http_method='GET',
+        method_id='artifactscanguard.projects.locations.reports.policyEvaluationSummaries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/reports/policyEvaluationSummaries',
+        request_field='',
+        request_type_name='ArtifactscanguardProjectsLocationsReportsPolicyEvaluationSummariesListRequest',
+        response_type_name='ListPolicyEvaluationSummariesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsReportsService(base_api.BaseApiService):
+    """Service class for the projects_locations_reports resource."""
+
+    _NAME = 'projects_locations_reports'
+
+    def __init__(self, client):
+      super(ArtifactscanguardV1alpha.ProjectsLocationsReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""

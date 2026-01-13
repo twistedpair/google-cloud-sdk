@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2024 Google LLC. All Rights Reserved.
+# Copyright 2025 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -199,6 +199,28 @@ def AddMaxTopologyDistanceAndAcceleratorTopologyArgsForWorkloadPolicy(parser):
       help=(
           'Specifies the topology of placement and interconnection network'
           ' performance of the group of VMs (MIG / Multi-MIGs).'
+      ),
+  )
+
+
+def AddAcceleratorTopologyModeArgs(parser):
+  """Set arguments for accelerator-topology-mode for workload policies and placement policies."""
+  choices = {
+      'AUTO_CONNECT': (
+          'This creates a static, pre-formed accelerator topology.'
+      ),
+      'PROVISION_ONLY': (
+          'The interconnected chips are connected on demand. At the time of'
+          ' VM creation, the chips are not connected.'
+      ),
+  }
+  parser.add_argument(
+      '--accelerator-topology-mode',
+      choices=choices,
+      type=arg_utils.ChoiceToEnumName,
+      help=(
+          'Defines the accelerator connection strategy for accelerator machine'
+          ' types like TPUs.'
       ),
   )
 

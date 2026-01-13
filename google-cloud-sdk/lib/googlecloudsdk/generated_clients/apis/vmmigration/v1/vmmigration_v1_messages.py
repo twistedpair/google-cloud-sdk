@@ -823,12 +823,15 @@ class BootDiskDefaults(_messages.Message):
         disks that balance performance and cost.
       COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
         type.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY: Hyperdisk
+        balanced high availability disk type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
     COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY = 5
 
   deviceName = _messages.StringField(1)
   diskName = _messages.StringField(2)
@@ -989,12 +992,15 @@ class ComputeEngineDisk(_messages.Message):
         disks that balance performance and cost.
       COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
         type.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY: Hyperdisk
+        balanced high availability disk type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
     COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY = 5
 
   diskId = _messages.StringField(1)
   diskType = _messages.EnumField('DiskTypeValueValuesEnum', 2)
@@ -1152,12 +1158,15 @@ class ComputeEngineTargetDefaults(_messages.Message):
         disks that balance performance and cost.
       COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
         type.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY: Hyperdisk
+        balanced high availability disk type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
     COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY = 5
 
   class LicenseTypeValueValuesEnum(_messages.Enum):
     r"""The license type to use in OS adaptation.
@@ -1359,12 +1368,15 @@ class ComputeEngineTargetDetails(_messages.Message):
         disks that balance performance and cost.
       COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
         type.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY: Hyperdisk
+        balanced high availability disk type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
     COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY = 5
 
   class LicenseTypeValueValuesEnum(_messages.Enum):
     r"""The license type to use in OS adaptation.
@@ -1537,6 +1549,10 @@ class CopyingSourceDiskSnapshotStep(_messages.Message):
 
 class CreatingImageStep(_messages.Message):
   r"""CreatingImageStep contains specific step details."""
+
+
+class CreatingInstanceStep(_messages.Message):
+  r"""CreatingInstanceStep contains specific step details."""
 
 
 class CreatingSourceDiskSnapshotStep(_messages.Message):
@@ -2217,6 +2233,8 @@ class ImageImport(_messages.Message):
       image, will be used by ImageImportJob.
     encryption: Immutable. The encryption details used by the image import
       process during the image adaptation for Compute Engine.
+    instanceTargetDefaults: Immutable. Target details for importing an
+      instance, will be used by ImageImportJob.
     machineImageTargetDefaults: Immutable. Target details for importing a
       machine image, will be used by ImageImportJob.
     name: Output only. The resource path of the ImageImport.
@@ -2229,9 +2247,10 @@ class ImageImport(_messages.Message):
   createTime = _messages.StringField(2)
   diskImageTargetDefaults = _messages.MessageField('DiskImageTargetDetails', 3)
   encryption = _messages.MessageField('Encryption', 4)
-  machineImageTargetDefaults = _messages.MessageField('MachineImageTargetDetails', 5)
-  name = _messages.StringField(6)
-  recentImageImportJobs = _messages.MessageField('ImageImportJob', 7, repeated=True)
+  instanceTargetDefaults = _messages.MessageField('InstanceTargetDetails', 5)
+  machineImageTargetDefaults = _messages.MessageField('MachineImageTargetDetails', 6)
+  name = _messages.StringField(7)
+  recentImageImportJobs = _messages.MessageField('ImageImportJob', 8, repeated=True)
 
 
 class ImageImportJob(_messages.Message):
@@ -2252,6 +2271,8 @@ class ImageImportJob(_messages.Message):
     endTime: Output only. The time the image import was ended.
     errors: Output only. Provides details on the error that led to the image
       import state in case of an error.
+    instanceTargetDetails: Output only. Target details used to import an
+      instance.
     machineImageTargetDetails: Output only. Target details used to import a
       machine image.
     name: Output only. The resource path of the ImageImportJob.
@@ -2286,11 +2307,12 @@ class ImageImportJob(_messages.Message):
   diskImageTargetDetails = _messages.MessageField('DiskImageTargetDetails', 4)
   endTime = _messages.StringField(5)
   errors = _messages.MessageField('Status', 6, repeated=True)
-  machineImageTargetDetails = _messages.MessageField('MachineImageTargetDetails', 7)
-  name = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  steps = _messages.MessageField('ImageImportStep', 10, repeated=True)
-  warnings = _messages.MessageField('MigrationWarning', 11, repeated=True)
+  instanceTargetDetails = _messages.MessageField('InstanceTargetDetails', 7)
+  machineImageTargetDetails = _messages.MessageField('MachineImageTargetDetails', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  steps = _messages.MessageField('ImageImportStep', 11, repeated=True)
+  warnings = _messages.MessageField('MigrationWarning', 12, repeated=True)
 
 
 class ImageImportOsAdaptationParameters(_messages.Message):
@@ -2363,6 +2385,7 @@ class ImageImportStep(_messages.Message):
   Fields:
     adaptingOs: Adapting OS step.
     creatingImage: Creating image step.
+    creatingInstance: Creating instance step.
     endTime: Output only. The time the step has ended.
     initializing: Initializing step.
     loadingSourceFiles: Loading source files step.
@@ -2371,10 +2394,11 @@ class ImageImportStep(_messages.Message):
 
   adaptingOs = _messages.MessageField('AdaptingOSStep', 1)
   creatingImage = _messages.MessageField('CreatingImageStep', 2)
-  endTime = _messages.StringField(3)
-  initializing = _messages.MessageField('InitializingImageImportStep', 4)
-  loadingSourceFiles = _messages.MessageField('LoadingImageSourceFilesStep', 5)
-  startTime = _messages.StringField(6)
+  creatingInstance = _messages.MessageField('CreatingInstanceStep', 3)
+  endTime = _messages.StringField(4)
+  initializing = _messages.MessageField('InitializingImageImportStep', 5)
+  loadingSourceFiles = _messages.MessageField('LoadingImageSourceFilesStep', 6)
+  startTime = _messages.StringField(7)
 
 
 class InitializingImageImportStep(_messages.Message):
@@ -2383,6 +2407,105 @@ class InitializingImageImportStep(_messages.Message):
 
 class InitializingReplicationStep(_messages.Message):
   r"""InitializingReplicationStep contains specific step details."""
+
+
+class InstanceTargetDetails(_messages.Message):
+  r"""The target details of the instance resource that will be created by the
+  image import job.
+
+  Messages:
+    LabelsValue: Optional. The labels to apply to the created instance.
+
+  Fields:
+    additionalLicenses: Optional. Additional licenses to assign to the created
+      instance. Format: https://www.googleapis.com/compute/v1/projects/PROJECT
+      _ID/global/licenses/LICENSE_NAME Or https://www.googleapis.com/compute/b
+      eta/projects/PROJECT_ID/global/licenses/LICENSE_NAME
+    computeScheduling: Optional. The compute scheduling of the instance.
+    deletionProtection: Optional. Whether the instance created has deletion
+      protection enabled.
+    description: Optional. An optional description of the instance.
+    encryption: Optional. Immutable. The encryption to apply to the instance.
+      If the Image Import resource has an encryption, this field must be set
+      to the same encryption key.
+    hostname: Optional. Specifies the hostname of the instance. The specified
+      hostname must be RFC1035 compliant. If hostname is not specified, the
+      default hostname is [INSTANCE_NAME].c.[PROJECT_ID].internal when using
+      the global DNS, and [INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal when
+      using zonal DNS.
+    instanceName: Required. The name of the resource that will be created The
+      resource name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    ipForwardingEnabled: Optional. Allows this instance to send and receive
+      packets with non-matching destination or source IPs. This is required if
+      you plan to use this instance to forward routes.
+    labels: Optional. The labels to apply to the created instance.
+    machineType: Optional. The machine type to create the instance with. If
+      empty, the service will choose a relevant machine type based on the
+      information from the source image. For more information about machine
+      types, please refer to https://cloud.google.com/compute/docs/machine-
+      resource.
+    networkInterfaces: Optional. The network interfaces to create with the
+      created instance.
+    osAdaptationParameters: Optional. Use to set the parameters relevant for
+      the OS adaptation process.
+    serviceAccount: Optional. The service account to assign to the created
+      instance.
+    shieldedInstanceConfig: Optional. Shielded instance configuration.
+    skipOsAdaptation: Optional. Use to skip OS adaptation process.
+    tags: Optional. The tags to apply to the created instance.
+    targetProject: Required. Reference to the TargetProject resource that
+      represents the target project in which the imported instance will be
+      created.
+    zone: Required. The zone to create the instance in.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels to apply to the created instance.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalLicenses = _messages.StringField(1, repeated=True)
+  computeScheduling = _messages.MessageField('ComputeScheduling', 2)
+  deletionProtection = _messages.BooleanField(3)
+  description = _messages.StringField(4)
+  encryption = _messages.MessageField('Encryption', 5)
+  hostname = _messages.StringField(6)
+  instanceName = _messages.StringField(7)
+  ipForwardingEnabled = _messages.BooleanField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  machineType = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  osAdaptationParameters = _messages.MessageField('ImageImportOsAdaptationParameters', 12)
+  serviceAccount = _messages.MessageField('ServiceAccount', 13)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
+  skipOsAdaptation = _messages.MessageField('SkipOsAdaptation', 15)
+  tags = _messages.StringField(16, repeated=True)
+  targetProject = _messages.StringField(17)
+  zone = _messages.StringField(18)
 
 
 class InstantiatingMigratedVMStep(_messages.Message):
@@ -3346,12 +3469,15 @@ class PersistentDiskDefaults(_messages.Message):
         disks that balance performance and cost.
       COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
         type.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY: Hyperdisk
+        balanced high availability disk type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
     COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED_HIGH_AVAILABILITY = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalLabelsValue(_messages.Message):

@@ -456,6 +456,7 @@ class _Sections(object):
     gkebackup: Section, The section containing gkebackup properties for the
       Cloud SDK.
     gkehub: Section, The section containing gkehub properties for the Cloud SDK.
+    grpc: Section, The section containing gRPC properties for the Cloud SDK.
     healthcare: Section, The section containing healthcare properties for the
       Cloud SDK.
     inframanager: Section, The section containing Infra Manager properties for
@@ -571,6 +572,7 @@ class _Sections(object):
     self.functions = _SectionFunctions()
     self.gcloudignore = _SectionGcloudignore()
     self.gkehub = _SectionGkeHub()
+    self.grpc = _SectionGrpc()
     self.gkebackup = _SectionGkebackup()
     self.healthcare = _SectionHealthcare()
     self.inframanager = _SectionInfraManager()
@@ -655,6 +657,7 @@ class _Sections(object):
         self.functions,
         self.gcloudignore,
         self.gkebackup,
+        self.grpc,
         self.healthcare,
         self.inframanager,
         self.interactive,
@@ -1249,6 +1252,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.certificatemanager = self._Add(
         'certificatemanager', command='gcloud certificate-manager')
     self.cloudaicompanion = self._Add('cloudaicompanion', hidden=True)
+    self.cloudapiregistry = self._Add(
+        'cloudapiregistry', command='gcloud api-registry')
     self.cloudasset = self._Add('cloudasset', command='gcloud asset')
     self.cloudbilling = self._Add('cloudbilling', command='gcloud billing')
     self.cloudbuild = self._Add('cloudbuild', command='gcloud builds')
@@ -1798,6 +1803,15 @@ class _SectionAuth(_Section):
         'service_account_disable_id_token_refresh',
         default=False,
         help_text='If True, disable ID token refresh for service account.',
+    )
+    self.git_helper_use_adc = self._AddBool(
+        'git_helper_use_adc',
+        default=False,
+        hidden=True,
+        help_text=(
+            'If True, `gcloud auth git-helper` will use Application Default'
+            ' Credentials.'
+        ),
     )
 
 
@@ -2509,7 +2523,8 @@ class _SectionCore(_Section):
     )
 
     self.credentialed_hosted_repo_domains = self._Add(
-        'credentialed_hosted_repo_domains', hidden=True)
+        'credentialed_hosted_repo_domains', hidden=True
+    )
 
     def ConsoleLogFormatValidator(console_log_format):
       if console_log_format is None:
@@ -2876,6 +2891,26 @@ class _SectionGkebackup(_Section):
             'Default restore ID to use when working with Backup for GKE '
             'Services resources. When a `--restore` flag is required but not '
             'provided, the command will fall back to this value.'))
+
+
+class _SectionGrpc(_Section):
+  """Contains the properties for gRPC clients."""
+
+  def __init__(self):
+    super(_SectionGrpc, self).__init__('grpc', hidden=True)
+    self.enable_http2_bdp_probe = self._AddBool(
+        'enable_http2_bdp_probe',
+        default=False,
+        hidden=True,
+        help_text='If True, gRPC will send BDP probes to estimate bandwidth.',
+    )
+    self.http2_lookahead_bytes = self._Add(
+        'http2_lookahead_bytes',
+        default=0,
+        hidden=True,
+        validator=_IntegerValidator,
+        help_text='The number of bytes gRPC will look ahead in the TCP stream.',
+    )
 
 
 class _SectionHealthcare(_Section):
@@ -3587,6 +3622,16 @@ class _SectionStorage(_Section):
         hidden=True,
         help_text=(
             'Enables zonal buckets bidi streaming for gcloud storage commands.'
+        ),
+    )
+
+    self.attempt_grpc_direct_path = self._AddBool(
+        'attempt_grpc_direct_path',
+        default=True,
+        hidden=True,
+        help_text=(
+            'If True, gRPC will attempt to use DirectPath for Zonal Buckets.'
+            'To disable DirectPath, set this property to False.'
         ),
     )
 

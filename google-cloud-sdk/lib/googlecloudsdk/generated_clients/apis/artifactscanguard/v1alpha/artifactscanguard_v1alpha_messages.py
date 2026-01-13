@@ -72,7 +72,8 @@ class ArtifactEvaluation(_messages.Message):
       image.
     name: Output only. The name of the artifactEvaluation, in the format `orga
       nizations/{organization_id}/locations/global/artifactEvaluations/{artifa
-      ct_evaluation_id}`.
+      ct_evaluation_id}` or `projects/{project_id}/locations/global/artifactEv
+      aluations/{artifact_evaluation_id}`
     reconciling: Output only. Indicates if changes are in flight. Whether the
       connector is in the process of being updated. See
       https://google.aip.dev/128 for more details.
@@ -152,7 +153,8 @@ class ArtifactPoliciesEvaluation(_messages.Message):
     name: Output only. Identifier. Resource name for the
       artifactPoliciesEvaluation, assigned by the server. Format: organization
       s/{organization_id}/locations/{location}/artifactPoliciesEvaluations/{ar
-      tifact_policies_evaluation_id}
+      tifact_policies_evaluation_id} projects/{project}/locations/{location}/a
+      rtifactPoliciesEvaluations/{artifact_policies_evaluation_id}
     scanTime: Output only. The timestamp when the artifact scan and evaluation
       were performed.
   """
@@ -162,86 +164,6 @@ class ArtifactPoliciesEvaluation(_messages.Message):
   evaluationResponse = _messages.MessageField('EvaluationResponse', 3)
   name = _messages.StringField(4)
   scanTime = _messages.StringField(5)
-
-
-class ArtifactscanguardFoldersLocationsConnectorsCreateRequest(_messages.Message):
-  r"""A ArtifactscanguardFoldersLocationsConnectorsCreateRequest object.
-
-  Fields:
-    connector: A Connector resource to be passed as the request body.
-    connectorId: Required. Id of the requesting object connector_id from the
-      method_signature of Create RPC
-    parent: Required. The parent resource where this connector will be
-      created. Format: organizations/{organization_id}/locations/{location}
-  """
-
-  connector = _messages.MessageField('Connector', 1)
-  connectorId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class ArtifactscanguardFoldersLocationsConnectorsDeleteRequest(_messages.Message):
-  r"""A ArtifactscanguardFoldersLocationsConnectorsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ArtifactscanguardFoldersLocationsConnectorsGetRequest(_messages.Message):
-  r"""A ArtifactscanguardFoldersLocationsConnectorsGetRequest object.
-
-  Fields:
-    name: Required. The name of the connector, in the format
-      `organizations/{organization}/locations/global/connectors/{connector_id}
-      `
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ArtifactscanguardFoldersLocationsConnectorsListRequest(_messages.Message):
-  r"""A ArtifactscanguardFoldersLocationsConnectorsListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListConnectorsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ArtifactscanguardFoldersLocationsConnectorsPatchRequest(_messages.Message):
-  r"""A ArtifactscanguardFoldersLocationsConnectorsPatchRequest object.
-
-  Fields:
-    connector: A Connector resource to be passed as the request body.
-    name: Optional. The name of the connector. Format: `organizations/{organiz
-      ation}/locations/{location}/connectors/{connector_id}`,
-      `folders/{folder}/locations/{location}/connectors/{connector_id}`, or
-      `projects/{project}/locations/{location}/connectors/{connector_id}`.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Connector resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields present in the request will be
-      overwritten.
-  """
-
-  connector = _messages.MessageField('Connector', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class ArtifactscanguardFoldersLocationsGetRequest(_messages.Message):
@@ -358,7 +280,8 @@ class ArtifactscanguardOrganizationsLocationsArtifactEvaluationsDataGatewayReque
     artifactMetadata_sbomUri: Optional. The unique GCS file name where sbom is
       stored. Format: [BUCKET_NAME]/[OBJECT_NAME]
     parent: Required. The parent resource name, in the format
-      `organizations/{organization}/locations/global`.
+      `organizations/{organization}/locations/global` or
+      `projects/{project}/locations/global`.
   """
 
   artifactMetadata_buildTime = _messages.StringField(1)
@@ -378,7 +301,8 @@ class ArtifactscanguardOrganizationsLocationsArtifactEvaluationsGetRequest(_mess
   Fields:
     name: Required. The name of the artifactEvaluation, in the format `organiz
       ations/{organization}/locations/global/artifactEvaluations/{artifact_eva
-      luation_id}`
+      luation_id}` or `projects/{project_number}/locations/global/artifactEval
+      uations/{artifact_evaluation_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -390,7 +314,8 @@ class ArtifactscanguardOrganizationsLocationsArtifactEvaluationsRunRequest(_mess
 
   Fields:
     parent: Required. The parent resource name, in the format
-      `organizations/{organization_id}/locations/global`.
+      `organizations/{organization_id}/locations/global` or
+      `projects/{project_id}/locations/global`.
     runArtifactEvaluationRequest: A RunArtifactEvaluationRequest resource to
       be passed as the request body.
   """
@@ -407,7 +332,9 @@ class ArtifactscanguardOrganizationsLocationsArtifactPoliciesEvaluationsGetReque
   Fields:
     name: Required. The full resource name of the policy to retrieve. Format:
       organizations/{organization_id}/locations/{location_id}/artifactPolicies
-      Evaluation/{artifact_policies_evaluation_id}
+      Evaluation/{artifact_policies_evaluation_id} projects/{project}/location
+      s/{location_id}/artifactPoliciesEvaluation/{artifact_policies_evaluation
+      _id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -420,7 +347,8 @@ class ArtifactscanguardOrganizationsLocationsArtifactPoliciesEvaluationsRunReque
 
   Fields:
     parent: Required. The parent resource where this policy evaluation will be
-      created. Format: organizations/{organization_id}/locations/{location}
+      created. Format: - organizations/{organization_id}/locations/{location}
+      - projects/{project}/locations/{location}
     runArtifactPoliciesEvaluationRequest: A
       RunArtifactPoliciesEvaluationRequest resource to be passed as the
       request body.
@@ -438,7 +366,8 @@ class ArtifactscanguardOrganizationsLocationsConnectorsCreateRequest(_messages.M
     connectorId: Required. Id of the requesting object connector_id from the
       method_signature of Create RPC
     parent: Required. The parent resource where this connector will be
-      created. Format: organizations/{organization_id}/locations/{location}
+      created. Format: - organizations/{organization_id}/locations/{location}
+      - projects/{project}/locations/{location}
   """
 
   connector = _messages.MessageField('Connector', 1)
@@ -450,7 +379,9 @@ class ArtifactscanguardOrganizationsLocationsConnectorsDeleteRequest(_messages.M
   r"""A ArtifactscanguardOrganizationsLocationsConnectorsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource ## Format: organizations/{organizatio
+      n_id}/locations/{location}/connectors/{connector_id} -
+      projects/{project}/locations/{location}/connectors/{connector_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -460,9 +391,9 @@ class ArtifactscanguardOrganizationsLocationsConnectorsGetRequest(_messages.Mess
   r"""A ArtifactscanguardOrganizationsLocationsConnectorsGetRequest object.
 
   Fields:
-    name: Required. The name of the connector, in the format
+    name: Required. The name of the connector, in the format -
       `organizations/{organization}/locations/global/connectors/{connector_id}
-      `
+      ` - `projects/{project}/locations/global/connectors/{connector_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -478,7 +409,9 @@ class ArtifactscanguardOrganizationsLocationsConnectorsListRequest(_messages.Mes
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListConnectorsRequest
+    parent: Required. Parent value for ListConnectorsRequest Format: -
+      organizations/{organization_id}/locations/{location} -
+      projects/{project}/locations/{location}
   """
 
   filter = _messages.StringField(1)
@@ -603,7 +536,8 @@ class ArtifactscanguardOrganizationsLocationsPoliciesCreateRequest(_messages.Mes
 
   Fields:
     parent: Required. The parent resource where this policy will be created.
-      Format: organizations/{organization_id}/locations/{location}
+      Format: - organizations/{organization_id}/locations/{location} -
+      projects/{project_number}/locations/{location}
     policy: A Policy resource to be passed as the request body.
     policyId: Required. The ID of the policy to create. This is the last part
       of the full name of the policy resource. It is required for API
@@ -627,9 +561,9 @@ class ArtifactscanguardOrganizationsLocationsPoliciesDeleteRequest(_messages.Mes
       value. If the values don't match, then the request fails with an ABORTED
       error. If you omit this value, then the policy is deleted regardless of
       its current `etag` value.
-    name: Required. The full resource name of the policy to delete. Format:
+    name: Required. The full resource name of the policy to delete. Format: -
       organizations/{organization_id}/locations/{location}/policies/{policy_id
-      }
+      } - projects/{project_number}/locations/{location}/policies/{policy_id}
     validateOnly: Optional. True to perform validations necessary for updating
       the resource, but not actually perform the action.
   """
@@ -644,8 +578,9 @@ class ArtifactscanguardOrganizationsLocationsPoliciesGetRequest(_messages.Messag
 
   Fields:
     name: Required. The full resource name of the policy to retrieve. Format:
-      organizations/{organization_id}/locations/{location}/policies/{policy_id
-      }
+      - organizations/{organization_id}/locations/{location}/policies/{policy_
+      id} -
+      projects/{project_number}/locations/{location}/policies/{policy_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -667,7 +602,8 @@ class ArtifactscanguardOrganizationsLocationsPoliciesListRequest(_messages.Messa
     pageToken: Optional. A page token received from a previous `ListPolicies`
       call. Provide this to retrieve the subsequent page.
     parent: Required. The parent resource whose policies are to be listed.
-      Format: organizations/{organization_id}/locations/{location}
+      Format: - organizations/{organization_id}/locations/{location} -
+      projects/{project_number}/locations/{location}
   """
 
   filter = _messages.StringField(1)
@@ -683,7 +619,8 @@ class ArtifactscanguardOrganizationsLocationsPoliciesPatchRequest(_messages.Mess
     allowMissing: Optional. If allow_missing is set, and the resource is not
       found, it will be created. The field mask will then be ignored.
     name: Output only. Identifier. Format: organizations/{organization_id}/loc
-      ations/{location_id}/policies/{policy_id}
+      ations/{location_id}/policies/{policy_id} or
+      projects/{project_number}/locations/{location_id}/policies/{policy_id}
     policy: A Policy resource to be passed as the request body.
     updateMask: Optional. A mask specifying which fields in the Policy to
       update. If a FieldMask is not provided, the system will default to
@@ -709,7 +646,8 @@ class ArtifactscanguardOrganizationsLocationsReportsConnectorEvaluationsListRequ
       maximum value is 1000
     pageToken: Optional. A page token received from a previous call.
     parent: Required. The parent resource name for which to list summaries.
-      Format: organizations/{organization_id}/locations/{location_id}
+      Format: - organizations/{organization_id}/locations/{location_id} -
+      projects/{project}/locations/{location_id}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -729,12 +667,117 @@ class ArtifactscanguardOrganizationsLocationsReportsPolicyEvaluationSummariesLis
       `ListPolicyScopeSummary` call. Provide this to retrieve the subsequent
       page.
     parent: Required. The parent resource whose policies are to be listed.
-      Format: organizations/{organization_id}/locations/{location_id}
+      Format: - organizations/{organization_id}/locations/{location_id} -
+      projects/{project}/locations/{location_id}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest(_messages.Message):
+  r"""A
+  ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest
+  object.
+
+  Fields:
+    artifactMetadata_buildTime: Optional. The time at which the image was
+      built.
+    artifactMetadata_imageDigest: Required. SHA256 hash of the image. For eg.:
+      sha256:3b4173355427fabc9e0ddf909b0a3b4a715a831470a9a548839f6e6caa3b7e87
+      Format: ^sha256:[a-f0-9]{64}$
+    artifactMetadata_imageId: Optional. Unique image_id generated for an image
+      after each build. For eg.: 4ecb2f62fbbd Format: ^[a-f0-9]{12}$
+    artifactMetadata_imageName: Required. Name of docker image, usually of
+      format [REGISTRY_HOST[:PORT]/][USERNAME/]REPOSITORY, for eg.: nginx
+      myrepo/myapp gcr.io/my-project/myapp
+      registry.example.com:5000/custom/image format:
+      ^([a-z0-9]+(?:._-+)*)(/[a-z0-9]+(?:._-+)*)*$
+    artifactMetadata_imageTag: Required. A tag identifies a specific version
+      of an image. For eg.: latest v1.0.0 release-2024 123abc_test Format:
+      ^\w{0,127}$
+    artifactMetadata_purlUri: Optional. The unique GCS file name where purl is
+      stored. Format: [BUCKET_NAME]/[OBJECT_NAME]
+    artifactMetadata_sbomUri: Optional. The unique GCS file name where sbom is
+      stored. Format: [BUCKET_NAME]/[OBJECT_NAME]
+    parent: Required. The parent resource name, in the format
+      `organizations/{organization}/locations/global` or
+      `projects/{project}/locations/global`.
+  """
+
+  artifactMetadata_buildTime = _messages.StringField(1)
+  artifactMetadata_imageDigest = _messages.StringField(2)
+  artifactMetadata_imageId = _messages.StringField(3)
+  artifactMetadata_imageName = _messages.StringField(4)
+  artifactMetadata_imageTag = _messages.StringField(5, repeated=True)
+  artifactMetadata_purlUri = _messages.StringField(6)
+  artifactMetadata_sbomUri = _messages.StringField(7)
+  parent = _messages.StringField(8, required=True)
+
+
+class ArtifactscanguardProjectsLocationsArtifactEvaluationsGetRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsArtifactEvaluationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the artifactEvaluation, in the format `organiz
+      ations/{organization}/locations/global/artifactEvaluations/{artifact_eva
+      luation_id}` or `projects/{project_number}/locations/global/artifactEval
+      uations/{artifact_evaluation_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardProjectsLocationsArtifactEvaluationsRunRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsArtifactEvaluationsRunRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource name, in the format
+      `organizations/{organization_id}/locations/global` or
+      `projects/{project_id}/locations/global`.
+    runArtifactEvaluationRequest: A RunArtifactEvaluationRequest resource to
+      be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  runArtifactEvaluationRequest = _messages.MessageField('RunArtifactEvaluationRequest', 2)
+
+
+class ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsGetRequest(_messages.Message):
+  r"""A
+  ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The full resource name of the policy to retrieve. Format:
+      organizations/{organization_id}/locations/{location_id}/artifactPolicies
+      Evaluation/{artifact_policies_evaluation_id} projects/{project}/location
+      s/{location_id}/artifactPoliciesEvaluation/{artifact_policies_evaluation
+      _id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsRunRequest(_messages.Message):
+  r"""A
+  ArtifactscanguardProjectsLocationsArtifactPoliciesEvaluationsRunRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource where this policy evaluation will be
+      created. Format: - organizations/{organization_id}/locations/{location}
+      - projects/{project}/locations/{location}
+    runArtifactPoliciesEvaluationRequest: A
+      RunArtifactPoliciesEvaluationRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  runArtifactPoliciesEvaluationRequest = _messages.MessageField('RunArtifactPoliciesEvaluationRequest', 2)
 
 
 class ArtifactscanguardProjectsLocationsConnectorsCreateRequest(_messages.Message):
@@ -745,7 +788,8 @@ class ArtifactscanguardProjectsLocationsConnectorsCreateRequest(_messages.Messag
     connectorId: Required. Id of the requesting object connector_id from the
       method_signature of Create RPC
     parent: Required. The parent resource where this connector will be
-      created. Format: organizations/{organization_id}/locations/{location}
+      created. Format: - organizations/{organization_id}/locations/{location}
+      - projects/{project}/locations/{location}
   """
 
   connector = _messages.MessageField('Connector', 1)
@@ -757,7 +801,9 @@ class ArtifactscanguardProjectsLocationsConnectorsDeleteRequest(_messages.Messag
   r"""A ArtifactscanguardProjectsLocationsConnectorsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource ## Format: organizations/{organizatio
+      n_id}/locations/{location}/connectors/{connector_id} -
+      projects/{project}/locations/{location}/connectors/{connector_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -767,9 +813,9 @@ class ArtifactscanguardProjectsLocationsConnectorsGetRequest(_messages.Message):
   r"""A ArtifactscanguardProjectsLocationsConnectorsGetRequest object.
 
   Fields:
-    name: Required. The name of the connector, in the format
+    name: Required. The name of the connector, in the format -
       `organizations/{organization}/locations/global/connectors/{connector_id}
-      `
+      ` - `projects/{project}/locations/global/connectors/{connector_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -785,7 +831,9 @@ class ArtifactscanguardProjectsLocationsConnectorsListRequest(_messages.Message)
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListConnectorsRequest
+    parent: Required. Parent value for ListConnectorsRequest Format: -
+      organizations/{organization_id}/locations/{location} -
+      projects/{project}/locations/{location}
   """
 
   filter = _messages.StringField(1)
@@ -906,6 +954,152 @@ class ArtifactscanguardProjectsLocationsOperationsListRequest(_messages.Message)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   returnPartialSuccess = _messages.BooleanField(5)
+
+
+class ArtifactscanguardProjectsLocationsPoliciesCreateRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsPoliciesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this policy will be created.
+      Format: - organizations/{organization_id}/locations/{location} -
+      projects/{project_number}/locations/{location}
+    policy: A Policy resource to be passed as the request body.
+    policyId: Required. The ID of the policy to create. This is the last part
+      of the full name of the policy resource. It is required for API
+      consistency.
+    validateOnly: Optional. True to perform validations necessary for updating
+      the resource, but not actually perform the action.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  policy = _messages.MessageField('Policy', 2)
+  policyId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class ArtifactscanguardProjectsLocationsPoliciesDeleteRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsPoliciesDeleteRequest object.
+
+  Fields:
+    etag: Optional. An opaque identifier for the current version of the
+      policy. If you provide this value, then it must match the existing
+      value. If the values don't match, then the request fails with an ABORTED
+      error. If you omit this value, then the policy is deleted regardless of
+      its current `etag` value.
+    name: Required. The full resource name of the policy to delete. Format: -
+      organizations/{organization_id}/locations/{location}/policies/{policy_id
+      } - projects/{project_number}/locations/{location}/policies/{policy_id}
+    validateOnly: Optional. True to perform validations necessary for updating
+      the resource, but not actually perform the action.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class ArtifactscanguardProjectsLocationsPoliciesGetRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The full resource name of the policy to retrieve. Format:
+      - organizations/{organization_id}/locations/{location}/policies/{policy_
+      id} -
+      projects/{project_number}/locations/{location}/policies/{policy_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactscanguardProjectsLocationsPoliciesListRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsPoliciesListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression to restrict the policies returned.
+      The filter is a sequence of field-operator-value expressions, separated
+      by "AND". Fields can be "policy_id", "enforcement_action",
+      "enablement_state". The operators are "=" (equals) and "!=" (not
+      equals). Example: "policy_id=my-policy AND enablement_state=ENABLED"
+    pageSize: Optional. The maximum number of policies to return. The service
+      may return fewer than this value. If unspecified, at most 100 policies
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token received from a previous `ListPolicies`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent resource whose policies are to be listed.
+      Format: - organizations/{organization_id}/locations/{location} -
+      projects/{project_number}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ArtifactscanguardProjectsLocationsPoliciesPatchRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsPoliciesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If allow_missing is set, and the resource is not
+      found, it will be created. The field mask will then be ignored.
+    name: Output only. Identifier. Format: organizations/{organization_id}/loc
+      ations/{location_id}/policies/{policy_id} or
+      projects/{project_number}/locations/{location_id}/policies/{policy_id}
+    policy: A Policy resource to be passed as the request body.
+    updateMask: Optional. A mask specifying which fields in the Policy to
+      update. If a FieldMask is not provided, the system will default to
+      updating all fields.
+    validateOnly: Optional. True to perform validations necessary for updating
+      the resource, but not actually perform the action.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  policy = _messages.MessageField('Policy', 3)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ArtifactscanguardProjectsLocationsReportsConnectorEvaluationsListRequest(_messages.Message):
+  r"""A
+  ArtifactscanguardProjectsLocationsReportsConnectorEvaluationsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of entries to return. If
+      unspecified, a default number of 100 entries will be returned. The
+      maximum value is 1000
+    pageToken: Optional. A page token received from a previous call.
+    parent: Required. The parent resource name for which to list summaries.
+      Format: - organizations/{organization_id}/locations/{location_id} -
+      projects/{project}/locations/{location_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactscanguardProjectsLocationsReportsPolicyEvaluationSummariesListRequest(_messages.Message):
+  r"""A ArtifactscanguardProjectsLocationsReportsPolicyEvaluationSummariesList
+  Request object.
+
+  Fields:
+    pageSize: Optional. The maximum number of entries to return. If
+      unspecified, a default number of 100 entries will be returned. The
+      maximum value is 1000
+    pageToken: Optional. A page token received from a previous
+      `ListPolicyScopeSummary` call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. The parent resource whose policies are to be listed.
+      Format: - organizations/{organization_id}/locations/{location_id} -
+      projects/{project}/locations/{location_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class BinAuthzPolicyFieldDrift(_messages.Message):
@@ -1048,6 +1242,7 @@ class ConnectorEvaluationSummary(_messages.Message):
   r"""Represents an aggregated summary of evaluations for a single connector.
 
   Enums:
+    ParentTypeValueValuesEnum: The parent type of the connector.
     PipelineTypeValueValuesEnum: The Pipeline type (e.g., GITHUB_ACTIONS,
       GITLAB_CI).
 
@@ -1059,10 +1254,24 @@ class ConnectorEvaluationSummary(_messages.Message):
     failedScans: Number of scans that failed policy evaluation.
     name: full resource name of the connector. Format: organizations/{organiza
       tion_id}/locations/{location_id}/connectors/{connector_id}
+      projects/{project}/locations/{location_id}/connectors/{connector_id}
+    parentType: The parent type of the connector.
     pipelineType: The Pipeline type (e.g., GITHUB_ACTIONS, GITLAB_CI).
     policyIds: The list of policy ids defined for this connector.
     totalScans: Total number of scans performed via this connector.
   """
+
+  class ParentTypeValueValuesEnum(_messages.Enum):
+    r"""The parent type of the connector.
+
+    Values:
+      PARENT_TYPE_UNSPECIFIED: The parent type is unspecified.
+      ORGANIZATION: Organization-level connector.
+      PROJECT: Project-level connector.
+    """
+    PARENT_TYPE_UNSPECIFIED = 0
+    ORGANIZATION = 1
+    PROJECT = 2
 
   class PipelineTypeValueValuesEnum(_messages.Enum):
     r"""The Pipeline type (e.g., GITHUB_ACTIONS, GITLAB_CI).
@@ -1084,9 +1293,10 @@ class ConnectorEvaluationSummary(_messages.Message):
   displayName = _messages.StringField(4)
   failedScans = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   name = _messages.StringField(6)
-  pipelineType = _messages.EnumField('PipelineTypeValueValuesEnum', 7)
-  policyIds = _messages.StringField(8, repeated=True)
-  totalScans = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  parentType = _messages.EnumField('ParentTypeValueValuesEnum', 7)
+  pipelineType = _messages.EnumField('PipelineTypeValueValuesEnum', 8)
+  policyIds = _messages.StringField(9, repeated=True)
+  totalScans = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class Empty(_messages.Message):
@@ -1096,39 +1306,6 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
-
-
-class EnableAdmissionControl(_messages.Message):
-  r"""EnableAdmissionControl defines the BinAuthz policy details when the
-  enable_admission_control is true.
-
-  Enums:
-    EnforcementActionValueValuesEnum: Required. The enforcement action to take
-      when this policy is violated in the runtime scope.
-
-  Fields:
-    enforcementAction: Required. The enforcement action to take when this
-      policy is violated in the runtime scope.
-  """
-
-  class EnforcementActionValueValuesEnum(_messages.Enum):
-    r"""Required. The enforcement action to take when this policy is violated
-    in the runtime scope.
-
-    Values:
-      RUNTIME_ENFORCEMENT_ACTION_UNSPECIFIED: The enforcement action is
-        unspecified.
-      AUDIT_ONLY: The policy is evaluated but not enforced. The policy
-        violation is only logged and not reported.
-      BLOCK_DEPLOYMENT: The policy is evaluated and enforced. The policy
-        violation is reported and the resource is blocked. The deployment will
-        be blocked based on policy evaluation in registry.
-    """
-    RUNTIME_ENFORCEMENT_ACTION_UNSPECIFIED = 0
-    AUDIT_ONLY = 1
-    BLOCK_DEPLOYMENT = 2
-
-  enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 1)
 
 
 class EvaluatedPolicy(_messages.Message):
@@ -1634,7 +1811,8 @@ class Pipeline(_messages.Message):
   Fields:
     connectorIds: Required. The connector ID(s) that this policy is associated
       with. Format: organizations/{organization_id}/locations/{location_id}/co
-      nnectors/{connector_id}
+      nnectors/{connector_id} or projects/{project_number}/locations/{location
+      _id}/connectors/{connector_id}
     enforcementAction: Required. The enforcement action to take when this
       policy is violated in the pipeline scope.
     imageNamePatterns: Optional. The image name patterns that this policy is
@@ -1685,7 +1863,8 @@ class PipelineEvaluationScope(_messages.Message):
   Fields:
     connectorId: Required. The connector ID that this policy is associated
       with. Format: organizations/{organization_id}/locations/{location_id}/co
-      nnectors/{connector_id}
+      nnectors/{connector_id} projects/{project_number}/locations/{location_id
+      }/connectors/{connector_id}
   """
 
   connectorId = _messages.StringField(1)
@@ -1720,7 +1899,8 @@ class Policy(_messages.Message):
       the `etag` when you delete a policy, to help ensure that you're deleting
       the intended version of the policy.
     name: Output only. Identifier. Format: organizations/{organization_id}/loc
-      ations/{location_id}/policies/{policy_id}
+      ations/{location_id}/policies/{policy_id} or
+      projects/{project_number}/locations/{location_id}/policies/{policy_id}
     reconciling: Output only. Whether the policy is in the process of being
       updated.
     scope: Required. Defines where this policy will be applicable.
@@ -1808,6 +1988,7 @@ class PolicyEvaluationSummary(_messages.Message):
   message corresponds to one row in your target table.
 
   Enums:
+    ParentTypeValueValuesEnum: The parent type of the policy.
     ScopesValueListEntryValuesEnum:
     StateValueValuesEnum: Output only. The state of policy
 
@@ -1821,12 +2002,26 @@ class PolicyEvaluationSummary(_messages.Message):
       policy.
     name: Full resource name of the policy. Format: organizations/{organizatio
       n_id}/locations/{location_id}/policies/{policy_id}
+      projects/{project}/locations/{location_id}/policies/{policy_id}
+    parentType: The parent type of the policy.
     passedCount: The count of evaluations that passed.
     scopes: The scopes the policy applies to (e.g., "PIPELINE_SCOPE",
       "REGISTRY_SCOPE").
     state: Output only. The state of policy
     totalPolicyEvaluations: Total number of times this policy was evaluated.
   """
+
+  class ParentTypeValueValuesEnum(_messages.Enum):
+    r"""The parent type of the policy.
+
+    Values:
+      PARENT_TYPE_UNSPECIFIED: The parent type is unspecified.
+      ORGANIZATION: Organization-level connector.
+      PROJECT: Project-level connector.
+    """
+    PARENT_TYPE_UNSPECIFIED = 0
+    ORGANIZATION = 1
+    PROJECT = 2
 
   class ScopesValueListEntryValuesEnum(_messages.Enum):
     r"""ScopesValueListEntryValuesEnum enum type.
@@ -1868,10 +2063,11 @@ class PolicyEvaluationSummary(_messages.Message):
   failedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   lastScanTime = _messages.StringField(5)
   name = _messages.StringField(6)
-  passedCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  scopes = _messages.EnumField('ScopesValueListEntryValuesEnum', 8, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  totalPolicyEvaluations = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  parentType = _messages.EnumField('ParentTypeValueValuesEnum', 7)
+  passedCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  scopes = _messages.EnumField('ScopesValueListEntryValuesEnum', 9, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  totalPolicyEvaluations = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class PolicyScope(_messages.Message):
@@ -1896,9 +2092,9 @@ class RegistryEvaluationScope(_messages.Message):
 
   Fields:
     garRepository: Optional. The gar repository that this artifact evaluation
-      is associated with. Format:
-      {location}-[pkg_type].pkg.dev/{project_id}/REPOSITORY_PATTERN or
-      {us|eu|asia}.gcr.io/{project_id} or gcr.io/{project_id}
+      is associated with. Format: -
+      {location}-[pkg_type].pkg.dev/{project_id}/REPOSITORY_PATTERN -
+      {us|eu|asia}.gcr.io/{project_id} - gcr.io/{project_id}
     projectId: Optional. The project that is associated with the registry.
       Format: projects/{project_id}
   """
@@ -1925,6 +2121,10 @@ class RegistryScope(_messages.Message):
       is associated with. Format:
       {location}-[pkg_type].pkg.dev/{project_id}/REPOSITORY_PATTERN or
       {us|eu|asia}.gcr.io/{project_id} or gcr.io/{project_id}
+    garRepositoryNames: Optional. The gar repositories that this policy is
+      associated with. Format:
+      {location}-[pkg_type].pkg.dev/{project_id}/{repository_id} or
+      {us|eu|asia}.gcr.io/{project_id} or gcr.io/{project_id}
     imageNamePatterns: Optional. The image name patterns that this policy is
       associated with. This will be a fully qualified image name. Format:
       full_repo_name/{image_name_pattern} where image_name_pattern is a regex.
@@ -1950,8 +2150,9 @@ class RegistryScope(_messages.Message):
   admissionControl = _messages.MessageField('AdmissionControl', 1)
   enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 2)
   garRepositoryNamePatterns = _messages.StringField(3, repeated=True)
-  imageNamePatterns = _messages.StringField(4, repeated=True)
-  projectIds = _messages.StringField(5, repeated=True)
+  garRepositoryNames = _messages.StringField(4, repeated=True)
+  imageNamePatterns = _messages.StringField(5, repeated=True)
+  projectIds = _messages.StringField(6, repeated=True)
 
 
 class RelatedReference(_messages.Message):
@@ -1978,7 +2179,8 @@ class RunArtifactEvaluationRequest(_messages.Message):
       artifact.
     pipelineConnector: Immutable. ID of the pipeline instance that triggered
       the evaluation. Format: {connector_id} or organizations/{organization}/l
-      ocations/{location}/connectors/{connector_id}
+      ocations/{location}/connectors/{connector_id} or
+      projects/{project}/locations/{location}/connectors/{connector_id}
     pipelineContext: Required. PipelineContext contains details about the
       source which triggered the evaluation.
     verbose: Optional. Indicates if the evaluation should be verbose.
@@ -2053,54 +2255,28 @@ class RuntimeEvaluationScope(_messages.Message):
 class RuntimeScope(_messages.Message):
   r"""RuntimeScope has the project IDs that are associated with the policy.
 
-  Enums:
-    EnforcementActionValueValuesEnum: The enforcement action to take when this
-      policy is violated in the runtime scope.
-
   Fields:
-    enableAdmissionControl: Whether to enable admission control for the
-      runtime scope. If true, the BinAuthz policy will be created based on the
-      enforcement action.
-    enforcementAction: The enforcement action to take when this policy is
-      violated in the runtime scope.
     gkeClusterNamePatterns: Optional. Google Kubernetes Engine clusters that
       are associated with the policy. Format: //container.googleapis.com/proje
       cts/{project_id}/locations/{location}/clusters/{cluster_name_pattern}
       where cluster_name_pattern is a regex.
+    gkeClusterNames: Optional. Google Kubernates Engine clusters that are
+      associated with the policy. Format: //container.googleapis.com/projects/
+      {project_id}/locations/{location}/clusters/{cluster_id} where cluster id
+      must belong to one of the projects in the project_ids field.
     gkeClusterNamespacePatterns: Optional. Google Kubernates Engine namespaces
       that are associated with the policy. Format: //container.googleapis.com/
       projects/{project_id}/locations/{location}/clusters/{cluster_id}/k8s/nam
       espaces/{namepace_pattern} where namespace_pattern is a regex.
-    overrideBinauthzPolicy: Whether to override the existing BinAuthz policy
-      for the projects in the runtime scope.
     projectIds: Required. The project ID that this policy is associated with.
       At least one project_id is required. Format: projects/{project_id} The
       policy will be applied to all the clusters in the project.
   """
 
-  class EnforcementActionValueValuesEnum(_messages.Enum):
-    r"""The enforcement action to take when this policy is violated in the
-    runtime scope.
-
-    Values:
-      RUNTIME_ENFORCEMENT_ACTION_UNSPECIFIED: The enforcement action is
-        unspecified.
-      AUDIT_ONLY: The policy is evaluated but not enforced. The policy
-        violation is only logged and not reported.
-      BLOCK_DEPLOYMENT: The policy is evaluated and enforced. The policy
-        violation is reported and the resource is blocked. The deployment will
-        be blocked based on policy evaluation in registry.
-    """
-    RUNTIME_ENFORCEMENT_ACTION_UNSPECIFIED = 0
-    AUDIT_ONLY = 1
-    BLOCK_DEPLOYMENT = 2
-
-  enableAdmissionControl = _messages.MessageField('EnableAdmissionControl', 1)
-  enforcementAction = _messages.EnumField('EnforcementActionValueValuesEnum', 2)
-  gkeClusterNamePatterns = _messages.StringField(3, repeated=True)
-  gkeClusterNamespacePatterns = _messages.StringField(4, repeated=True)
-  overrideBinauthzPolicy = _messages.BooleanField(5)
-  projectIds = _messages.StringField(6, repeated=True)
+  gkeClusterNamePatterns = _messages.StringField(1, repeated=True)
+  gkeClusterNames = _messages.StringField(2, repeated=True)
+  gkeClusterNamespacePatterns = _messages.StringField(3, repeated=True)
+  projectIds = _messages.StringField(4, repeated=True)
 
 
 class ScanMetadata(_messages.Message):
@@ -2342,3 +2518,17 @@ encoding.AddCustomJsonFieldMapping(
     ArtifactscanguardOrganizationsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_purlUri', 'artifactMetadata.purlUri')
 encoding.AddCustomJsonFieldMapping(
     ArtifactscanguardOrganizationsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_sbomUri', 'artifactMetadata.sbomUri')
+encoding.AddCustomJsonFieldMapping(
+    ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_buildTime', 'artifactMetadata.buildTime')
+encoding.AddCustomJsonFieldMapping(
+    ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_imageDigest', 'artifactMetadata.imageDigest')
+encoding.AddCustomJsonFieldMapping(
+    ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_imageId', 'artifactMetadata.imageId')
+encoding.AddCustomJsonFieldMapping(
+    ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_imageName', 'artifactMetadata.imageName')
+encoding.AddCustomJsonFieldMapping(
+    ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_imageTag', 'artifactMetadata.imageTag')
+encoding.AddCustomJsonFieldMapping(
+    ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_purlUri', 'artifactMetadata.purlUri')
+encoding.AddCustomJsonFieldMapping(
+    ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest, 'artifactMetadata_sbomUri', 'artifactMetadata.sbomUri')

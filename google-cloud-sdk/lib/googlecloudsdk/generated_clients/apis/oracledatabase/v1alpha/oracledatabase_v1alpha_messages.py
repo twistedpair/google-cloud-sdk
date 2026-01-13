@@ -495,6 +495,11 @@ class AutonomousDatabaseProperties(_messages.Message):
       of the Autonomous Database.
     localAdgAutoFailoverMaxDataLossLimit: Output only. This field indicates
       the maximum data loss limit for an Autonomous Database, in seconds.
+    localAdgAutoFailoverMaxDataLossLimitDuration: Optional. This field
+      indicates the maximum data loss limit for an Autonomous Database, in
+      seconds.
+    localDataGuardEnabled: Optional. This field indicates whether the
+      Autonomous Database has local (in-region) Data Guard enabled.
     localDisasterRecoveryType: Output only. This field indicates the local
       disaster recovery (DR) type of an Autonomous Database.
     localStandbyDb: Output only. The details of the Autonomous Data Guard
@@ -853,37 +858,39 @@ class AutonomousDatabaseProperties(_messages.Message):
   licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 30)
   lifecycleDetails = _messages.StringField(31)
   localAdgAutoFailoverMaxDataLossLimit = _messages.IntegerField(32, variant=_messages.Variant.INT32)
-  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 33)
-  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 34)
-  maintenanceBeginTime = _messages.StringField(35)
-  maintenanceEndTime = _messages.StringField(36)
-  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 37)
-  memoryPerOracleComputeUnitGbs = _messages.IntegerField(38, variant=_messages.Variant.INT32)
-  memoryTableGbs = _messages.IntegerField(39, variant=_messages.Variant.INT32)
-  mtlsConnectionRequired = _messages.BooleanField(40)
-  nCharacterSet = _messages.StringField(41)
-  nextLongTermBackupTime = _messages.StringField(42)
-  ociUrl = _messages.StringField(43)
-  ocid = _messages.StringField(44)
-  openMode = _messages.EnumField('OpenModeValueValuesEnum', 45)
-  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 46)
-  peerDbIds = _messages.StringField(47, repeated=True)
-  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 48)
-  privateEndpoint = _messages.StringField(49)
-  privateEndpointIp = _messages.StringField(50)
-  privateEndpointLabel = _messages.StringField(51)
-  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 52)
-  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 53)
-  role = _messages.EnumField('RoleValueValuesEnum', 54)
-  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 55, repeated=True)
-  secretId = _messages.StringField(56)
-  serviceAgentEmail = _messages.StringField(57)
-  sqlWebDeveloperUrl = _messages.StringField(58)
-  state = _messages.EnumField('StateValueValuesEnum', 59)
-  supportedCloneRegions = _messages.StringField(60, repeated=True)
-  totalAutoBackupStorageSizeGbs = _messages.FloatField(61, variant=_messages.Variant.FLOAT)
-  usedDataStorageSizeTbs = _messages.IntegerField(62, variant=_messages.Variant.INT32)
-  vaultId = _messages.StringField(63)
+  localAdgAutoFailoverMaxDataLossLimitDuration = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  localDataGuardEnabled = _messages.BooleanField(34)
+  localDisasterRecoveryType = _messages.EnumField('LocalDisasterRecoveryTypeValueValuesEnum', 35)
+  localStandbyDb = _messages.MessageField('AutonomousDatabaseStandbySummary', 36)
+  maintenanceBeginTime = _messages.StringField(37)
+  maintenanceEndTime = _messages.StringField(38)
+  maintenanceScheduleType = _messages.EnumField('MaintenanceScheduleTypeValueValuesEnum', 39)
+  memoryPerOracleComputeUnitGbs = _messages.IntegerField(40, variant=_messages.Variant.INT32)
+  memoryTableGbs = _messages.IntegerField(41, variant=_messages.Variant.INT32)
+  mtlsConnectionRequired = _messages.BooleanField(42)
+  nCharacterSet = _messages.StringField(43)
+  nextLongTermBackupTime = _messages.StringField(44)
+  ociUrl = _messages.StringField(45)
+  ocid = _messages.StringField(46)
+  openMode = _messages.EnumField('OpenModeValueValuesEnum', 47)
+  operationsInsightsState = _messages.EnumField('OperationsInsightsStateValueValuesEnum', 48)
+  peerDbIds = _messages.StringField(49, repeated=True)
+  permissionLevel = _messages.EnumField('PermissionLevelValueValuesEnum', 50)
+  privateEndpoint = _messages.StringField(51)
+  privateEndpointIp = _messages.StringField(52)
+  privateEndpointLabel = _messages.StringField(53)
+  refreshableMode = _messages.EnumField('RefreshableModeValueValuesEnum', 54)
+  refreshableState = _messages.EnumField('RefreshableStateValueValuesEnum', 55)
+  role = _messages.EnumField('RoleValueValuesEnum', 56)
+  scheduledOperationDetails = _messages.MessageField('ScheduledOperationDetails', 57, repeated=True)
+  secretId = _messages.StringField(58)
+  serviceAgentEmail = _messages.StringField(59)
+  sqlWebDeveloperUrl = _messages.StringField(60)
+  state = _messages.EnumField('StateValueValuesEnum', 61)
+  supportedCloneRegions = _messages.StringField(62, repeated=True)
+  totalAutoBackupStorageSizeGbs = _messages.FloatField(63, variant=_messages.Variant.FLOAT)
+  usedDataStorageSizeTbs = _messages.IntegerField(64, variant=_messages.Variant.INT32)
+  vaultId = _messages.StringField(65)
 
 
 class AutonomousDatabaseStandbySummary(_messages.Message):
@@ -3137,6 +3144,74 @@ class GiVersion(_messages.Message):
   version = _messages.StringField(2)
 
 
+class GoldenGateConnection(_messages.Message):
+  r"""Details of the GoldenGateConnection resource.
+
+  Messages:
+    LabelsValue: Optional. The labels or tags associated with the
+      GoldenGateConnection.
+
+  Fields:
+    createTime: Output only. The date and time that the GoldenGateConnection
+      was created.
+    entitlementId: Output only. The ID of the subscription entitlement
+      associated with the GoldenGateConnection.
+    gcpOracleZone: Optional. The GCP Oracle zone where Oracle
+      GoldenGateConnection is hosted. Example: us-east4-b-r2. If not
+      specified, the system will pick a zone based on availability.
+    labels: Optional. The labels or tags associated with the
+      GoldenGateConnection.
+    name: Identifier. The name of the GoldenGateConnection resource in the
+      following format: projects/{project}/locations/{region}/goldenGateConnec
+      tions/{golden_gate_connection}
+    ociUrl: Output only. HTTPS link to OCI resources exposed to Customer via
+      UI Interface.
+    odbNetwork: Optional. The name of the OdbNetwork associated with the
+      GoldenGateConnection. The format is
+      projects/{project}/locations/{location}/odbNetworks/{odb_network}. It is
+      optional but if specified, this should match the parent ODBNetwork of
+      the OdbSubnet.
+    odbSubnet: Optional. The name of the OdbSubnet associated with the
+      GoldenGateConnection for IP allocation. Format: projects/{project}/locat
+      ions/{location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
+    properties: Required. The properties of the GoldenGateConnection.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels or tags associated with the GoldenGateConnection.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  entitlementId = _messages.StringField(2)
+  gcpOracleZone = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  ociUrl = _messages.StringField(6)
+  odbNetwork = _messages.StringField(7)
+  odbSubnet = _messages.StringField(8)
+  properties = _messages.MessageField('GoldenGateConnectionProperties', 9)
+
+
 class GoldenGateConnectionAssignment(_messages.Message):
   r"""Represents the metadata of a GoldenGate Connection Assignment.
 
@@ -3237,6 +3312,86 @@ class GoldenGateConnectionAssignmentProperties(_messages.Message):
   goldenGateDeployment = _messages.StringField(3)
   ocid = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class GoldenGateConnectionProperties(_messages.Message):
+  r"""The properties of a GoldenGateConnection.
+
+  Enums:
+    LifecycleStateValueValuesEnum: Output only. The lifecycle state of the
+      connection.
+    RoutingMethodValueValuesEnum: Optional. The routing method for the
+      GoldenGateConnection.
+
+  Fields:
+    connectionType: Required. The connection type.
+    description: Optional. Metadata about this specific object.
+    displayName: Required. An object's Display Name.
+    genericConnectionProperties: Properties for a Generic Connection.
+    goldenGateConnectionProperties: Properties for a GoldenGate Connection.
+    googleBigQueryConnectionProperties: Properties for a Google BigQuery
+      Connection.
+    googleCloudStorageConnectionProperties: Properties for a Google Cloud
+      Storage Connection.
+    lifecycleDetails: Output only. Describes the object's current state in
+      detail. For example, it can be used to provide actionable information
+      for a resource in a Failed state.
+    lifecycleState: Output only. The lifecycle state of the connection.
+    ocid: Output only. The [OCID] of the connection being referenced.
+    oracleConnectionProperties: Properties for an Oracle Database Connection.
+    routingMethod: Optional. The routing method for the GoldenGateConnection.
+    updateTime: Output only. The time the resource was last updated.
+  """
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The lifecycle state of the connection.
+
+    Values:
+      GOLDEN_GATE_CONNECTION_LIFECYCLE_STATE_UNSPECIFIED: Default unspecified
+        value.
+      CREATING: Indicates that the resource is in provisioning state.
+      ACTIVE: Indicates that the resource is in active state.
+      UPDATING: Indicates that the resource is in updating state.
+      DELETING: Indicates that the resource is in deleting state.
+      DELETED: Indicates that the resource is in deleted state.
+      FAILED: Indicates that the resource is in failed state.
+    """
+    GOLDEN_GATE_CONNECTION_LIFECYCLE_STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    UPDATING = 3
+    DELETING = 4
+    DELETED = 5
+    FAILED = 6
+
+  class RoutingMethodValueValuesEnum(_messages.Enum):
+    r"""Optional. The routing method for the GoldenGateConnection.
+
+    Values:
+      GOLDEN_GATE_CONNECTION_ROUTING_METHOD_UNSPECIFIED: Default unspecified
+        value.
+      SHARED_DEPLOYMENT_ENDPOINT: Network traffic flows from the assigned
+        deployment's private endpoint through the deployment's subnet.
+      DEDICATED_ENDPOINT: A dedicated private endpoint is created in the
+        target VCN subnet for the connection.
+    """
+    GOLDEN_GATE_CONNECTION_ROUTING_METHOD_UNSPECIFIED = 0
+    SHARED_DEPLOYMENT_ENDPOINT = 1
+    DEDICATED_ENDPOINT = 2
+
+  connectionType = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  genericConnectionProperties = _messages.MessageField('GoldenGateGenericConnectionProperties', 4)
+  goldenGateConnectionProperties = _messages.MessageField('GoldenGateGoldenGateConnectionProperties', 5)
+  googleBigQueryConnectionProperties = _messages.MessageField('GoldenGateGoogleBigQueryConnectionProperties', 6)
+  googleCloudStorageConnectionProperties = _messages.MessageField('GoldenGateGoogleCloudStorageConnectionProperties', 7)
+  lifecycleDetails = _messages.StringField(8)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 9)
+  ocid = _messages.StringField(10)
+  oracleConnectionProperties = _messages.MessageField('GoldenGateOracleConnectionProperties', 11)
+  routingMethod = _messages.EnumField('RoutingMethodValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class GoldenGateDeployment(_messages.Message):
@@ -3395,6 +3550,69 @@ class GoldenGateDeploymentProperties(_messages.Message):
   oggData = _messages.MessageField('GoldenGateOggDeployment', 11)
 
 
+class GoldenGateGenericConnectionProperties(_messages.Message):
+  r"""The properties of GoldenGateGenericConnectionProperties.
+
+  Fields:
+    host: Required. The host of the GenericConnection.
+    technologyType: Optional. The technology type.
+  """
+
+  host = _messages.StringField(1)
+  technologyType = _messages.StringField(2)
+
+
+class GoldenGateGoldenGateConnectionProperties(_messages.Message):
+  r"""The properties of GoldenGateGoldenGateConnectionProperties.
+
+  Fields:
+    goldenGateDeploymentId: Optional. The name of the GoldenGateDeployment
+      associated with the GoldenGateConnection. Format: projects/{project}/loc
+      ations/{location}/goldenGateDeployments/{golden_gate_deployment}
+    host: Optional. The host of the GoldenGateConnection.
+    passwordSecret: Optional. The password used to connect to the Oracle
+      GoldenGate accessed through this connection.
+    port: Optional. The port of the GoldenGateConnection.
+    technologyType: Optional. The technology type.
+    username: Optional. The username credential.
+  """
+
+  goldenGateDeploymentId = _messages.StringField(1)
+  host = _messages.StringField(2)
+  passwordSecret = _messages.StringField(3)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  technologyType = _messages.StringField(5)
+  username = _messages.StringField(6)
+
+
+class GoldenGateGoogleBigQueryConnectionProperties(_messages.Message):
+  r"""The properties of GoldenGateGoogleBigQueryConnectionProperties.
+
+  Fields:
+    serviceAccountKeyFileGcpLocation: Optional. The service account key file
+      Cloud Storage location containing the credentials required to use Google
+      BigQuery.
+    technologyType: Optional. The technology type.
+  """
+
+  serviceAccountKeyFileGcpLocation = _messages.StringField(1)
+  technologyType = _messages.StringField(2)
+
+
+class GoldenGateGoogleCloudStorageConnectionProperties(_messages.Message):
+  r"""The properties of GoldenGateGoogleCloudStorageConnectionProperties.
+
+  Fields:
+    serviceAccountKeyFileGcpLocation: Optional. The service account key Cloud
+      Storage file location containing the credentials required to use Google
+      Cloud Storage.
+    technologyType: Optional. The technology type.
+  """
+
+  serviceAccountKeyFileGcpLocation = _messages.StringField(1)
+  technologyType = _messages.StringField(2)
+
+
 class GoldenGateMaintenanceConfig(_messages.Message):
   r"""The maintenance configuration of the GoldenGateDeployment.
 
@@ -3455,6 +3673,55 @@ class GoldenGateOggDeployment(_messages.Message):
   adminUsername = _messages.StringField(2)
   deployment = _messages.StringField(3)
   oggVersion = _messages.StringField(4)
+
+
+class GoldenGateOracleConnectionProperties(_messages.Message):
+  r"""The properties of GoldenGate Oracle Database Connection.
+
+  Enums:
+    SessionModeValueValuesEnum: Optional. The mode of the database connection
+      session to be established by the data client.
+
+  Fields:
+    authenticationMode: Optional. Authentication mode.
+    connectionString: Optional. Connect descriptor or Easy Connect Naming
+      method used to connect to a database.
+    gcpOracleDatabaseId: Optional. database instance id of database in Oracle
+      Database @ Google Cloud. If gcp_oracle_database_id is provided,
+      connection_string must be empty.
+    passwordSecret: Optional. The password Oracle GoldenGate uses to connect
+      the associated system of the given technology. It must conform to the
+      specific security requirements including length, case sensitivity, and
+      so on.
+    sessionMode: Optional. The mode of the database connection session to be
+      established by the data client.
+    technologyType: Optional. The technology type.
+    username: Required. The username Oracle GoldenGate uses to connect.
+    walletGcpFileLocation: Optional. The wallet contents Oracle GoldenGate
+      uses to make connections to a database.
+  """
+
+  class SessionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of the database connection session to be
+    established by the data client.
+
+    Values:
+      SESSION_MODE_UNSPECIFIED: Default unspecified value.
+      DIRECT: Indicates that the resource is using direct session mode.
+      REDIRECT: Indicates that the resource is using redirect session mode.
+    """
+    SESSION_MODE_UNSPECIFIED = 0
+    DIRECT = 1
+    REDIRECT = 2
+
+  authenticationMode = _messages.StringField(1)
+  connectionString = _messages.StringField(2)
+  gcpOracleDatabaseId = _messages.StringField(3)
+  passwordSecret = _messages.StringField(4)
+  sessionMode = _messages.EnumField('SessionModeValueValuesEnum', 5)
+  technologyType = _messages.StringField(6)
+  username = _messages.StringField(7)
+  walletGcpFileLocation = _messages.StringField(8)
 
 
 class IdentityConnector(_messages.Message):
@@ -3742,6 +4009,21 @@ class ListGoldenGateConnectionAssignmentsResponse(_messages.Message):
 
   goldenGateConnectionAssignments = _messages.MessageField('GoldenGateConnectionAssignment', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListGoldenGateConnectionsResponse(_messages.Message):
+  r"""The response for `GoldenGateConnection.List`.
+
+  Fields:
+    goldenGateConnections: The list of GoldenGateConnections.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Optional. Locations that could not be reached.
+  """
+
+  goldenGateConnections = _messages.MessageField('GoldenGateConnection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGoldenGateDeploymentsResponse(_messages.Message):
@@ -5741,6 +6023,95 @@ class OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsListRequest(
     parent: Required. The parent resource where this
       GoldenGateConnectionAssignment will be created. Format:
       projects/{project}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionsCreateRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateConnectionsCreateRequest
+  object.
+
+  Fields:
+    goldenGateConnection: A GoldenGateConnection resource to be passed as the
+      request body.
+    goldenGateConnectionId: Required. The ID of the GoldenGateConnection to
+      create. This value is restricted to (^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$)
+      and must be a maximum of 63 characters in length. The value must start
+      with a letter and end with a letter or a number.
+    parent: Required. The value for parent of the GoldenGateConnection in the
+      following format: projects/{project}/locations/{location}.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  goldenGateConnection = _messages.MessageField('GoldenGateConnection', 1)
+  goldenGateConnectionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionsDeleteRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateConnectionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the GoldenGateConnection in the following
+      format: projects/{project}/locations/{location}/goldenGateConnections/{g
+      olden_gate_connection}.
+    requestId: Optional. An optional ID to identify the request. This value is
+      used to identify duplicate requests. If you make a request with the same
+      request ID and the original request is still in progress or completed,
+      the server ignores the second request. This prevents clients from
+      accidentally creating duplicate commitments. The request ID must be a
+      valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionsGetRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateConnectionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the GoldenGateConnection in the following
+      format: projects/{project}/locations/{location}/goldenGateConnections/{g
+      olden_gate_connection}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OracledatabaseProjectsLocationsGoldenGateConnectionsListRequest(_messages.Message):
+  r"""A OracledatabaseProjectsLocationsGoldenGateConnectionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+    orderBy: Optional. An expression for ordering the results of the request.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      at most 50 GoldenGateConnections will be returned. The maximum value is
+      1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      ListGoldenGateConnections call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. The parent value for GoldenGateConnections in the
+      following format: projects/{project}/locations/{location}.
   """
 
   filter = _messages.StringField(1)

@@ -30,7 +30,6 @@ from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
 
-from oauth2client import client
 import six
 from google.auth import exceptions as google_auth_exceptions
 
@@ -136,7 +135,7 @@ class CredentialWrappingMixin(object):
 
     self.WrapRequest(
         http_client, handlers, _HandleAuthError,
-        (client.AccessTokenRefreshError, google_auth_exceptions.RefreshError))
+        (google_auth_exceptions.RefreshError,))
 
     return http_client
 

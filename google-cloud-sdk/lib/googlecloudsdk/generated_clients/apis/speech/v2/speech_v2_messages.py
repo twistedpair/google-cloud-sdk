@@ -506,8 +506,8 @@ class CustomPromptConfig(_messages.Message):
   r"""Configuration to enable custom prompt in chirp3.
 
   Fields:
-    customPrompt: Optional. The custom prompt to override the whole existing
-      prompt for chirp3. DD: go/mutable_prompt_chir3
+    customPrompt: Optional. The custom instructions to override the existing
+      instructions for chirp3.
   """
 
   customPrompt = _messages.StringField(1)

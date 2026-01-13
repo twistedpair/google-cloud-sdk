@@ -1445,7 +1445,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExchangeError(_messages.Message):
   r"""Message for representing an error from exchanging OAuth tokens.
 
@@ -1661,6 +1660,8 @@ class GitHubEnterpriseConfig(_messages.Message):
       is for.
     installationUri: Output only. The URI to navigate to in order to manage
       the installation associated with this GitHubEnterpriseConfig.
+    organization: Optional. Immutable. GitHub Enterprise organization in which
+      the GitHub App is created.
     privateKeySecretVersion: Optional. SecretManager resource containing the
       private key of the GitHub App, formatted as
       `projects/*/secrets/*/versions/*` or
@@ -1687,11 +1688,12 @@ class GitHubEnterpriseConfig(_messages.Message):
   appSlug = _messages.StringField(3)
   hostUri = _messages.StringField(4)
   installationUri = _messages.StringField(5)
-  privateKeySecretVersion = _messages.StringField(6)
-  serverVersion = _messages.StringField(7)
-  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 8)
-  sslCaCertificate = _messages.StringField(9)
-  webhookSecretSecretVersion = _messages.StringField(10)
+  organization = _messages.StringField(6)
+  privateKeySecretVersion = _messages.StringField(7)
+  serverVersion = _messages.StringField(8)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 9)
+  sslCaCertificate = _messages.StringField(10)
+  webhookSecretSecretVersion = _messages.StringField(11)
 
 
 class GitLabConfig(_messages.Message):

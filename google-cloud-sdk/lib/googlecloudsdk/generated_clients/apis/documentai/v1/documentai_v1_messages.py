@@ -2975,12 +2975,14 @@ class GoogleCloudDocumentaiV1DocumentEntitiesRevision(_messages.Message):
   Fields:
     entities: The entities in this revision.
     entityValidationOutput: The entity validation output for this revision.
+    provenance: Optional. The history of this revision.
     revisionId: The revision id.
   """
 
   entities = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntity', 1, repeated=True)
   entityValidationOutput = _messages.MessageField('GoogleCloudDocumentaiV1DocumentEntityValidationOutput', 2)
-  revisionId = _messages.StringField(3)
+  provenance = _messages.MessageField('GoogleCloudDocumentaiV1DocumentProvenance', 3)
+  revisionId = _messages.StringField(4)
 
 
 class GoogleCloudDocumentaiV1DocumentEntity(_messages.Message):

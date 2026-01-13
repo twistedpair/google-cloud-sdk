@@ -126,8 +126,10 @@ class FinalizeSlicedDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
         downloaded_file_hash_digest = crc32c.get_hash(
             downloaded_file_hash_object)
 
+        source_crc32c_hash = download_util.get_crc32c_hash_for_resource(
+            self._source_resource)
         download_util.validate_download_hash_and_delete_corrupt_files(
-            temporary_object_path, self._source_resource.crc32c_hash,
+            temporary_object_path, source_crc32c_hash,
             downloaded_file_hash_digest)
 
     preserve_symlinks = symlink_util.get_preserve_symlink_from_user_request(

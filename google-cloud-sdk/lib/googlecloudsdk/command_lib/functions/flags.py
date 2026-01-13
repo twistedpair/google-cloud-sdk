@@ -467,7 +467,7 @@ def AddStageBucketFlag(parser):
   )
 
 
-def AddRuntimeFlag(parser):
+def AddRuntimeFlag(parser, hidden=False):
   parser.add_argument(
       '--runtime',
       help="""\
@@ -478,6 +478,7 @@ def AddRuntimeFlag(parser):
 
           For a list of available runtimes, run `gcloud functions runtimes list`.
           """,
+      hidden=hidden,
   )
 
 
@@ -1192,19 +1193,26 @@ def AddConcurrencyFlag(parser):
   )
 
 
-def AddUpgradeFlags(parser):
+def AddUpgradeFlags(parser, release_track=base.ReleaseTrack.GA):
   """Adds upgrade related function flags."""
+  if release_track == base.ReleaseTrack.ALPHA:
+    description = 'Upgrade a 1st gen Cloud Function to a Cloud Run Function.'
+    commit_flag_help = '- `--commit` and optionally `--skip-detach`'
+  else:
+    description = 'Upgrade a 1st gen Cloud Function to the 2nd gen environment.'
+    commit_flag_help = '- `--commit`'
+
   upgrade_group = parser.add_group(
       mutex=True,
       help="""\
-      Upgrade a 1st gen Cloud Function to the 2nd gen environment.
+      {}
       You must specify one of the following flags:
       - `--setup-config` and optionally `--trigger-service-account`,
       - `--redirect-traffic`,
       - `--rollback-traffic`,
-      - `--commit`,
+      {},
       - `--abort`.
-  """,
+  """.format(description, commit_flag_help),
   )
 
   setup_config_group = upgrade_group.add_argument_group()
@@ -1217,6 +1225,18 @@ def AddUpgradeFlags(parser):
       ),
   )
   AddTriggerServiceAccountFlag(setup_config_group)
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    hidden = release_track == base.ReleaseTrack.BETA
+    AddRuntimeFlag(setup_config_group, hidden=hidden)
+    setup_config_group.add_argument(
+        '--max-instances',
+        type=arg_parsers.BoundedInt(lower_bound=1),
+        help="""\
+          Sets the maximum number of instances for the function. A function
+          execution that would exceed max-instances times out.
+        """,
+        hidden=hidden,
+    )
 
   upgrade_group.add_argument(
       '--redirect-traffic',
@@ -1231,7 +1251,9 @@ def AddUpgradeFlags(parser):
           ' function. The 2nd gen copy will still be available for testing.'
       ),
   )
-  upgrade_group.add_argument(
+
+  commit_group = upgrade_group.add_argument_group()
+  commit_group.add_argument(
       '--commit',
       action='store_true',
       help=(
@@ -1239,6 +1261,20 @@ def AddUpgradeFlags(parser):
           ' 1st gen copy of the function.'
       ),
   )
+  if release_track == base.ReleaseTrack.ALPHA:
+    commit_group.add_argument(
+        '--skip-detach',
+        action='store_true',
+        hidden=True,
+        help=(
+            'The function will not be detached when committing the upgrade to'
+            ' allow continued use of the Cloud Functions v2 API. You can'
+            ' detach the function to Cloud Run afterward'
+            ' https://docs.cloud.google.com/run/docs/functions/comparison#detach_your_function.'
+            ' This flag is only valid when used with --commit flag.'
+        ),
+    )
+
   upgrade_group.add_argument(
       '--abort',
       action='store_true',

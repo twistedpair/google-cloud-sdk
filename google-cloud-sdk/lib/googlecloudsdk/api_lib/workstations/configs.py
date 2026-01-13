@@ -170,10 +170,7 @@ class Configs:
     if args.startup_script_uri:
       config.host.gceInstance.startupScriptUri = args.startup_script_uri
 
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.instance_metadata
-    ):
+    if args.instance_metadata:
       instance_metadata_value_message = (
           self.messages.GceInstance.InstanceMetadataValue
       )
@@ -572,10 +569,7 @@ class Configs:
       config.host.gceInstance.startupScriptUri = args.startup_script_uri
       update_mask.append('host.gce_instance.startup_script_uri')
 
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.instance_metadata
-    ):
+    if args.instance_metadata:
       instance_metadata_value_message = (
           self.messages.GceInstance.InstanceMetadataValue
       )

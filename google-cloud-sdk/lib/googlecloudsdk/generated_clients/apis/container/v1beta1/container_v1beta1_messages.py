@@ -42,6 +42,17 @@ class AcceleratorConfig(_messages.Message):
   maxTimeSharedClientsPerGpu = _messages.IntegerField(6)
 
 
+class AccurateTimeConfig(_messages.Message):
+  r"""AccurateTimeConfig contains configuration for the accurate time
+  synchronization feature.
+
+  Fields:
+    enablePtpKvmTimeSync: Enables enhanced time synchronization using PTP-KVM.
+  """
+
+  enablePtpKvmTimeSync = _messages.BooleanField(1)
+
+
 class AdditionalIPRangesConfig(_messages.Message):
   r"""AdditionalIPRangesConfig is the configuration for individual additional
   subnetwork attached to the cluster
@@ -4769,6 +4780,8 @@ class LinuxNodeConfig(_messages.Message):
       vm.watermark_scale_factor vm.min_free_kbytes
 
   Fields:
+    accurateTimeConfig: Optional. The accurate time configuration for the node
+      pool.
     additionalEtcHosts: Optional. Additional entries to be added to
       /etc/hosts.
     additionalEtcResolvConf: Optional. Additional entries to be added to
@@ -4944,19 +4957,20 @@ class LinuxNodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  additionalEtcHosts = _messages.MessageField('EtcHostsEntry', 1, repeated=True)
-  additionalEtcResolvConf = _messages.MessageField('ResolvedConfEntry', 2, repeated=True)
-  additionalEtcSystemdResolvedConf = _messages.MessageField('ResolvedConfEntry', 3, repeated=True)
-  cgroupMode = _messages.EnumField('CgroupModeValueValuesEnum', 4)
-  customNodeInit = _messages.MessageField('CustomNodeInit', 5)
-  hugepages = _messages.MessageField('HugepagesConfig', 6)
-  kernelOverrides = _messages.MessageField('KernelOverrides', 7)
-  nodeKernelModuleLoading = _messages.MessageField('NodeKernelModuleLoading', 8)
-  swapConfig = _messages.MessageField('SwapConfig', 9)
-  sysctls = _messages.MessageField('SysctlsValue', 10)
-  timeZone = _messages.StringField(11)
-  transparentHugepageDefrag = _messages.EnumField('TransparentHugepageDefragValueValuesEnum', 12)
-  transparentHugepageEnabled = _messages.EnumField('TransparentHugepageEnabledValueValuesEnum', 13)
+  accurateTimeConfig = _messages.MessageField('AccurateTimeConfig', 1)
+  additionalEtcHosts = _messages.MessageField('EtcHostsEntry', 2, repeated=True)
+  additionalEtcResolvConf = _messages.MessageField('ResolvedConfEntry', 3, repeated=True)
+  additionalEtcSystemdResolvedConf = _messages.MessageField('ResolvedConfEntry', 4, repeated=True)
+  cgroupMode = _messages.EnumField('CgroupModeValueValuesEnum', 5)
+  customNodeInit = _messages.MessageField('CustomNodeInit', 6)
+  hugepages = _messages.MessageField('HugepagesConfig', 7)
+  kernelOverrides = _messages.MessageField('KernelOverrides', 8)
+  nodeKernelModuleLoading = _messages.MessageField('NodeKernelModuleLoading', 9)
+  swapConfig = _messages.MessageField('SwapConfig', 10)
+  sysctls = _messages.MessageField('SysctlsValue', 11)
+  timeZone = _messages.StringField(12)
+  transparentHugepageDefrag = _messages.EnumField('TransparentHugepageDefragValueValuesEnum', 13)
+  transparentHugepageEnabled = _messages.EnumField('TransparentHugepageEnabledValueValuesEnum', 14)
 
 
 class ListClustersResponse(_messages.Message):
@@ -6137,6 +6151,7 @@ class NodeConfig(_messages.Message):
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
       within the list must comply with RFC1035.
+    taintConfig: Optional. The taint configuration for the node pool.
     taints: List of kubernetes taints to be applied to each node. For more
       information, including usage and the valid values, see:
       https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -6327,9 +6342,10 @@ class NodeConfig(_messages.Message):
   stableFleetConfig = _messages.MessageField('StableFleetConfig', 49)
   storagePools = _messages.StringField(50, repeated=True)
   tags = _messages.StringField(51, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 52, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 53)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 54)
+  taintConfig = _messages.MessageField('TaintConfig', 52)
+  taints = _messages.MessageField('NodeTaint', 53, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 54)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 55)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -6687,11 +6703,13 @@ class NodeNetworkConfig(_messages.Message):
       false, uses an existing secondary range with this ID. Only applicable if
       `ip_allocation_policy.use_ip_aliases` is true. This field cannot be
       changed after the node pool has been created.
-    subnetwork: The subnetwork path for the node pool. Format:
+    subnetwork: Optional. The subnetwork name/path for the node pool. Format:
       projects/{project}/regions/{region}/subnetworks/{subnetwork} If the
-      cluster is associated with multiple subnetworks, the subnetwork for the
-      node pool is picked based on the IP utilization during node pool
-      creation and is immutable.
+      cluster is associated with multiple subnetworks, the subnetwork can be
+      either: 1. A user supplied subnetwork name/full path during node pool
+      creation. Example1: my-subnet Example2: projects/gke-project/regions/us-
+      central1/subnetworks/my-subnet 2. A subnetwork path picked based on the
+      IP utilization during node pool creation and is immutable.
     targetPodIpv4Range: The target IP address range of the pod IPs in this
       node pool. This setting works in conjunction with `pod_ipv4_cidr_block`.
       When `pod_ipv4_cidr_block` specifies an IP mask length then the
@@ -9425,6 +9443,16 @@ class SyncRotationConfig(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   rotationInterval = _messages.StringField(2)
+
+
+class TaintConfig(_messages.Message):
+  r"""TaintConfig contains the configuration for the taints of the node pool.
+
+  Fields:
+    disableArmTaint: Optional. Disable applying default ARM taint.
+  """
+
+  disableArmTaint = _messages.BooleanField(1)
 
 
 class TimeWindow(_messages.Message):

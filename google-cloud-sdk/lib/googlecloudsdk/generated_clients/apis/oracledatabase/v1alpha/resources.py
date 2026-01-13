@@ -272,6 +272,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GOLDENGATECONNECTIONS = (
+      'projects.locations.goldenGateConnections',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'goldenGateConnections/{goldenGateConnectionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GOLDENGATEDEPLOYMENTS = (
       'projects.locations.goldenGateDeployments',
       '{+name}',

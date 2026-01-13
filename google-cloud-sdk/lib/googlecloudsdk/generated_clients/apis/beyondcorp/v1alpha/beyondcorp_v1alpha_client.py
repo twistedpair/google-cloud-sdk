@@ -39,8 +39,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.organizations_locations_global_partnerTenants = self.OrganizationsLocationsGlobalPartnerTenantsService(self)
-    self.organizations_locations_global = self.OrganizationsLocationsGlobalService(self)
     self.organizations_locations_insights = self.OrganizationsLocationsInsightsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_subscriptions = self.OrganizationsLocationsSubscriptionsService(self)
@@ -59,107 +57,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     self.projects_locations_securityGateways = self.ProjectsLocationsSecurityGatewaysService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class OrganizationsLocationsGlobalPartnerTenantsService(base_api.BaseApiService):
-    """Service class for the organizations_locations_global_partnerTenants resource."""
-
-    _NAME = 'organizations_locations_global_partnerTenants'
-
-    def __init__(self, client):
-      super(BeyondcorpV1alpha.OrganizationsLocationsGlobalPartnerTenantsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single PartnerTenant.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}',
-        http_method='DELETE',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single PartnerTenant.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants/{partnerTenantsId}',
-        http_method='GET',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetRequest',
-        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists PartnerTenants in a given organization.
-
-      Args:
-        request: (BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/global/partnerTenants',
-        http_method='GET',
-        method_id='beyondcorp.organizations.locations.global.partnerTenants.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/partnerTenants',
-        request_field='',
-        request_type_name='BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest',
-        response_type_name='GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse',
-        supports_download=False,
-    )
-
-  class OrganizationsLocationsGlobalService(base_api.BaseApiService):
-    """Service class for the organizations_locations_global resource."""
-
-    _NAME = 'organizations_locations_global'
-
-    def __init__(self, client):
-      super(BeyondcorpV1alpha.OrganizationsLocationsGlobalService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class OrganizationsLocationsInsightsService(base_api.BaseApiService):
     """Service class for the organizations_locations_insights resource."""

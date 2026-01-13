@@ -65,7 +65,7 @@ class CloudkmsV1(base_api.BaseApiClient):
           }
 
     def GetAutokeyConfig(self, request, global_params=None):
-      r"""Returns the AutokeyConfig for a folder.
+      r"""Returns the AutokeyConfig for a folder or project.
 
       Args:
         request: (CloudkmsFoldersGetAutokeyConfigRequest) input message
@@ -119,7 +119,7 @@ class CloudkmsV1(base_api.BaseApiClient):
     )
 
     def UpdateAutokeyConfig(self, request, global_params=None):
-      r"""Updates the AutokeyConfig for a folder. The caller must have both `cloudkms.autokeyConfigs.update` permission on the parent folder and `cloudkms.cryptoKeys.setIamPolicy` permission on the provided key project. A KeyHandle creation in the folder's descendant projects will use this configuration to determine where to create the resulting CryptoKey.
+      r"""Updates the AutokeyConfig for a folder or a project. The caller must have both `cloudkms.autokeyConfigs.update` permission on the parent folder and `cloudkms.cryptoKeys.setIamPolicy` permission on the provided key project. A KeyHandle creation in the folder's descendant projects will use this configuration to determine where to create the resulting CryptoKey.
 
       Args:
         request: (CloudkmsFoldersUpdateAutokeyConfigRequest) input message
@@ -2138,6 +2138,33 @@ class CloudkmsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetAutokeyConfig(self, request, global_params=None):
+      r"""Returns the AutokeyConfig for a folder or project.
+
+      Args:
+        request: (CloudkmsProjectsGetAutokeyConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutokeyConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetAutokeyConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAutokeyConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/autokeyConfig',
+        http_method='GET',
+        method_id='cloudkms.projects.getAutokeyConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsGetAutokeyConfigRequest',
+        response_type_name='AutokeyConfig',
+        supports_download=False,
+    )
+
     def GetKajPolicyConfig(self, request, global_params=None):
       r"""Gets the KeyAccessJustificationsPolicyConfig for a given organization, folder, or project.
 
@@ -2243,6 +2270,33 @@ class CloudkmsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudkmsProjectsShowEffectiveKeyAccessJustificationsPolicyConfigRequest',
         response_type_name='ShowEffectiveKeyAccessJustificationsPolicyConfigResponse',
+        supports_download=False,
+    )
+
+    def UpdateAutokeyConfig(self, request, global_params=None):
+      r"""Updates the AutokeyConfig for a folder or a project. The caller must have both `cloudkms.autokeyConfigs.update` permission on the parent folder and `cloudkms.cryptoKeys.setIamPolicy` permission on the provided key project. A KeyHandle creation in the folder's descendant projects will use this configuration to determine where to create the resulting CryptoKey.
+
+      Args:
+        request: (CloudkmsProjectsUpdateAutokeyConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutokeyConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAutokeyConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAutokeyConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/autokeyConfig',
+        http_method='PATCH',
+        method_id='cloudkms.projects.updateAutokeyConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='autokeyConfig',
+        request_type_name='CloudkmsProjectsUpdateAutokeyConfigRequest',
+        response_type_name='AutokeyConfig',
         supports_download=False,
     )
 

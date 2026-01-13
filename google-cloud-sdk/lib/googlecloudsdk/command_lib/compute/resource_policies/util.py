@@ -280,6 +280,11 @@ def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
     collocation = flags.GetCollocationFlagMapper(
         messages, track).GetEnumForChoice(args.collocation)
   gpu_topology = args.gpu_topology if args.IsSpecified('gpu_topology') else None
+  accelerator_topology_mode = None
+  if hasattr(args, 'accelerator_topology_mode') and args.IsSpecified(
+      'accelerator_topology_mode'
+  ):
+    accelerator_topology_mode = args.accelerator_topology_mode
   placement_policy = None
   if track == base.ReleaseTrack.ALPHA and args.IsSpecified('scope'):
     scope = flags.GetAvailabilityDomainScopeFlagMapper(
@@ -314,6 +319,11 @@ def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
   if gpu_topology:
     placement_policy.gpuTopology = gpu_topology
 
+  if accelerator_topology_mode:
+    placement_policy.acceleratorTopologyMode = messages.ResourcePolicyGroupPlacementPolicy.AcceleratorTopologyModeValueValuesEnum(
+        accelerator_topology_mode
+    )
+
   return messages.ResourcePolicy(
       name=policy_ref.Name(),
       description=args.description,
@@ -335,6 +345,14 @@ def MakeWorkloadPolicy(policy_ref, args, messages):
     )
   if args.accelerator_topology:
     workload_policy.acceleratorTopology = args.accelerator_topology
+
+  if (
+      hasattr(args, 'accelerator_topology_mode')
+      and args.accelerator_topology_mode
+  ):
+    workload_policy.acceleratorTopologyMode = messages.ResourcePolicyWorkloadPolicy.AcceleratorTopologyModeValueValuesEnum(
+        args.accelerator_topology_mode
+    )
 
   return messages.ResourcePolicy(
       name=policy_ref.Name(),

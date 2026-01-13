@@ -470,6 +470,36 @@ def _ConvertYamlTaskToProto(
   )
 
 
+def _ConvertYamlVerifyConfigToProto(
+    strategy: dict[str, Any], transform_context: _TransformContext
+) -> dict[str, Any]:
+  """Transforms a verifyConfig in YAML format to proto-compatible format."""
+  verify = strategy.get('verify', None)
+  if isinstance(verify, dict):
+    if 'verifyConfig' in strategy:
+      raise exceptions.CloudDeployConfigError.for_resource_field(
+          transform_context.kind,
+          transform_context.name,
+          transform_context.field,
+          'verify and verifyConfig cannot be set at the same time',
+      )
+    strategy['verifyConfig'] = verify
+    del strategy['verify']
+  return strategy
+
+
+def _ConvertProtoVerifyConfigToYaml(
+    strategy: dict[str, Any], transform_context: _TransformContext
+) -> dict[str, Any]:
+  """Transforms a verifyConfig in YAML format to proto-compatible format."""
+  del transform_context
+  if 'verifyConfig' not in strategy:
+    return strategy
+  strategy['verify'] = strategy['verifyConfig']
+  del strategy['verifyConfig']
+  return strategy
+
+
 @dataclasses.dataclass
 class TransformConfig:
   """Represents a field that needs transformation during parsing.
@@ -604,6 +634,15 @@ _PARSE_TRANSFORMS = [
         fields=['customTarget.customTargetType'],
         replace=_ReplaceCustomTargetType,
         schema={'type': 'string'},
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.DELIVERY_PIPELINE],
+        fields=[
+            'serialPipeline.stages[].strategy.standard',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[]',
+        ],
+        replace=_ConvertYamlVerifyConfigToProto,
     ),
     TransformConfig(
         kinds=[ResourceKind.DELIVERY_PIPELINE],
@@ -899,6 +938,15 @@ _EXPORT_TRANSFORMS = [
             'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].analysis.customChecks[].task',
         ],
         replace=_ConvertProtoTaskToYaml,
+    ),
+    TransformConfig(
+        kinds=[ResourceKind.DELIVERY_PIPELINE],
+        fields=[
+            'serialPipeline.stages[].strategy.standard',
+            'serialPipeline.stages[].strategy.canary.canaryDeployment',
+            'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[]',
+        ],
+        replace=_ConvertProtoVerifyConfigToYaml,
     ),
 ]
 

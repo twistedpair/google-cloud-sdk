@@ -316,6 +316,23 @@ class BuildConfig(_messages.Message):
   workerPool = _messages.StringField(13)
 
 
+class BuildConfigOverrides(_messages.Message):
+  r"""Contains overrides related to the function's build configuration.
+
+  Fields:
+    runtime: Optional. Specifies the desired runtime for the new Cloud Run
+      function. (e.g., `"nodejs20"`, `"python312"`). Constraints: 1. This
+      field CANNOT be used to change the runtime language (e.g., from `NODEJS`
+      to `PYTHON`). The backend will enforce this. 2. This field can ONLY be
+      used to upgrade the runtime version (e.g., `nodejs18` to `nodejs20`).
+      Downgrading the version is not permitted. The backend will validate the
+      version change. If provided and valid, this overrides the runtime of the
+      Gen1 function.
+  """
+
+  runtime = _messages.StringField(1)
+
+
 class CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest
   object.
@@ -2047,6 +2064,18 @@ class ServiceConfig(_messages.Message):
   vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 21)
 
 
+class ServiceConfigOverrides(_messages.Message):
+  r"""Contains overrides related to the function's service configuration.
+
+  Fields:
+    maxInstanceCount: Optional. Specifies the maximum number of instances for
+      the new Cloud Run function. If provided, this overrides the
+      max_instance_count setting of the Gen1 function.
+  """
+
+  maxInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -2068,6 +2097,9 @@ class SetupFunctionUpgradeConfigRequest(_messages.Message):
   r"""Request for the `SetupFunctionUpgradeConfig` method.
 
   Fields:
+    buildConfigOverrides: Optional. Specifies overrides for the build process.
+    serviceConfigOverrides: Optional. Specifies overrides for the service
+      configuration.
     triggerServiceAccount: Optional. The trigger's service account. The
       service account must have permission to invoke Cloud Run services, the
       permission is `run.routes.invoke`. If empty, defaults to the Compute
@@ -2075,7 +2107,9 @@ class SetupFunctionUpgradeConfigRequest(_messages.Message):
       `{project_number}-compute@developer.gserviceaccount.com`.
   """
 
-  triggerServiceAccount = _messages.StringField(1)
+  buildConfigOverrides = _messages.MessageField('BuildConfigOverrides', 1)
+  serviceConfigOverrides = _messages.MessageField('ServiceConfigOverrides', 2)
+  triggerServiceAccount = _messages.StringField(3)
 
 
 class Source(_messages.Message):

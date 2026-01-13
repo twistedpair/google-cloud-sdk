@@ -31,10 +31,8 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.api_lib.iam import policies
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.resource_manager import tags
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.projects import exceptions
-from googlecloudsdk.command_lib.resource_manager import tag_utils
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -293,8 +291,8 @@ def GetEnvironmentTag(project_id):
   """Returns the environment tag for the project id."""
   messages = tags.TagMessages()
   project_ref = ParseProject(project_id)
-  resource_name = tag_utils.GetCanonicalResourceName(
-      project_ref.RelativeName(), None, base.ReleaseTrack.GA
+  resource_name = '//cloudresourcemanager.googleapis.com/{}'.format(
+      project_ref.RelativeName()
   )
   try:
     effective_tags_request = (

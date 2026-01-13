@@ -5,6 +5,95 @@ Copyright 2014-2026 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 552.0.0 (2026-01-13)
+
+### BigQuery
+
+* Added `--managed_table_type` in `bq mk --transfer_config` to support destination table type in Data Transfer Service.
+* Fixed the bug where `bq` command would stop responding indefinitely when the Cloud Resource Manager API was not enabled in the project.
+
+### Cloud Composer
+
+* Updated warning message to reflect Composer 3 as the default version.
+
+### Cloud Firestore
+
+* Promoted `enable-firestore-data-access`, `enable-mongodb-compatible-data-access` and `enable-realtime-updates` to beta and GA.
+
+### Cloud Infrastructure Manager
+
+*   Added `gcloud infra-manager automigrationconfig describe`,
+    `gcloud infra-manager automigrationconfig enable-auto-migration`, and
+    `gcloud infra-manager automigrationconfig disable-auto-migration` commands
+    to manage Infrastructure Manager AutoMigrationConfig.
+
+### Cloud Run
+
+* Added `--region` flag to `gcloud beta run worker-pools logs` command group.
+* Added `--instances` flag to `gcloud beta run worker-pools deploy/update` to replace `--scaling` flag.
+* Deprecated `--scaling` flag from `gcloud beta run worker-pools deploy/update`.
+* Added `gcloud run compose up` command to alpha and beta.
+* Added `--[no-]iap` to `gcloud beta run multi-region-services`.
+
+### Cloud Storage
+
+* Promoted `--activity-data-retention-period-days` flag in `gcloud storage insights dataset-configs` to GA.
+*   Added `--dry-run` flag to `gcloud storage batch operations jobs create` to support creating dry run jobs.
+
+### Cloud Workstations
+
+* Promoted `--instance-metadata` flag of `gcloud workstations configs create` and `gcloud workstations configs update` to GA.
+
+### Compute Engine
+
+* Add `--accelerator-topology-mode` support to
+  `gcloud compute resource-policies create workload-policy`
+  and `gcloud compute resource-policies create group-placement` commands.
+
+### Design Center
+
+*   Added `--create-sa` flag to
+    `gcloud design-center spaces applications deploy` command in GA. This flag
+    automates the creation, role binding, and configuration of a new service
+    account required for the application deployment. `--service-account` flag
+    can be used in conjunction with `--create-sa` to specify the name for the
+    new service account.
+*   Added `--create-sa` flag to
+    `gcloud design-center spaces applications preview` command in GA. This flag
+    automates the creation, role binding, and configuration of a new service
+    account required for the application preview. `--service-account` flag
+    can be used in conjunction with `--create-sa` to specify the name for the
+    new service account.
+
+### Developer Connect
+
+* Updated `gcloud developer-connect insights-configs create` to support `--target-projects` flag.
+* Added generic HTTP Endpoint config connection type to `gcloud developer-connect connection create|update commands`.
+
+### Kubernetes Engine
+
+* Added new kubectl version 1.35.0 for the RAPID channel.
+* Additional kubectl versions:
+  * kubectl.1.30 (1.30.14)
+  * kubectl.1.31 (1.31.14)
+  * kubectl.1.32 (1.32.11)
+  * kubectl.1.33 (1.33.7)
+  * kubectl.1.34 (1.34.3)
+  * kubectl.1.35 (1.35.0)
+
+### Network Services
+
+* Added `gcloud compute networks peerings cancel-request-delete` command to alpha and beta. This command is used to cancel a pending request to delete a consensus peering between two networks.
+
+### Vmware Engine
+
+* Added `datastores` command to `gcloud vmware` to create, delete, update, describe and list datastores.
+* Added `mount-datastore` and `unmount-datastore` command to `gcloud vmware private-clouds clusters` to `mount` and `unmount` datastore on the given cluster.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 551.0.0 (2026-01-06)
 
 ### Breaking Changes

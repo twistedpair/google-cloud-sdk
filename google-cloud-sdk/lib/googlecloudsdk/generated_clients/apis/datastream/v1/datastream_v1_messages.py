@@ -36,6 +36,7 @@ class BackfillAllStrategy(_messages.Message):
       backfilling.
     salesforceExcludedObjects: Salesforce data source objects to avoid
       backfilling
+    spannerExcludedObjects: Spanner data source objects to avoid backfilling.
     sqlServerExcludedObjects: SQLServer data source objects to avoid
       backfilling
   """
@@ -45,7 +46,8 @@ class BackfillAllStrategy(_messages.Message):
   oracleExcludedObjects = _messages.MessageField('OracleRdbms', 3)
   postgresqlExcludedObjects = _messages.MessageField('PostgresqlRdbms', 4)
   salesforceExcludedObjects = _messages.MessageField('SalesforceOrg', 5)
-  sqlServerExcludedObjects = _messages.MessageField('SqlServerRdbms', 6)
+  spannerExcludedObjects = _messages.MessageField('SpannerDatabase', 6)
+  sqlServerExcludedObjects = _messages.MessageField('SqlServerRdbms', 7)
 
 
 class BackfillJob(_messages.Message):
@@ -282,6 +284,7 @@ class ConnectionProfile(_messages.Message):
     salesforceProfile: Salesforce Connection Profile configuration.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
+    spannerProfile: Spanner Connection Profile configuration.
     sqlServerProfile: SQLServer Connection Profile configuration.
     staticServiceIpConnectivity: Static Service IP connectivity.
     updateTime: Output only. The update time of the resource.
@@ -326,9 +329,10 @@ class ConnectionProfile(_messages.Message):
   salesforceProfile = _messages.MessageField('SalesforceProfile', 13)
   satisfiesPzi = _messages.BooleanField(14)
   satisfiesPzs = _messages.BooleanField(15)
-  sqlServerProfile = _messages.MessageField('SqlServerProfile', 16)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 17)
-  updateTime = _messages.StringField(18)
+  spannerProfile = _messages.MessageField('SpannerProfile', 16)
+  sqlServerProfile = _messages.MessageField('SqlServerProfile', 17)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 18)
+  updateTime = _messages.StringField(19)
 
 
 class CustomizationRule(_messages.Message):
@@ -1039,6 +1043,8 @@ class DiscoverConnectionProfileRequest(_messages.Message):
       objects and metadata.
     salesforceOrg: Optional. Salesforce organization to enrich with child data
       objects and metadata.
+    spannerDatabase: Optional. Spanner database to enrich with child data
+      objects and metadata.
     sqlServerRdbms: Optional. SQLServer RDBMS to enrich with child data
       objects and metadata.
   """
@@ -1052,7 +1058,8 @@ class DiscoverConnectionProfileRequest(_messages.Message):
   oracleRdbms = _messages.MessageField('OracleRdbms', 7)
   postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 8)
   salesforceOrg = _messages.MessageField('SalesforceOrg', 9)
-  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 10)
+  spannerDatabase = _messages.MessageField('SpannerDatabase', 10)
+  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 11)
 
 
 class DiscoverConnectionProfileResponse(_messages.Message):
@@ -1064,6 +1071,7 @@ class DiscoverConnectionProfileResponse(_messages.Message):
     oracleRdbms: Enriched Oracle RDBMS object.
     postgresqlRdbms: Enriched PostgreSQL RDBMS object.
     salesforceOrg: Enriched Salesforce organization.
+    spannerDatabase: Enriched Spanner database.
     sqlServerRdbms: Enriched SQLServer RDBMS object.
   """
 
@@ -1072,7 +1080,8 @@ class DiscoverConnectionProfileResponse(_messages.Message):
   oracleRdbms = _messages.MessageField('OracleRdbms', 3)
   postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 4)
   salesforceOrg = _messages.MessageField('SalesforceOrg', 5)
-  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 6)
+  spannerDatabase = _messages.MessageField('SpannerDatabase', 6)
+  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 7)
 
 
 class DropLargeObjects(_messages.Message):
@@ -2855,6 +2864,7 @@ class SourceConfig(_messages.Message):
     sourceConnectionProfile: Required. Source connection profile resource.
       Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`
+    spannerSourceConfig: Spanner data source configuration.
     sqlServerSourceConfig: SQLServer data source configuration.
   """
 
@@ -2864,7 +2874,8 @@ class SourceConfig(_messages.Message):
   postgresqlSourceConfig = _messages.MessageField('PostgresqlSourceConfig', 4)
   salesforceSourceConfig = _messages.MessageField('SalesforceSourceConfig', 5)
   sourceConnectionProfile = _messages.StringField(6)
-  sqlServerSourceConfig = _messages.MessageField('SqlServerSourceConfig', 7)
+  spannerSourceConfig = _messages.MessageField('SpannerSourceConfig', 7)
+  sqlServerSourceConfig = _messages.MessageField('SqlServerSourceConfig', 8)
 
 
 class SourceHierarchyDatasets(_messages.Message):
@@ -2890,6 +2901,7 @@ class SourceObjectIdentifier(_messages.Message):
     oracleIdentifier: Oracle data source object identifier.
     postgresqlIdentifier: PostgreSQL data source object identifier.
     salesforceIdentifier: Salesforce data source object identifier.
+    spannerIdentifier: Spanner data source object identifier.
     sqlServerIdentifier: SQLServer data source object identifier.
   """
 
@@ -2898,7 +2910,135 @@ class SourceObjectIdentifier(_messages.Message):
   oracleIdentifier = _messages.MessageField('OracleObjectIdentifier', 3)
   postgresqlIdentifier = _messages.MessageField('PostgresqlObjectIdentifier', 4)
   salesforceIdentifier = _messages.MessageField('SalesforceObjectIdentifier', 5)
-  sqlServerIdentifier = _messages.MessageField('SqlServerObjectIdentifier', 6)
+  spannerIdentifier = _messages.MessageField('SpannerObjectIdentifier', 6)
+  sqlServerIdentifier = _messages.MessageField('SqlServerObjectIdentifier', 7)
+
+
+class SpannerColumn(_messages.Message):
+  r"""Spanner column.
+
+  Fields:
+    column: Required. Column name.
+    dataType: Optional. Spanner data type.
+    isPrimaryKey: Optional. Whether or not the column is a primary key.
+    ordinalPosition: Optional. The ordinal position of the column in the
+      table.
+  """
+
+  column = _messages.StringField(1)
+  dataType = _messages.StringField(2)
+  isPrimaryKey = _messages.BooleanField(3)
+  ordinalPosition = _messages.IntegerField(4)
+
+
+class SpannerDatabase(_messages.Message):
+  r"""Spanner database structure.
+
+  Fields:
+    schemas: Optional. Spanner schemas in the database.
+  """
+
+  schemas = _messages.MessageField('SpannerSchema', 1, repeated=True)
+
+
+class SpannerObjectIdentifier(_messages.Message):
+  r"""Spanner data source object identifier.
+
+  Fields:
+    schema: Optional. The schema name.
+    table: Required. The table name.
+  """
+
+  schema = _messages.StringField(1)
+  table = _messages.StringField(2)
+
+
+class SpannerProfile(_messages.Message):
+  r"""Spanner profile.
+
+  Fields:
+    database: Required. Immutable. Cloud Spanner database resource. This field
+      is immutable. Must be in the format:
+      projects/{project}/instances/{instance}/databases/{database_id}.
+    host: Optional. The Spanner endpoint to connect to. Defaults to the global
+      endpoint (https://spanner.googleapis.com). Must be in the format:
+      https://spanner.{region}.rep.googleapis.com.
+  """
+
+  database = _messages.StringField(1)
+  host = _messages.StringField(2)
+
+
+class SpannerSchema(_messages.Message):
+  r"""Spanner schema.
+
+  Fields:
+    schema: Required. Schema name.
+    tables: Optional. Spanner tables in the schema.
+  """
+
+  schema = _messages.StringField(1)
+  tables = _messages.MessageField('SpannerTable', 2, repeated=True)
+
+
+class SpannerSourceConfig(_messages.Message):
+  r"""Spanner source configuration.
+
+  Enums:
+    SpannerRpcPriorityValueValuesEnum: Optional. The RPC priority to use for
+      the stream.
+
+  Fields:
+    backfillDataBoostEnabled: Optional. Whether to use Data Boost for Spanner
+      backfills. Defaults to false if not set.
+    changeStreamName: Required. Immutable. The change stream name to use for
+      the stream.
+    excludeObjects: Optional. Spanner objects to avoid retrieving. If some
+      objects are both included and excluded, an error will be thrown.
+    fgacRole: Optional. The FGAC role to use for the stream.
+    includeObjects: Optional. Spanner objects to retrieve from the data
+      source. If some objects are both included and excluded, an error will be
+      thrown.
+    maxConcurrentBackfillTasks: Optional. Maximum number of concurrent
+      backfill tasks.
+    maxConcurrentCdcTasks: Optional. Maximum number of concurrent CDC tasks.
+    spannerRpcPriority: Optional. The RPC priority to use for the stream.
+  """
+
+  class SpannerRpcPriorityValueValuesEnum(_messages.Enum):
+    r"""Optional. The RPC priority to use for the stream.
+
+    Values:
+      SPANNER_RPC_PRIORITY_UNSPECIFIED: Unspecified RPC priority.
+      LOW: Low RPC priority.
+      MEDIUM: Medium RPC priority.
+      HIGH: High RPC priority.
+    """
+    SPANNER_RPC_PRIORITY_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+  backfillDataBoostEnabled = _messages.BooleanField(1)
+  changeStreamName = _messages.StringField(2)
+  excludeObjects = _messages.MessageField('SpannerDatabase', 3)
+  fgacRole = _messages.StringField(4)
+  includeObjects = _messages.MessageField('SpannerDatabase', 5)
+  maxConcurrentBackfillTasks = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxConcurrentCdcTasks = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  spannerRpcPriority = _messages.EnumField('SpannerRpcPriorityValueValuesEnum', 8)
+
+
+class SpannerTable(_messages.Message):
+  r"""Spanner table.
+
+  Fields:
+    columns: Optional. Spanner columns in the table.
+    table: Required. Table name.
+  """
+
+  columns = _messages.MessageField('SpannerColumn', 1, repeated=True)
+  table = _messages.StringField(2)
 
 
 class SpecificStartPosition(_messages.Message):

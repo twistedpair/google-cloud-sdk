@@ -602,18 +602,18 @@ class DataplexProjectsLocationsDataProductsCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataProductsCreateRequest object.
 
   Fields:
-    dataProductId: Optional. The ID of the Data Product to create.The ID must
+    dataProductId: Optional. The ID of the data product to create.The ID must
       conform to RFC-1034 and contain only lower-case letters (a-z), numbers
       (0-9), or hyphens, with the first character a letter, the last a letter
       or a number, and a 63 character maximum. Characters outside of ASCII are
-      not permitted. Valid format regex: (^a-z?$) If not provided, a system
-      generated ID will be used.
+      not permitted. Valid format regex: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$ If
+      not provided, a system generated ID will be used.
     googleCloudDataplexV1DataProduct: A GoogleCloudDataplexV1DataProduct
       resource to be passed as the request body.
-    parent: Required. The parent resource where this Data Product will be
+    parent: Required. The parent resource where this data product will be
       created. Format: projects/{project_id_or_number}/locations/{location_id}
     validateOnly: Optional. Validates the request without actually creating
-      the Data Product. Default: false.
+      the data product. Default: false.
   """
 
   dataProductId = _messages.StringField(1)
@@ -626,19 +626,19 @@ class DataplexProjectsLocationsDataProductsDataAssetsCreateRequest(_messages.Mes
   r"""A DataplexProjectsLocationsDataProductsDataAssetsCreateRequest object.
 
   Fields:
-    dataAssetId: Optional. The ID of the Data Asset to create.The ID must
+    dataAssetId: Optional. The ID of the data asset to create.The ID must
       conform to RFC-1034 and contain only lower-case letters (a-z), numbers
       (0-9), or hyphens, with the first character a letter, the last a letter
       or a number, and a 63 character maximum. Characters outside of ASCII are
-      not permitted. Valid format regex: (^a-z?$) If not provided, a system
-      generated ID will be used.
+      not permitted. Valid format regex: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$ If
+      not provided, a system generated ID will be used.
     googleCloudDataplexV1DataAsset: A GoogleCloudDataplexV1DataAsset resource
       to be passed as the request body.
-    parent: Required. The parent resource where this Data Asset will be
+    parent: Required. The parent resource where this data asset will be
       created. Format: projects/{project_id_or_number}/locations/{location_id}
       /dataProducts/{data_product_id}
     validateOnly: Optional. Validates the request without actually creating
-      the Data Asset. Defaults to false.
+      the data asset. Defaults to false.
   """
 
   dataAssetId = _messages.StringField(1)
@@ -651,14 +651,14 @@ class DataplexProjectsLocationsDataProductsDataAssetsDeleteRequest(_messages.Mes
   r"""A DataplexProjectsLocationsDataProductsDataAssetsDeleteRequest object.
 
   Fields:
-    etag: Optional. The etag of the Data Asset. If this is provided, it must
+    etag: Optional. The etag of the data asset. If this is provided, it must
       match the server's etag. If the etag is provided and does not match the
       server-computed etag, the request must fail with a ABORTED error code.
-    name: Required. The name of the Data Asset to delete. Format: projects/{pr
+    name: Required. The name of the data asset to delete. Format: projects/{pr
       oject_id_or_number}/locations/{location_id}/dataProducts/{data_product_i
       d}/dataAssets/{data_asset_id}
     validateOnly: Optional. Validates the request without actually deleting
-      the Data Asset. Defaults to false.
+      the data asset. Defaults to false.
   """
 
   etag = _messages.StringField(1)
@@ -670,7 +670,7 @@ class DataplexProjectsLocationsDataProductsDataAssetsGetRequest(_messages.Messag
   r"""A DataplexProjectsLocationsDataProductsDataAssetsGetRequest object.
 
   Fields:
-    name: Required. The name of the Data Asset to retrieve. Format: projects/{
+    name: Required. The name of the data asset to retrieve. Format: projects/{
       project_id_or_number}/locations/{location_id}/dataProducts/{data_product
       _id}/dataAssets/{data_asset_id}
   """
@@ -682,20 +682,20 @@ class DataplexProjectsLocationsDataProductsDataAssetsListRequest(_messages.Messa
   r"""A DataplexProjectsLocationsDataProductsDataAssetsListRequest object.
 
   Fields:
-    filter: Optional. Filter expression that filters DataAssets listed in the
+    filter: Optional. Filter expression that filters data assets listed in the
       response.
-    orderBy: Optional. Order by expression that orders DataAssets listed in
-      the response.Supported Order by fields are: name or create_time.If not
+    orderBy: Optional. Order by expression that orders data assets listed in
+      the response.Supported order_by fields are: name or create_time.If not
       specified, the ordering is undefined.
-    pageSize: Optional. The maximum number of Data Assets to return. The
+    pageSize: Optional. The maximum number of data assets to return. The
       service may return fewer than this value. If unspecified, at most 50
-      Data Assets will be returned. The maximum value is 1000; values above
+      data assets will be returned. The maximum value is 1000; values above
       1000 will be coerced to 1000.
     pageToken: Optional. A page token, received from a previous ListDataAssets
       call. Provide this to retrieve the subsequent page.When paginating, all
       other parameters provided to ListDataAssets must match the call that
       provided the page token.
-    parent: Required. The parent, which has this collection of Data Assets.
+    parent: Required. The parent, which has this collection of data assets.
       Format: projects/{project_id_or_number}/locations/{location_id}/dataProd
       ucts/{data_product_id}
   """
@@ -713,14 +713,13 @@ class DataplexProjectsLocationsDataProductsDataAssetsPatchRequest(_messages.Mess
   Fields:
     googleCloudDataplexV1DataAsset: A GoogleCloudDataplexV1DataAsset resource
       to be passed as the request body.
-    name: Identifier. Resource name of the Data Asset. Format: projects/{proje
+    name: Identifier. Resource name of the data asset. Format: projects/{proje
       ct_id_or_number}/locations/{location_id}/dataProducts/{data_product_id}/
       dataAssets/{data_asset_id}
     updateMask: Optional. The list of fields to update. If this is empty or
-      not set, then all fields that are populated (have a non-empty value) in
-      data_asset above will be updated.
+      not set, then all the fields will be updated.
     validateOnly: Optional. Validates the request without actually updating
-      the Data Asset. Defaults to false.
+      the data asset. Defaults to false.
   """
 
   googleCloudDataplexV1DataAsset = _messages.MessageField('GoogleCloudDataplexV1DataAsset', 1)
@@ -733,14 +732,14 @@ class DataplexProjectsLocationsDataProductsDeleteRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataProductsDeleteRequest object.
 
   Fields:
-    etag: Optional. The etag of the Data Product.If an etag is provided and
-      does not match the current etag of the Data Product, then the deletion
+    etag: Optional. The etag of the data product.If an etag is provided and
+      does not match the current etag of the data product, then the deletion
       will be blocked and an ABORTED error will be returned.
-    name: Required. The name of the Data Product to delete. Format: projects/{
+    name: Required. The name of the data product to delete. Format: projects/{
       project_id_or_number}/locations/{location_id}/dataProducts/{data_product
       _id}
     validateOnly: Optional. Validates the request without actually deleting
-      the Data Product. Default: false.
+      the data product. Default: false.
   """
 
   etag = _messages.StringField(1)
@@ -776,7 +775,7 @@ class DataplexProjectsLocationsDataProductsGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataProductsGetRequest object.
 
   Fields:
-    name: Required. The name of the Data Product to retrieve. Format: projects
+    name: Required. The name of the data product to retrieve. Format: projects
       /{project_id_or_number}/locations/{location_id}/dataProducts/{data_produ
       ct_id}
   """
@@ -788,24 +787,24 @@ class DataplexProjectsLocationsDataProductsListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataProductsListRequest object.
 
   Fields:
-    filter: Optional. Filter expression that filters Data Products listed in
+    filter: Optional. Filter expression that filters data products listed in
       the response.Example of using this filter is: display_name="my-data-
       product"
-    orderBy: Optional. Order by expression that orders Data Products listed in
+    orderBy: Optional. Order by expression that orders data products listed in
       the response.Supported Order by fields are: name or create_time.If not
       specified, the ordering is undefined.Ordering by create_time is not
       supported when listing resources across locations (i.e. when request
       contains /locations/-).
-    pageSize: Optional. The maximum number of Data Products to return. The
+    pageSize: Optional. The maximum number of data products to return. The
       service may return fewer than this value. If unspecified, at most 50
-      Data Products will be returned. The maximum value is 1000; values above
+      data products will be returned. The maximum value is 1000; values above
       1000 will be coerced to 1000.
     pageToken: Optional. A page token, received from a previous
       ListDataProducts call. Provide this to retrieve the subsequent page.When
       paginating, all other parameters provided to ListDataProducts must match
       the call that provided the page token.
-    parent: Required. The parent, which has this collection of Data
-      Products.Format:
+    parent: Required. The parent, which has this collection of data
+      products.Format:
       projects/{project_id_or_number}/locations/{location_id}.Supports listing
       across all locations with the wildcard - (hyphen) character. Example:
       projects/{project_id_or_number}/locations/-
@@ -824,13 +823,13 @@ class DataplexProjectsLocationsDataProductsPatchRequest(_messages.Message):
   Fields:
     googleCloudDataplexV1DataProduct: A GoogleCloudDataplexV1DataProduct
       resource to be passed as the request body.
-    name: Identifier. Resource name of the Data Product. Format: projects/{pro
+    name: Identifier. Resource name of the data product. Format: projects/{pro
       ject_id_or_number}/locations/{location_id}/dataProducts/{data_product_id
       }.
     updateMask: Optional. The list of fields to update. If this is empty or
       not set, then all the fields will be updated.
     validateOnly: Optional. Validates the request without actually updating
-      the Data Product. Default: false.
+      the data product. Default: false.
   """
 
   googleCloudDataplexV1DataProduct = _messages.MessageField('GoogleCloudDataplexV1DataProduct', 1)
@@ -5362,59 +5361,60 @@ class GoogleCloudDataplexV1DataAccessSpec(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataAsset(_messages.Message):
-  r"""Represents a Data Asset resource that can be packaged and shared via a
-  Data Product.
+  r"""Represents a data asset resource that can be packaged and shared via a
+  data product.
 
   Messages:
     AccessGroupConfigsValue: Optional. Access groups configurations for this
-      Data Asset. The key is DataProduct.AccessGroup.id and the value is
-      AccessGroupConfig. Example: key: "analyst" value: { AccessGroupConfig :
-      { iam_roles : "roles/bigquery.dataViewer" } } Currently, at most one IAM
-      role is allowed per access group. For providing multiple predefined IAM
-      roles, wrap them in a custom IAM role as per
+      data asset.The key is DataProduct.AccessGroup.id and the value is
+      AccessGroupConfig.Example: { "analyst": { "iamRoles":
+      ["roles/bigquery.dataViewer"] } } Currently, at most one IAM role is
+      allowed per access group. For providing multiple predefined IAM roles,
+      wrap them in a custom IAM role as per
       https://cloud.google.com/iam/docs/creating-custom-roles.
-    LabelsValue: Optional. User-defined labels for the Data Asset.
+    LabelsValue: Optional. User-defined labels for the data asset.Example: {
+      "environment": "production", "billing": "marketing-department" }
 
   Fields:
-    accessGroupConfigs: Optional. Access groups configurations for this Data
-      Asset. The key is DataProduct.AccessGroup.id and the value is
-      AccessGroupConfig. Example: key: "analyst" value: { AccessGroupConfig :
-      { iam_roles : "roles/bigquery.dataViewer" } } Currently, at most one IAM
-      role is allowed per access group. For providing multiple predefined IAM
-      roles, wrap them in a custom IAM role as per
+    accessGroupConfigs: Optional. Access groups configurations for this data
+      asset.The key is DataProduct.AccessGroup.id and the value is
+      AccessGroupConfig.Example: { "analyst": { "iamRoles":
+      ["roles/bigquery.dataViewer"] } } Currently, at most one IAM role is
+      allowed per access group. For providing multiple predefined IAM roles,
+      wrap them in a custom IAM role as per
       https://cloud.google.com/iam/docs/creating-custom-roles.
-    createTime: Output only. The time at which the Data Asset was created.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
-    labels: Optional. User-defined labels for the Data Asset.
-    name: Identifier. Resource name of the Data Asset. Format: projects/{proje
+    createTime: Output only. The time at which the data asset was created.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    labels: Optional. User-defined labels for the data asset.Example: {
+      "environment": "production", "billing": "marketing-department" }
+    name: Identifier. Resource name of the data asset. Format: projects/{proje
       ct_id_or_number}/locations/{location_id}/dataProducts/{data_product_id}/
       dataAssets/{data_asset_id}
     resource: Required. Immutable. Full resource name of the cloud resource
-      represented by the Data Asset. This must follow
+      represented by the data asset. This must follow
       https://cloud.google.com/iam/docs/full-resource-names. Example: //bigque
       ry.googleapis.com/projects/my_project_123/datasets/dataset_456/tables/ta
       ble_789 Only BigQuery tables and datasets are currently supported. Data
-      Asset creator must have getIamPolicy and setIamPolicy permissions on the
-      resource. Data Asset creator must also have resource specific get
+      asset creator must have getIamPolicy and setIamPolicy permissions on the
+      resource. Data asset creator must also have resource specific get
       permission, for instance, bigquery.tables.get for BigQuery tables.
-    uid: Output only. System generated globally unique ID for the Data Asset.
-      This ID will be different if the Data Asset is deleted and re-created
+    uid: Output only. System generated globally unique ID for the data asset.
+      This ID will be different if the data asset is deleted and re-created
       with the same name.
-    updateTime: Output only. The time at which the Data Asset was last
+    updateTime: Output only. The time at which the data asset was last
       updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AccessGroupConfigsValue(_messages.Message):
-    r"""Optional. Access groups configurations for this Data Asset. The key is
-    DataProduct.AccessGroup.id and the value is AccessGroupConfig. Example:
-    key: "analyst" value: { AccessGroupConfig : { iam_roles :
-    "roles/bigquery.dataViewer" } } Currently, at most one IAM role is allowed
-    per access group. For providing multiple predefined IAM roles, wrap them
-    in a custom IAM role as per https://cloud.google.com/iam/docs/creating-
-    custom-roles.
+    r"""Optional. Access groups configurations for this data asset.The key is
+    DataProduct.AccessGroup.id and the value is AccessGroupConfig.Example: {
+    "analyst": { "iamRoles": ["roles/bigquery.dataViewer"] } } Currently, at
+    most one IAM role is allowed per access group. For providing multiple
+    predefined IAM roles, wrap them in a custom IAM role as per
+    https://cloud.google.com/iam/docs/creating-custom-roles.
 
     Messages:
       AdditionalProperty: An additional property for a AccessGroupConfigsValue
@@ -5440,7 +5440,8 @@ class GoogleCloudDataplexV1DataAsset(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. User-defined labels for the Data Asset.
+    r"""Optional. User-defined labels for the data asset.Example: {
+    "environment": "production", "billing": "marketing-department" }
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -5473,13 +5474,13 @@ class GoogleCloudDataplexV1DataAsset(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataAssetAccessGroupConfig(_messages.Message):
-  r"""Configuration for access group inherited from the parent Data Product.
+  r"""Configuration for access group inherited from the parent data product.
 
   Fields:
     iamRoles: Optional. IAM roles granted on the resource to this access
       group. Role name follows
-      https://cloud.google.com/iam/docs/reference/rest/v1/roles. Example:
-      "roles/bigquery.dataViewer"
+      https://cloud.google.com/iam/docs/reference/rest/v1/roles.Example: [
+      "roles/bigquery.dataViewer" ]
   """
 
   iamRoles = _messages.StringField(1, repeated=True)
@@ -5919,53 +5920,63 @@ class GoogleCloudDataplexV1DataDocumentationSpec(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataProduct(_messages.Message):
-  r"""A Data Product is a curated collection of Data Assets, packaged to
+  r"""A data product is a curated collection of data assets, packaged to
   address specific use cases. It's a way to manage and share data in a more
   organized, product-like manner.
 
   Messages:
-    AccessGroupsValue: Optional. Data Product access groups by access group id
-      as key. If Data Product is used only for packaging Data Assets, then
-      access groups may be empty. However, if a Data Product is used for
-      sharing Data Assets, then at least one access group must be specified.
-    LabelsValue: Optional. User-defined labels for the Data Product.
+    AccessGroupsValue: Optional. Data product access groups by access group id
+      as key. If data product is used only for packaging data assets, then
+      access groups may be empty. However, if a data product is used for
+      sharing data assets, then at least one access group must be
+      specified.Example: { "analyst": { "id": "analyst", "displayName":
+      "Analyst", "description": "Access group for analysts", "principal": {
+      "googleGroup": "analysts@example.com" } } }
+    LabelsValue: Optional. User-defined labels for the data product.Example: {
+      "environment": "production", "billing": "marketing-department" }
 
   Fields:
-    accessGroups: Optional. Data Product access groups by access group id as
-      key. If Data Product is used only for packaging Data Assets, then access
-      groups may be empty. However, if a Data Product is used for sharing Data
-      Assets, then at least one access group must be specified.
-    assetCount: Output only. Number of Data Assets associated with this Data
-      Product.
-    createTime: Output only. The time at which the Data Product was created.
-    description: Optional. Description of the Data Product.
-    displayName: Required. User-friendly display name of the Data Product.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
-    icon: Optional. Base64 encoded image representing the Data Product. Max
+    accessGroups: Optional. Data product access groups by access group id as
+      key. If data product is used only for packaging data assets, then access
+      groups may be empty. However, if a data product is used for sharing data
+      assets, then at least one access group must be specified.Example: {
+      "analyst": { "id": "analyst", "displayName": "Analyst", "description":
+      "Access group for analysts", "principal": { "googleGroup":
+      "analysts@example.com" } } }
+    assetCount: Output only. Number of data assets associated with this data
+      product.
+    createTime: Output only. The time at which the data product was created.
+    description: Optional. Description of the data product.
+    displayName: Required. User-friendly display name of the data product.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    icon: Optional. Base64 encoded image representing the data product. Max
       Size: 3.0MiB Expected image dimensions are 512x512 pixels, however the
       API only performs validation on size of the encoded data. Note: For byte
       fields, the content of the fields are base64-encoded (which increases
       the size of the data by 33-36%) when using JSON on the wire.
-    labels: Optional. User-defined labels for the Data Product.
-    name: Identifier. Resource name of the Data Product. Format: projects/{pro
+    labels: Optional. User-defined labels for the data product.Example: {
+      "environment": "production", "billing": "marketing-department" }
+    name: Identifier. Resource name of the data product. Format: projects/{pro
       ject_id_or_number}/locations/{location_id}/dataProducts/{data_product_id
       }.
-    ownerEmails: Required. Emails of the Data Product owners.
-    uid: Output only. System generated unique ID for the Data Product. This ID
-      will be different if the Data Product is deleted and re-created with the
+    ownerEmails: Required. Emails of the data product owners.
+    uid: Output only. System generated unique ID for the data product. This ID
+      will be different if the data product is deleted and re-created with the
       same name.
-    updateTime: Output only. The time at which the Data Product was last
+    updateTime: Output only. The time at which the data product was last
       updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AccessGroupsValue(_messages.Message):
-    r"""Optional. Data Product access groups by access group id as key. If
-    Data Product is used only for packaging Data Assets, then access groups
-    may be empty. However, if a Data Product is used for sharing Data Assets,
-    then at least one access group must be specified.
+    r"""Optional. Data product access groups by access group id as key. If
+    data product is used only for packaging data assets, then access groups
+    may be empty. However, if a data product is used for sharing data assets,
+    then at least one access group must be specified.Example: { "analyst": {
+    "id": "analyst", "displayName": "Analyst", "description": "Access group
+    for analysts", "principal": { "googleGroup": "analysts@example.com" } } }
 
     Messages:
       AdditionalProperty: An additional property for a AccessGroupsValue
@@ -5990,7 +6001,8 @@ class GoogleCloudDataplexV1DataProduct(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. User-defined labels for the Data Product.
+    r"""Optional. User-defined labels for the data product.Example: {
+    "environment": "production", "billing": "marketing-department" }
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -6027,16 +6039,16 @@ class GoogleCloudDataplexV1DataProduct(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataProductAccessGroup(_messages.Message):
-  r"""Custom user defined access groups at the Data Product level. These are
+  r"""Custom user defined access groups at the data product level. These are
   used for granting different levels of access (IAM roles) on the individual
-  Data Product's Data Assets.
+  data product's data assets.
 
   Fields:
     description: Optional. Description of the access group.
     displayName: Required. User friendly display name of the access group. Eg.
       "Analyst", "Developer", etc.
-    id: Required. Unique identifier of the access group within the Data
-      Product. User defined. Eg. "analyst", "developer", etc.
+    id: Required. Unique identifier of the access group within the data
+      product. User defined. Eg. "analyst", "developer", etc.
     principal: Required. The principal entity associated with this access
       group.
   """
@@ -6052,7 +6064,7 @@ class GoogleCloudDataplexV1DataProductPrincipal(_messages.Message):
   https://cloud.google.com/iam/docs/principals-overview.
 
   Fields:
-    googleGroup: Email of the Google Group, as per
+    googleGroup: Optional. Email of the Google Group, as per
       https://cloud.google.com/iam/docs/principals-overview#google-group.
   """
 
@@ -9604,10 +9616,10 @@ class GoogleCloudDataplexV1ListContentResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1ListDataAssetsResponse(_messages.Message):
-  r"""Response message for listing Data Assets.
+  r"""Response message for listing data assets.
 
   Fields:
-    dataAssets: The Data Assets for the requested filter criteria.
+    dataAssets: The data assets for the requested filter criteria.
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is empty, then there are no subsequent pages.
   """
@@ -9648,10 +9660,10 @@ class GoogleCloudDataplexV1ListDataAttributesResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1ListDataProductsResponse(_messages.Message):
-  r"""Response message for listing Data Products.
+  r"""Response message for listing data products.
 
   Fields:
-    dataProducts: The Data Products for the requested filter criteria.
+    dataProducts: The data products for the requested filter criteria.
     nextPageToken: A token, which can be sent as page_token to retrieve the
       next page. If this field is empty, then there are no subsequent pages.
     unreachable: Unordered list. Locations that the service couldn't reach.

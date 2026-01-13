@@ -20,9 +20,21 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.run import instance
 from googlecloudsdk.command_lib.run.printers import container_and_volume_printer_util as container_util
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.core.resource import custom_printer_base as cp
+
+
+def status_color_format():
+  """Return the color format string for the status of this instance."""
+  color_formatters = []
+  for _, symbol in instance.Instance.INSTANCE_SYMBOLS.items():
+    if symbol.color:
+      color_formatters.append(f'{symbol.color}="[{symbol.best}{symbol.alt}]"')
+  color_formatters_str = ','.join(color_formatters)
+  return f'ready_symbol.color({color_formatters_str}):label=""'
+
 
 INSTANCE_PRINTER_FORMAT = 'instance'
 

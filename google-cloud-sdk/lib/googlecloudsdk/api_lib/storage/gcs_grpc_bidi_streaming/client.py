@@ -20,7 +20,11 @@ from __future__ import annotations
 from typing import Any
 
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
+from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
+from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util as grpc_retry_util
 from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import download
+from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import retry_util
 from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import upload
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
 from googlecloudsdk.api_lib.util import apis as core_apis
@@ -28,6 +32,7 @@ from googlecloudsdk.command_lib.storage import gzip_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 
 
 def _log_transfer(
@@ -92,8 +97,16 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
       self._gapic_client = core_apis.GetGapicClientInstance(
           'storage',
           'v2',
-          attempt_direct_path=True,
+          attempt_direct_path=properties.VALUES.storage.attempt_grpc_direct_path.GetBool(),
           redact_request_body_reason=redact_request_body_reason,
+          channel_options={
+              'grpc.http2.lookahead_bytes': (
+                  properties.VALUES.grpc.http2_lookahead_bytes.GetInt()
+              ),
+              'grpc.http2.bdp_probe': (
+                  properties.VALUES.grpc.enable_http2_bdp_probe.GetBool()
+              ),
+          },
       )
     return self._gapic_client
 
@@ -111,6 +124,47 @@ class GcsGrpcBidiStreamingClient(cloud_api.CloudApi):
       return source_resource.storage_url.versionless_url_string
 
     return None
+
+  @grpc_retry_util.grpc_default_retryer
+  def get_grpc_bidi_object_metadata(
+      self,
+      bucket_name,
+      object_name,
+      source_resource=None,
+      destination_resource=None,
+      request_config=None,
+      generation=None,
+  ):
+    """Get object metadata using gRPC bidi streaming API."""
+    gapic_client = self._get_gapic_client()
+    decryption_key = getattr(
+        getattr(request_config, 'resource_args', None), 'decryption_key', None
+    )
+    read_request = gapic_client.types.BidiReadObjectRequest(
+        read_object_spec=gapic_client.types.BidiReadObjectSpec(
+            bucket=grpc_util.get_full_bucket_name(bucket_name),
+            object_=object_name,
+            generation=generation,
+            common_object_request_params=grpc_util.get_encryption_request_params(
+                gapic_client, decryption_key
+            ),
+        )
+    )
+
+    redirection_handler = retry_util.BidiRedirectedTokenErrorHandler(
+        gapic_client, source_resource=source_resource,
+        destination_resource=destination_resource,
+    )
+    bidi_read_object_rpc = (
+        redirection_handler.start_bidi_rpc_with_retry_on_redirected_token_error(
+            read_request
+        )
+    )
+    try:
+      response = bidi_read_object_rpc.recv()
+    finally:
+      bidi_read_object_rpc.close()
+    return metadata_util.get_object_resource_from_grpc_object(response.metadata)
 
   def get_object_metadata(
       self,

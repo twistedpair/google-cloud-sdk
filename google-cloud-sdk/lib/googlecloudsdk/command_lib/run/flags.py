@@ -92,9 +92,7 @@ _TO_ANNOTATION_IDENTITY_TYPE_STR = {
 IDENTITY_TYPE_FLAG = base.Argument(
     '--identity-type',
     choices=_IDENTITY_TYPE_CHOICES,
-    help=(
-        'Configures the type of identity to be used by the resource.'
-    ),
+    help='Configures the type of identity to be used by the resource.',
     hidden=True,
 )
 
@@ -976,21 +974,22 @@ def MutexEnvVarsFlags(release_track=base.ReleaseTrack.GA):
               key_type=env_vars_util.EnvVarKeyType,
               value_type=env_vars_util.EnvVarValueType,
           ),
-          help="""Path to a local YAML or ENV file with definitions for all environment
-            variables. All existing environment variables will be removed before
-            the new environment variables are added. Example YAML content:
+          help="""\
+Path to a local YAML or ENV file with definitions for all environment
+variables. All existing environment variables will be removed before
+the new environment variables are added. Example YAML content:
 
-              ```
-              KEY_1: "value1"
-              KEY_2: "value 2"
-              ```
-              Example ENV content:
+  ```
+  KEY_1: "value1"
+  KEY_2: "value 2"
+  ```
 
-              ```
-              KEY_1="value1"
-              KEY_2="value 2"
-              ```
-            """,
+Example ENV content:
+
+  ```
+  KEY_1="value1"
+  KEY_2="value 2"
+  ```""",
       )
   )
   return group
@@ -1575,6 +1574,24 @@ class ScalingValue:
         )
 
 
+class InstanceValue:
+  """Type for --instances flag values."""
+
+  def __init__(self, value):
+    try:
+      self.instance_count = int(value)
+    except (TypeError, ValueError):
+      raise serverless_exceptions.ArgumentError(
+          "Input value '%s' for --instances flag is not an integer." % value
+      )
+
+    if self.instance_count < 0:
+      raise serverless_exceptions.ArgumentError(
+          'Input value for --instances flag should be a non-negative'
+          ' integer. Input value: %s' % value
+      )
+
+
 def AddMinInstancesFlag(parser, resource_kind='service'):
   """Add min scaling flag."""
   resource = 'Service' if resource_kind == 'service' else 'Worker'
@@ -1689,30 +1706,32 @@ def AddMaxInstancesFlag(parser, resource_kind='service'):
   )
 
 
-def AddScalingFlag(
-    parser, release_track=base.ReleaseTrack.GA, resource_kind='service'
-):
+def AddScalingFlag(parser, resource_kind='service'):
   """Add scaling flag."""
-  # For worker pools in BETA, we only support manual scaling with a fixed
-  # instance count.
-  help_text = (
-      'The scaling mode to use for this resource. Flag value should be a'
-      ' positive integer to configure manual scaling with the given integer as'
-      ' a fixed instance count.'
-  )
-  # For worker pools in ALPHA and services, we support both manual and automatic
-  # scaling.
-  if resource_kind == 'service' or release_track == base.ReleaseTrack.ALPHA:
-    help_text = (
-        'The scaling mode to use for this resource. Flag value could be'
-        ' either "auto" for automatic scaling, or a positive integer to'
-        ' configure manual scaling with the given integer as a fixed instance'
-        ' count.'
-    )
   parser.add_argument(
       '--scaling',
       type=ScalingValue,
-      help=help_text,
+      # --instances should be used instead for worker pools.
+      hidden=resource_kind == 'worker',
+      help=(
+          'The scaling mode to use for this service. Flag value could be'
+          ' either "auto" for automatic scaling, or a positive integer to'
+          ' configure manual scaling with the given integer as a fixed instance'
+          ' count.'
+      ),
+  )
+
+
+def AddInstancesFlag(parser):
+  """Add instances flag for worker pools."""
+  parser.add_argument(
+      '--instances',
+      type=InstanceValue,
+      help=(
+          'The number of instances to run for this WorkerPool. Flag value'
+          ' should be a positive integer to configure manual scaling with the'
+          ' given integer as a fixed instance count.'
+      ),
   )
 
 
@@ -2173,8 +2192,9 @@ def AddClearVpcNetworkTagsFlags(parser, resource_kind='service'):
       '--clear-network-tags',
       action='store_true',
       help=(
-          'Clears all existing network tags from the Cloud Run {kind}. '
-          .format(kind=resource_kind)
+          'Clears all existing network tags from the Cloud Run {kind}. '.format(
+              kind=resource_kind
+          )
       ),
   )
 
@@ -3167,9 +3187,7 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
 
   if FlagIsExplicitlySet(args, 'clear_presets'):
     changes.append(
-        config_changes.RemovePresetsChange(
-            clear_presets=args.clear_presets
-        )
+        config_changes.RemovePresetsChange(clear_presets=args.clear_presets)
     )
   return changes
 

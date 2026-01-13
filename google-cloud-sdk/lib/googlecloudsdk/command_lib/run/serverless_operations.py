@@ -1052,7 +1052,9 @@ class ServerlessOperations(object):
         service_ref, allow_unauthenticated, multiregion_regions, tracker
     )
 
-    self._HandleIap(service_ref, iap_enabled, updated_service, tracker)
+    self._HandleIap(
+        service_ref, iap_enabled, updated_service, multiregion_regions, tracker
+    )
 
     if not asyn and not dry_run:
       if updated_service.conditions.IsReady():
@@ -1071,6 +1073,7 @@ class ServerlessOperations(object):
           tracker,
           dependencies=stages.ServiceDependencies(multiregion_regions),
           serv=updated_service,
+          skip_stage_updates=True,
       )
       self.WaitForCondition(poller)
       for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
@@ -1170,52 +1173,134 @@ class ServerlessOperations(object):
       return f'serviceAccount:service-{project_num}@gcp-sa-iap.{project_prefix}.iam.gserviceaccount.com'
     return f'serviceAccount:service-{project_num}@gcp-sa-iap.iam.gserviceaccount.com'
 
-  def _HandleIap(self, service_ref, iap_enabled, updated_service, tracker):
+  def _HandleIap(
+      self,
+      service_ref,
+      iap_enabled,
+      updated_service,
+      multiregion_regions,
+      tracker,
+  ):
     """Handle IAP changes."""
+    if iap_enabled is None:
+      return
+
     iap_service_agent = self.GetServiceAgent(updated_service.namespace)
-    if iap_enabled is not None:
+    if multiregion_regions is not None:
+      return self._HandleMultiRegionIap(
+          service_ref,
+          iap_enabled,
+          multiregion_regions,
+          iap_service_agent,
+          tracker,
+      )
+
+    try:
+      tracker.StartStage(stages.SERVICE_IAP_ENABLE)
+      tracker.UpdateStage(stages.SERVICE_IAP_ENABLE, '')
+      if iap_enabled:
+        self._AddIamPolicyBindingWithRetry(service_ref, iap_service_agent)
+      else:
+        self.AddOrRemoveIamPolicyBinding(
+            service_ref,
+            False,
+            iap_service_agent,
+            ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+        )
+      tracker.CompleteStage(stages.SERVICE_IAP_ENABLE)
+    except api_exceptions.HttpError as e:
+      if (
+          iap_enabled and e.status_code == 400
+      ):  # IAP service agent not ready yet.
+        warning_message = (
+            'IAP has not been successfully enabled. If this is the first time'
+            " you're enabling IAP in this project, please wait a few minutes"
+            ' for the service agent to propagate, then try enabling IAP again'
+            ' on this service.'
+        )
+      else:
+        warning_message = (
+            'Setting IAM policy failed, try "gcloud run services'
+            ' {}-iam-policy-binding --region={region} --member={member}'
+            ' --role=roles/run.invoker {service}"'.format(
+                'add' if iap_enabled else 'remove',
+                region=self._region,
+                member=iap_service_agent,
+                service=service_ref.servicesId,
+            )
+        )
+      tracker.CompleteStageWithWarning(
+          stages.SERVICE_IAP_ENABLE, warning_message=warning_message
+      )
+
+  def _HandleMultiRegionIap(
+      self,
+      service_ref,
+      iap_enabled,
+      multiregion_regions,
+      iap_service_agent,
+      tracker,
+  ):
+    """Handle IAP changes for Multi-Region Services."""
+    warning_messages = []
+    failed_regions = []
+    tracker.StartStage(stages.SERVICE_IAP_ENABLE)
+    for region in multiregion_regions:
       try:
-        tracker.StartStage(stages.SERVICE_IAP_ENABLE)
-        tracker.UpdateStage(stages.SERVICE_IAP_ENABLE, '')
+        tracker.UpdateStage(
+            stages.SERVICE_IAP_ENABLE,
+            'Setting IAP policy for region {}'.format(region),
+        )
         if iap_enabled:
-          self._AddIamPolicyBindingWithRetry(service_ref, iap_service_agent)
+          self._AddIamPolicyBindingWithRetry(
+              service_ref, iap_service_agent, region_override=region
+          )
         else:
           self.AddOrRemoveIamPolicyBinding(
               service_ref,
               False,
               iap_service_agent,
               ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+              region_override=region,
           )
-        tracker.CompleteStage(stages.SERVICE_IAP_ENABLE)
       except api_exceptions.HttpError as e:
-        if (
-            iap_enabled and e.status_code == 400
-        ):  # IAP service agent not ready yet.
-          warning_message = (
-              'IAP has not been successfully enabled. If this is the first time'
-              " you're enabling IAP in this project, please wait a few minutes"
-              ' for the service agent to propagate, then try enabling IAP again'
-              ' on this service.'
+        failed_regions.append(region)
+        if iap_enabled and e.status_code == 400:
+          warning_messages.append(
+              'IAP has not been successfully enabled in region {}. If this is'
+              " the first time you're enabling IAP in this project, please"
+              ' wait a few minutes for the service agent to propagate, then'
+              ' try enabling IAP again on this service.'.format(region)
           )
         else:
-          warning_message = (
-              'Setting IAM policy failed, try "gcloud run services'
-              ' {}-iam-policy-binding --region={region} --member={member}'
-              ' --role=roles/run.invoker {service}"'.format(
-                  'add' if iap_enabled else 'remove',
-                  region=self._region,
+          warning_messages.append(
+              'Setting IAM policy failed in region {region}, try "gcloud run'
+              ' services {action}-iam-policy-binding --region={region}'
+              ' --member={member} --role=roles/run.invoker {service}"'.format(
+                  region=region,
+                  action='add' if iap_enabled else 'remove',
                   member=iap_service_agent,
                   service=service_ref.servicesId,
               )
           )
-        tracker.CompleteStageWithWarning(
-            stages.SERVICE_IAP_ENABLE, warning_message=warning_message
-        )
+    if warning_messages:
+      tracker.CompleteStageWithWarning(
+          stages.SERVICE_IAP_ENABLE,
+          warning_message='\n'.join(warning_messages),
+      )
+    else:
+      tracker.CompleteStage(stages.SERVICE_IAP_ENABLE)
 
   @retry.RetryOnException(max_retrials=10, sleep_ms=15 * 1000)
-  def _AddIamPolicyBindingWithRetry(self, service_ref, iap_service_agent):
+  def _AddIamPolicyBindingWithRetry(
+      self, service_ref, iap_service_agent, region_override=None
+  ):
     return self.AddOrRemoveIamPolicyBinding(
-        service_ref, True, iap_service_agent, ALLOW_UNAUTH_POLICY_BINDING_ROLE
+        service_ref,
+        True,
+        iap_service_agent,
+        ALLOW_UNAUTH_POLICY_BINDING_ROLE,
+        region_override=region_override,
     )
 
   def GetWorkerPool(self, worker_pool_ref):

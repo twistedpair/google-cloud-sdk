@@ -244,12 +244,6 @@ class Backup(_messages.Message):
         version is 46.
       MYSQL_8_4: The database version is MySQL 8.4.
       MYSQL_9_7: The database version is MySQL 9.7.
-      MYSQL_9_7_0: The database version is MySQL 9.7.0.
-      MYSQL_9_7_1: The database version is MySQL 9.7.1.
-      MYSQL_9_7_2: The database version is MySQL 9.7.2.
-      MYSQL_9_7_3: The database version is MySQL 9.7.3.
-      MYSQL_9_7_4: The database version is MySQL 9.7.4.
-      MYSQL_9_7_5: The database version is MySQL 9.7.5.
       SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
         Standard.
       SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
@@ -308,34 +302,28 @@ class Backup(_messages.Message):
     MYSQL_8_0_46 = 26
     MYSQL_8_4 = 27
     MYSQL_9_7 = 28
-    MYSQL_9_7_0 = 29
-    MYSQL_9_7_1 = 30
-    MYSQL_9_7_2 = 31
-    MYSQL_9_7_3 = 32
-    MYSQL_9_7_4 = 33
-    MYSQL_9_7_5 = 34
-    SQLSERVER_2017_STANDARD = 35
-    SQLSERVER_2017_ENTERPRISE = 36
-    SQLSERVER_2017_EXPRESS = 37
-    SQLSERVER_2017_WEB = 38
-    POSTGRES_9_6 = 39
-    POSTGRES_10 = 40
-    POSTGRES_11 = 41
-    POSTGRES_12 = 42
-    POSTGRES_13 = 43
-    POSTGRES_14 = 44
-    POSTGRES_15 = 45
-    POSTGRES_16 = 46
-    POSTGRES_17 = 47
-    POSTGRES_18 = 48
-    SQLSERVER_2019_STANDARD = 49
-    SQLSERVER_2019_ENTERPRISE = 50
-    SQLSERVER_2019_EXPRESS = 51
-    SQLSERVER_2019_WEB = 52
-    SQLSERVER_2022_STANDARD = 53
-    SQLSERVER_2022_ENTERPRISE = 54
-    SQLSERVER_2022_EXPRESS = 55
-    SQLSERVER_2022_WEB = 56
+    SQLSERVER_2017_STANDARD = 29
+    SQLSERVER_2017_ENTERPRISE = 30
+    SQLSERVER_2017_EXPRESS = 31
+    SQLSERVER_2017_WEB = 32
+    POSTGRES_9_6 = 33
+    POSTGRES_10 = 34
+    POSTGRES_11 = 35
+    POSTGRES_12 = 36
+    POSTGRES_13 = 37
+    POSTGRES_14 = 38
+    POSTGRES_15 = 39
+    POSTGRES_16 = 40
+    POSTGRES_17 = 41
+    POSTGRES_18 = 42
+    SQLSERVER_2019_STANDARD = 43
+    SQLSERVER_2019_ENTERPRISE = 44
+    SQLSERVER_2019_EXPRESS = 45
+    SQLSERVER_2019_WEB = 46
+    SQLSERVER_2022_STANDARD = 47
+    SQLSERVER_2022_ENTERPRISE = 48
+    SQLSERVER_2022_EXPRESS = 49
+    SQLSERVER_2022_WEB = 50
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this backup.
@@ -675,12 +663,6 @@ class BackupRun(_messages.Message):
         version is 46.
       MYSQL_8_4: The database version is MySQL 8.4.
       MYSQL_9_7: The database version is MySQL 9.7.
-      MYSQL_9_7_0: The database version is MySQL 9.7.0.
-      MYSQL_9_7_1: The database version is MySQL 9.7.1.
-      MYSQL_9_7_2: The database version is MySQL 9.7.2.
-      MYSQL_9_7_3: The database version is MySQL 9.7.3.
-      MYSQL_9_7_4: The database version is MySQL 9.7.4.
-      MYSQL_9_7_5: The database version is MySQL 9.7.5.
       SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
         Standard.
       SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
@@ -739,34 +721,28 @@ class BackupRun(_messages.Message):
     MYSQL_8_0_46 = 26
     MYSQL_8_4 = 27
     MYSQL_9_7 = 28
-    MYSQL_9_7_0 = 29
-    MYSQL_9_7_1 = 30
-    MYSQL_9_7_2 = 31
-    MYSQL_9_7_3 = 32
-    MYSQL_9_7_4 = 33
-    MYSQL_9_7_5 = 34
-    SQLSERVER_2017_STANDARD = 35
-    SQLSERVER_2017_ENTERPRISE = 36
-    SQLSERVER_2017_EXPRESS = 37
-    SQLSERVER_2017_WEB = 38
-    POSTGRES_9_6 = 39
-    POSTGRES_10 = 40
-    POSTGRES_11 = 41
-    POSTGRES_12 = 42
-    POSTGRES_13 = 43
-    POSTGRES_14 = 44
-    POSTGRES_15 = 45
-    POSTGRES_16 = 46
-    POSTGRES_17 = 47
-    POSTGRES_18 = 48
-    SQLSERVER_2019_STANDARD = 49
-    SQLSERVER_2019_ENTERPRISE = 50
-    SQLSERVER_2019_EXPRESS = 51
-    SQLSERVER_2019_WEB = 52
-    SQLSERVER_2022_STANDARD = 53
-    SQLSERVER_2022_ENTERPRISE = 54
-    SQLSERVER_2022_EXPRESS = 55
-    SQLSERVER_2022_WEB = 56
+    SQLSERVER_2017_STANDARD = 29
+    SQLSERVER_2017_ENTERPRISE = 30
+    SQLSERVER_2017_EXPRESS = 31
+    SQLSERVER_2017_WEB = 32
+    POSTGRES_9_6 = 33
+    POSTGRES_10 = 34
+    POSTGRES_11 = 35
+    POSTGRES_12 = 36
+    POSTGRES_13 = 37
+    POSTGRES_14 = 38
+    POSTGRES_15 = 39
+    POSTGRES_16 = 40
+    POSTGRES_17 = 41
+    POSTGRES_18 = 42
+    SQLSERVER_2019_STANDARD = 43
+    SQLSERVER_2019_ENTERPRISE = 44
+    SQLSERVER_2019_EXPRESS = 45
+    SQLSERVER_2019_WEB = 46
+    SQLSERVER_2022_STANDARD = 47
+    SQLSERVER_2022_ENTERPRISE = 48
+    SQLSERVER_2022_EXPRESS = 49
+    SQLSERVER_2022_WEB = 50
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of this run.
@@ -1092,12 +1068,6 @@ class ConnectSettings(_messages.Message):
         version is 46.
       MYSQL_8_4: The database version is MySQL 8.4.
       MYSQL_9_7: The database version is MySQL 9.7.
-      MYSQL_9_7_0: The database version is MySQL 9.7.0.
-      MYSQL_9_7_1: The database version is MySQL 9.7.1.
-      MYSQL_9_7_2: The database version is MySQL 9.7.2.
-      MYSQL_9_7_3: The database version is MySQL 9.7.3.
-      MYSQL_9_7_4: The database version is MySQL 9.7.4.
-      MYSQL_9_7_5: The database version is MySQL 9.7.5.
       SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
         Standard.
       SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
@@ -1156,34 +1126,28 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_46 = 26
     MYSQL_8_4 = 27
     MYSQL_9_7 = 28
-    MYSQL_9_7_0 = 29
-    MYSQL_9_7_1 = 30
-    MYSQL_9_7_2 = 31
-    MYSQL_9_7_3 = 32
-    MYSQL_9_7_4 = 33
-    MYSQL_9_7_5 = 34
-    SQLSERVER_2017_STANDARD = 35
-    SQLSERVER_2017_ENTERPRISE = 36
-    SQLSERVER_2017_EXPRESS = 37
-    SQLSERVER_2017_WEB = 38
-    POSTGRES_9_6 = 39
-    POSTGRES_10 = 40
-    POSTGRES_11 = 41
-    POSTGRES_12 = 42
-    POSTGRES_13 = 43
-    POSTGRES_14 = 44
-    POSTGRES_15 = 45
-    POSTGRES_16 = 46
-    POSTGRES_17 = 47
-    POSTGRES_18 = 48
-    SQLSERVER_2019_STANDARD = 49
-    SQLSERVER_2019_ENTERPRISE = 50
-    SQLSERVER_2019_EXPRESS = 51
-    SQLSERVER_2019_WEB = 52
-    SQLSERVER_2022_STANDARD = 53
-    SQLSERVER_2022_ENTERPRISE = 54
-    SQLSERVER_2022_EXPRESS = 55
-    SQLSERVER_2022_WEB = 56
+    SQLSERVER_2017_STANDARD = 29
+    SQLSERVER_2017_ENTERPRISE = 30
+    SQLSERVER_2017_EXPRESS = 31
+    SQLSERVER_2017_WEB = 32
+    POSTGRES_9_6 = 33
+    POSTGRES_10 = 34
+    POSTGRES_11 = 35
+    POSTGRES_12 = 36
+    POSTGRES_13 = 37
+    POSTGRES_14 = 38
+    POSTGRES_15 = 39
+    POSTGRES_16 = 40
+    POSTGRES_17 = 41
+    POSTGRES_18 = 42
+    SQLSERVER_2019_STANDARD = 43
+    SQLSERVER_2019_ENTERPRISE = 44
+    SQLSERVER_2019_EXPRESS = 45
+    SQLSERVER_2019_WEB = 46
+    SQLSERVER_2022_STANDARD = 47
+    SQLSERVER_2022_ENTERPRISE = 48
+    SQLSERVER_2022_EXPRESS = 49
+    SQLSERVER_2022_WEB = 50
 
   class MdxProtocolSupportValueListEntryValuesEnum(_messages.Enum):
     r"""MdxProtocolSupportValueListEntryValuesEnum enum type.
@@ -1535,12 +1499,6 @@ class DatabaseInstance(_messages.Message):
         version is 46.
       MYSQL_8_4: The database version is MySQL 8.4.
       MYSQL_9_7: The database version is MySQL 9.7.
-      MYSQL_9_7_0: The database version is MySQL 9.7.0.
-      MYSQL_9_7_1: The database version is MySQL 9.7.1.
-      MYSQL_9_7_2: The database version is MySQL 9.7.2.
-      MYSQL_9_7_3: The database version is MySQL 9.7.3.
-      MYSQL_9_7_4: The database version is MySQL 9.7.4.
-      MYSQL_9_7_5: The database version is MySQL 9.7.5.
       SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
         Standard.
       SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
@@ -1599,34 +1557,28 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_46 = 26
     MYSQL_8_4 = 27
     MYSQL_9_7 = 28
-    MYSQL_9_7_0 = 29
-    MYSQL_9_7_1 = 30
-    MYSQL_9_7_2 = 31
-    MYSQL_9_7_3 = 32
-    MYSQL_9_7_4 = 33
-    MYSQL_9_7_5 = 34
-    SQLSERVER_2017_STANDARD = 35
-    SQLSERVER_2017_ENTERPRISE = 36
-    SQLSERVER_2017_EXPRESS = 37
-    SQLSERVER_2017_WEB = 38
-    POSTGRES_9_6 = 39
-    POSTGRES_10 = 40
-    POSTGRES_11 = 41
-    POSTGRES_12 = 42
-    POSTGRES_13 = 43
-    POSTGRES_14 = 44
-    POSTGRES_15 = 45
-    POSTGRES_16 = 46
-    POSTGRES_17 = 47
-    POSTGRES_18 = 48
-    SQLSERVER_2019_STANDARD = 49
-    SQLSERVER_2019_ENTERPRISE = 50
-    SQLSERVER_2019_EXPRESS = 51
-    SQLSERVER_2019_WEB = 52
-    SQLSERVER_2022_STANDARD = 53
-    SQLSERVER_2022_ENTERPRISE = 54
-    SQLSERVER_2022_EXPRESS = 55
-    SQLSERVER_2022_WEB = 56
+    SQLSERVER_2017_STANDARD = 29
+    SQLSERVER_2017_ENTERPRISE = 30
+    SQLSERVER_2017_EXPRESS = 31
+    SQLSERVER_2017_WEB = 32
+    POSTGRES_9_6 = 33
+    POSTGRES_10 = 34
+    POSTGRES_11 = 35
+    POSTGRES_12 = 36
+    POSTGRES_13 = 37
+    POSTGRES_14 = 38
+    POSTGRES_15 = 39
+    POSTGRES_16 = 40
+    POSTGRES_17 = 41
+    POSTGRES_18 = 42
+    SQLSERVER_2019_STANDARD = 43
+    SQLSERVER_2019_ENTERPRISE = 44
+    SQLSERVER_2019_EXPRESS = 45
+    SQLSERVER_2019_WEB = 46
+    SQLSERVER_2022_STANDARD = 47
+    SQLSERVER_2022_ENTERPRISE = 48
+    SQLSERVER_2022_EXPRESS = 49
+    SQLSERVER_2022_WEB = 50
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1683,12 +1635,6 @@ class DatabaseInstance(_messages.Message):
         version is 46.
       MYSQL_8_4: The database version is MySQL 8.4.
       MYSQL_9_7: The database version is MySQL 9.7.
-      MYSQL_9_7_0: The database version is MySQL 9.7.0.
-      MYSQL_9_7_1: The database version is MySQL 9.7.1.
-      MYSQL_9_7_2: The database version is MySQL 9.7.2.
-      MYSQL_9_7_3: The database version is MySQL 9.7.3.
-      MYSQL_9_7_4: The database version is MySQL 9.7.4.
-      MYSQL_9_7_5: The database version is MySQL 9.7.5.
       SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
         Standard.
       SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
@@ -1747,34 +1693,28 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_46 = 26
     MYSQL_8_4 = 27
     MYSQL_9_7 = 28
-    MYSQL_9_7_0 = 29
-    MYSQL_9_7_1 = 30
-    MYSQL_9_7_2 = 31
-    MYSQL_9_7_3 = 32
-    MYSQL_9_7_4 = 33
-    MYSQL_9_7_5 = 34
-    SQLSERVER_2017_STANDARD = 35
-    SQLSERVER_2017_ENTERPRISE = 36
-    SQLSERVER_2017_EXPRESS = 37
-    SQLSERVER_2017_WEB = 38
-    POSTGRES_9_6 = 39
-    POSTGRES_10 = 40
-    POSTGRES_11 = 41
-    POSTGRES_12 = 42
-    POSTGRES_13 = 43
-    POSTGRES_14 = 44
-    POSTGRES_15 = 45
-    POSTGRES_16 = 46
-    POSTGRES_17 = 47
-    POSTGRES_18 = 48
-    SQLSERVER_2019_STANDARD = 49
-    SQLSERVER_2019_ENTERPRISE = 50
-    SQLSERVER_2019_EXPRESS = 51
-    SQLSERVER_2019_WEB = 52
-    SQLSERVER_2022_STANDARD = 53
-    SQLSERVER_2022_ENTERPRISE = 54
-    SQLSERVER_2022_EXPRESS = 55
-    SQLSERVER_2022_WEB = 56
+    SQLSERVER_2017_STANDARD = 29
+    SQLSERVER_2017_ENTERPRISE = 30
+    SQLSERVER_2017_EXPRESS = 31
+    SQLSERVER_2017_WEB = 32
+    POSTGRES_9_6 = 33
+    POSTGRES_10 = 34
+    POSTGRES_11 = 35
+    POSTGRES_12 = 36
+    POSTGRES_13 = 37
+    POSTGRES_14 = 38
+    POSTGRES_15 = 39
+    POSTGRES_16 = 40
+    POSTGRES_17 = 41
+    POSTGRES_18 = 42
+    SQLSERVER_2019_STANDARD = 43
+    SQLSERVER_2019_ENTERPRISE = 44
+    SQLSERVER_2019_EXPRESS = 45
+    SQLSERVER_2019_WEB = 46
+    SQLSERVER_2022_STANDARD = 47
+    SQLSERVER_2022_ENTERPRISE = 48
+    SQLSERVER_2022_EXPRESS = 49
+    SQLSERVER_2022_WEB = 50
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -2201,6 +2141,10 @@ class ExecuteSqlPayload(_messages.Message):
   Fields:
     accessToken: Optional. Deprecated field. The access token required for IAM
       user authentication.
+    application: Optional. Specifies the name of the application that is
+      making the request. This field is used for telemetry. Only alphanumeric
+      characters, dashes, and underscores are allowed. The maximum length is
+      32 characters.
     autoIamAuthn: Optional. When set to true, the API caller identity
       associated with the request is used for database authentication. The API
       caller must be an IAM user in the database.
@@ -2242,8 +2186,8 @@ class ExecuteSqlPayload(_messages.Message):
     Values:
       PARTIAL_RESULT_MODE_UNSPECIFIED: Unspecified mode, effectively the same
         as `FAIL_PARTIAL_RESULT`.
-      FAIL_PARTIAL_RESULT: Throw an error if the result exceeds 10 MB or if a
-        partial result can be retrieved. Don't return the result.
+      FAIL_PARTIAL_RESULT: Throw an error if the result exceeds 10 MB or if
+        only a partial result can be retrieved. Don't return the result.
       ALLOW_PARTIAL_RESULT: Return a truncated result and set `partial_result`
         to true if the result exceeds 10 MB or if only a partial result can be
         retrieved due to error. Don't throw an error.
@@ -2253,15 +2197,16 @@ class ExecuteSqlPayload(_messages.Message):
     ALLOW_PARTIAL_RESULT = 2
 
   accessToken = _messages.StringField(1)
-  autoIamAuthn = _messages.BooleanField(2)
-  database = _messages.StringField(3)
-  outputFormat = _messages.EnumField('OutputFormatValueValuesEnum', 4)
-  partialResultMode = _messages.EnumField('PartialResultModeValueValuesEnum', 5)
-  password = _messages.StringField(6)
-  rowLimit = _messages.IntegerField(7)
-  secretPath = _messages.StringField(8)
-  sqlStatement = _messages.StringField(9)
-  user = _messages.StringField(10)
+  application = _messages.StringField(2)
+  autoIamAuthn = _messages.BooleanField(3)
+  database = _messages.StringField(4)
+  outputFormat = _messages.EnumField('OutputFormatValueValuesEnum', 5)
+  partialResultMode = _messages.EnumField('PartialResultModeValueValuesEnum', 6)
+  password = _messages.StringField(7)
+  rowLimit = _messages.IntegerField(8)
+  secretPath = _messages.StringField(9)
+  sqlStatement = _messages.StringField(10)
+  user = _messages.StringField(11)
 
 
 class ExportContext(_messages.Message):
@@ -2644,12 +2589,6 @@ class Flag(_messages.Message):
         version is 46.
       MYSQL_8_4: The database version is MySQL 8.4.
       MYSQL_9_7: The database version is MySQL 9.7.
-      MYSQL_9_7_0: The database version is MySQL 9.7.0.
-      MYSQL_9_7_1: The database version is MySQL 9.7.1.
-      MYSQL_9_7_2: The database version is MySQL 9.7.2.
-      MYSQL_9_7_3: The database version is MySQL 9.7.3.
-      MYSQL_9_7_4: The database version is MySQL 9.7.4.
-      MYSQL_9_7_5: The database version is MySQL 9.7.5.
       SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
         Standard.
       SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
@@ -2708,34 +2647,28 @@ class Flag(_messages.Message):
     MYSQL_8_0_46 = 26
     MYSQL_8_4 = 27
     MYSQL_9_7 = 28
-    MYSQL_9_7_0 = 29
-    MYSQL_9_7_1 = 30
-    MYSQL_9_7_2 = 31
-    MYSQL_9_7_3 = 32
-    MYSQL_9_7_4 = 33
-    MYSQL_9_7_5 = 34
-    SQLSERVER_2017_STANDARD = 35
-    SQLSERVER_2017_ENTERPRISE = 36
-    SQLSERVER_2017_EXPRESS = 37
-    SQLSERVER_2017_WEB = 38
-    POSTGRES_9_6 = 39
-    POSTGRES_10 = 40
-    POSTGRES_11 = 41
-    POSTGRES_12 = 42
-    POSTGRES_13 = 43
-    POSTGRES_14 = 44
-    POSTGRES_15 = 45
-    POSTGRES_16 = 46
-    POSTGRES_17 = 47
-    POSTGRES_18 = 48
-    SQLSERVER_2019_STANDARD = 49
-    SQLSERVER_2019_ENTERPRISE = 50
-    SQLSERVER_2019_EXPRESS = 51
-    SQLSERVER_2019_WEB = 52
-    SQLSERVER_2022_STANDARD = 53
-    SQLSERVER_2022_ENTERPRISE = 54
-    SQLSERVER_2022_EXPRESS = 55
-    SQLSERVER_2022_WEB = 56
+    SQLSERVER_2017_STANDARD = 29
+    SQLSERVER_2017_ENTERPRISE = 30
+    SQLSERVER_2017_EXPRESS = 31
+    SQLSERVER_2017_WEB = 32
+    POSTGRES_9_6 = 33
+    POSTGRES_10 = 34
+    POSTGRES_11 = 35
+    POSTGRES_12 = 36
+    POSTGRES_13 = 37
+    POSTGRES_14 = 38
+    POSTGRES_15 = 39
+    POSTGRES_16 = 40
+    POSTGRES_17 = 41
+    POSTGRES_18 = 42
+    SQLSERVER_2019_STANDARD = 43
+    SQLSERVER_2019_ENTERPRISE = 44
+    SQLSERVER_2019_EXPRESS = 45
+    SQLSERVER_2019_WEB = 46
+    SQLSERVER_2022_STANDARD = 47
+    SQLSERVER_2022_ENTERPRISE = 48
+    SQLSERVER_2022_EXPRESS = 49
+    SQLSERVER_2022_WEB = 50
 
   class FlagScopeValueValuesEnum(_messages.Enum):
     r"""Scope of flag.
@@ -4302,6 +4235,8 @@ class PointInTimeRestoreContext(_messages.Message):
     privateNetwork: Optional. The resource link for the VPC network from which
       the Cloud SQL instance is accessible for private IP. For example,
       `/projects/myProject/global/networks/default`.
+    region: Optional. The region of the target instance where the datasource
+      will be restored. For example: "us-central1".
     sourceInstanceDeletionTime: The timestamp used to identify the time when
       the source instance is deleted. If this instance is deleted, then you
       must set the timestamp.
@@ -4321,10 +4256,11 @@ class PointInTimeRestoreContext(_messages.Message):
   preferredSecondaryZone = _messages.StringField(5)
   preferredZone = _messages.StringField(6)
   privateNetwork = _messages.StringField(7)
-  sourceInstanceDeletionTime = _messages.StringField(8)
-  targetInstance = _messages.StringField(9)
-  targetInstanceClearSettingsFieldNames = _messages.StringField(10, repeated=True)
-  targetInstanceSettings = _messages.MessageField('DatabaseInstance', 11)
+  region = _messages.StringField(8)
+  sourceInstanceDeletionTime = _messages.StringField(9)
+  targetInstance = _messages.StringField(10)
+  targetInstanceClearSettingsFieldNames = _messages.StringField(11, repeated=True)
+  targetInstanceSettings = _messages.MessageField('DatabaseInstance', 12)
 
 
 class PoolNodeConfig(_messages.Message):
@@ -4455,12 +4391,6 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
         version is 46.
       MYSQL_8_4: The database version is MySQL 8.4.
       MYSQL_9_7: The database version is MySQL 9.7.
-      MYSQL_9_7_0: The database version is MySQL 9.7.0.
-      MYSQL_9_7_1: The database version is MySQL 9.7.1.
-      MYSQL_9_7_2: The database version is MySQL 9.7.2.
-      MYSQL_9_7_3: The database version is MySQL 9.7.3.
-      MYSQL_9_7_4: The database version is MySQL 9.7.4.
-      MYSQL_9_7_5: The database version is MySQL 9.7.5.
       SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
         Standard.
       SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
@@ -4519,34 +4449,28 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
     MYSQL_8_0_46 = 26
     MYSQL_8_4 = 27
     MYSQL_9_7 = 28
-    MYSQL_9_7_0 = 29
-    MYSQL_9_7_1 = 30
-    MYSQL_9_7_2 = 31
-    MYSQL_9_7_3 = 32
-    MYSQL_9_7_4 = 33
-    MYSQL_9_7_5 = 34
-    SQLSERVER_2017_STANDARD = 35
-    SQLSERVER_2017_ENTERPRISE = 36
-    SQLSERVER_2017_EXPRESS = 37
-    SQLSERVER_2017_WEB = 38
-    POSTGRES_9_6 = 39
-    POSTGRES_10 = 40
-    POSTGRES_11 = 41
-    POSTGRES_12 = 42
-    POSTGRES_13 = 43
-    POSTGRES_14 = 44
-    POSTGRES_15 = 45
-    POSTGRES_16 = 46
-    POSTGRES_17 = 47
-    POSTGRES_18 = 48
-    SQLSERVER_2019_STANDARD = 49
-    SQLSERVER_2019_ENTERPRISE = 50
-    SQLSERVER_2019_EXPRESS = 51
-    SQLSERVER_2019_WEB = 52
-    SQLSERVER_2022_STANDARD = 53
-    SQLSERVER_2022_ENTERPRISE = 54
-    SQLSERVER_2022_EXPRESS = 55
-    SQLSERVER_2022_WEB = 56
+    SQLSERVER_2017_STANDARD = 29
+    SQLSERVER_2017_ENTERPRISE = 30
+    SQLSERVER_2017_EXPRESS = 31
+    SQLSERVER_2017_WEB = 32
+    POSTGRES_9_6 = 33
+    POSTGRES_10 = 34
+    POSTGRES_11 = 35
+    POSTGRES_12 = 36
+    POSTGRES_13 = 37
+    POSTGRES_14 = 38
+    POSTGRES_15 = 39
+    POSTGRES_16 = 40
+    POSTGRES_17 = 41
+    POSTGRES_18 = 42
+    SQLSERVER_2019_STANDARD = 43
+    SQLSERVER_2019_ENTERPRISE = 44
+    SQLSERVER_2019_EXPRESS = 45
+    SQLSERVER_2019_WEB = 46
+    SQLSERVER_2022_STANDARD = 47
+    SQLSERVER_2022_ENTERPRISE = 48
+    SQLSERVER_2022_EXPRESS = 49
+    SQLSERVER_2022_WEB = 50
 
   kind = _messages.StringField(1)
   preCheckResponse = _messages.MessageField('PreCheckResponse', 2, repeated=True)
@@ -4631,13 +4555,19 @@ class PscConfig(_messages.Message):
     pscAutoConnections: Optional. The list of settings for requested Private
       Service Connect consumer endpoints that can be used to connect to this
       Cloud SQL instance.
+    pscAutoDnsEnabled: Optional. Whether PSC DNS automation is enabled for
+      this instance.
     pscEnabled: Whether PSC connectivity is enabled for this instance.
+    pscWriteEndpointDnsEnabled: Optional. Whether PSC write endpoint DNS
+      automation is enabled for this instance.
   """
 
   allowedConsumerProjects = _messages.StringField(1, repeated=True)
   networkAttachmentUri = _messages.StringField(2)
   pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 3, repeated=True)
-  pscEnabled = _messages.BooleanField(4)
+  pscAutoDnsEnabled = _messages.BooleanField(4)
+  pscEnabled = _messages.BooleanField(5)
+  pscWriteEndpointDnsEnabled = _messages.BooleanField(6)
 
 
 class QueryResult(_messages.Message):

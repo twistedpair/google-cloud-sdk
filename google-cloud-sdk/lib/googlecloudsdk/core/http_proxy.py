@@ -15,16 +15,57 @@
 
 """A module to get an http proxy information."""
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import http_proxy_types
-
-import httplib2
 from six.moves import urllib
+import socks
+
+
+class ProxyInfo(object):
+  """A class to hold proxy information."""
+
+  def __init__(self, proxy_type, proxy_host, proxy_port, proxy_rdns=None,
+               proxy_user=None, proxy_pass=None):
+    self.proxy_type = proxy_type
+    self.proxy_host = proxy_host
+    self.proxy_port = proxy_port
+    self.proxy_rdns = proxy_rdns
+    self.proxy_user = proxy_user
+    self.proxy_pass = proxy_pass
+    self.bypass_host = lambda host: 0
+
+  def IsGood(self):
+    return (
+        socks
+        and (self.proxy_host is not None)
+        and (self.proxy_port is not None)
+    )
+
+
+def ProxyInfoFromUrl(url, proxy_rdns=None):
+  """Extract proxy information from a URL."""
+  p = urllib.parse.urlparse(url)
+  username = p.username
+  password = p.password
+  if p.scheme == 'socks5':
+    proxy_type = socks.PROXY_TYPE_SOCKS5
+  elif p.scheme == 'socks4':
+    proxy_type = socks.PROXY_TYPE_SOCKS4
+  elif p.scheme == 'http' or p.scheme == 'https':
+    proxy_type = socks.PROXY_TYPE_HTTP
+  else:
+    return None  # Unsupported proxy scheme.
+  return ProxyInfo(
+      proxy_type,
+      p.hostname,
+      p.port,
+      proxy_rdns=proxy_rdns,
+      proxy_user=username,
+      proxy_pass=password)
 
 
 def GetDefaultProxyInfo(method='http'):
@@ -38,7 +79,7 @@ def GetDefaultProxyInfo(method='http'):
   Args:
     method: protocol string
   Returns:
-    httplib2 ProxyInfo object or None
+    ProxyInfo object or None
   """
 
   proxy_dict = urllib.request.getproxies()
@@ -46,7 +87,9 @@ def GetDefaultProxyInfo(method='http'):
   if not proxy_url:
     return None
 
-  pi = httplib2.proxy_info_from_url(proxy_url, method)
+  pi = ProxyInfoFromUrl(proxy_url, method)
+  if not pi:
+    return None
 
   # The ProxyInfo object has a bypass_host method that takes the hostname as an
   # argument and it returns 1 or 0 based on if the hostname should bypass the
@@ -105,14 +148,14 @@ def GetHttpProxyInfo():
   settings.
 
   Returns:
-    httplib2 ProxyInfo object or callable function that returns a Proxy Info
+    ProxyInfo object or callable function that returns a Proxy Info
     object given the protocol (http, https)
   """
 
   proxy_settings = GetProxyProperties()
 
   if proxy_settings:
-    return httplib2.ProxyInfo(
+    return ProxyInfo(
         proxy_settings['proxy_type'],
         proxy_settings['proxy_address'],
         proxy_settings['proxy_port'],

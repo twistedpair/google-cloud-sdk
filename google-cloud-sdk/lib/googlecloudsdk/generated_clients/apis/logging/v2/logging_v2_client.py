@@ -1530,13 +1530,13 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def QuerySync(self, request, global_params=None):
-      r"""Attempts to run the query synchronously and return all query results. If the query cannot be executed synchronously, returns query handle that can be used to fetch the results via ReadQueryResults. All tables must be referenced in the form of Observability Views.
+      r"""Attempts to run the query synchronously and return the first page of results. If the query cannot be executed synchronously, a query step handle is returned which allows the caller to wait longer for results by polling ReadQueryResults. All tables must be referenced in the form of Observability Views.By default, the query will block until either results are available or the RPC deadline is reached. QueryDataSync does not promise to return any or all available data on success. Callers should use ReadQueryResults to page through the result set to ensure that complete results are obtained.Callers may allow queries to continue asynchronously beyond the RPC deadline by setting the job_timeout parameter; however, this is discouraged as it can increase backend costs.
 
       Args:
-        request: (QueryDataRequest) input message
+        request: (QueryDataSyncRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (QueryResults) The response message.
+        (QueryDataSyncResponse) The response message.
       """
       config = self.GetMethodConfig('QuerySync')
       return self._RunMethod(
@@ -1550,8 +1550,8 @@ class LoggingV2(base_api.BaseApiClient):
         query_params=[],
         relative_path='v2/data:querySync',
         request_field='<request>',
-        request_type_name='QueryDataRequest',
-        response_type_name='QueryResults',
+        request_type_name='QueryDataSyncRequest',
+        response_type_name='QueryDataSyncResponse',
         supports_download=False,
     )
 

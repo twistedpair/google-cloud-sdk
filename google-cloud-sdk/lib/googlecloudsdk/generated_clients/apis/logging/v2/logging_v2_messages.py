@@ -965,9 +965,10 @@ class FieldSource(_messages.Message):
     columnType: The type of the selected field. This comes from the schema.
       Can be one of the BigQuery data types: - STRING - INT64 - FLOAT64 - BOOL
       - TIMESTAMP - DATE - RECORD - JSON
-    field: This will be the field that is selected using the . annotation to
-      display the drill down value. For example:
-      "json_payload.labels.message".
+    field: The fully qualified, dot-delimited path to the selected atomic
+      field (the leaf value). This path is used for primary selection and
+      actions like drill-down or projection.Example:
+      json_payload.labels.message.
     isJson: Whether the field is a JSON field, or has a parent that is a JSON
       field. This value is used to determine JSON extractions in generated SQL
       queries. Note that this is_json flag may be true when the column_type is
@@ -978,6 +979,12 @@ class FieldSource(_messages.Message):
     literalValue: A literal like "1,2,3 as testArray" or other singular
       constants like 'foo'. Note: this is not a viable option for the order_by
       since sorting based on a constant doesn't return anything useful.
+    parentPath: The dot-delimited path of the parent container that holds the
+      target field.This path defines the structural hierarchy and is essential
+      for correctly generating SQL when field keys contain special characters
+      (e.g., dots or brackets).Example: json_payload.labels (This points to
+      the 'labels' object). This is an empty string if the target field is at
+      the root level.
     projectedField: A projected field option for when a user wants to use a
       field with some additional transformations such as casting or
       extractions.
@@ -989,8 +996,9 @@ class FieldSource(_messages.Message):
   field = _messages.StringField(3)
   isJson = _messages.BooleanField(4)
   literalValue = _messages.MessageField('extra_types.JsonValue', 5)
-  projectedField = _messages.MessageField('ProjectedField', 6)
-  variableRef = _messages.StringField(7)
+  parentPath = _messages.StringField(6)
+  projectedField = _messages.MessageField('ProjectedField', 7)
+  variableRef = _messages.StringField(8)
 
 
 class FilterExpression(_messages.Message):
@@ -1004,10 +1012,7 @@ class FilterExpression(_messages.Message):
     ComparatorValueValuesEnum: The comparison type to use for the filter.
 
   Fields:
-    booleanFilterValue: The boolean value to use for the filter. Set if the
-      field is a boolean type.
     comparator: The comparison type to use for the filter.
-    field: A string attribute.
     fieldSource: Can be one of the FieldSource types: field name, alias ref,
       variable ref, or a literal value.
     fieldSourceValue: The field. This will be the field that is set as the
@@ -1015,10 +1020,6 @@ class FilterExpression(_messages.Message):
     isNegation: Determines if the NOT flag should be added to the comparator.
     literalValue: The Value will be used to hold user defined constants set as
       the Right Hand Side of the filter.
-    numericFilterValue: The numeric value to use for the filter. Set if the
-      field is a numeric type.
-    stringFilterValue: The string value to use for the filter. Set if the
-      field is a string type.
   """
 
   class ComparatorValueValuesEnum(_messages.Enum):
@@ -1027,17 +1028,12 @@ class FilterExpression(_messages.Message):
     Values:
       COMPARATOR_UNSPECIFIED: Invalid value, do not use.
       EQUALS: The value is equal to the inputted value.
-      NOT_EQUALS: The value is not equal to the inputted value.
       MATCHES_REGEXP: The value is equal to the inputted regex value.
-      NOT_MATCHES_REGEXP: The value is not equal to the inputted regex value.
       GREATER_THAN: The value is greater than the inputted value.
       LESS_THAN: The value is less than the inputted value.
       GREATER_THAN_EQUALS: The value is greater than or equal to the inputted
         value.
       LESS_THAN_EQUALS: The value is less than or equal to the inputted value.
-      IS_NOT_NULL: IS_NOT_NULL will be slightly different in the fact that it
-        will not require the value field to be inputted. For simplicity, the
-        value field will be set to an empty string when IS_NOT_NULL is used
       IS_NULL: Requires the filter_value to be a Value type with null_value
         set to true.
       IN: The value is in the inputted array value.
@@ -1045,27 +1041,20 @@ class FilterExpression(_messages.Message):
     """
     COMPARATOR_UNSPECIFIED = 0
     EQUALS = 1
-    NOT_EQUALS = 2
-    MATCHES_REGEXP = 3
-    NOT_MATCHES_REGEXP = 4
-    GREATER_THAN = 5
-    LESS_THAN = 6
-    GREATER_THAN_EQUALS = 7
-    LESS_THAN_EQUALS = 8
-    IS_NOT_NULL = 9
-    IS_NULL = 10
-    IN = 11
-    LIKE = 12
+    MATCHES_REGEXP = 2
+    GREATER_THAN = 3
+    LESS_THAN = 4
+    GREATER_THAN_EQUALS = 5
+    LESS_THAN_EQUALS = 6
+    IS_NULL = 7
+    IN = 8
+    LIKE = 9
 
-  booleanFilterValue = _messages.BooleanField(1)
-  comparator = _messages.EnumField('ComparatorValueValuesEnum', 2)
-  field = _messages.StringField(3)
-  fieldSource = _messages.MessageField('FieldSource', 4)
-  fieldSourceValue = _messages.MessageField('FieldSource', 5)
-  isNegation = _messages.BooleanField(6)
-  literalValue = _messages.MessageField('extra_types.JsonValue', 7)
-  numericFilterValue = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
-  stringFilterValue = _messages.StringField(9)
+  comparator = _messages.EnumField('ComparatorValueValuesEnum', 1)
+  fieldSource = _messages.MessageField('FieldSource', 2)
+  fieldSourceValue = _messages.MessageField('FieldSource', 3)
+  isNegation = _messages.BooleanField(4)
+  literalValue = _messages.MessageField('extra_types.JsonValue', 5)
 
 
 class FilterPredicate(_messages.Message):
@@ -1080,7 +1069,6 @@ class FilterPredicate(_messages.Message):
     childPredicates: The children of the filter predicate. This equates to the
       branches of the filter predicate that could contain further nested
       leaves.
-    expressions: The expressions to use for the filter.
     leafPredicate: The leaves of the filter predicate. This equates to the
       last leaves of the filter predicate associated with an operator.
     operatorType: The operator type for the filter. Currently there is no
@@ -1105,9 +1093,8 @@ class FilterPredicate(_messages.Message):
     LEAF = 3
 
   childPredicates = _messages.MessageField('FilterPredicate', 1, repeated=True)
-  expressions = _messages.MessageField('FilterExpression', 2, repeated=True)
-  leafPredicate = _messages.MessageField('FilterExpression', 3)
-  operatorType = _messages.EnumField('OperatorTypeValueValuesEnum', 4)
+  leafPredicate = _messages.MessageField('FilterExpression', 2)
+  operatorType = _messages.EnumField('OperatorTypeValueValuesEnum', 3)
 
 
 class FunctionApplication(_messages.Message):
@@ -1514,17 +1501,17 @@ class ListLogEntriesRequest(_messages.Message):
 
   Fields:
     filter: Optional. A filter that chooses which log entries to return. For
-      more information, see Logging query language
-      (https://cloud.google.com/logging/docs/view/logging-query-language).Only
-      log entries that match the filter are returned. An empty filter matches
-      all log entries in the resources listed in resource_names. Referencing a
-      parent resource that is not listed in resource_names will cause the
-      filter to return no results. The maximum length of a filter is 20,000
-      characters.To make queries faster, you can make the filter more
-      selective by using restrictions on indexed fields
-      (https://cloud.google.com/logging/docs/view/logging-query-
-      language#indexed-fields) as well as limit the time range of the query by
-      adding range restrictions on the timestamp field.
+      more information, see Logging query language (https://{$universe.dns_nam
+      es.final_documentation_domain}/logging/docs/view/logging-query-
+      language).Only log entries that match the filter are returned. An empty
+      filter matches all log entries in the resources listed in
+      resource_names. Referencing a parent resource that is not listed in
+      resource_names will cause the filter to return no results. The maximum
+      length of a filter is 20,000 characters.To make queries faster, you can
+      make the filter more selective by using restrictions on indexed fields (
+      https://{$universe.dns_names.final_documentation_domain}/logging/docs/vi
+      ew/logging-query-language#indexed-fields) as well as limit the time
+      range of the query by adding range restrictions on the timestamp field.
     orderBy: Optional. How the results should be sorted. Presently, the only
       permitted values are "timestamp asc" (default) and "timestamp desc". The
       first option returns entries in order of increasing values of
@@ -1667,8 +1654,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets ListOperationsRequest.return_partial_success and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2066,8 +2053,11 @@ class LogEntry(_messages.Message):
       multiple associated applications (such as for VPC flow logs)
     apphubDestination: Output only. AppHub application metadata associated
       with the destination application. This is only populated if the log
-      represented "edge"-like data (such as for VPC flow logs) with a source
-      and destination.
+      represented "edge"-like data (such as for VPC flow logs) with a
+      destination.
+    apphubSource: Output only. AppHub application metadata associated with the
+      source application. This is only populated if the log represented
+      "edge"-like data (such as for VPC flow logs) with a source.
     errorGroups: Output only. The Error Reporting
       (https://cloud.google.com/error-reporting) error groups associated with
       this LogEntry. Error Reporting sets the values for this field during
@@ -2301,25 +2291,26 @@ class LogEntry(_messages.Message):
 
   apphub = _messages.MessageField('AppHub', 1)
   apphubDestination = _messages.MessageField('AppHub', 2)
-  errorGroups = _messages.MessageField('LogErrorGroup', 3, repeated=True)
-  httpRequest = _messages.MessageField('HttpRequest', 4)
-  insertId = _messages.StringField(5)
-  jsonPayload = _messages.MessageField('JsonPayloadValue', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  logName = _messages.StringField(8)
-  metadata = _messages.MessageField('MonitoredResourceMetadata', 9)
-  operation = _messages.MessageField('LogEntryOperation', 10)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 11)
-  receiveTimestamp = _messages.StringField(12)
-  resource = _messages.MessageField('MonitoredResource', 13)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 14)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 15)
-  spanId = _messages.StringField(16)
-  split = _messages.MessageField('LogSplit', 17)
-  textPayload = _messages.StringField(18)
-  timestamp = _messages.StringField(19)
-  trace = _messages.StringField(20)
-  traceSampled = _messages.BooleanField(21)
+  apphubSource = _messages.MessageField('AppHub', 3)
+  errorGroups = _messages.MessageField('LogErrorGroup', 4, repeated=True)
+  httpRequest = _messages.MessageField('HttpRequest', 5)
+  insertId = _messages.StringField(6)
+  jsonPayload = _messages.MessageField('JsonPayloadValue', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  logName = _messages.StringField(9)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 10)
+  operation = _messages.MessageField('LogEntryOperation', 11)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 12)
+  receiveTimestamp = _messages.StringField(13)
+  resource = _messages.MessageField('MonitoredResource', 14)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 15)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 16)
+  spanId = _messages.StringField(17)
+  split = _messages.MessageField('LogSplit', 18)
+  textPayload = _messages.StringField(19)
+  timestamp = _messages.StringField(20)
+  trace = _messages.StringField(21)
+  traceSampled = _messages.BooleanField(22)
 
 
 class LogEntryOperation(_messages.Message):
@@ -3385,8 +3376,8 @@ class LoggingBillingAccountsLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4574,8 +4565,8 @@ class LoggingFoldersLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -5480,8 +5471,8 @@ class LoggingLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -6254,8 +6245,8 @@ class LoggingOrganizationsLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -7398,8 +7389,8 @@ class LoggingProjectsLocationsOperationsListRequest(_messages.Message):
     returnPartialSuccess: When set to true, operations that are reachable are
       returned as normal, and those that are unreachable are returned in the
       ListOperationsResponse.unreachable field.This can only be true when
-      reading across collections e.g. when parent is set to
-      "projects/example/locations/-".This field is not by default supported
+      reading across collections. For example, when parent is set to
+      "projects/example/locations/-".This field is not supported by default
       and will result in an UNIMPLEMENTED error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -8912,7 +8903,6 @@ class ProjectedField(_messages.Message):
       selection, grouping, or aggregation).
 
   Fields:
-    aggregationFunction: The aggregation function for the field.
     alias: The alias name for the field. Valid alias examples are: - single
       word alias: TestAlias - numbers in an alias: Alias123 - multi word alias
       should be enclosed in quotes: "Test Alias" Invalid alias examples are: -
@@ -8956,21 +8946,20 @@ class ProjectedField(_messages.Message):
         GROUP BY clause.
       AGGREGATE: Apply an aggregation function to this field across grouped
         results. Corresponds to applying a function like COUNT, SUM, AVG in
-        the SELECT list. Requires aggregation_function to be set.
+        the SELECT list. Requires sql_aggregation_function to be set.
     """
     FIELD_OPERATION_UNSPECIFIED = 0
     NO_SETTING = 1
     GROUP_BY = 2
     AGGREGATE = 3
 
-  aggregationFunction = _messages.MessageField('QueryStepAggregation', 1)
-  alias = _messages.StringField(2)
-  cast = _messages.StringField(3)
-  field = _messages.StringField(4)
-  operation = _messages.EnumField('OperationValueValuesEnum', 5)
-  regexExtraction = _messages.StringField(6)
-  sqlAggregationFunction = _messages.MessageField('FunctionApplication', 7)
-  truncationGranularity = _messages.StringField(8)
+  alias = _messages.StringField(1)
+  cast = _messages.StringField(2)
+  field = _messages.StringField(3)
+  operation = _messages.EnumField('OperationValueValuesEnum', 4)
+  regexExtraction = _messages.StringField(5)
+  sqlAggregationFunction = _messages.MessageField('FunctionApplication', 6)
+  truncationGranularity = _messages.StringField(7)
 
 
 class QueryBuilderConfig(_messages.Message):
@@ -8983,8 +8972,6 @@ class QueryBuilderConfig(_messages.Message):
   Fields:
     fieldSources: Defines the items to include in the query result, analogous
       to a SQL SELECT clause.
-    fields: The fields to select in the query. This equates to the SELECT
-      clause in SQL.
     filter: The filter to use for the query. This equates to the WHERE clause
       in SQL.
     limit: The limit to use for the query. This equates to the LIMIT clause in
@@ -9004,12 +8991,11 @@ class QueryBuilderConfig(_messages.Message):
   """
 
   fieldSources = _messages.MessageField('FieldSource', 1, repeated=True)
-  fields = _messages.MessageField('ProjectedField', 2, repeated=True)
-  filter = _messages.MessageField('FilterPredicate', 3)
-  limit = _messages.IntegerField(4)
-  orderBys = _messages.MessageField('SortOrderParameter', 5, repeated=True)
-  resourceNames = _messages.StringField(6, repeated=True)
-  searchTerm = _messages.StringField(7)
+  filter = _messages.MessageField('FilterPredicate', 2)
+  limit = _messages.IntegerField(3)
+  orderBys = _messages.MessageField('SortOrderParameter', 4, repeated=True)
+  resourceNames = _messages.StringField(5, repeated=True)
+  searchTerm = _messages.StringField(6)
 
 
 class QueryBuilderQueryStep(_messages.Message):
@@ -9038,13 +9024,13 @@ class QueryDataLocalRequest(_messages.Message):
     LabelsValue: Optional. A set of labels to be propagated to the BigQuery
       Job. If a resource generated the query, best practice is to provide
       sufficient labels to identify the resource. For example, alerting
-      queries apply the label goog-alert-policy-id=12345678.Label keys and
-      values will be visible to customers in BigQuery's
-      INFORMATION_SCHEMA.JOBS table.The key goog-oa-client-id is reserved and
-      should not be set. If set, the label's value will be silently
-      overwritten.FORMATTING: * BigQuery key and label values can be no longer
-      than 63 characters. They can only contain lowercase letters, numeric
-      characters, underscores and dashes. Spaces are not allowed.
+      queries apply the label goog-alert-policy-id=.Label keys and values will
+      be visible to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The
+      key goog-oa-client-id is reserved and should not be set. If set, the
+      label's value will be silently overwritten.FORMATTING: * BigQuery key
+      and label values can be no longer than 63 characters. They can only
+      contain lowercase letters, numeric characters, underscores and dashes.
+      Spaces are not allowed.
 
   Fields:
     clientId: Optional. An identifier for the client who sent this query. This
@@ -9062,13 +9048,13 @@ class QueryDataLocalRequest(_messages.Message):
     labels: Optional. A set of labels to be propagated to the BigQuery Job. If
       a resource generated the query, best practice is to provide sufficient
       labels to identify the resource. For example, alerting queries apply the
-      label goog-alert-policy-id=12345678.Label keys and values will be
-      visible to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key
-      goog-oa-client-id is reserved and should not be set. If set, the label's
-      value will be silently overwritten.FORMATTING: * BigQuery key and label
-      values can be no longer than 63 characters. They can only contain
-      lowercase letters, numeric characters, underscores and dashes. Spaces
-      are not allowed.
+      label goog-alert-policy-id=.Label keys and values will be visible to
+      customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+      client-id is reserved and should not be set. If set, the label's value
+      will be silently overwritten.FORMATTING: * BigQuery key and label values
+      can be no longer than 63 characters. They can only contain lowercase
+      letters, numeric characters, underscores and dashes. Spaces are not
+      allowed.
     parent: Required. The project in which the query will be run. The calling
       user must have the bigquery.jobs.create and bigquery.jobs.get
       permissions in this project.For example: "projects/PROJECT_ID"
@@ -9082,8 +9068,8 @@ class QueryDataLocalRequest(_messages.Message):
     r"""Optional. A set of labels to be propagated to the BigQuery Job. If a
     resource generated the query, best practice is to provide sufficient
     labels to identify the resource. For example, alerting queries apply the
-    label goog-alert-policy-id=12345678.Label keys and values will be visible
-    to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+    label goog-alert-policy-id=.Label keys and values will be visible to
+    customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
     client-id is reserved and should not be set. If set, the label's value
     will be silently overwritten.FORMATTING: * BigQuery key and label values
     can be no longer than 63 characters. They can only contain lowercase
@@ -9125,13 +9111,13 @@ class QueryDataRequest(_messages.Message):
     LabelsValue: Optional. A set of labels to be propagated to the BigQuery
       Job. If a resource generated the query, best practice is to provide
       sufficient labels to identify the resource. For example, alerting
-      queries apply the label goog-alert-policy-id=12345678.Label keys and
-      values will be visible to customers in BigQuery's
-      INFORMATION_SCHEMA.JOBS table.The key goog-oa-client-id is reserved and
-      should not be set. If set, the label's value will be silently
-      overwritten.FORMATTING: * BigQuery key and label values can be no longer
-      than 63 characters. They can only contain lowercase letters, numeric
-      characters, underscores and dashes. Spaces are not allowed.
+      queries apply the label goog-alert-policy-id=.Label keys and values will
+      be visible to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The
+      key goog-oa-client-id is reserved and should not be set. If set, the
+      label's value will be silently overwritten.FORMATTING: * BigQuery key
+      and label values can be no longer than 63 characters. They can only
+      contain lowercase letters, numeric characters, underscores and dashes.
+      Spaces are not allowed.
 
   Fields:
     clientId: Optional. An identifier for the client who sent this query. This
@@ -9149,16 +9135,15 @@ class QueryDataRequest(_messages.Message):
     labels: Optional. A set of labels to be propagated to the BigQuery Job. If
       a resource generated the query, best practice is to provide sufficient
       labels to identify the resource. For example, alerting queries apply the
-      label goog-alert-policy-id=12345678.Label keys and values will be
-      visible to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key
-      goog-oa-client-id is reserved and should not be set. If set, the label's
-      value will be silently overwritten.FORMATTING: * BigQuery key and label
-      values can be no longer than 63 characters. They can only contain
-      lowercase letters, numeric characters, underscores and dashes. Spaces
-      are not allowed.
+      label goog-alert-policy-id=.Label keys and values will be visible to
+      customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+      client-id is reserved and should not be set. If set, the label's value
+      will be silently overwritten.FORMATTING: * BigQuery key and label values
+      can be no longer than 63 characters. They can only contain lowercase
+      letters, numeric characters, underscores and dashes. Spaces are not
+      allowed.
     query: Optional. The contents of the query. If this field is populated,
-      query_steps will be ignored. For QueryDataSync the query must consist of
-      a single SqlQueryStep.
+      query_steps will be ignored.
     resourceNames: Required. Names of one or more views to run a SQL
       query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
       CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
@@ -9179,8 +9164,8 @@ class QueryDataRequest(_messages.Message):
     r"""Optional. A set of labels to be propagated to the BigQuery Job. If a
     resource generated the query, best practice is to provide sufficient
     labels to identify the resource. For example, alerting queries apply the
-    label goog-alert-policy-id=12345678.Label keys and values will be visible
-    to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+    label goog-alert-policy-id=.Label keys and values will be visible to
+    customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
     client-id is reserved and should not be set. If set, the label's value
     will be silently overwritten.FORMATTING: * BigQuery key and label values
     can be no longer than 63 characters. They can only contain lowercase
@@ -9236,6 +9221,176 @@ class QueryDataResponse(_messages.Message):
   queryStepHandles = _messages.StringField(1, repeated=True)
   resourceNames = _messages.StringField(2, repeated=True)
   restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 3, repeated=True)
+
+
+class QueryDataSyncRequest(_messages.Message):
+  r"""Request message for QueryDataSync.
+
+  Messages:
+    LabelsValue: Optional. A set of labels to be propagated to the BigQuery
+      Job. If a resource generated the query, best practice is to provide
+      sufficient labels to identify the resource. For example, alerting
+      queries apply the label goog-alert-policy-id=.Label keys and values will
+      be visible to customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The
+      key goog-oa-client-id is reserved and should not be set. If set, the
+      label's value will be silently overwritten.FORMATTING: * BigQuery key
+      and label values can be no longer than 63 characters. They can only
+      contain lowercase letters, numeric characters, underscores and dashes.
+      Spaces are not allowed.
+
+  Fields:
+    clientId: Optional. An identifier for the client who sent this query. This
+      should be the same (or one of a small number of values) for all queries
+      sent by a given client such as "alerting" or "dashboard". It is
+      propagated to metric labels in Monarch and becomes the value of the
+      label goog-oa-client-id in the BigQuery Job. Best practice is for all
+      clients to set this field. If not set, then "unknown-client" will be
+      used.This value will be visible in BigQuery's INFORMATION_SCHEMA.JOBS
+      table.FORMATTING: * BigQuery label values can be no longer than 63
+      characters. They can only contain lowercase letters, numeric characters,
+      underscores and dashes. Spaces are not allowed.
+    disableQueryCaching: Optional. If true, all query caching on both the
+      Analytics and BigQuery sides is turned off.
+    jobTimeout: Optional. If not set, the query will be terminated when the
+      deadline of the QueryDataSync call is reached. This is the default
+      behavior.The query will be terminated when job_timeout is reached, if it
+      does not complete before then. If job_timeout exceeds the deadline of
+      the QueryDataSync call, the query can continue running after
+      QueryDataSync returns. If the query is not complete when QueryDataSync
+      returns, no results are returned and the caller may call
+      ReadQueryResults to wait longer for the results.
+    labels: Optional. A set of labels to be propagated to the BigQuery Job. If
+      a resource generated the query, best practice is to provide sufficient
+      labels to identify the resource. For example, alerting queries apply the
+      label goog-alert-policy-id=.Label keys and values will be visible to
+      customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+      client-id is reserved and should not be set. If set, the label's value
+      will be silently overwritten.FORMATTING: * BigQuery key and label values
+      can be no longer than 63 characters. They can only contain lowercase
+      letters, numeric characters, underscores and dashes. Spaces are not
+      allowed.
+    pageSize: Optional. The maximum number of rows to return in the results.
+      Responses are limited to 10 MB in size regardless of the page size.By
+      default, there is no maximum row count, and only the byte limit applies.
+      When the byte limit is reached, the rest of query results will be
+      paginated.
+    resourceNames: Required. Names of one or more views to run a SQL
+      query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
+      CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
+      resource, such as 'logging.views.access' on log view resources.
+    sqlQueryStep: Required. The query to execute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. A set of labels to be propagated to the BigQuery Job. If a
+    resource generated the query, best practice is to provide sufficient
+    labels to identify the resource. For example, alerting queries apply the
+    label goog-alert-policy-id=.Label keys and values will be visible to
+    customers in BigQuery's INFORMATION_SCHEMA.JOBS table.The key goog-oa-
+    client-id is reserved and should not be set. If set, the label's value
+    will be silently overwritten.FORMATTING: * BigQuery key and label values
+    can be no longer than 63 characters. They can only contain lowercase
+    letters, numeric characters, underscores and dashes. Spaces are not
+    allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientId = _messages.StringField(1)
+  disableQueryCaching = _messages.BooleanField(2)
+  jobTimeout = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  resourceNames = _messages.StringField(6, repeated=True)
+  sqlQueryStep = _messages.MessageField('SqlQueryStep', 7)
+
+
+class QueryDataSyncResponse(_messages.Message):
+  r"""Response message for QueryDataSync.
+
+  Messages:
+    RowsValueListEntry: A RowsValueListEntry object.
+
+  Fields:
+    nextPageToken: A token that can be sent as page_token to retrieve the next
+      page. If this field is omitted, there are no subsequent pages.
+    queryComplete: Whether the query has completed or not. If this is false,
+      the rows and total_row_count fields will not be populated. To wait for
+      results, the client can poll ReadQueryResults using query_step_handle.
+    queryStepHandle: An opaque string that can be used as a reference to this
+      query result. This reference can be used in the ReadQueryResults query
+      to fetch this result up to 24 hours in the future.This is populated only
+      if the query cannot be completed synchronously within the deadline of
+      the QueryDataSync call.
+    resourceNames: The resources that were used while serving the request,
+      e.g. projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/v
+      iews/[VIEW_ID] for any Views read or projects/[PROJECT_ID]/locations/[LO
+      CATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID] for any Links for any
+      linked dataset resolved.
+    rows: Query result rows. The number of rows returned depends upon the page
+      size requested. To get any additional rows, you can call
+      ReadQueryResults and specify the query_step_handle and the
+      page_token.The REST-based representation of this data leverages a series
+      of JSON f,v objects for indicating fields and values.
+    schema: The schema of the results. It shows the columns present in the
+      output table. Present only when the query completes successfully.
+    totalBytesProcessed: The total number of bytes processed for this query.
+    totalRowCount: The total number of rows in the complete query result set,
+      which can be more than the number of rows in this single page of
+      results.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RowsValueListEntry(_messages.Message):
+    r"""A RowsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a RowsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RowsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  nextPageToken = _messages.StringField(1)
+  queryComplete = _messages.BooleanField(2)
+  queryStepHandle = _messages.StringField(3)
+  resourceNames = _messages.StringField(4, repeated=True)
+  rows = _messages.MessageField('RowsValueListEntry', 5, repeated=True)
+  schema = _messages.MessageField('TableSchema', 6)
+  totalBytesProcessed = _messages.IntegerField(7)
+  totalRowCount = _messages.IntegerField(8)
 
 
 class QueryParameter(_messages.Message):
@@ -9389,9 +9544,9 @@ class QueryResults(_messages.Message):
     nextPageToken: A token that can be sent as page_token to retrieve the next
       page. If this field is omitted, there are no subsequent pages.
     queryComplete: Whether the query has completed or not. If this is false,
-      the rows, total_rows, and execution_time fields will not be populated.
-      The client needs to poll on ReadQueryResults specifying the
-      result_reference and wait for results.
+      the rows and total_rows fields will not be populated. To wait for
+      results, the client can poll ReadQueryResults using the value of
+      result_reference for query_step_handle.
     reservation: Output only. The resource name of the BigQuery reservation
       that this query was billed to, (or when validating, would be billed to).
       Only set when the billing model is USER_PROJECT_RESERVATION. If the
@@ -9410,9 +9565,7 @@ class QueryResults(_messages.Message):
       executing the query.
     resultReference: An opaque string that can be used as a reference to this
       query result. This result reference can be used in the ReadQueryResults
-      query to fetch this result up to 24 hours in the future.For
-      QueryDataSync this is populated only if the query cannot be executed
-      synchronously within the requested deadline.
+      query to fetch this result up to 24 hours in the future.
     rows: Query result rows. The number of rows returned depends upon the page
       size requested. To get any additional rows, you can call
       ReadQueryResults and specify the result_reference and the page_token.The
@@ -9423,8 +9576,6 @@ class QueryResults(_messages.Message):
     startTime: Output only. The start time of the query execution. Not set on
       validate queries.
     totalBytesProcessed: The total number of bytes processed for this query.
-      If this query was a validate_only query, this is the number of bytes
-      that would be processed if the query were run.
     totalRows: The total number of rows in the complete query result set,
       which can be more than the number of rows in this single page of
       results.
@@ -9575,9 +9726,10 @@ class ReadQueryResultsRequest(_messages.Message):
       sent by a given client such as Alerting or Dashboards. It is ultimately
       propagated to metric labels in Monarch.
     pageSize: Optional. The maximum number of rows to return in the results.
-      Responses are limited to 10 MB in size.By default, there is no maximum
-      row count, and only the byte limit applies. When the byte limit is
-      reached, the rest of query results will be paginated.
+      Responses are limited to 10 MB in size regardless of the page size.By
+      default, there is no maximum row count, and only the byte limit applies.
+      When the byte limit is reached, the rest of query results will be
+      paginated.
     pageToken: Optional. Page token returned by a previous call to
       ReadQueryResults to paginate through the response rows.
     queryStepHandle: Required. A query step handle returned by QueryData.
@@ -10321,8 +10473,11 @@ class TailLogEntriesRequest(_messages.Message):
       server before being returned to prevent out of order results due to late
       arriving log entries. Valid values are between 0-60000 milliseconds.
       Defaults to 2000 milliseconds.
-    filter: Optional. Only log entries that match the filter are returned. An
-      empty filter matches all log entries in the resources listed in
+    filter: Optional. A filter that chooses which log entries to return. For
+      more information, see Logging query language (https://{$universe.dns_nam
+      es.final_documentation_domain}/logging/docs/view/logging-query-
+      language).Only log entries that match the filter are returned. An empty
+      filter matches all log entries in the resources listed in
       resource_names. Referencing a parent resource that is not listed in
       resource_names will cause the filter to return no results. The maximum
       length of a filter is 20,000 characters.
