@@ -55,6 +55,7 @@ class RunV1(base_api.BaseApiClient):
     self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
+    self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
@@ -1517,6 +1518,97 @@ class RunV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='RunProjectsLocationsDomainmappingsListRequest',
         response_type_name='ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances resource."""
+
+    _NAME = 'projects_locations_instances'
+
+    def __init__(self, client):
+      super(RunV1.ProjectsLocationsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Get the IAM Access Control policy currently in effect for the given instance. This result does not include any inherited policies.
+
+      Args:
+        request: (RunProjectsLocationsInstancesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:getIamPolicy',
+        http_method='GET',
+        method_id='run.projects.locations.instances.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='RunProjectsLocationsInstancesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM Access control policy for the specified instance. Overwrites any existing policy.
+
+      Args:
+        request: (RunProjectsLocationsInstancesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:setIamPolicy',
+        http_method='POST',
+        method_id='run.projects.locations.instances.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='RunProjectsLocationsInstancesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified instance. There are no permissions required for making this API call.
+
+      Args:
+        request: (RunProjectsLocationsInstancesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:testIamPermissions',
+        http_method='POST',
+        method_id='run.projects.locations.instances.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='RunProjectsLocationsInstancesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

@@ -203,8 +203,8 @@ class BearerTokenAuthentication(_messages.Message):
   r"""Bearer token authentication with a token.
 
   Fields:
-    tokenSecretVersion: The token SecretManager secret version to authenticate
-      as.
+    tokenSecretVersion: Optional. The token SecretManager secret version to
+      authenticate as.
   """
 
   tokenSecretVersion = _messages.StringField(1)
@@ -314,7 +314,8 @@ class Connection(_messages.Message):
     gitlabConfig: Configuration for connections to gitlab.com.
     gitlabEnterpriseConfig: Configuration for connections to an instance of
       GitLab Enterprise.
-    httpConfig: Configuration for connections to an HTTP service provider.
+    httpConfig: Optional. Configuration for connections to an HTTP service
+      provider.
     installationState: Output only. Installation state of the Connection.
     labels: Optional. Labels as key value pairs
     name: Identifier. The resource name of the connection, in the format
@@ -479,8 +480,8 @@ class DeploymentEvent(_messages.Message):
     deployTime: Output only. The time at which the DeploymentEvent was
       deployed. This would be the min of all ArtifactDeployment deploy_times.
     name: Identifier. The name of the DeploymentEvent. This name is provided
-      by DCI. Format: projects/{project}/locations/{location}/insightsConfigs/
-      {insights_config}/deploymentEvents/{uuid}
+      by Developer Connect insights. Format: projects/{project}/locations/{loc
+      ation}/insightsConfigs/{insights_config}/deploymentEvents/{uuid}
     runtimeConfig: Output only. The runtime configurations where the
       DeploymentEvent happened.
     runtimeDeploymentUri: Output only. The runtime assigned URI of the
@@ -1445,6 +1446,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExchangeError(_messages.Message):
   r"""Message for representing an error from exchanging OAuth tokens.
 
@@ -1587,11 +1589,13 @@ class GKEWorkload(_messages.Message):
 
 
 class GenericHTTPEndpointConfig(_messages.Message):
-  r"""Configuration for connections to an HTTP service provider.
+  r"""Defines the configuration for connections to an HTTP service provider.
 
   Fields:
-    basicAuthentication: Basic authentication with username and password.
-    bearerTokenAuthentication: Bearer token authentication with a token.
+    basicAuthentication: Optional. Basic authentication with username and
+      password.
+    bearerTokenAuthentication: Optional. Bearer token authentication with a
+      token.
     hostUri: Required. Immutable. The service provider's https endpoint.
     serviceDirectoryConfig: Optional. Configuration for using Service
       Directory to privately connect to a HTTP service provider. This should
@@ -1971,7 +1975,7 @@ class HttpBody(_messages.Message):
 class InsightsConfig(_messages.Message):
   r"""The InsightsConfig resource is the core configuration object to capture
   events from your Software Development Lifecycle. It acts as the central hub
-  for managing how Developer connect understands your application, its runtime
+  for managing how Developer Connect understands your application, its runtime
   environments, and the artifacts deployed within them.
 
   Enums:
@@ -2000,7 +2004,7 @@ class InsightsConfig(_messages.Message):
     labels: Optional. Set of labels associated with an InsightsConfig.
     name: Identifier. The name of the InsightsConfig. Format:
       projects/{project}/locations/{location}/insightsConfigs/{insightsConfig}
-    projects: Optional. The GCP projects to track with the InsightsConfig.
+    projects: Optional. The projects to track with the InsightsConfig.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of InsightsConfig does not match the user's intended state, and
@@ -2569,7 +2573,7 @@ class Projects(_messages.Message):
   r"""Projects represents the projects to track with the InsightsConfig.
 
   Fields:
-    projectIds: Optional. The GCP Project IDs. Format: projects/{project}
+    projectIds: Optional. The project IDs. Format: {project}
   """
 
   projectIds = _messages.StringField(1, repeated=True)
@@ -2811,9 +2815,9 @@ class StartOAuthResponse(_messages.Message):
     authUri: The authorization server URL to the OAuth flow of the service
       provider.
     clientId: The client ID to the OAuth App of the service provider.
-    codeChallenge: https://datatracker.ietf.org/doc/html/rfc7636#section-4.1
-      Follow http://shortn/_WFYl6U0NyC to include it in the AutoCodeURL.
-    codeChallengeMethod:
+    codeChallenge: Please refer to
+      https://datatracker.ietf.org/doc/html/rfc7636#section-4.1
+    codeChallengeMethod: Please refer to
       https://datatracker.ietf.org/doc/html/rfc7636#section-4.2
     scopes: The list of scopes requested by the application.
     systemProviderId: The ID of the system provider.

@@ -1594,6 +1594,7 @@ class SecuresourcemanagerProjectsLocationsInstancesDeleteRequest(_messages.Messa
   r"""A SecuresourcemanagerProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, will force the deletion of the instance.
     name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1608,8 +1609,9 @@ class SecuresourcemanagerProjectsLocationsInstancesDeleteRequest(_messages.Messa
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class SecuresourcemanagerProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message):

@@ -1,0 +1,43 @@
+project:
+  name: project
+  collection: edgecontainer.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+
+location:
+  name: location
+  collection: edgecontainer.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: edgecontainer.projects.locations.operations
+  attributes:
+  - *project
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: Edge-container long running operation.
+  disable_auto_completers: false
+
+apiKey:
+  name: apiKey
+  collection: edgecontainer.projects.locations.apiKeys
+  request_id_field: apiKeyId
+  attributes:
+  - *project
+  - *location
+  - &apiKey
+    parameter_name: apiKeysId
+    attribute_name: api_key
+    help: The ID of the API key.
+  disable_auto_completers: false

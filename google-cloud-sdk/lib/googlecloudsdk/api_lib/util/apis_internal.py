@@ -27,12 +27,16 @@ from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import transport
+from googlecloudsdk.core.util import regional
 from googlecloudsdk.generated_clients.apis import apis_map
+import requests
 import six
 from six.moves.urllib.parse import urljoin
 from six.moves.urllib.parse import urlparse
 from six.moves.urllib.parse import urlunparse
+import urllib3
 
 
 def _GetApiNameAndAlias(api_name):
@@ -174,6 +178,31 @@ def _GetClientInstance(api_name,
     http_client = transports.GetApitoolsTransport(
         response_encoding=transport.ENCODING,
         timeout=http_timeout_sec if http_timeout_sec else 'unset')
+    # Add exception handling for potential DNS resolution failures due to
+    # unknown regional endpoints.
+    if region and _ShouldUseRegionalEndpoints(api_name, api_version, region):
+      api_def = GetApiDef(api_name, api_version)
+      if region not in api_def.regional_endpoints:
+        def _UnavailableRegionDnsExceptionHandler(e):
+          # requests.exceptions.ConnectionError wraps
+          # urllib3.exceptions.MaxRetryError which wraps
+          # urllib3.exceptions.NameResolutionError.
+          if (
+              e.args
+              and isinstance(e.args[0], urllib3.exceptions.MaxRetryError)
+              and isinstance(
+                  e.args[0].reason, urllib3.exceptions.NameResolutionError)):
+            raise regional.UnavailableRegionError(
+                '{}\n\nNote: the region [{}] may not be available for this '
+                'service. Known available regions are: [{}].'.format(
+                    e, region, ', '.join(sorted(api_def.regional_endpoints))))
+          raise e
+        core_requests.RequestWrapper().WrapRequest(
+            http_client.session,
+            [],
+            exc_handler=_UnavailableRegionDnsExceptionHandler,
+            exc_type=requests.exceptions.ConnectionError,
+        )
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(
@@ -277,6 +306,19 @@ def _GetGapicClientInstance(
 
     return UniversifyAddress(address)
 
+  # Add exception handling for potential DNS resolution failures due to unknown
+  # regional endpoints.
+  region_interceptors = []
+  if region and _ShouldUseRegionalEndpoints(api_name, api_version, region):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import gapic_util_internal
+    # pylint: enable=g-import-not-at-top
+    api_def = GetApiDef(api_name, api_version)
+    if region not in api_def.regional_endpoints:
+      interceptor = gapic_util_internal.UnavailableRegionDnsErrorInterceptor(
+          region, known_available_regions=api_def.regional_endpoints)
+      region_interceptors.append(interceptor)
+
   client_class = _GetGapicClientClass(
       api_name, api_version, transport_choice=transport_choice)
 
@@ -286,7 +328,7 @@ def _GetGapicClientInstance(
       mtls_enabled=_MtlsEnabled(api_name, api_version),
       attempt_direct_path=attempt_direct_path,
       redact_request_body_reason=redact_request_body_reason,
-      custom_interceptors=custom_interceptors,
+      custom_interceptors=(custom_interceptors or []) + region_interceptors,
       channel_options=channel_options,
   )
 

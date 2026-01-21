@@ -83,12 +83,11 @@ def ValidateAutoscalingMetricSpecs(specs):
           ),
       )
 
-    if key == 'request-counts-per-minute':
+    if key == 'request-counts-per-minute' or key == 'vllm-num-requests-waiting':
       if value <= 0:
         raise exceptions.InvalidArgumentException(
             '--autoscaling-metric-specs',
-            'Metric target for request-counts-per-minute must be a positive'
-            ' value.',
+            'Metric target for {} must be a positive value.'.format(key),
         )
     elif value <= 0 or value > 100:
       raise exceptions.InvalidArgumentException(

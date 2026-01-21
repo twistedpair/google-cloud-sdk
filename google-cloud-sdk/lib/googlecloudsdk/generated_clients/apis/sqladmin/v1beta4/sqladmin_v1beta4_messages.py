@@ -7027,6 +7027,9 @@ class SqlUsersUpdateRequest(_messages.Message):
     project: Project ID of the project that contains the instance.
     revokeExistingRoles: Optional. revoke the existing roles granted to the
       user.
+    serverRoles: Optional. The server roles to grant to the SQL Server login.
+      Existing server roles will not be revoked if revoke_existing_roles is
+      false. body.server_roles will be ignored for update request.
     user: A User resource to be passed as the request body.
   """
 
@@ -7036,7 +7039,8 @@ class SqlUsersUpdateRequest(_messages.Message):
   name = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   revokeExistingRoles = _messages.BooleanField(6)
-  user = _messages.MessageField('User', 7)
+  serverRoles = _messages.StringField(7, repeated=True)
+  user = _messages.MessageField('User', 8)
 
 
 class SslCert(_messages.Message):
@@ -7386,6 +7390,7 @@ class User(_messages.Message):
     project: The project ID of the project containing the Cloud SQL database.
       The Google apps domain is prefixed if applicable. Can be omitted for
       *update* because it is already specified on the URL.
+    serverRoles: Optional. The server roles for the SQL Server login.
     sqlserverUserDetails: A SqlServerUserDetails attribute.
     type: The user type. It determines the method to authenticate the user
       during login. The default is the database's built-in user type.
@@ -7462,8 +7467,9 @@ class User(_messages.Message):
   password = _messages.StringField(10)
   passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 11)
   project = _messages.StringField(12)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  serverRoles = _messages.StringField(13, repeated=True)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
 
 
 class UserPasswordValidationPolicy(_messages.Message):

@@ -27,7 +27,6 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
-
 import six
 
 
@@ -40,8 +39,10 @@ def _RegionAttributeConfig():
           'region constitutes an independent resource namespace constrained to '
           'deploying instances into Compute Engine zones inside the '
           'region. Overrides the default `dataproc/region` property '
-          'value for this command invocation.'),
-      fallthroughs=fallthroughs)
+          'value for this command invocation.'
+      ),
+      fallthroughs=fallthroughs,
+  )
 
 
 def _LocationAttributeConfig():
@@ -53,8 +54,10 @@ def _LocationAttributeConfig():
           'location constitutes an independent resource namespace constrained '
           'to deploying instances into Compute Engine zones inside the '
           'location. Overrides the default `dataproc/location` property '
-          'value for this command invocation.'),
-      fallthroughs=fallthroughs)
+          'value for this command invocation.'
+      ),
+      fallthroughs=fallthroughs,
+  )
 
 
 def AddRegionFlag(parser):
@@ -63,7 +66,8 @@ def AddRegionFlag(parser):
       '--region',
       help=region_prop.help_text,
       # Don't set default, because it would override users' property setting.
-      action=actions.StoreProperty(region_prop))
+      action=actions.StoreProperty(region_prop),
+  )
 
 
 def AddLocationFlag(parser):
@@ -72,7 +76,8 @@ def AddLocationFlag(parser):
       '--location',
       help=location_prop.help_text,
       # Don't set default, because it would override user's property setting.
-      action=actions.StoreProperty(location_prop))
+      action=actions.StoreProperty(location_prop),
+  )
 
 
 def AddProjectsLocationsResourceArg(parser, api_version):
@@ -84,13 +89,15 @@ def AddProjectsLocationsResourceArg(parser, api_version):
       resource_name='region',
       disable_auto_completers=True,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=_RegionAttributeConfig())
+      locationsId=_RegionAttributeConfig(),
+  )
 
   concept_parsers.ConceptParser.ForResource(
       '--region',
       spec,
       properties.VALUES.dataproc.region.help_text,
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAsync(parser):
@@ -99,8 +106,11 @@ def AddAsync(parser):
       '--async',
       action='store_true',
       dest='async_',
-      help=('Return immediately without waiting for the operation in '
-            'progress to complete.'))
+      help=(
+          'Return immediately without waiting for the operation in '
+          'progress to complete.'
+      ),
+  )
 
 
 def ClusterConfig():
@@ -127,7 +137,8 @@ def AddClusterResourceArg(parser, verb, api_version):
       'cluster',
       _GetClusterResourceSpec(api_version),
       'The name of the cluster to {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def GkeClusterConfig():
@@ -140,7 +151,7 @@ def GkeClusterConfig():
 def _DataprocRegionFallthrough():
   return [
       deps.ArgFallthrough('--region'),
-      deps.PropertyFallthrough(properties.VALUES.dataproc.region)
+      deps.PropertyFallthrough(properties.VALUES.dataproc.region),
   ]
 
 
@@ -148,7 +159,8 @@ def _GkeLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='gke-cluster-location',
       help_text='GKE region for the {resource}.',
-      fallthroughs=_DataprocRegionFallthrough())
+      fallthroughs=_DataprocRegionFallthrough(),
+  )
 
 
 def _GetGkeClusterResourceSpec():
@@ -166,13 +178,16 @@ def AddGkeClusterResourceArg(parser):
       '--gke-cluster',
       _GetGkeClusterResourceSpec(),
       'The GKE cluster to install the Dataproc cluster on.',
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def MetastoreServiceConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='metastore-service',
-      help_text='Dataproc Metastore Service to be used as an external metastore.'
+      help_text=(
+          'Dataproc Metastore Service to be used as an external metastore.'
+      ),
   )
 
 
@@ -180,7 +195,8 @@ def _MetastoreServiceLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='metastore-service-location',
       help_text='Dataproc Metastore location for the {resource}.',
-      fallthroughs=_DataprocRegionFallthrough())
+      fallthroughs=_DataprocRegionFallthrough(),
+  )
 
 
 def _GetMetastoreServiceResourceSpec():
@@ -204,17 +220,23 @@ def AddMetastoreServiceResourceArg(parser):
 def HistoryServerClusterConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='history-server-cluster',
-      help_text='Spark History Server. '
-      'Resource name of an existing Dataproc cluster to act as a '
-      'Spark History Server for workloads run on the Cluster.')
+      help_text=(
+          'Spark History Server. '
+          'Resource name of an existing Dataproc cluster to act as a '
+          'Spark History Server for workloads run on the Cluster.'
+      ),
+  )
 
 
 def _HistoryServerClusterRegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='history-server-cluster-region',
-      help_text=('Compute Engine region for the {resource}. It must be the '
-                 'same region as the Dataproc cluster that is being created.'),
-      fallthroughs=_DataprocRegionFallthrough())
+      help_text=(
+          'Compute Engine region for the {resource}. It must be the '
+          'same region as the Dataproc cluster that is being created.'
+      ),
+      fallthroughs=_DataprocRegionFallthrough(),
+  )
 
 
 def _GetHistoryServerClusterResourceSpec():
@@ -231,7 +253,8 @@ def AddHistoryServerClusterResourceArg(parser):
   concept_parsers.ConceptParser.ForResource(
       '--history-server-cluster',
       _GetHistoryServerClusterResourceSpec(),
-      'A Dataproc Cluster created as a History Server, see https://cloud.google.com/dataproc/docs/concepts/jobs/history-server',
+      'A Dataproc Cluster created as a History Server, see'
+      ' https://cloud.google.com/dataproc/docs/concepts/jobs/history-server',
   ).AddToParser(parser)
 
 
@@ -242,28 +265,30 @@ def AddZoneAndExcludedZonesFlags(parser, short_flags=True):
       '--zone',
       *(['-z'] if short_flags else []),
       help="""
-            The compute zone (e.g. us-central1-a) for the cluster. If empty
-            and --region is set to a value other than `global`, the server will
-            pick a zone in the region.
+            The compute zone (such as `us-central1-a`) for the cluster. If empty
+            and --region is set to a value other than global, [Dataproc Auto Zone placement](https://docs.cloud.google.com/dataproc/docs/concepts/configuring-clusters/auto-zone)
+            will pick a zone in the region.
+            Overrides the default compute/zone property value for this command invocation.
             """,
-      action=actions.StoreProperty(properties.VALUES.compute.zone)
+      action=actions.StoreProperty(properties.VALUES.compute.zone),
   )
   zone_and_excluded_zones_group.add_argument(
       '--auto-zone-exclude-zones',
       type=arg_parsers.ArgList(),
       default=[],
       metavar='ZONE',
-      hidden=True,
       help="""
-            A comma-separated list of compute zones (e.g. us-central1-a) to
-            exclude when picking the zone for the cluster.
+            A comma-separated list of compute zones (such as `us-central1-a`)
+            to exclude when [Dataproc Auto Zone placement](https://docs.cloud.google.com/dataproc/docs/concepts/configuring-clusters/auto-zone)
+            picks the zone for the cluster.
             """,
   )
 
 
 def AddVersionFlag(parser):
   parser.add_argument(
-      '--version', type=int, help='The version of the workflow template.')
+      '--version', type=int, help='The version of the workflow template.'
+  )
 
 
 def AddFileFlag(parser, input_type, action):
@@ -271,14 +296,18 @@ def AddFileFlag(parser, input_type, action):
   parser.add_argument(
       '--file',
       help='The YAML file containing the {0} to {1}'.format(input_type, action),
-      required=True)
+      required=True,
+  )
 
 
 def AddMainPythonFile(parser):
   parser.add_argument(
       'MAIN_PYTHON_FILE',
-      help=('URI of the main Python file to use as the Spark driver. '
-            'Must be a ``.py\'\' file.'))
+      help=(
+          'URI of the main Python file to use as the Spark driver. '
+          "Must be a ``.py'' file."
+      ),
+  )
 
 
 def AddJvmMainMutex(parser):
@@ -288,18 +317,23 @@ def AddJvmMainMutex(parser):
   main_group.add_argument(
       '--class',
       dest='main_class',
-      help=('Class contains the main method of the job. '
-            'The jar file that contains the class must be in the classpath '
-            'or specified in `jar_files`.'))
+      help=(
+          'Class contains the main method of the job. '
+          'The jar file that contains the class must be in the classpath '
+          'or specified in `jar_files`.'
+      ),
+  )
 
   main_group.add_argument(
-      '--jar', dest='main_jar', help='URI of the main jar file.')
+      '--jar', dest='main_jar', help='URI of the main jar file.'
+  )
 
 
 def AddMainSqlScript(parser):
   parser.add_argument(
       'SQL_SCRIPT',
-      help='URI of the script that contains Spark SQL queries to execute.')
+      help='URI of the script that contains Spark SQL queries to execute.',
+  )
 
 
 def AddSqlScriptVariables(parser):
@@ -308,8 +342,11 @@ def AddSqlScriptVariables(parser):
       '--vars',
       type=arg_parsers.ArgDict(),
       metavar='NAME=VALUE',
-      help=('Mapping of query variable names to values (equivalent to the '
-            'Spark SQL command: SET name="value";).'))
+      help=(
+          'Mapping of query variable names to values (equivalent to the '
+          'Spark SQL command: SET name="value";).'
+      ),
+  )
 
 
 def AddJarFiles(parser):
@@ -319,15 +356,20 @@ def AddJarFiles(parser):
       type=arg_parsers.ArgList(),
       metavar='JAR',
       default=[],
-      help=('Comma-separated list of jar files to be provided to the '
-            'classpaths.'))
+      help=(
+          'Comma-separated list of jar files to be provided to the classpaths.'
+      ),
+  )
 
 
 def AddMainRFile(parser):
   parser.add_argument(
       'MAIN_R_FILE',
-      help=('URI of the main R file to use as the driver. '
-            'Must be a ``.R\'\' or ``.r\'\' file.'))
+      help=(
+          'URI of the main R file to use as the driver. '
+          "Must be a ``.R'' or ``.r'' file."
+      ),
+  )
 
 
 def AddPythonFiles(parser):
@@ -337,9 +379,12 @@ def AddPythonFiles(parser):
       type=arg_parsers.ArgList(),
       metavar='PY',
       default=[],
-      help=('Comma-separated list of Python scripts to be passed to the '
-            'PySpark framework. Supported file types: ``.py\'\', ``.egg\'\' '
-            'and ``.zip.\'\''))
+      help=(
+          'Comma-separated list of Python scripts to be passed to the '
+          "PySpark framework. Supported file types: ``.py'', ``.egg'' "
+          "and ``.zip.''"
+      ),
+  )
 
 
 def AddOtherFiles(parser):
@@ -348,7 +393,8 @@ def AddOtherFiles(parser):
       type=arg_parsers.ArgList(),
       metavar='FILE',
       default=[],
-      help='Files to be placed in the working directory.')
+      help='Files to be placed in the working directory.',
+  )
 
 
 def AddArchives(parser):
@@ -357,8 +403,11 @@ def AddArchives(parser):
       type=arg_parsers.ArgList(),
       metavar='ARCHIVE',
       default=[],
-      help=('Archives to be extracted into the working directory. '
-            'Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.'))
+      help=(
+          'Archives to be extracted into the working directory. '
+          'Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.'
+      ),
+  )
 
 
 def AddArgs(parser):
@@ -368,15 +417,16 @@ def AddArgs(parser):
       metavar='JOB_ARG',
       nargs=argparse.REMAINDER,
       default=[],
-      help='Arguments to pass to the driver.')
+      help='Arguments to pass to the driver.',
+  )
 
 
 def AddBucket(parser):
   """Cloud Storage bucket to upload workload dependencies."""
   parser.add_argument(
       '--deps-bucket',
-      help=('A Cloud Storage bucket to upload workload '
-            'dependencies.'))
+      help='A Cloud Storage bucket to upload workload dependencies.',
+  )
 
 
 def JobConfig():
@@ -403,7 +453,8 @@ def AddJobResourceArg(parser, verb, api_version):
       'job',
       _GetJobResourceSpec(api_version),
       'The ID of the job to {0}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddBatchResourceArg(parser, verb, api_version, use_location=False):
@@ -432,7 +483,8 @@ def AddBatchResourceArg(parser, verb, api_version, use_location=False):
       'batch',
       GetBatchResourceSpec(api_version),
       'ID of the batch job to {0}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddSessionResourceArg(parser, verb, api_version):
@@ -459,7 +511,8 @@ def AddSessionResourceArg(parser, verb, api_version):
       'session',
       GetSessionResourceSpec(api_version),
       'ID of the session to {0}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddNodeGroupResourceArg(parser, verb, api_version):
@@ -487,7 +540,8 @@ def AddNodeGroupResourceArg(parser, verb, api_version):
       'node_group',
       GetNodeGroupResourceSpec(api_version),
       'ID of the node group to {0}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def OperationConfig():
@@ -515,7 +569,8 @@ def AddOperationResourceArg(parser, verb, api_version):
       name,
       _GetOperationResourceSpec(api_version),
       'The ID of the operation to {0}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddTimeoutFlag(parser, default='10m'):
@@ -524,10 +579,13 @@ def AddTimeoutFlag(parser, default='10m'):
       '--timeout',
       type=arg_parsers.Duration(),
       default=default,
-      help=('Client side timeout on how long to wait for Dataproc operations. '
-            'See $ gcloud topic datetimes for information on duration '
-            'formats.'),
-      hidden=True)
+      help=(
+          'Client side timeout on how long to wait for Dataproc operations. '
+          'See $ gcloud topic datetimes for information on duration '
+          'formats.'
+      ),
+      hidden=True,
+  )
 
 
 def AddParametersFlag(parser):
@@ -541,7 +599,8 @@ def AddParametersFlag(parser):
           Parameters can be configured when creating or updating a workflow
           template.
           """,
-      dest='parameters')
+      dest='parameters',
+  )
 
 
 def AddMinCpuPlatformArgs(parser, include_driver_pool_args=False):
@@ -563,18 +622,21 @@ def AddMinCpuPlatformArgs(parser, include_driver_pool_args=False):
       '--master-min-cpu-platform',
       metavar='PLATFORM',
       required=False,
-      help=help_text)
+      help=help_text,
+  )
   parser.add_argument(
       '--worker-min-cpu-platform',
       metavar='PLATFORM',
       required=False,
-      help=help_text)
+      help=help_text,
+  )
   if include_driver_pool_args:
     parser.add_argument(
         '--driver-pool-min-cpu-platform',
         metavar='PLATFORM',
         required=False,
-        help=help_text)
+        help=help_text,
+    )
 
 
 def AddComponentFlag(parser):
@@ -591,7 +653,8 @@ def AddComponentFlag(parser):
       metavar='COMPONENT',
       type=arg_parsers.ArgList(element_type=lambda val: val.upper()),
       dest='components',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def TemplateAttributeConfig():
@@ -628,7 +691,8 @@ def AddTemplateResourceArg(parser, verb, api_version, positional=True):
       name,
       _GetTemplateResourceSpec(api_version),
       'The name of the workflow template to {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def _AutoscalingPolicyResourceSpec(api_version):
@@ -673,7 +737,8 @@ def AddAutoscalingPolicyResourceArg(parser, verb, api_version):
       'autoscaling_policy',
       _AutoscalingPolicyResourceSpec(api_version),
       'The autoscaling policy to {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddSessionTemplateResourceArg(parser, verb, api_version):
@@ -688,7 +753,8 @@ def AddSessionTemplateResourceArg(parser, verb, api_version):
       'session_template',
       _SessionTemplateResourceSpec(api_version),
       'The session template to {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAutoscalingPolicyResourceArgForCluster(parser, api_version):
@@ -705,10 +771,9 @@ def AddAutoscalingPolicyResourceArgForCluster(parser, api_version):
       command_level_fallthroughs={
           'region': ['--region'],
       },
-      flag_name_overrides={
-          'region': ''
-      },
-      required=False).AddToParser(parser)
+      flag_name_overrides={'region': ''},
+      required=False,
+  ).AddToParser(parser)
 
 
 def AddListOperationsFormat(parser):
@@ -718,12 +783,14 @@ def AddListOperationsFormat(parser):
       'operationType': _TransformOperationType,
       'operationWarnings': _TransformOperationWarnings,
   })
-  parser.display_info.AddFormat('table(name.segment():label=NAME, '
-                                'metadata.operationTimestamp():label=TIMESTAMP,'
-                                'metadata.operationType():label=TYPE, '
-                                'metadata.operationState():label=STATE, '
-                                'status.code.yesno(no=\'\'):label=ERROR, '
-                                'metadata.operationWarnings():label=WARNINGS)')
+  parser.display_info.AddFormat(
+      'table(name.segment():label=NAME, '
+      'metadata.operationTimestamp():label=TIMESTAMP,'
+      'metadata.operationType():label=TYPE, '
+      'metadata.operationState():label=STATE, '
+      "status.code.yesno(no=''):label=ERROR, "
+      'metadata.operationWarnings():label=WARNINGS)'
+  )
 
 
 def _TransformOperationType(metadata):
@@ -779,14 +846,16 @@ def AddPersonalAuthSessionArgs(parser):
 
         For more information, see:
         https://cloud.google.com/iam/docs/downscoping-short-lived-credentials.
-        """)
+        """,
+  )
   parser.add_argument(
       '--openssl-command',
       hidden=True,
       help="""
         The full path to the command used to invoke the OpenSSL tool on this
         machine.
-        """)
+        """,
+  )
   parser.add_argument(
       '--refresh-credentials',
       action='store_true',
@@ -794,7 +863,8 @@ def AddPersonalAuthSessionArgs(parser):
       hidden=True,
       help="""
         Keep the command running to periodically refresh credentials.
-        """)
+        """,
+  )
 
 
 def ProjectGcsObjectsAccessBoundary(project):
@@ -811,14 +881,13 @@ def ProjectGcsObjectsAccessBoundary(project):
   access_boundary = {
       'access_boundary': {
           'accessBoundaryRules': [{
-              'availableResource':
-                  cab_resource,
+              'availableResource': cab_resource,
               'availablePermissions': [
                   'inRole:roles/storage.objectViewer',
                   'inRole:roles/storage.objectCreator',
                   'inRole:roles/storage.objectAdmin',
-                  'inRole:roles/storage.legacyBucketReader'
-              ]
+                  'inRole:roles/storage.legacyBucketReader',
+              ],
           }]
       }
   }
@@ -832,10 +901,8 @@ def AddSizeFlag(parser):
     parser: The argparse parser for the command.
   """
   parser.add_argument(
-      '--size',
-      help=('New size for a node group.'),
-      type=int,
-      required=True)
+      '--size', help='New size for a node group.', type=int, required=True
+  )
 
 
 def AddGracefulDecommissionTimeoutFlag(parser):
@@ -846,10 +913,9 @@ def AddGracefulDecommissionTimeoutFlag(parser):
   """
   parser.add_argument(
       '--graceful-decommission-timeout',
-      help=(
-          'Graceful decommission timeout for a node group scale-down resize.'
-      ),
-      required=False)
+      help='Graceful decommission timeout for a node group scale-down resize.',
+      required=False,
+  )
 
 
 def AddDriverPoolId(parser):
@@ -865,7 +931,8 @@ def AddDriverPoolId(parser):
             provided, a random string is generated.
             """),
       required=False,
-      default=None)
+      default=None,
+  )
 
 
 def InstanceConfig():
@@ -892,7 +959,8 @@ def AddInstanceResourceArg(parser, verb, api_version):
       'instance',
       _GetInstanceResourceSpec(api_version),
       'The name of the instance to {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def GdceClusterConfig():
@@ -925,5 +993,5 @@ def _GetGdceClusterResourceSpec():
       resource_name='gdce-cluster',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=_GdceLocationAttributeConfig(),
-      clustersId=GdceClusterConfig()
+      clustersId=GdceClusterConfig(),
   )

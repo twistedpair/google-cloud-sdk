@@ -113,6 +113,8 @@ properties:
     enum:
     - SPOT
     - STANDARD
+    - RESERVATION_BOUND
+    - FLEX_START
   terminationTime:
     description: |-
       Specifies the timestamp, when the instance will be terminated, in

@@ -18,10 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import http.client
 import os
 import socket
 import threading
 import time
+import urllib.error
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
@@ -29,10 +31,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
-
-import six
-from six.moves import http_client
-from six.moves import urllib_error
 
 SslCertificateError = None  # pylint: disable=invalid-name
 try:
@@ -47,9 +45,12 @@ _GCE_CACHE_MAX_AGE = 10 * 60  # 10 minutes
 # Depending on how a firewall/ NAT behaves, we can have different
 # exceptions at different levels in the networking stack when trying to
 # access an address that we can't reach. Capture all these exceptions.
-_POSSIBLE_ERRORS_GCE_METADATA_CONNECTION = (urllib_error.URLError, socket.error,
-                                            http_client.HTTPException,
-                                            SslCertificateError)
+_POSSIBLE_ERRORS_GCE_METADATA_CONNECTION = (
+    urllib.error.URLError,
+    socket.error,
+    http.client.HTTPException,
+    SslCertificateError,
+)
 
 _DOMAIN_NAME_RESOLVE_ERROR_MSG = 'Name or service not known'
 
@@ -60,10 +61,16 @@ def _ShouldRetryMetadataServerConnection(exc_type, exc_value, exc_traceback,
   del exc_type, exc_traceback, state
   if not isinstance(exc_value, _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION):
     return False
-  # It means the domain name cannot be resolved, which happens when not on GCE.
-  if (isinstance(exc_value, urllib_error.URLError) and
-      _DOMAIN_NAME_RESOLVE_ERROR_MSG in six.text_type(exc_value)):
+  # The domain name cannot be resolved, which happens when not on GCE.
+  if isinstance(
+      exc_value, urllib.error.URLError
+  ) and _DOMAIN_NAME_RESOLVE_ERROR_MSG in str(exc_value):
     return False
+
+  if isinstance(exc_value, urllib.error.HTTPError):
+    if exc_value.code in [429, 503]:
+      time.sleep(0.5)
+
   return True
 
 
@@ -146,7 +153,7 @@ class _OnGCECache(object):
         mtime = os.stat(gce_cache_path).st_mtime
         expiration_time = mtime + _GCE_CACHE_MAX_AGE
         gcecache_file_value = files.ReadFileContents(gce_cache_path)
-        return gcecache_file_value == six.text_type(True), expiration_time
+        return gcecache_file_value == str(True), expiration_time
       except (OSError, IOError, files.Error) as e:
         # Failed to read Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet
@@ -159,8 +166,7 @@ class _OnGCECache(object):
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
-        files.WriteFileContents(
-            gce_cache_path, six.text_type(on_gce), private=True)
+        files.WriteFileContents(gce_cache_path, str(on_gce), private=True)
       except (OSError, IOError, files.Error) as e:
         # Failed to write Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet

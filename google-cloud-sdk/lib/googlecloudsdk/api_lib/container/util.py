@@ -154,6 +154,9 @@ NC_CUSTOM_NODE_INIT_SCRIPT = 'initScript'
 NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI = 'gcsUri'
 NC_CUSTOM_NODE_INIT_SCRIPT_GCS_GENERATION = 'gcsGeneration'
 NC_CUSTOM_NODE_INIT_SCRIPT_ARGS = 'args'
+NC_CUSTOM_NODE_INIT_SCRIPT_GCP_SECRET_MANAGER_SECRET_URI = (
+    'gcpSecretManagerSecretUri'
+)
 NC_ETC_HOSTS_ENTRY_IP = 'ip'
 NC_ETC_HOSTS_ENTRY_HOST = 'host'
 NC_RESOLVED_CONF_ENTRY_KEY = 'key'
@@ -1441,11 +1444,27 @@ def LoadSystemConfigFromYAML(
                 NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI: str,
                 NC_CUSTOM_NODE_INIT_SCRIPT_GCS_GENERATION: int,
                 NC_CUSTOM_NODE_INIT_SCRIPT_ARGS: list,
+                NC_CUSTOM_NODE_INIT_SCRIPT_GCP_SECRET_MANAGER_SECRET_URI: str,
             },
         )
-        node_config.linuxNodeConfig.customNodeInit.initScript.gcsUri = (
-            init_script_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI)
+        gcs_uri = init_script_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI)
+        gcp_secret_manager_secret_uri = init_script_opts.get(
+            NC_CUSTOM_NODE_INIT_SCRIPT_GCP_SECRET_MANAGER_SECRET_URI
         )
+
+        if gcs_uri and gcp_secret_manager_secret_uri:
+          raise NodeConfigError(
+              f'Cannot specify both [{NC_CUSTOM_NODE_INIT_SCRIPT_GCS_URI}] and'
+              f' [{NC_CUSTOM_NODE_INIT_SCRIPT_GCP_SECRET_MANAGER_SECRET_URI}]'
+              ' for custom node init script.'
+          )
+        if gcs_uri:
+          node_config.linuxNodeConfig.customNodeInit.initScript.gcsUri = gcs_uri
+        if gcp_secret_manager_secret_uri:
+          node_config.linuxNodeConfig.customNodeInit.initScript.gcpSecretManagerSecretUri = (
+              gcp_secret_manager_secret_uri
+          )
+
         node_config.linuxNodeConfig.customNodeInit.initScript.gcsGeneration = (
             init_script_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT_GCS_GENERATION)
         )

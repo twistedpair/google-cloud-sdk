@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from typing import Any, Dict
 
@@ -28,6 +29,7 @@ from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run.compose import tracker as tracker_stages
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -35,6 +37,10 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import parallel
+
+_FINGERPRINTS_FILE_NAME = 'fingerprints.json'
+_FINGERPRINT_KEY = 'fingerprint'
+_IMAGE_ID_KEY = 'image_id'
 
 
 class BuildConfig:
@@ -75,15 +81,44 @@ def handle(
   if no_build:
     _handle_no_build(source_build, project_name, region, tracker)
     return
+
+  loaded_fingerprints = _load_source_fingerprints(project_name)
+  fingerprints_to_save = {}
   build_ops = []
+
   for container, build_config in source_build.items():
+    current_fingerprint = _calculate_source_fingerprint(build_config)
+    if loaded_fingerprints.get(container, {}).get(
+        _FINGERPRINT_KEY
+    ) == current_fingerprint:
+      image_id = loaded_fingerprints[container][_IMAGE_ID_KEY]
+      build_config.image_id = image_id
+      fingerprints_to_save[container] = loaded_fingerprints[container]
+      stage_key = tracker_stages.StagedProgressTrackerStage.BUILD.get_key(
+          container=container
+      )
+      tracker.StartStage(stage_key)
+      tracker.UpdateStage(
+          stage_key, f'Skipping build, using image [{image_id}] from cache.'
+      )
+      tracker.CompleteStage(stage_key)
+      # This log is added to verify if the build is skipped in e2e.
+      log.debug(
+          f'Skipping build for container {container}, using image from cache.'
+      )
+      continue
     try:
       build_op_ref, build_log_url, image_tag = _build_from_source(
           build_config, container, repo, project_name, region, tracker
       )
-      build_ops.append(
-          (container, build_config, build_op_ref, build_log_url, image_tag)
-      )
+      build_ops.append((
+          container,
+          build_config,
+          build_op_ref,
+          build_log_url,
+          image_tag,
+          current_fingerprint,
+      ))
     except submit_util.FailedBuildException as e:
       log.error(f'Build failed for container {container}: {e}')
       raise
@@ -92,13 +127,25 @@ def handle(
       raise
 
   if not build_ops:
+    _save_source_fingerprints(fingerprints_to_save, project_name)
     return
 
   def _run_build(args):
-    container, build_config, build_op_ref, build_log_url, image_tag = args
-    return _poll_and_handle_build_result(
+    (
+        container,
+        build_config,
+        build_op_ref,
+        build_log_url,
+        image_tag,
+        fingerprint,
+    ) = args
+    success = _poll_and_handle_build_result(
         container, build_config, build_op_ref, build_log_url, tracker, image_tag
     )
+    if success:
+      return container, fingerprint, build_config.image_id
+    else:
+      return None
 
   task_args = [
       (
@@ -107,18 +154,98 @@ def handle(
           build_op_ref,
           build_log_url,
           image_tag,
+          fingerprint,
       )
-      for container, build_config, build_op_ref, build_log_url, image_tag in (
-          build_ops
-      )
+      for (
+          container,
+          build_config,
+          build_op_ref,
+          build_log_url,
+          image_tag,
+          fingerprint,
+      ) in build_ops
   ]
 
   num_threads = min(len(task_args), 10)
   with parallel.GetPool(num_threads) as pool:
-    results = pool.Map(_run_build, task_args)
+    build_results = pool.Map(_run_build, task_args)
 
-  if not all(results):
+  num_build_successes = 0
+  for result in build_results:
+    if result:
+      num_build_successes += 1
+      container, fingerprint, image_id = result
+      fingerprints_to_save[container] = {
+          _FINGERPRINT_KEY: fingerprint,
+          _IMAGE_ID_KEY: image_id,
+      }
+
+  _save_source_fingerprints(fingerprints_to_save, project_name)
+
+  if num_build_successes != len(build_ops):
     raise exceptions.Error('One or more container builds failed.')
+
+
+def _save_source_fingerprints(
+    source_fingerprint_map: Dict[str, Dict[str, str]], project_name: str
+) -> None:
+  """Saves the source fingerprint map to a JSON file.
+
+  Args:
+    source_fingerprint_map: A dictionary mapping container names to a
+      dictionary containing their 'fingerprint' and 'image_id'.
+    project_name: The name of the project.
+  """
+  cfg_dir = config.Paths().global_config_dir
+  out_dir = os.path.join(cfg_dir, 'surface', 'run', 'compose', project_name)
+  files.MakeDir(out_dir)
+  fingerprint_file = os.path.join(out_dir, _FINGERPRINTS_FILE_NAME)
+
+  try:
+    with files.FileWriter(fingerprint_file) as f:
+      json.dump(source_fingerprint_map, f, indent=2)
+    log.debug(f"Successfully saved fingerprints to '{fingerprint_file}'.")
+  except files.Error as e:
+    log.warning(f"Could not write fingerprint file '{fingerprint_file}': {e}")
+
+
+def _load_source_fingerprints(project_name: str) -> Dict[str, Dict[str, str]]:
+  """Loads the source fingerprint map from a JSON file.
+
+  Args:
+    project_name: The name of the project.
+
+  Returns:
+    A dictionary mapping container names to a dictionary containing their
+    'fingerprint' and 'image_id'. Returns an empty map if the file is not
+    found or cannot be parsed, as this loading is done on a best-effort basis.
+  """
+  cfg_dir = config.Paths().global_config_dir
+  out_dir = os.path.join(cfg_dir, 'surface', 'run', 'compose', project_name)
+  fingerprint_file = os.path.join(out_dir, _FINGERPRINTS_FILE_NAME)
+
+  if os.path.exists(fingerprint_file):
+    try:
+      with files.FileReader(fingerprint_file) as f:
+        return json.load(f)
+    except json.JSONDecodeError as e:
+      log.warning(
+          f"Could not decode fingerprint file '{fingerprint_file}': {e}. "
+          'Starting with an empty map.'
+      )
+      return {}
+    except files.Error as e:
+      log.warning(
+          f"Could not read fingerprint file '{fingerprint_file}': {e}. "
+          'Starting with an empty map.'
+      )
+      return {}
+  else:
+    log.debug(
+        f"Fingerprint file '{fingerprint_file}' not found. "
+        'Starting with an empty map.'
+    )
+    return {}
 
 
 def _calculate_source_fingerprint(build_config: BuildConfig) -> str:
@@ -285,7 +412,7 @@ def _handle_no_build(
 
 
 def _build_from_source(
-    config: BuildConfig,
+    build_cfg: BuildConfig,
     container: str,
     repo: str,
     project_name: str,
@@ -293,7 +420,7 @@ def _build_from_source(
     tracker: progress_tracker.StagedProgressTracker,
 ) -> tuple[resources.Resource, str, str]:
   """Performs source build for a given container using build config."""
-  source_path = config.context
+  source_path = build_cfg.context
   if source_path is None:
     raise ValueError('Build context is required for source build.')
 

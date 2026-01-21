@@ -17,6 +17,12 @@
 
 import re
 
+from googlecloudsdk.core import exceptions
+
+
+class UnavailableRegionError(exceptions.Error):
+  """Error for when a region is not available for a service."""
+
 
 def LocationToRegion(location):
   """Returns the region corresponding to the given location.

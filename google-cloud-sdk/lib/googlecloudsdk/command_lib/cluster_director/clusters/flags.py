@@ -560,33 +560,36 @@ def AddReservedInstances(
     )
 
 
-def AddDwsFlexInstances(
+def AddFlexStartInstances(
     parser,
-    name="dws-flex-instances",
+    name="flex-start-instances",
     api_version=None,
     hidden=False,
     include_update_flags=False,
 ):
-  """Adds an DWS Flex instances flag for the given API version."""
+  """Adds an Flex Start instances flag for the given API version."""
   if api_version not in ["v1alpha"]:
     raise exceptions.ToolException(f"Unsupported API version: {api_version}")
   remove_flag_name = f"remove-{name}"
+  spec = {
+      "id": str,
+      "zone": str,
+      "machineType": str,
+      "maxDuration": str,
+  }
+  if api_version == "v1alpha":
+    spec["atmTags"] = flag_types.LABEL
   if include_update_flags:
     name = f"add-{name}"
   parser.add_argument(
       f"--{name}",
       help=textwrap.dedent(f"""
-        Parameters to define cluster DWS Flex instances.
+        Parameters to define cluster Flex Start instances.
 
         For e.g. --{name} id={{computeId}},zone={{zone}},machineType={{machineType}},maxDuration=10000s
       """),
       type=arg_parsers.ArgObject(
-          spec={
-              "id": str,
-              "zone": str,
-              "machineType": str,
-              "maxDuration": str,
-          },
+          spec=spec,
           required_keys=["id", "zone", "machineType", "maxDuration"],
           enable_shorthand=True,
           repeated=True,
@@ -598,7 +601,7 @@ def AddDwsFlexInstances(
     parser.add_argument(
         f"--{remove_flag_name}",
         help=textwrap.dedent(f"""
-          Parameters to remove DWS Flex instance config by compute id.
+          Parameters to remove Flex Start instance config by compute id.
 
           For e.g. --{remove_flag_name} {{computeId1}},{{computeId2}},...
         """),

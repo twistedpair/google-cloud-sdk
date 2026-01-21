@@ -331,7 +331,7 @@ def PrintEnvironmentTagMessage(project_id):
   """Prints environment tag message given project ID."""
   env_tag_key, env_tag_value = GetEnvironmentTag(project_id)
   if not env_tag_key:
-    log.info(
+    log.status.Print(
         "Project '{0}' lacks an 'environment' tag. Please create or add a tag"
         " with key 'environment' and a value like 'Production',"
         " 'Development', 'Test', or 'Staging'. Add an 'environment' tag using"
@@ -345,7 +345,7 @@ def PrintEnvironmentTagMessage(project_id):
       env_tag_value
   )
   if not env_standard_value:
-    log.info(
+    log.status.Print(
         "Project '{0}' has an 'environment' tag with an"
         " unrecognized value. Please use a standard value such as"
         " 'Production', 'Development', 'Test', or 'Staging'. You can update"
@@ -357,9 +357,9 @@ def PrintEnvironmentTagMessage(project_id):
     return
 
   if env_standard_value == Environment.PRODUCTION:
-    log.warning(
-        "Project '{0}' is designated as '{2}'(tagged 'environment: {1}')."
-        " Making changes could affect your '{2}' apps."
+    log.status.Print(
+        "Caution: Project '{0}' is designated as '{2}'(tagged 'environment:"
+        " {1}'). Making changes could affect your '{2}' apps."
         ' Learn more at https://cloud.google.com/resource-manager/docs/'
         'creating-managing-projects#designate_project_environments_with_tags'
         .format(
@@ -367,7 +367,7 @@ def PrintEnvironmentTagMessage(project_id):
         )
     )
   else:
-    log.info(
+    log.status.Print(
         "Caution: Project '{0}' is designated as '{2}'(tagged"
         " 'environment: {1}'). Making changes could affect your '{2}'"
         ' apps. If incorrect, you can update it by managing the tag'

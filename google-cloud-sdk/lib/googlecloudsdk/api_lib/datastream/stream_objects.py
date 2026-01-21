@@ -100,6 +100,13 @@ class StreamObjectsClient:
               objectName=args.salesforce_object_name
           )
       )
+    elif args.spanner_table:
+      object_identifier.spannerIdentifier = (
+          self._messages.SpannerObjectIdentifier(
+              schema=args.spanner_schema if args.spanner_schema else None,
+              table=args.spanner_table
+          )
+      )
     elif args.mongodb_database:
       object_identifier.mongodbIdentifier = (
           self._messages.MongodbObjectIdentifier(

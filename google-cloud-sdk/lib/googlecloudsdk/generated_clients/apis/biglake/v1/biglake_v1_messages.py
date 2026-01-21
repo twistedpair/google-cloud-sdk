@@ -576,10 +576,7 @@ class CreateIcebergTableRequest(_messages.Message):
   r"""The request message for the `CreateIcebergTable` API.
 
   Fields:
-    httpBody: Required. The raw HTTP body is bound to this field. Our handler
-      will validate that content_type is `application/json` and that data
-      adheres to the Apache Iceberg Rest Catalog Spec OpenAPI schema: #
-      /components/schemas/CreateTableRequest
+    httpBody: Required.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -754,7 +751,7 @@ class IcebergCatalog(_messages.Message):
     credential_mode: Optional. The credential mode for the catalog.
     default_location: Optional. The default storage location for the catalog,
       e.g., `gs://my-bucket`. For the Google Cloud Storage Bucket catalog this
-      is output only. For BigLake flexible catalogs, this field must be
+      is output only. For BigLake Iceberg catalogs, this field must be
       provided and point to a Google Cloud Storage bucket or a path within
       that bucket. This path serves as the base directory for constructing the
       full path to a table's data and metadata directories when a location is
@@ -781,13 +778,13 @@ class IcebergCatalog(_messages.Message):
     Values:
       CATALOG_TYPE_UNSPECIFIED: Default value. This value is unused.
       CATALOG_TYPE_GCS_BUCKET: Catalog type for Google Cloud Storage Buckets.
-      CATALOG_TYPE_FLEXIBLE: BigLake flexible catalog. Catalog type which
-        allows namespaces and tables within a catalog to be mapped to
-        locations beyond the catalog's designated default.
+      CATALOG_TYPE_BIGLAKE: BigLake Iceberg catalog. Catalog type which allows
+        namespaces and tables within a catalog to be mapped to locations
+        beyond the catalog's designated default.
     """
     CATALOG_TYPE_UNSPECIFIED = 0
     CATALOG_TYPE_GCS_BUCKET = 1
-    CATALOG_TYPE_FLEXIBLE = 2
+    CATALOG_TYPE_BIGLAKE = 2
 
   class CredentialModeValueValuesEnum(_messages.Enum):
     r"""Optional. The credential mode for the catalog.
@@ -1325,10 +1322,7 @@ class UpdateIcebergTableRequest(_messages.Message):
   r"""The update message for the `UpdateIcebergTable` API.
 
   Fields:
-    httpBody: Required. The raw HTTP body is bound to this field. Our handler
-      will validate that content_type is `application/json` and that data
-      adheres to the Apache Iceberg Rest Catalog Spec OpenAPI schema: #
-      /components/schemas/CommitTableRequest
+    httpBody: Required.
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)

@@ -4611,6 +4611,11 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChang
   hangeRequestsListRequest object.
 
   Fields:
+    filter: Optional. Filter expression to filter the results. See AIP-160 for
+      filtering syntax. Supported fields are: - `sha256` (string, equality
+      only, e.g. `sha256 = "..."`) - `state` (enum, equality only, e.g. `state
+      = "ACTIVE"`) - `create_time` (timestamp, comparisons, e.g. `create_time
+      > "2026-01-01T00:00:00Z"`)
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
@@ -4621,9 +4626,10 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChang
       ion}/firewallEndpoints/{firewall_endpoint}
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class NetworksecurityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
@@ -4739,8 +4745,9 @@ class NetworksecurityOrganizationsLocationsSecurityProfileGroupsListRequest(_mes
   object.
 
   Fields:
-    pageSize: Maximum number of SecurityProfileGroups to return per call.
-    pageToken: The value returned by the last
+    pageSize: Optional. Maximum number of SecurityProfileGroups to return per
+      call.
+    pageToken: Optional. The value returned by the last
       `ListSecurityProfileGroupsResponse` Indicates that this is a
       continuation of a prior `ListSecurityProfileGroups` call, and that the
       system should return the next page of data.
@@ -4829,10 +4836,11 @@ class NetworksecurityOrganizationsLocationsSecurityProfilesListRequest(_messages
   object.
 
   Fields:
-    pageSize: Maximum number of SecurityProfiles to return per call.
-    pageToken: The value returned by the last `ListSecurityProfilesResponse`
-      Indicates that this is a continuation of a prior `ListSecurityProfiles`
-      call, and that the system should return the next page of data.
+    pageSize: Optional. Maximum number of SecurityProfiles to return per call.
+    pageToken: Optional. The value returned by the last
+      `ListSecurityProfilesResponse` Indicates that this is a continuation of
+      a prior `ListSecurityProfiles` call, and that the system should return
+      the next page of data.
     parent: Required. The project or organization and location from which the
       SecurityProfiles should be listed, specified in the format
       `projects|organizations/*/locations/{location}`.
@@ -7882,8 +7890,9 @@ class NetworksecurityProjectsLocationsSecurityProfileGroupsListRequest(_messages
   object.
 
   Fields:
-    pageSize: Maximum number of SecurityProfileGroups to return per call.
-    pageToken: The value returned by the last
+    pageSize: Optional. Maximum number of SecurityProfileGroups to return per
+      call.
+    pageToken: Optional. The value returned by the last
       `ListSecurityProfileGroupsResponse` Indicates that this is a
       continuation of a prior `ListSecurityProfileGroups` call, and that the
       system should return the next page of data.
@@ -7968,10 +7977,11 @@ class NetworksecurityProjectsLocationsSecurityProfilesListRequest(_messages.Mess
   r"""A NetworksecurityProjectsLocationsSecurityProfilesListRequest object.
 
   Fields:
-    pageSize: Maximum number of SecurityProfiles to return per call.
-    pageToken: The value returned by the last `ListSecurityProfilesResponse`
-      Indicates that this is a continuation of a prior `ListSecurityProfiles`
-      call, and that the system should return the next page of data.
+    pageSize: Optional. Maximum number of SecurityProfiles to return per call.
+    pageToken: Optional. The value returned by the last
+      `ListSecurityProfilesResponse` Indicates that this is a continuation of
+      a prior `ListSecurityProfiles` call, and that the system should return
+      the next page of data.
     parent: Required. The project or organization and location from which the
       SecurityProfiles should be listed, specified in the format
       `projects|organizations/*/locations/{location}`.

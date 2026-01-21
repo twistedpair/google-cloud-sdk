@@ -42,18 +42,20 @@ class AutonomousDatabase(_messages.Message):
       Database.
 
   Fields:
-    adminPassword: Optional. The password for the default ADMIN user.
-    cidr: Optional. The subnet CIDR range for the Autonomous Database.
+    adminPassword: Optional. Immutable. The password for the default ADMIN
+      user.
+    cidr: Optional. Immutable. The subnet CIDR range for the Autonomous
+      Database.
     createTime: Output only. The date and time that the Autonomous Database
       was created.
-    database: Optional. The name of the Autonomous Database. The database name
-      must be unique in the project. The name must begin with a letter and can
-      contain a maximum of 30 alphanumeric characters.
+    database: Optional. Immutable. The name of the Autonomous Database. The
+      database name must be unique in the project. The name must begin with a
+      letter and can contain a maximum of 30 alphanumeric characters.
     disasterRecoverySupportedLocations: Output only. List of supported GCP
       region to clone the Autonomous Database for disaster recovery. Format:
       `project/{project}/locations/{location}`.
-    displayName: Optional. The display name for the Autonomous Database. The
-      name does not have to be unique within your project.
+    displayName: Optional. Immutable. The display name for the Autonomous
+      Database. The name does not have to be unique within your project.
     entitlementId: Output only. The ID of the subscription entitlement
       associated with the Autonomous Database.
     labels: Optional. The labels or tags associated with the Autonomous
@@ -61,24 +63,24 @@ class AutonomousDatabase(_messages.Message):
     name: Identifier. The name of the Autonomous Database resource in the
       following format: projects/{project}/locations/{region}/autonomousDataba
       ses/{autonomous_database}
-    network: Optional. The name of the VPC network used by the Autonomous
-      Database in the following format:
+    network: Optional. Immutable. The name of the VPC network used by the
+      Autonomous Database in the following format:
       projects/{project}/global/networks/{network}
-    odbNetwork: Optional. The name of the OdbNetwork associated with the
-      Autonomous Database. Format:
+    odbNetwork: Optional. Immutable. The name of the OdbNetwork associated
+      with the Autonomous Database. Format:
       projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
       optional but if specified, this should match the parent ODBNetwork of
       the OdbSubnet.
-    odbSubnet: Optional. The name of the OdbSubnet associated with the
-      Autonomous Database. Format: projects/{project}/locations/{location}/odb
-      Networks/{odb_network}/odbSubnets/{odb_subnet}
+    odbSubnet: Optional. Immutable. The name of the OdbSubnet associated with
+      the Autonomous Database. Format: projects/{project}/locations/{location}
+      /odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
     peerAutonomousDatabases: Output only. The peer Autonomous Database names
       of the given Autonomous Database.
     properties: Optional. The properties of the Autonomous Database.
-    sourceConfig: Optional. The source Autonomous Database configuration for
-      the standby Autonomous Database. The source Autonomous Database is
-      configured while creating the Peer Autonomous Database and can't be
-      updated after creation.
+    sourceConfig: Optional. Immutable. The source Autonomous Database
+      configuration for the standby Autonomous Database. The source Autonomous
+      Database is configured while creating the Peer Autonomous Database and
+      can't be updated after creation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -398,17 +400,17 @@ class AutonomousDatabaseProperties(_messages.Message):
       Safe registration for the Autonomous Database.
     DatabaseManagementStateValueValuesEnum: Output only. The current state of
       database management for the Autonomous Database.
-    DbEditionValueValuesEnum: Optional. The edition of the Autonomous
-      Databases.
-    DbWorkloadValueValuesEnum: Required. The workload type of the Autonomous
-      Database.
-    LicenseTypeValueValuesEnum: Required. The license type used for the
+    DbEditionValueValuesEnum: Optional. Immutable. The edition of the
+      Autonomous Databases.
+    DbWorkloadValueValuesEnum: Required. Immutable. The workload type of the
       Autonomous Database.
+    LicenseTypeValueValuesEnum: Required. Immutable. The license type used for
+      the Autonomous Database.
     LocalDisasterRecoveryTypeValueValuesEnum: Output only. This field
       indicates the local disaster recovery (DR) type of an Autonomous
       Database.
-    MaintenanceScheduleTypeValueValuesEnum: Optional. The maintenance schedule
-      of the Autonomous Database.
+    MaintenanceScheduleTypeValueValuesEnum: Optional. Immutable. The
+      maintenance schedule of the Autonomous Database.
     OpenModeValueValuesEnum: Output only. This field indicates the current
       mode of the Autonomous Database.
     OperationsInsightsStateValueValuesEnum: Output only. This field indicates
@@ -430,8 +432,8 @@ class AutonomousDatabaseProperties(_messages.Message):
     allocatedStorageSizeTb: Output only. The amount of storage currently
       allocated for the database tables and billed for, rounded up in
       terabytes.
-    allowlistedIps: Optional. The list of allowlisted IP addresses for the
-      Autonomous Database.
+    allowlistedIps: Optional. Immutable. The list of allowlisted IP addresses
+      for the Autonomous Database.
     apexDetails: Output only. The details for the Oracle APEX Application
       Development.
     arePrimaryAllowlistedIpsUsed: Output only. This field indicates the status
@@ -447,34 +449,35 @@ class AutonomousDatabaseProperties(_messages.Message):
       Database OCID.
     availableUpgradeVersions: Output only. The list of available Oracle
       Database upgrade versions for an Autonomous Database.
-    backupRetentionPeriodDays: Optional. The retention period for the
-      Autonomous Database. This field is specified in days, can range from 1
-      day to 60 days, and has a default value of 60 days.
-    characterSet: Optional. The character set for the Autonomous Database. The
-      default is AL32UTF8.
-    computeCount: Optional. The number of compute servers for the Autonomous
-      Database.
+    backupRetentionPeriodDays: Optional. Immutable. The retention period for
+      the Autonomous Database. This field is specified in days, can range from
+      1 day to 60 days, and has a default value of 60 days.
+    characterSet: Optional. Immutable. The character set for the Autonomous
+      Database. The default is AL32UTF8.
+    computeCount: Optional. Immutable. The number of compute servers for the
+      Autonomous Database.
     connectionStrings: Output only. The connection strings used to connect to
       an Autonomous Database.
     connectionUrls: Output only. The Oracle Connection URLs for an Autonomous
       Database.
-    cpuCoreCount: Optional. The number of CPU cores to be made available to
-      the database.
-    customerContacts: Optional. The list of customer contacts.
+    cpuCoreCount: Optional. Immutable. The number of CPU cores to be made
+      available to the database.
+    customerContacts: Optional. Immutable. The list of customer contacts.
     dataGuardRoleChangedTime: Output only. The date and time the Autonomous
       Data Guard role was changed for the standby Autonomous Database.
     dataSafeState: Output only. The current state of the Data Safe
       registration for the Autonomous Database.
-    dataStorageSizeGb: Optional. The size of the data stored in the database,
-      in gigabytes.
-    dataStorageSizeTb: Optional. The size of the data stored in the database,
-      in terabytes.
+    dataStorageSizeGb: Optional. Immutable. The size of the data stored in the
+      database, in gigabytes.
+    dataStorageSizeTb: Optional. Immutable. The size of the data stored in the
+      database, in terabytes.
     databaseManagementState: Output only. The current state of database
       management for the Autonomous Database.
-    dbEdition: Optional. The edition of the Autonomous Databases.
-    dbVersion: Optional. The Oracle Database version for the Autonomous
+    dbEdition: Optional. Immutable. The edition of the Autonomous Databases.
+    dbVersion: Optional. Immutable. The Oracle Database version for the
+      Autonomous Database.
+    dbWorkload: Required. Immutable. The workload type of the Autonomous
       Database.
-    dbWorkload: Required. The workload type of the Autonomous Database.
     disasterRecoveryRoleChangedTime: Output only. The date and time the
       Disaster Recovery role was changed for the standby Autonomous Database.
     encryptionKey: Optional. The encryption key used to encrypt the Autonomous
@@ -484,13 +487,14 @@ class AutonomousDatabaseProperties(_messages.Message):
       keys used to encrypt the Autonomous Database.
     failedDataRecoveryDuration: Output only. This field indicates the number
       of seconds of data loss during a Data Guard failover.
-    isAutoScalingEnabled: Optional. This field indicates if auto scaling is
-      enabled for the Autonomous Database CPU core count.
+    isAutoScalingEnabled: Optional. Immutable. This field indicates if auto
+      scaling is enabled for the Autonomous Database CPU core count.
     isLocalDataGuardEnabled: Output only. This field indicates whether the
       Autonomous Database has local (in-region) Data Guard enabled.
-    isStorageAutoScalingEnabled: Optional. This field indicates if auto
-      scaling is enabled for the Autonomous Database storage.
-    licenseType: Required. The license type used for the Autonomous Database.
+    isStorageAutoScalingEnabled: Optional. Immutable. This field indicates if
+      auto scaling is enabled for the Autonomous Database storage.
+    licenseType: Required. Immutable. The license type used for the Autonomous
+      Database.
     lifecycleDetails: Output only. The details of the current lifestyle state
       of the Autonomous Database.
     localAdgAutoFailoverMaxDataLossLimit: Output only. This field indicates
@@ -503,16 +507,16 @@ class AutonomousDatabaseProperties(_messages.Message):
       begin.
     maintenanceEndTime: Output only. The date and time when maintenance will
       end.
-    maintenanceScheduleType: Optional. The maintenance schedule of the
-      Autonomous Database.
+    maintenanceScheduleType: Optional. Immutable. The maintenance schedule of
+      the Autonomous Database.
     memoryPerOracleComputeUnitGbs: Output only. The amount of memory enabled
       per ECPU, in gigabytes.
     memoryTableGbs: Output only. The memory assigned to in-memory tables in an
       Autonomous Database.
-    mtlsConnectionRequired: Optional. This field specifies if the Autonomous
-      Database requires mTLS connections.
-    nCharacterSet: Optional. The national character set for the Autonomous
-      Database. The default is AL16UTF16.
+    mtlsConnectionRequired: Optional. Immutable. This field specifies if the
+      Autonomous Database requires mTLS connections.
+    nCharacterSet: Optional. Immutable. The national character set for the
+      Autonomous Database. The default is AL16UTF16.
     nextLongTermBackupTime: Output only. The long term backup schedule of the
       Autonomous Database.
     ociUrl: Output only. The Oracle Cloud Infrastructure link for the
@@ -531,18 +535,18 @@ class AutonomousDatabaseProperties(_messages.Message):
       Database.
     privateEndpoint: Output only. The private endpoint for the Autonomous
       Database.
-    privateEndpointIp: Optional. The private endpoint IP address for the
-      Autonomous Database.
-    privateEndpointLabel: Optional. The private endpoint label for the
-      Autonomous Database.
+    privateEndpointIp: Optional. Immutable. The private endpoint IP address
+      for the Autonomous Database.
+    privateEndpointLabel: Optional. Immutable. The private endpoint label for
+      the Autonomous Database.
     refreshableMode: Output only. The refresh mode of the cloned Autonomous
       Database.
     refreshableState: Output only. The refresh State of the clone.
     role: Output only. The Data Guard role of the Autonomous Database.
     scheduledOperationDetails: Output only. The list and details of the
       scheduled operations of the Autonomous Database.
-    secretId: Optional. The ID of the Oracle Cloud Infrastructure vault
-      secret.
+    secretId: Optional. Immutable. The ID of the Oracle Cloud Infrastructure
+      vault secret.
     serviceAgentEmail: Output only. An Oracle-managed Google Cloud service
       account on which customers can grant roles to access resources in the
       customer project.
@@ -556,7 +560,8 @@ class AutonomousDatabaseProperties(_messages.Message):
       automatic backups of Autonomous Database, in gigabytes.
     usedDataStorageSizeTbs: Output only. The storage space used by Autonomous
       Database, in gigabytes.
-    vaultId: Optional. The ID of the Oracle Cloud Infrastructure vault.
+    vaultId: Optional. Immutable. The ID of the Oracle Cloud Infrastructure
+      vault.
   """
 
   class DataSafeStateValueValuesEnum(_messages.Enum):
@@ -600,7 +605,7 @@ class AutonomousDatabaseProperties(_messages.Message):
     FAILED_DISABLING = 6
 
   class DbEditionValueValuesEnum(_messages.Enum):
-    r"""Optional. The edition of the Autonomous Databases.
+    r"""Optional. Immutable. The edition of the Autonomous Databases.
 
     Values:
       DATABASE_EDITION_UNSPECIFIED: Default unspecified value.
@@ -612,7 +617,7 @@ class AutonomousDatabaseProperties(_messages.Message):
     ENTERPRISE_EDITION = 2
 
   class DbWorkloadValueValuesEnum(_messages.Enum):
-    r"""Required. The workload type of the Autonomous Database.
+    r"""Required. Immutable. The workload type of the Autonomous Database.
 
     Values:
       DB_WORKLOAD_UNSPECIFIED: Default unspecified value.
@@ -629,7 +634,8 @@ class AutonomousDatabaseProperties(_messages.Message):
     APEX = 4
 
   class LicenseTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The license type used for the Autonomous Database.
+    r"""Required. Immutable. The license type used for the Autonomous
+    Database.
 
     Values:
       LICENSE_TYPE_UNSPECIFIED: Unspecified
@@ -654,7 +660,8 @@ class AutonomousDatabaseProperties(_messages.Message):
     BACKUP_BASED = 2
 
   class MaintenanceScheduleTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The maintenance schedule of the Autonomous Database.
+    r"""Optional. Immutable. The maintenance schedule of the Autonomous
+    Database.
 
     Values:
       MAINTENANCE_SCHEDULE_TYPE_UNSPECIFIED: Default unspecified value.

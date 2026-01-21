@@ -311,6 +311,75 @@ _SALESFORCE_UPDATE_SOURCE_CONFIG_HELP_TEXT = """
   ```
 """
 
+_SPANNER_CREATE_SOURCE_CONFIG_HELP_TEXT = """
+  Path to a YAML (or JSON) file containing the configuration for Spanner Source Config.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    "changeStreamName": "SAMPLE_CHANGE_STREAM_NAME",
+    {
+      "includeObjects": {},
+      "excludeObjects": {
+        "schemas": [
+          {
+            "schema": "SAMPLE",
+            "tables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "columns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "maxConcurrentCdcTasks": 1000,
+      "maxConcurrentBackfillTasks": 10,
+      "backfillDataBoostEnabled": false,
+      "fgacRole": "SAMPLE_FGAC_ROLE",
+      "spannerRpcPriority": "MEDIUM"
+    }
+  ```
+"""
+
+_SPANNER_UPDATE_SOURCE_CONFIG_HELP_TEXT = """
+  Path to a YAML (or JSON) file containing the configuration for Spanner Source Config.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+      "includeObjects": {},
+      "excludeObjects": {
+        "schemas": [
+          {
+            "schema": "SAMPLE",
+            "tables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "columns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "maxConcurrentCdcTasks": 1000,
+      "maxConcurrentBackfillTasks": 10,
+      "backfillDataBoostEnabled": false,
+      "fgacRole": "SAMPLE_FGAC_ROLE",
+      "spannerRpcPriority": "MEDIUM"
+    }
+  ```
+"""
+
 _MONGODB_SOURCE_CONFIG_HELP_TEXT = """\
   Path to a YAML (or JSON) file containing the configuration for MongoDB Source Config.
 
@@ -617,6 +686,12 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       help=_SALESFORCE_UPDATE_SOURCE_CONFIG_HELP_TEXT
       if verb == 'update'
       else _SALESFORCE_CREATE_SOURCE_CONFIG_HELP_TEXT,
+  )
+  source_config_parser_group.add_argument(
+      '--spanner-source-config',
+      help=_SPANNER_UPDATE_SOURCE_CONFIG_HELP_TEXT
+      if verb == 'update'
+      else _SPANNER_CREATE_SOURCE_CONFIG_HELP_TEXT,
   )
   source_config_parser_group.add_argument(
       '--mongodb-source-config',

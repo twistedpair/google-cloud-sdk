@@ -680,6 +680,9 @@ class CatalogTemplateRevision(_messages.Message):
       gs://[bucket] or gs://[bucket]/[object].
     gitSource: Optional. The git source.
     helmChartMetadata: Output only. The helm chart metadata.
+    inferredMetadata: Output only. Metadata that was automatically inferred
+      from the template content. This field can be updated by the system as it
+      gets new information.
     logicalProducts: Output only. The Product Main logical product type
       information.
     metadataInput: Optional. Metadata input.
@@ -793,16 +796,17 @@ class CatalogTemplateRevision(_messages.Message):
   gcsSourceUri = _messages.StringField(7)
   gitSource = _messages.MessageField('GitSource', 8)
   helmChartMetadata = _messages.MessageField('HelmChartMetadata', 9)
-  logicalProducts = _messages.MessageField('LogicalProduct', 10, repeated=True)
-  metadataInput = _messages.MessageField('MetadataInput', 11)
-  name = _messages.StringField(12)
-  ociRepo = _messages.MessageField('OciRepo', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 15)
-  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  updateTime = _messages.StringField(18)
-  uuid = _messages.StringField(19)
+  inferredMetadata = _messages.MessageField('InferredMetadata', 10)
+  logicalProducts = _messages.MessageField('LogicalProduct', 11, repeated=True)
+  metadataInput = _messages.MessageField('MetadataInput', 12)
+  name = _messages.StringField(13)
+  ociRepo = _messages.MessageField('OciRepo', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 16)
+  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
+  uuid = _messages.StringField(20)
 
 
 class Channel(_messages.Message):
@@ -3330,6 +3334,23 @@ class ImportIaCError(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
+class InferredMetadata(_messages.Message):
+  r"""Inferred metadata.
+
+  Fields:
+    createTime: Output only. Inferred metadata creation timestamp.
+    description: Output only. Inferred description.
+    templateMetadata: Output only. Inferred template metadata related to
+      Terraform input and output.
+    updateTime: Output only. Inferred metadata update timestamp.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 3)
+  updateTime = _messages.StringField(4)
+
+
 class ListApplicationTemplateRevisionsResponse(_messages.Message):
   r"""Message for response to listing application template revisions.
 
@@ -4374,6 +4395,8 @@ class SharedTemplateRevision(_messages.Message):
       gs://[bucket] or gs://[bucket]/[object].
     gitSource: Optional. The git source.
     helmChartMetadata: Output only. The helm chart metadata.
+    inferredMetadata: Output only. Metadata that was automatically inferred
+      from the template content.
     logicalProducts: Output only. The Product Main logical product type
       information.
     name: Identifier. The shared template revision name. $sharedTemplate is a
@@ -4470,13 +4493,14 @@ class SharedTemplateRevision(_messages.Message):
   gcsSourceUri = _messages.StringField(7)
   gitSource = _messages.MessageField('GitSource', 8)
   helmChartMetadata = _messages.MessageField('HelmChartMetadata', 9)
-  logicalProducts = _messages.MessageField('LogicalProduct', 10, repeated=True)
-  name = _messages.StringField(11)
-  ociRepo = _messages.MessageField('OciRepo', 12)
-  originTemplateRevision = _messages.StringField(13)
-  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 14)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  inferredMetadata = _messages.MessageField('InferredMetadata', 10)
+  logicalProducts = _messages.MessageField('LogicalProduct', 11, repeated=True)
+  name = _messages.StringField(12)
+  ociRepo = _messages.MessageField('OciRepo', 13)
+  originTemplateRevision = _messages.StringField(14)
+  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 15)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class Space(_messages.Message):

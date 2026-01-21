@@ -145,7 +145,6 @@ def SubnetworkResolver():
 def AddUpdateArgs(
     parser,
     include_alpha_logging,
-    include_allow_cidr_routes_overlap,
     api_version,
     update_purpose_to_private,
 ):
@@ -154,7 +153,6 @@ def AddUpdateArgs(
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
-    include_allow_cidr_routes_overlap: Include CIDR routes overlap args.
     api_version: The api version of the request.
     update_purpose_to_private: Allow updating purpose to private.
   """
@@ -247,14 +245,13 @@ def AddUpdateArgs(
             ' more information, see '
             'https://cloud.google.com/vpc/docs/using-flow-logs.'))
 
-  if include_allow_cidr_routes_overlap:
-    updated_field.add_argument(
-        '--allow-cidr-routes-overlap',
-        action=arg_parsers.StoreTrueFalseAction,
-        help=(
-            "Allow/disallow this subnetwork's IP address ranges to conflict "
-            'with existing static routes.'
-        ),
+  updated_field.add_argument(
+      '--allow-cidr-routes-overlap',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          "Allow/disallow this subnetwork's IP address ranges to conflict "
+          'with existing custom routes.'
+      ),
     )
 
   AddLoggingAggregationInterval(parser, messages)

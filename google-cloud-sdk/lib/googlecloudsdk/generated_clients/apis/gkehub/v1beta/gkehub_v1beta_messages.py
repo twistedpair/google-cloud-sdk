@@ -362,8 +362,8 @@ class ClusterSelector(_messages.Message):
   r"""Selector for clusters.
 
   Fields:
-    labelSelector: The label selector must be a valid CEL (go/cel) expression
-      which evaluates resource.labels.
+    labelSelector: Optional. A valid CEL (Common Expression Language)
+      expression which evaluates `resource.labels`.
   """
 
   labelSelector = _messages.StringField(1)
@@ -7183,13 +7183,11 @@ class Rollout(_messages.Message):
     rolloutSequence: Optional. Immutable. The full, unique resource name of
       the rollout sequence that initiatied this Rollout. In the format of `pro
       jects/{project}/locations/global/rolloutSequences/{rollout_sequence}`.
-      Empty for user initiated rollouts.
     schedule: Output only. The schedule of the Rollout.
     scheduledStartTime: Optional. The timestamp at which the Rollout is
       scheduled to start. If not specified, the Rollout will start
       immediately.
-    stages: Output only. The stages of the Rollout. Note: this is only
-      populated for google-initiated rollouts.
+    stages: Output only. The stages of the Rollout.
     state: Output only. State specifies various states of the Rollout.
     stateReason: Output only. A human-readable description explaining the
       reason for the current state.
@@ -7198,8 +7196,7 @@ class Rollout(_messages.Message):
       another resource with the same name is created, it gets a different uid.
     updateTime: Output only. The timestamp at which the Rollout was last
       updated.
-    versionUpgrade: Optional. Config for version upgrade of clusters. Note:
-      Currently for GDCE clusters only.
+    versionUpgrade: Optional. Config for version upgrade of clusters.
   """
 
   class StateValueValuesEnum(_messages.Enum):

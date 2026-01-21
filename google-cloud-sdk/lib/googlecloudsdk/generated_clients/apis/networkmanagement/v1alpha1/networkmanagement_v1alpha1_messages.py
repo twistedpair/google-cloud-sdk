@@ -71,7 +71,14 @@ class AbortInfo(_messages.Message):
       PERMISSION_DENIED_NO_CLOUD_ROUTER_CONFIGS: Aborted because user lacks
         permission to access Cloud Router configs required to run the test.
       NO_SOURCE_LOCATION: Aborted because no valid source or destination
-        endpoint is derived from the input test request.
+        endpoint can be derived from the test request.
+      NO_SOURCE_GCP_NETWORK_LOCATION: Aborted because the source IP address is
+        not contained within the subnet ranges of the provided VPC network.
+      NO_SOURCE_NON_GCP_NETWORK_LOCATION: Aborted because the source IP
+        address is not contained within the destination ranges of the routes
+        towards non-GCP networks in the provided VPC network.
+      NO_SOURCE_INTERNET_LOCATION: Aborted because the source IP address can't
+        be resolved as an Internet IP address.
       INVALID_ARGUMENT: Aborted because the source or destination endpoint
         specified in the request is invalid. Some examples: - The request
         might contain malformed resource URI, project ID, or IP address. - The
@@ -147,31 +154,34 @@ class AbortInfo(_messages.Message):
     PERMISSION_DENIED_NO_NEG_ENDPOINT_CONFIGS = 14
     PERMISSION_DENIED_NO_CLOUD_ROUTER_CONFIGS = 15
     NO_SOURCE_LOCATION = 16
-    INVALID_ARGUMENT = 17
-    TRACE_TOO_LONG = 18
-    INTERNAL_ERROR = 19
-    UNSUPPORTED = 20
-    MISMATCHED_IP_VERSION = 21
-    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 22
-    RESOURCE_CONFIG_NOT_FOUND = 23
-    VM_INSTANCE_CONFIG_NOT_FOUND = 24
-    NETWORK_CONFIG_NOT_FOUND = 25
-    FIREWALL_CONFIG_NOT_FOUND = 26
-    ROUTE_CONFIG_NOT_FOUND = 27
-    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 28
-    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT = 29
-    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 30
-    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 31
-    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 32
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 33
-    NON_ROUTABLE_IP_ADDRESS = 34
-    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 35
-    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 36
-    INVALID_JUSTIFICATION = 37
-    NO_SERVERLESS_IP_RANGES = 38
-    ALLOY_DB_INSTANCE_OUTBOUND_CONNECTION_UNSUPPORTED = 39
-    IP_VERSION_PROTOCOL_MISMATCH = 40
-    GKE_POD_UNKNOWN_ENDPOINT_LOCATION = 41
+    NO_SOURCE_GCP_NETWORK_LOCATION = 17
+    NO_SOURCE_NON_GCP_NETWORK_LOCATION = 18
+    NO_SOURCE_INTERNET_LOCATION = 19
+    INVALID_ARGUMENT = 20
+    TRACE_TOO_LONG = 21
+    INTERNAL_ERROR = 22
+    UNSUPPORTED = 23
+    MISMATCHED_IP_VERSION = 24
+    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 25
+    RESOURCE_CONFIG_NOT_FOUND = 26
+    VM_INSTANCE_CONFIG_NOT_FOUND = 27
+    NETWORK_CONFIG_NOT_FOUND = 28
+    FIREWALL_CONFIG_NOT_FOUND = 29
+    ROUTE_CONFIG_NOT_FOUND = 30
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 31
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT = 32
+    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 33
+    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 34
+    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 35
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 36
+    NON_ROUTABLE_IP_ADDRESS = 37
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 38
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 39
+    INVALID_JUSTIFICATION = 40
+    NO_SERVERLESS_IP_RANGES = 41
+    ALLOY_DB_INSTANCE_OUTBOUND_CONNECTION_UNSUPPORTED = 42
+    IP_VERSION_PROTOCOL_MISMATCH = 43
+    GKE_POD_UNKNOWN_ENDPOINT_LOCATION = 44
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -1388,6 +1398,7 @@ class DropInfo(_messages.Message):
         route matched within this hybrid subnet.
       HYBRID_SUBNET_NO_ROUTE: Packet is dropped because no matching route was
         found in the hybrid subnet.
+      GKE_NETWORK_POLICY: Packet is dropped by GKE Network Policy.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1497,6 +1508,7 @@ class DropInfo(_messages.Message):
     NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 105
     HYBRID_SUBNET_REGION_MISMATCH = 106
     HYBRID_SUBNET_NO_ROUTE = 107
+    GKE_NETWORK_POLICY = 108
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -2065,6 +2077,47 @@ class GkePodInfo(_messages.Message):
   ipAddress = _messages.StringField(1)
   networkUri = _messages.StringField(2)
   podUri = _messages.StringField(3)
+
+
+class GoogleManagedServiceInfo(_messages.Message):
+  r"""For display only. Metadata associated with
+  ARRIVE_AT_GOOGLE_MANAGED_SERVICE state.
+
+  Enums:
+    ServiceTypeValueValuesEnum: Type of a Google-managed service.
+
+  Fields:
+    ipAddress: IP address of the Google-managed service endpoint.
+    networkUri: URI of the Google-managed service endpoint network, it is
+      empty if the IP address is a public IP address.
+    serviceType: Type of a Google-managed service.
+    serviceUri: URI of the Google-managed service.
+  """
+
+  class ServiceTypeValueValuesEnum(_messages.Enum):
+    r"""Type of a Google-managed service.
+
+    Values:
+      SERVICE_TYPE_UNSPECIFIED: Service type is unspecified.
+      UNSUPPORTED: Unsupported Google-managed service.
+      CLOUD_SQL: Cloud SQL Instance.
+      GKE_CLUSTER_CONTROL_PLANE: GKE Cluster control plane.
+      REDIS_CLUSTER: Redis Cluster.
+      REDIS_INSTANCE: Redis Instance.
+      ALLOY_DB: AlloyDB Instance.
+    """
+    SERVICE_TYPE_UNSPECIFIED = 0
+    UNSUPPORTED = 1
+    CLOUD_SQL = 2
+    GKE_CLUSTER_CONTROL_PLANE = 3
+    REDIS_CLUSTER = 4
+    REDIS_INSTANCE = 5
+    ALLOY_DB = 6
+
+  ipAddress = _messages.StringField(1)
+  networkUri = _messages.StringField(2)
+  serviceType = _messages.EnumField('ServiceTypeValueValuesEnum', 3)
+  serviceUri = _messages.StringField(4)
 
 
 class GoogleServiceInfo(_messages.Message):
@@ -4827,6 +4880,7 @@ class Step(_messages.Message):
     gkeNetworkPolicySkipped: Display information of the reason why GKE Network
       Policy evaluation was skipped.
     gkePod: Display information of a Google Kubernetes Engine Pod.
+    googleManagedService: Display information of a Google-managed service.
     googleService: Display information of a Google service
     hybridSubnet: Display information of a hybrid subnet.
     instance: Display information of a Compute Engine instance.
@@ -4935,16 +4989,25 @@ class Step(_messages.Message):
       ARRIVE_AT_INTERCONNECT_ATTACHMENT: Forwarding state: arriving at an
         interconnect attachment.
       ARRIVE_AT_VPC_CONNECTOR: Forwarding state: arriving at a VPC connector.
+      ARRIVE_AT_GKE_POD: Forwarding state: arriving at a GKE Pod.
       DIRECT_VPC_EGRESS_CONNECTION: Forwarding state: for packets originating
         from a serverless endpoint forwarded through Direct VPC egress.
       SERVERLESS_EXTERNAL_CONNECTION: Forwarding state: for packets
         originating from a serverless endpoint forwarded through public
         (external) connectivity.
+      ARRIVE_AT_GOOGLE_MANAGED_SERVICE: Forwarding state: arriving at a
+        Google-managed service endpoint.
       NAT: Transition state: packet header translated. The `nat` field is
         populated with the translation information.
       SKIP_GKE_POD_IP_MASQUERADING: Transition state: GKE Pod IP masquerading
         is skipped. The `ip_masquerading_skipped` field is populated with the
         reason.
+      SKIP_GKE_INGRESS_NETWORK_POLICY: Transition state: GKE Ingress Network
+        Policy is skipped. The `gke_network_policy_skipped` field is populated
+        with the reason.
+      SKIP_GKE_EGRESS_NETWORK_POLICY: Transition state: GKE Egress Network
+        Policy is skipped. The `gke_network_policy_skipped` field is populated
+        with the reason.
       PROXY_CONNECTION: Transition state: original connection is terminated
         and a new proxied connection is initiated.
       DELIVER: Final state: packet could be delivered.
@@ -4986,16 +5049,20 @@ class Step(_messages.Message):
     ARRIVE_AT_VPN_TUNNEL = 28
     ARRIVE_AT_INTERCONNECT_ATTACHMENT = 29
     ARRIVE_AT_VPC_CONNECTOR = 30
-    DIRECT_VPC_EGRESS_CONNECTION = 31
-    SERVERLESS_EXTERNAL_CONNECTION = 32
-    NAT = 33
-    SKIP_GKE_POD_IP_MASQUERADING = 34
-    PROXY_CONNECTION = 35
-    DELIVER = 36
-    DROP = 37
-    FORWARD = 38
-    ABORT = 39
-    VIEWER_PERMISSION_MISSING = 40
+    ARRIVE_AT_GKE_POD = 31
+    DIRECT_VPC_EGRESS_CONNECTION = 32
+    SERVERLESS_EXTERNAL_CONNECTION = 33
+    ARRIVE_AT_GOOGLE_MANAGED_SERVICE = 34
+    NAT = 35
+    SKIP_GKE_POD_IP_MASQUERADING = 36
+    SKIP_GKE_INGRESS_NETWORK_POLICY = 37
+    SKIP_GKE_EGRESS_NETWORK_POLICY = 38
+    PROXY_CONNECTION = 39
+    DELIVER = 40
+    DROP = 41
+    FORWARD = 42
+    ABORT = 43
+    VIEWER_PERMISSION_MISSING = 44
 
   abort = _messages.MessageField('AbortInfo', 1)
   alloyDbInstance = _messages.MessageField('AlloyDbInstanceInfo', 2)
@@ -5016,27 +5083,28 @@ class Step(_messages.Message):
   gkeNetworkPolicy = _messages.MessageField('GkeNetworkPolicyInfo', 17)
   gkeNetworkPolicySkipped = _messages.MessageField('GkeNetworkPolicySkippedInfo', 18)
   gkePod = _messages.MessageField('GkePodInfo', 19)
-  googleService = _messages.MessageField('GoogleServiceInfo', 20)
-  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 21)
-  instance = _messages.MessageField('InstanceInfo', 22)
-  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 23)
-  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 24)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 25)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 26)
-  nat = _messages.MessageField('NatInfo', 27)
-  network = _messages.MessageField('NetworkInfo', 28)
-  projectId = _messages.StringField(29)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 30)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 31)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 32)
-  route = _messages.MessageField('RouteInfo', 33)
-  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 34)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 35)
-  state = _messages.EnumField('StateValueValuesEnum', 36)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 37)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 38)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 39)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 40)
+  googleManagedService = _messages.MessageField('GoogleManagedServiceInfo', 20)
+  googleService = _messages.MessageField('GoogleServiceInfo', 21)
+  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 22)
+  instance = _messages.MessageField('InstanceInfo', 23)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 24)
+  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 25)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 26)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 27)
+  nat = _messages.MessageField('NatInfo', 28)
+  network = _messages.MessageField('NetworkInfo', 29)
+  projectId = _messages.StringField(30)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 31)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 32)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 33)
+  route = _messages.MessageField('RouteInfo', 34)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 35)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 36)
+  state = _messages.EnumField('StateValueValuesEnum', 37)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 38)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 39)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 40)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 41)
 
 
 class StorageBucketInfo(_messages.Message):

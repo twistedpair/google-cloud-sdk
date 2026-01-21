@@ -555,8 +555,8 @@ class ApphubProjectsLocationsExtendedMetadataSchemasGetRequest(_messages.Message
   r"""A ApphubProjectsLocationsExtendedMetadataSchemasGetRequest object.
 
   Fields:
-    name: Required. Schema resource name Format: `projects/{project}/locations
-      /{location}/extendedMetadataSchemas/{extended_metadata_schema}`.
+    name: Required. Schema resource name. Format: `projects/{project}/location
+      s/{location}/extendedMetadataSchemas/{extended_metadata_schema}`.
       `{extended_metadata_schema}` has the format
       `"apphub.googleapis.com/{SchemaName}"`.
   """

@@ -190,6 +190,13 @@ def ParseSalesforceOrgFile(messages, salesforce_org_file):
   )
 
 
+def ParseSpannerDatabaseFile(messages, spanner_database_file):
+  """Parses a spanner_rdbms_file into the SpannerRdbms message."""
+  return ParseMessageAndValidateSchema(
+      spanner_database_file, 'SpannerDatabase', messages.SpannerDatabase
+  )
+
+
 def ParseMongodbFile(messages, mongodb_file):
   """Parses a mongodb_file into the MongodbCluster message."""
   return ParseMessageAndValidateSchema(

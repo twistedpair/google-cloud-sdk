@@ -45,6 +45,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     self.projects_instances_appProfiles = self.ProjectsInstancesAppProfilesService(self)
     self.projects_instances_clusters_backups = self.ProjectsInstancesClustersBackupsService(self)
     self.projects_instances_clusters_hotTablets = self.ProjectsInstancesClustersHotTabletsService(self)
+    self.projects_instances_clusters_memoryLayers = self.ProjectsInstancesClustersMemoryLayersService(self)
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_logicalViews = self.ProjectsInstancesLogicalViewsService(self)
     self.projects_instances_materializedViews = self.ProjectsInstancesMaterializedViewsService(self)
@@ -571,6 +572,43 @@ class BigtableadminV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BigtableadminProjectsInstancesClustersHotTabletsListRequest',
         response_type_name='ListHotTabletsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesClustersMemoryLayersService(base_api.BaseApiService):
+    """Service class for the projects_instances_clusters_memoryLayers resource."""
+
+    _NAME = 'projects_instances_clusters_memoryLayers'
+
+    def __init__(self, client):
+      super(BigtableadminV2.ProjectsInstancesClustersMemoryLayersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists information about memory layers.
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersMemoryLayersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMemoryLayersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/memoryLayers',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.clusters.memoryLayers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/memoryLayers',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesClustersMemoryLayersListRequest',
+        response_type_name='ListMemoryLayersResponse',
         supports_download=False,
     )
 

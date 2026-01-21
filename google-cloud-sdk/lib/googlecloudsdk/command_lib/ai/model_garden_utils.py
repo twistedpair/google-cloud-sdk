@@ -144,6 +144,13 @@ def _GetQuotaUsage(region, project, accelerator_type):
   return current_usage
 
 
+def IsDefaultUniverse():
+  return (
+      properties.VALUES.core.universe_domain.Get()
+      == properties.VALUES.core.universe_domain.default
+  )
+
+
 def GetCLIEndpointLabelValue(
     is_hf_model, publisher_name, model_name='', model_version_name=''
 ):
@@ -277,6 +284,16 @@ def CheckAcceleratorQuota(
   elif machine_type == 'ct5lp-hightpu-4t':
     accelerator_type = 'TPU_V5_LITEPOD'
     accelerator_count = 4
+
+  if not IsDefaultUniverse():
+    # Handle CPU-only deployments in non-default universes.
+    # deploy.py stringifies the acceleratorType, so we check for 'None' to
+    # prevent KeyError in the quota map lookup.
+    if str(accelerator_type) == 'None':
+      log.debug(
+          'No accelerator type specified, skipping accelerator quota check.'
+      )
+      return
   project = properties.VALUES.core.project.GetOrFail()
   quota_limit = _GetQuotaLimit(args.region, project, accelerator_type)
   if quota_limit < accelerator_count:

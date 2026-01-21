@@ -429,6 +429,33 @@ class FaulttestingV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def StopAll(self, request, global_params=None):
+      r"""StopAllExperiments stops all running experiments for a given project and optionally location. On return, the process of stopping all experiments will have begun, but may not be completed. Call ListExperiments with filter="state!=COMPLETED" to check the progress. If all_locations is true, check the "unreachable" field in the response for a list of locations that did not respond to the internal stop-all request. Returns an RPC error if it can't list experiments at all. Otherwise, it lists and stops all experiments it can, and returns a response including success count and a list of errors. If there are no experiments to stop, it returns successfully with an empty response message.
+
+      Args:
+        request: (FaulttestingProjectsLocationsExperimentsStopAllRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StopAllExperimentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('StopAll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopAll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/experiments:stopAll',
+        http_method='POST',
+        method_id='faulttesting.projects.locations.experiments.stopAll',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/experiments:stopAll',
+        request_field='stopAllExperimentsRequest',
+        request_type_name='FaulttestingProjectsLocationsExperimentsStopAllRequest',
+        response_type_name='StopAllExperimentsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

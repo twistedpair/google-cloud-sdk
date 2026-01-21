@@ -420,7 +420,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         method_id='networksecurity.organizations.locations.firewallEndpoints.wildfireVerdictChangeRequests.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+parent}/wildfireVerdictChangeRequests',
         request_field='',
         request_type_name='NetworksecurityOrganizationsLocationsFirewallEndpointsWildfireVerdictChangeRequestsListRequest',

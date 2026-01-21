@@ -1148,6 +1148,7 @@ class Observation(_messages.Message):
         instructions/external links, RAG etc.
       OBSERVATION_TYPE_INVESTIGATION_RECAP: Provides a recap or summary of the
         investigation.
+      OBSERVATION_TYPE_WARNING: Indicates a warning about the investigation.
     """
     OBSERVATION_TYPE_UNSPECIFIED = 0
     OBSERVATION_TYPE_CLOUD_LOG = 1
@@ -1167,6 +1168,7 @@ class Observation(_messages.Message):
     OBSERVATION_TYPE_OUTAGE = 15
     OBSERVATION_TYPE_KNOWLEDGE = 16
     OBSERVATION_TYPE_INVESTIGATION_RECAP = 17
+    OBSERVATION_TYPE_WARNING = 18
 
   class ObserverTypeValueValuesEnum(_messages.Enum):
     r"""Required. The type of observer that produced this observation.

@@ -2495,6 +2495,13 @@ class Instance(_messages.Message):
       availability_type is always UNSPECIFIED. Instances in the read pools are
       evenly distributed across available zones within the region (i.e. read
       pools with more than one node will have a node in at least two zones).
+    DataApiAccessValueValuesEnum: Optional. Controls whether the Data API is
+      enabled for this instance. When enabled, this allows authorized users to
+      connect to the instance from the public internet using the `executeSql`
+      API, even for private IP instances. If this is not specified, the data
+      API is enabled by default for Google internal services like AlloyDB
+      Studio. Disable it explicitly to disallow Google internal services as
+      well.
     InstanceTypeValueValuesEnum: Required. The type of the instance. Specified
       at creation time.
     StateValueValuesEnum: Output only. The current serving state of the
@@ -2539,6 +2546,12 @@ class Instance(_messages.Message):
     connectionPoolConfig: Optional. The configuration for Managed Connection
       Pool (MCP).
     createTime: Output only. Create time stamp
+    dataApiAccess: Optional. Controls whether the Data API is enabled for this
+      instance. When enabled, this allows authorized users to connect to the
+      instance from the public internet using the `executeSql` API, even for
+      private IP instances. If this is not specified, the data API is enabled
+      by default for Google internal services like AlloyDB Studio. Disable it
+      explicitly to disallow Google internal services as well.
     databaseFlags: Database flags. Set at the instance level. They are copied
       from the primary instance on secondary instance creation. Flags that
       have restrictions default to the value at primary instance on read
@@ -2643,6 +2656,28 @@ class Instance(_messages.Message):
     AVAILABILITY_TYPE_UNSPECIFIED = 0
     ZONAL = 1
     REGIONAL = 2
+
+  class DataApiAccessValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls whether the Data API is enabled for this instance.
+    When enabled, this allows authorized users to connect to the instance from
+    the public internet using the `executeSql` API, even for private IP
+    instances. If this is not specified, the data API is enabled by default
+    for Google internal services like AlloyDB Studio. Disable it explicitly to
+    disallow Google internal services as well.
+
+    Values:
+      DEFAULT_DATA_API_ENABLED_FOR_GOOGLE_CLOUD_SERVICES:
+        DEFAULT_DATA_API_ENABLED_FOR_GOOGLE_CLOUD_SERVICES is a default value
+        that allows Google internal services like AlloyDB Studio to access the
+        instance.
+      DISABLED: Data API access is disabled for this instance.
+      ENABLED: Data API access is enabled for this instance. For private IP
+        instances, this allows authorized users to access the instance from
+        the public internet using the ExecuteSql API.
+    """
+    DEFAULT_DATA_API_ENABLED_FOR_GOOGLE_CLOUD_SERVICES = 0
+    DISABLED = 1
+    ENABLED = 2
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""Required. The type of the instance. Specified at creation time.
@@ -2791,31 +2826,32 @@ class Instance(_messages.Message):
   clientConnectionConfig = _messages.MessageField('ClientConnectionConfig', 4)
   connectionPoolConfig = _messages.MessageField('ConnectionPoolConfig', 5)
   createTime = _messages.StringField(6)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 7)
-  deleteTime = _messages.StringField(8)
-  displayName = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  gceZone = _messages.StringField(11)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
-  ipAddress = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  machineConfig = _messages.MessageField('MachineConfig', 15)
-  maintenanceVersionName = _messages.StringField(16)
-  name = _messages.StringField(17)
-  networkConfig = _messages.MessageField('InstanceNetworkConfig', 18)
-  nodes = _messages.MessageField('Node', 19, repeated=True)
-  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 20)
-  outboundPublicIpAddresses = _messages.StringField(21, repeated=True)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 22)
-  publicIpAddress = _messages.StringField(23)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 24)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 25)
-  reconciling = _messages.BooleanField(26)
-  satisfiesPzs = _messages.BooleanField(27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  uid = _messages.StringField(29)
-  updateTime = _messages.StringField(30)
-  writableNode = _messages.MessageField('Node', 31)
+  dataApiAccess = _messages.EnumField('DataApiAccessValueValuesEnum', 7)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 8)
+  deleteTime = _messages.StringField(9)
+  displayName = _messages.StringField(10)
+  etag = _messages.StringField(11)
+  gceZone = _messages.StringField(12)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
+  ipAddress = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  machineConfig = _messages.MessageField('MachineConfig', 16)
+  maintenanceVersionName = _messages.StringField(17)
+  name = _messages.StringField(18)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 19)
+  nodes = _messages.MessageField('Node', 20, repeated=True)
+  observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 21)
+  outboundPublicIpAddresses = _messages.StringField(22, repeated=True)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 23)
+  publicIpAddress = _messages.StringField(24)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 25)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 26)
+  reconciling = _messages.BooleanField(27)
+  satisfiesPzs = _messages.BooleanField(28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  uid = _messages.StringField(30)
+  updateTime = _messages.StringField(31)
+  writableNode = _messages.MessageField('Node', 32)
 
 
 class InstanceNetworkConfig(_messages.Message):

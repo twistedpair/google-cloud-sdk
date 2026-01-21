@@ -107,7 +107,7 @@ class SecuresourcemanagerV1(base_api.BaseApiClient):
         method_id='securesourcemanager.projects.locations.instances.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['force', 'requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='SecuresourcemanagerProjectsLocationsInstancesDeleteRequest',

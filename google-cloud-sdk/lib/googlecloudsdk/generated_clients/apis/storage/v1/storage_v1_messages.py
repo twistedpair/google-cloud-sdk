@@ -2016,6 +2016,9 @@ class RelocateBucketRequest(_messages.Message):
   Fields:
     destinationCustomPlacementConfig: The bucket's new custom placement
       configuration if relocating to a Custom Dual Region.
+    destinationKmsKeyName: Resource name of a Cloud KMS key, of the form
+      projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key.
+      If set, is used to encrypt all objects in the destination bucket.
     destinationLocation: The new location the bucket will be relocated to.
     validateOnly: If true, validate the operation, but do not actually
       relocate the bucket.
@@ -2032,8 +2035,9 @@ class RelocateBucketRequest(_messages.Message):
     dataLocations = _messages.StringField(1, repeated=True)
 
   destinationCustomPlacementConfig = _messages.MessageField('DestinationCustomPlacementConfigValue', 1)
-  destinationLocation = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
+  destinationKmsKeyName = _messages.StringField(2)
+  destinationLocation = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class RewriteResponse(_messages.Message):

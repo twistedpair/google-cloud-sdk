@@ -1217,13 +1217,13 @@ class IssuancePolicy(_messages.Message):
     allowedKeyTypes: Optional. If any AllowedKeyType is specified, then the
       certificate request's public key must match one of the key types listed
       here. Otherwise, any key may be used.
-    backdateDuration: Optional. The duration to backdate all certificates
-      issued from this CaPool. If not set, the certificates will be issued
-      with a not_before_time of the issuance time (i.e. the current time). If
-      set, the certificates will be issued with a not_before_time of the
-      issuance time minus the backdate_duration. The not_after_time will be
-      adjusted to preserve the requested lifetime. The backdate_duration must
-      be less than or equal to 48 hours.
+    backdateDuration: Optional. If set, all certificates issued from this
+      CaPool will be backdated by this duration. The 'not_before_time' will be
+      the issuance time minus this backdate_duration, and the 'not_after_time'
+      will be adjusted to preserve the requested lifetime. The maximum
+      duration that a certificate can be backdated with these options is 48
+      hours in the past. This option cannot be set if
+      allow_requester_specified_not_before_time is set.
     baselineValues: Optional. A set of X.509 values that will be applied to
       all certificates issued through this CaPool. If a certificate request
       includes conflicting values for the same properties, they will be

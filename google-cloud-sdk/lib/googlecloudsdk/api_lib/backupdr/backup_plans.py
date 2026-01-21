@@ -36,6 +36,8 @@ class BackupPlansClient(util.BackupDrClientBase):
 
   def _ParseBackupRules(self, backup_rules):
     backup_rules_message = []
+    if backup_rules is None:
+      return []
     for backup_rule in backup_rules:
       standard_schedule = self.messages.StandardSchedule()
       standard_schedule.timeZone = (

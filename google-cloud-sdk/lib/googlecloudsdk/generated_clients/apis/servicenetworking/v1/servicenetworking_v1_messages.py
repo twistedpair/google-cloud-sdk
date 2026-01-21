@@ -3673,7 +3673,14 @@ class Service(_messages.Message):
     documentation: Additional API documentation.
     endpoints: Configuration for network endpoints. If this is empty, then an
       endpoint with the same name as the service is automatically generated to
-      service all defined APIs.
+      service all defined APIs. WARNING: Defining any entries in the
+      `endpoints` list disables the automatic generation of default endpoint
+      variations (e.g., `{service}.clients6.google.com`,
+      `content-{service}.googleapis.com`, and mTLS variants like
+      `{service}.mtls.googleapis.com`). To retain these default variations,
+      you are required to explicitly include your main service endpoint (e.g.,
+      `myservice.googleapis.com`) in this list alongside any other custom
+      endpoints (like REP, GFE, etc.).
     enums: A list of all enum types included in this API service. Enums
       referenced directly or indirectly by the `apis` are automatically
       included. Enums which are not referenced but shall be included should be
@@ -3688,7 +3695,7 @@ class Service(_messages.Message):
     logs: Defines the logs used by this service.
     metrics: Defines the metrics used by this service.
     monitoredResources: Defines the monitored resources used by this service.
-      This is required by the Service.monitoring and Service.logging
+      This is required by the `Service.monitoring` and `Service.logging`
       configurations.
     monitoring: Monitoring configuration.
     name: The service name, which is a DNS-like logical identifier for the

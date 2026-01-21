@@ -672,7 +672,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     self._out('\n')
 
-  def _PrintArgDefinition(self, arg, depth=0, single=False):
+  def _PrintArgDefinition(self, arg, depth=0, single=False, in_group=False):
     """Prints a positional or flag arg definition list item at depth."""
     usage = usage_text.GetArgUsage(arg, definition=True, markdown=True)
     if not usage:
@@ -682,7 +682,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
             usage=usage, depth=':' * (depth + _SECOND_LINE_OFFSET)
         )
     )
-    if arg.is_required and depth and not single:
+    if arg.is_required and (depth or in_group) and not single:
       modal = (
           '\n+\nThis {arg_type} argument must be specified if any of the other '
           'arguments in this group are specified.'
@@ -692,7 +692,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     details = self.GetArgDetails(arg, depth=depth).replace('\n\n', '\n+\n')
     self._out('\n{details}{modal}\n'.format(details=details, modal=modal))
 
-  def _PrintArgGroup(self, arg, depth=0, single=False):
+  def _PrintArgGroup(self, arg, depth=0, single=False, disable_header=False):
     """Prints an arg group definition list at depth."""
     args = (
         sorted(arg.arguments, key=usage_text.GetArgSortKey)
@@ -700,7 +700,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         else arg.arguments
     )
     heading = []
-    if arg.help or arg.is_mutex or arg.is_required:
+    if (arg.help or arg.is_mutex or arg.is_required) and not disable_header:
       if arg.help:
         heading.append(arg.help)
       if arg.disable_default_heading:
@@ -722,9 +722,20 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
               ':' * (depth + _SECOND_LINE_OFFSET), '\n+\n'.join(heading)
           ).replace('\n\n', '\n+\n'),
       )
+      if not (len(heading) == 1 and arg.help and heading[0] == arg.help):
+        depth += 1
       heading = None
-      depth += 1
 
+    has_non_group_arg = False
+    for group_arg in args:
+      if not group_arg.is_group and not group_arg.is_hidden:
+        has_non_group_arg = True
+        break
+
+    # If the group has help, it is a real group and not just a wrapper.
+    in_group = bool(arg.help)
+
+    first_arg = True
     for a in args:
       if a.is_hidden:
         continue
@@ -737,10 +748,45 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
             a = singleton
           else:
             single = True
-      if a.is_group:
+      if a.is_group and arg.is_mutex and has_non_group_arg:
+        if not first_arg:
+          intro = 'Or at least one of these can be specified:'
+          if a.is_mutex:
+            if a.is_required:
+              intro = 'Or exactly one of these must be specified:'
+            else:
+              intro = 'Or at most one of these can be specified:'
+          elif a.is_required:
+            intro = 'Or at least one of these must be specified:'
+
+          self._out(
+              '\n{0} {1}\n\n'.format(
+                  ':' * (depth + _SECOND_LINE_OFFSET),
+                  '\n+\n'.join([intro]),
+              ).replace('\n\n', '\n+\n'),
+          )
+
+          next_depth = depth + 1
+          if a.help:
+            self._out(
+                '\n{0} {1}\n\n'.format(
+                    ':' * (next_depth + _SECOND_LINE_OFFSET),
+                    '\n+\n'.join([a.help]),
+                ).replace('\n\n', '\n+\n'),
+            )
+
+          self._PrintArgGroup(
+              a, depth=next_depth, single=single, disable_header=True
+          )
+        else:
+          self._PrintArgGroup(a, depth=depth + 1, single=single)
+      elif a.is_group:
         self._PrintArgGroup(a, depth=depth, single=single)
       else:
-        self._PrintArgDefinition(a, depth=depth, single=single)
+        self._PrintArgDefinition(
+            a, depth=depth, single=single, in_group=in_group
+        )
+      first_arg = False
 
   def PrintPositionalDefinition(self, arg, depth=0):
     self._out(

@@ -138,6 +138,7 @@ class Client:
       description,
       threat_prevention_profile=None,
       url_filtering_profile=None,
+      wildfire_analysis_profile=None,
       custom_mirroring_profile=None,
       custom_intercept_profile=None,
       labels=None,
@@ -151,6 +152,8 @@ class Client:
     )
     if hasattr(security_profile_group, 'urlFilteringProfile'):
       security_profile_group.urlFilteringProfile = url_filtering_profile
+    if hasattr(security_profile_group, 'wildfireAnalysisProfile'):
+      security_profile_group.wildfireAnalysisProfile = wildfire_analysis_profile
     # v1 API doesn't have the new field yet, so don't assign it.
     if hasattr(security_profile_group, 'customMirroringProfile'):
       security_profile_group.customMirroringProfile = custom_mirroring_profile

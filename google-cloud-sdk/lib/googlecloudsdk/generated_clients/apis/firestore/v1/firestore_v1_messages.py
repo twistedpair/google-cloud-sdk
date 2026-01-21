@@ -3384,7 +3384,16 @@ class GoogleFirestoreAdminV1ListUserCredsResponse(_messages.Message):
 
 
 class GoogleFirestoreAdminV1LocationMetadata(_messages.Message):
-  r"""The metadata message for google.cloud.location.Location.metadata."""
+  r"""The metadata message for google.cloud.location.Location.metadata.
+
+  Fields:
+    availableStoragePlacements: The storage placements available in the
+      location. When the location represents a Standard Managed Multi-Region
+      (SMMR) like "us", this field lists the available Google-Managed Multi-
+      Regions (GMMRs) within it, such as "nam5" or "eur3".
+  """
+
+  availableStoragePlacements = _messages.StringField(1, repeated=True)
 
 
 class GoogleFirestoreAdminV1PitrSnapshot(_messages.Message):

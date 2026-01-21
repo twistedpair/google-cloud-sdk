@@ -2146,7 +2146,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.users.update',
         ordered_params=['project', 'instance'],
         path_params=['instance', 'project'],
-        query_params=['databaseRoles', 'host', 'name', 'revokeExistingRoles'],
+        query_params=['databaseRoles', 'host', 'name', 'revokeExistingRoles', 'serverRoles'],
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/users',
         request_field='user',
         request_type_name='SqlUsersUpdateRequest',

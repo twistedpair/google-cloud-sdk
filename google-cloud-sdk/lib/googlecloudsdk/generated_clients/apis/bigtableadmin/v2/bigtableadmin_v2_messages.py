@@ -341,9 +341,9 @@ class BigtableadminOperationsProjectsOperationsListRequest(_messages.Message):
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -736,6 +736,28 @@ class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
 
   pageToken = _messages.StringField(1)
   parent = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesClustersMemoryLayersListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersMemoryLayersListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of memory layers to return. The
+      service may return fewer than this value.
+    pageToken: Optional. A page token, received from a previous
+      `ListMemoryLayers` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListMemoryLayers`
+      must match the call that provided the page token.
+    parent: Required. The unique name of the cluster for which a list of
+      memory layers is requested. Values are of the form
+      `projects/{project}/instances/{instance}/clusters/{cluster}`. Use
+      `{cluster} = '-'` to list MemoryLayers for all Clusters in an instance,
+      e.g., `projects/myproject/instances/myinstance/clusters/-`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest(_messages.Message):
@@ -3688,6 +3710,25 @@ class ListMaterializedViewsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMemoryLayersResponse(_messages.Message):
+  r"""Response message for BigtableInstanceAdmin.ListMemoryLayers.
+
+  Fields:
+    failedLocations: Locations from which MemoryLayer information could not be
+      retrieved, due to an outage or some other transient condition.
+      MemoryLayers from these locations may be missing from `memory_layers`,
+      or may only have partial information returned. Values are of the form
+      `projects//locations/`
+    memoryLayers: The list of requested memory layers.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  failedLocations = _messages.StringField(1, repeated=True)
+  memoryLayers = _messages.MessageField('MemoryLayer', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -3697,8 +3738,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)

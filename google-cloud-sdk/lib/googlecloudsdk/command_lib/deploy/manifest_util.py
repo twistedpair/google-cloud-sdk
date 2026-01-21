@@ -645,7 +645,7 @@ _PARSE_TRANSFORMS = [
         replace=_ConvertYamlVerifyConfigToProto,
     ),
     TransformConfig(
-        kinds=[ResourceKind.DELIVERY_PIPELINE],
+        kinds=[ResourceKind.DELIVERY_PIPELINE, ResourceKind.CUSTOM_TARGET_TYPE],
         fields=[
             'serialPipeline.stages[].strategy.standard.predeploy.tasks[]',
             'serialPipeline.stages[].strategy.standard.postdeploy.tasks[]',
@@ -659,6 +659,8 @@ _PARSE_TRANSFORMS = [
             'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].postdeploy.tasks[]',
             'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].verifyConfig.tasks[]',
             'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].analysis.customChecks[].task',
+            'tasks.render',
+            'tasks.deploy',
         ],
         replace=_ConvertYamlTaskToProto,
         schema={
@@ -784,7 +786,7 @@ def _ConvertProtoTaskToYaml(
   del transform_context  # Unused by _ConvertProtoTaskToYaml.
   new_task = {}
   for task_type in TaskType:
-    if task[task_type.value] is not None:
+    if task.get(task_type.value) is not None:
       new_task['type'] = task_type.value
       task_data = task[task_type.value]
       for k, v in task_data.items():
@@ -922,7 +924,7 @@ _EXPORT_TRANSFORMS = [
         replace=ConvertTimeProtoToString,
     ),
     TransformConfig(
-        kinds=[ResourceKind.DELIVERY_PIPELINE],
+        kinds=[ResourceKind.DELIVERY_PIPELINE, ResourceKind.CUSTOM_TARGET_TYPE],
         fields=[
             'serialPipeline.stages[].strategy.standard.predeploy.tasks[]',
             'serialPipeline.stages[].strategy.standard.postdeploy.tasks[]',
@@ -936,6 +938,8 @@ _EXPORT_TRANSFORMS = [
             'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].postdeploy.tasks[]',
             'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].verifyConfig.tasks[]',
             'serialPipeline.stages[].strategy.canary.customCanaryDeployment.phaseConfigs[].analysis.customChecks[].task',
+            'tasks.render',
+            'tasks.deploy',
         ],
         replace=_ConvertProtoTaskToYaml,
     ),

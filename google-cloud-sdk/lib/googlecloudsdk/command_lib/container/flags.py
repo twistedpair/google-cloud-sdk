@@ -2173,6 +2173,26 @@ The maintenance interval type must be either 'PERIODIC' or 'AS_NEEDED'
   )
 
 
+def AddSubnetworkFlag(parser, hidden=False):
+  """Adds a --subnetwork flag to parser."""
+  help_text = """\
+The subnetwork to use for nodes. This subnetwork must exist in the cluster's
+list of additional subnetworks.
+
+If not specified, the node pool's node IP addresses are allocated from the
+least utilized subnet and its secondary range. See details at
+https://cloud.google.com/kubernetes-engine/docs/how-to/multi-subnet-clusters#create-node-pool
+"""
+  parser.add_argument(
+      '--subnetwork',
+      help=help_text,
+      hidden=hidden,
+      type=str,
+      default=None,
+      metavar='SUBNETWORK',
+  )
+
+
 def AddNodePoolNameArg(parser, help_text):
   """Adds a name flag to the given parser.
 

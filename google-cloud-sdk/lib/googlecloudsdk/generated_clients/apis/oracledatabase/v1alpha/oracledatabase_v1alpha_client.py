@@ -2325,6 +2325,60 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Start(self, request, global_params=None):
+      r"""Starts a single GoldenGateDeployment.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsGoldenGateDeploymentsStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/goldenGateDeployments/{goldenGateDeploymentsId}:start',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.goldenGateDeployments.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:start',
+        request_field='startGoldenGateDeploymentRequest',
+        request_type_name='OracledatabaseProjectsLocationsGoldenGateDeploymentsStartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops a single GoldenGateDeployment.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsGoldenGateDeploymentsStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/goldenGateDeployments/{goldenGateDeploymentsId}:stop',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.goldenGateDeployments.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:stop',
+        request_field='stopGoldenGateDeploymentRequest',
+        request_type_name='OracledatabaseProjectsLocationsGoldenGateDeploymentsStopRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOdbNetworksOdbSubnetsService(base_api.BaseApiService):
     """Service class for the projects_locations_odbNetworks_odbSubnets resource."""
 

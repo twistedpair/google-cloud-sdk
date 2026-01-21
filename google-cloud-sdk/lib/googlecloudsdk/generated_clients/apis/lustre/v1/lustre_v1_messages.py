@@ -200,7 +200,7 @@ class Instance(_messages.Message):
     network: Required. Immutable. The full name of the VPC network to which
       the instance is connected. Must be in the format
       `projects/{project_id}/global/networks/{network_name}`.
-    perUnitStorageThroughput: Required. The throughput of the instance in MBps
+    perUnitStorageThroughput: Optional. The throughput of the instance in MBps
       per TiB. Valid values are 125, 250, 500, 1000. See [Performance tiers
       and maximum storage capacities](https://cloud.google.com/managed-
       lustre/docs/create-instance#performance-tiers) for more information.

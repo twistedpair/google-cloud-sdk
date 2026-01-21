@@ -60,6 +60,9 @@ properties:
   salesforceProfile:
     description: Salesforce Connection Profile configuration.
     $ref: SalesforceProfile.yaml
+  spannerProfile:
+    description: Spanner Connection Profile configuration.
+    $ref: SpannerProfile.yaml
   sqlServerProfile:
     description: SQLServer Connection Profile configuration.
     $ref: SqlServerProfile.yaml

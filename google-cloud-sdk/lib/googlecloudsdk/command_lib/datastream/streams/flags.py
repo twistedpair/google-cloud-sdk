@@ -142,6 +142,32 @@ _SALESFORCE_EXCLUDED_OBJECTS_HELP_TEXT = """\
   ```
 """
 
+_SPANNER_EXCLUDED_OBJECTS_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the Spanner data sources to avoid backfilling.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+      "schemas": [
+        {
+          "schema": "SAMPLE_SCHEMA",
+          "tables": [
+            {
+              "table": "SAMPLE_TABLE",
+              "columns": [
+                {
+                  "column": "SAMPLE_COLUMN",
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ```
+"""
+
 _MONGODB_EXCLUDED_OBJECTS_HELP_TEXT = """\
   Path to a YAML (or JSON) file containing the MongoDB data sources to avoid backfilling.
 
@@ -290,6 +316,10 @@ def AddBackfillStrategyGroup(parser, required=True):
   backfill_all_excluded_objects.add_argument(
       '--salesforce-excluded-objects',
       help=_SALESFORCE_EXCLUDED_OBJECTS_HELP_TEXT,
+  )
+  backfill_all_excluded_objects.add_argument(
+      '--spanner-excluded-objects',
+      help=_SPANNER_EXCLUDED_OBJECTS_HELP_TEXT,
   )
   backfill_all_excluded_objects.add_argument(
       '--mongodb-excluded-objects',

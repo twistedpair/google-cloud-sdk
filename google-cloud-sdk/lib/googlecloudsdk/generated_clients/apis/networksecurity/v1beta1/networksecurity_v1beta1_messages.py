@@ -3953,8 +3953,9 @@ class NetworksecurityOrganizationsLocationsSecurityProfileGroupsListRequest(_mes
   object.
 
   Fields:
-    pageSize: Maximum number of SecurityProfileGroups to return per call.
-    pageToken: The value returned by the last
+    pageSize: Optional. Maximum number of SecurityProfileGroups to return per
+      call.
+    pageToken: Optional. The value returned by the last
       `ListSecurityProfileGroupsResponse` Indicates that this is a
       continuation of a prior `ListSecurityProfileGroups` call, and that the
       system should return the next page of data.
@@ -4043,10 +4044,11 @@ class NetworksecurityOrganizationsLocationsSecurityProfilesListRequest(_messages
   object.
 
   Fields:
-    pageSize: Maximum number of SecurityProfiles to return per call.
-    pageToken: The value returned by the last `ListSecurityProfilesResponse`
-      Indicates that this is a continuation of a prior `ListSecurityProfiles`
-      call, and that the system should return the next page of data.
+    pageSize: Optional. Maximum number of SecurityProfiles to return per call.
+    pageToken: Optional. The value returned by the last
+      `ListSecurityProfilesResponse` Indicates that this is a continuation of
+      a prior `ListSecurityProfiles` call, and that the system should return
+      the next page of data.
     parent: Required. The project or organization and location from which the
       SecurityProfiles should be listed, specified in the format
       `projects|organizations/*/locations/{location}`.

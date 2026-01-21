@@ -326,11 +326,11 @@ class ClusterUtil:
         not self.args.IsSpecified("on_demand_instances")
         and not self.args.IsSpecified("spot_instances")
         and not self.args.IsSpecified("reserved_instances")
-        and not self.args.IsSpecified("dws_flex_instances")
+        and not self.args.IsSpecified("flex_start_instances")
     ):
       raise exceptions.ToolException(
           "At least one of on_demand_instances, spot_instances,"
-          " reserved_instances, or dws_flex_instances flag must be specified."
+          " reserved_instances, or flex_start_instances flag must be specified."
       )
     compute_ids = set()
     compute = self.message_module.Cluster.ComputeResourcesValue()
@@ -364,14 +364,14 @@ class ClusterUtil:
                 value=self._MakeReservedComputeResource(instance),
             )
         )
-    if self.args.IsSpecified("dws_flex_instances"):
-      for instance in self.args.dws_flex_instances:
+    if self.args.IsSpecified("flex_start_instances"):
+      for instance in self.args.flex_start_instances:
         compute_id = instance.get("id")
         compute_ids.add(compute_id)
         compute.additionalProperties.append(
             self.message_module.Cluster.ComputeResourcesValue.AdditionalProperty(
                 key=compute_id,
-                value=self._MakeDwsFlexComputeResource(instance),
+                value=self._MakeFlexStartComputeResource(instance),
             )
         )
     if len(compute_ids) != len(compute.additionalProperties):
@@ -460,7 +460,7 @@ class ClusterUtil:
       disk.sizeGb = 100
     return disk
 
-  def MakeBootDisk(self, machine_type: str) -> Any:
+  def MakeBootDisk(self, machine_type: str, image: str = None) -> Any:
     """Returns BootDisk message for login node."""
     if machine_type.startswith(
         ("a3-megagpu", "a3-ultragpu", "a4-highgpu", "a4x-highgpu")
@@ -471,6 +471,7 @@ class ClusterUtil:
     return self.message_module.BootDisk(
         type=disk_type,
         sizeGb=100,
+        image=image,
     )
 
   def MakeClusterPatchFromConfig(self):
@@ -861,14 +862,14 @@ class ClusterUtil:
             attr_exception_message=f"Reserved {ex_msg_not_found}",
         )
         is_compute_updated = True
-    if self.args.IsSpecified("remove_dws_flex_instances"):
-      for compute_id in self.args.remove_dws_flex_instances:
+    if self.args.IsSpecified("remove_flex_start_instances"):
+      for compute_id in self.args.remove_flex_start_instances:
         self._RemoveKeyByAttrFromDictSpec(
             key=compute_id,
             dict_spec=compute,
-            attrs=["newDwsFlexInstances", "newFlexStartInstances"],
+            attrs=["newFlexStartInstances"],
             key_exception_message=ex_msg_not_found,
-            attr_exception_message=f"DWS Flex {ex_msg_not_found}",
+            attr_exception_message=f"Flex Start {ex_msg_not_found}",
         )
         is_compute_updated = True
     if self.args.IsSpecified("add_on_demand_instances"):
@@ -898,12 +899,12 @@ class ClusterUtil:
             exception_message=ex_msg_already_exist,
         )
         is_compute_updated = True
-    if self.args.IsSpecified("add_dws_flex_instances"):
-      for instance in self.args.add_dws_flex_instances:
+    if self.args.IsSpecified("add_flex_start_instances"):
+      for instance in self.args.add_flex_start_instances:
         self._AddKeyToDictSpec(
             key=instance.get("id"),
             dict_spec=compute,
-            value=self._MakeDwsFlexComputeResource(instance),
+            value=self._MakeFlexStartComputeResource(instance),
             exception_message=ex_msg_already_exist,
         )
         is_compute_updated = True
@@ -1037,12 +1038,14 @@ class ClusterUtil:
         login_nodes.count = count
       if (startup_script := login_node_patch.get("startupScript")) is not None:
         login_nodes.startupScript = self._GetBashScript(startup_script)
-      if (boot_disk := login_node_patch.get("bootDisk")) is not None:
-        login_nodes.bootDisk = self.message_module.BootDisk(
-            type=boot_disk.get("type"),
-            sizeGb=boot_disk.get("sizeGb"),
-            image=boot_disk.get("image"),
-        )
+      if (boot_disk_patch := login_node_patch.get("bootDisk")) is not None:
+        boot_disk = login_nodes.bootDisk
+        if not boot_disk:
+          boot_disk = self.MakeBootDisk(login_nodes.machineType)
+        boot_disk.type = boot_disk_patch.get("type", boot_disk.type)
+        boot_disk.sizeGb = boot_disk_patch.get("sizeGb", boot_disk.sizeGb)
+        boot_disk.image = boot_disk_patch.get("image", boot_disk.image)
+        login_nodes.bootDisk = boot_disk
       slurm.loginNodes = login_nodes
       self.update_mask.add("orchestrator.slurm.login_nodes")
 
@@ -1069,12 +1072,9 @@ class ClusterUtil:
     if boot_disk.sizeGb is None:
       boot_disk.sizeGb = default_boot_disk.sizeGb
 
-    if "type" in boot_disk_patch:
-      boot_disk.type = boot_disk_patch["type"]
-    if "sizeGb" in boot_disk_patch:
-      boot_disk.sizeGb = boot_disk_patch["sizeGb"]
-    if "image" in boot_disk_patch:
-      boot_disk.image = boot_disk_patch["image"]
+    boot_disk.type = boot_disk_patch.get("type", boot_disk.type)
+    boot_disk.sizeGb = boot_disk_patch.get("sizeGb", boot_disk.sizeGb)
+    boot_disk.image = boot_disk_patch.get("image", boot_disk.image)
 
     # Assign the patched bootDisk to computeInstance.
     if not existing_node_set.computeInstance:
@@ -1135,8 +1135,8 @@ class ClusterUtil:
       instances.extend(self.args.spot_instances)
     if self.args.IsSpecified("reserved_instances"):
       instances.extend(self.args.reserved_instances)
-    if self.args.IsSpecified("dws_flex_instances"):
-      instances.extend(self.args.dws_flex_instances)
+    if self.args.IsSpecified("flex_start_instances"):
+      instances.extend(self.args.flex_start_instances)
     for instance in instances:
       if instance.get("id") == compute_id:
         return instance.get("machineType")
@@ -1173,8 +1173,6 @@ class ClusterUtil:
       return compute_resource.config.newSpotInstances.machineType
     if compute_resource.config.newReservedInstances:
       return compute_resource.config.newReservedInstances.machineType
-    if compute_resource.config.newDwsFlexInstances:
-      return compute_resource.config.newDwsFlexInstances.machineType
     if compute_resource.config.newFlexStartInstances:
       return compute_resource.config.newFlexStartInstances.machineType
     raise exceptions.ToolException("Compute instances type not supported.")
@@ -1182,6 +1180,8 @@ class ClusterUtil:
   def _GetStorageConfigs(self, cluster):
     """Returns the storage configs."""
     storage_configs: list[self.message_module.StorageConfig] = []
+    if not cluster.storageResources:
+      return storage_configs
     sorted_storages = sorted(
         cluster.storageResources.additionalProperties,
         key=lambda storage: storage.key,
@@ -1341,11 +1341,11 @@ class ClusterUtil:
         ),
     )
 
-  def _MakeDwsFlexComputeResource(self, instance):
-    """Makes a cluster compute resource message for DWS Flex instances."""
+  def _MakeFlexStartComputeResource(self, instance):
+    """Makes a cluster compute resource message for flex start instances."""
     return self.message_module.ComputeResource(
         config=self.message_module.ComputeResourceConfig(
-            newDwsFlexInstances=self.message_module.NewDWSFlexInstancesConfig(
+            newFlexStartInstances=self.message_module.NewFlexStartInstancesConfig(
                 zone=instance.get("zone"),
                 machineType=instance.get("machineType"),
                 maxDuration=instance.get("maxDuration"),

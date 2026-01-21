@@ -14,7 +14,6 @@
 # limitations under the License.
 """Flags and helpers for the Datastream related commands."""
 
-
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -39,16 +38,19 @@ def AddMysqlProfileGroup(parser, required=True):
   mysql_profile.add_argument(
       '--mysql-hostname',
       help="""IP or hostname of the MySQL source database.""",
-      required=required)
+      required=required,
+  )
   mysql_profile.add_argument(
       '--mysql-port',
       help="""Network port of the MySQL source database.""",
       required=required,
-      type=int)
+      type=int,
+  )
   mysql_profile.add_argument(
       '--mysql-username',
       help="""Username Datastream will use to connect to the database.""",
-      required=required)
+      required=required,
+  )
   password_group = mysql_profile.add_group(required=required, mutex=True)
   password_group.add_argument(
       '--mysql-password',
@@ -57,11 +59,13 @@ def AddMysqlProfileGroup(parser, required=True):
           connect to the database.
           This field is not returned on request, and the value is encrypted
           when stored in Datastream.""",
-      default='')
+      default='',
+  )
   password_group.add_argument(
       '--mysql-prompt-for-password',
       action='store_true',
-      help='Prompt for the password used to connect to the database.')
+      help='Prompt for the password used to connect to the database.',
+  )
   password_group.add_argument(
       '--mysql-secret-manager-stored-password',
       help=(
@@ -77,19 +81,22 @@ def AddMysqlProfileGroup(parser, required=True):
           x509 PEM-encoded certificate of the CA that signed the source database
           server's certificate. The replica will use this certificate to verify
           it's connecting to the right host.""",
-      required=required)
+      required=required,
+  )
   ssl_config.add_argument(
       '--client-certificate',
       help="""\
           x509 PEM-encoded certificate that will be used by the replica to
           authenticate against the source database server.""",
-      required=required)
+      required=required,
+  )
   ssl_config.add_argument(
       '--client-key',
       help="""\
           Unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with
           the Client Certificate.""",
-      required=required)
+      required=required,
+  )
 
 
 def AddOracleProfileGroup(parser, required=True):
@@ -98,20 +105,24 @@ def AddOracleProfileGroup(parser, required=True):
   oracle_profile.add_argument(
       '--oracle-hostname',
       help="""IP or hostname of the oracle source database.""",
-      required=required)
+      required=required,
+  )
   oracle_profile.add_argument(
       '--oracle-port',
       help="""Network port of the oracle source database.""",
       required=required,
-      type=int)
+      type=int,
+  )
   oracle_profile.add_argument(
       '--oracle-username',
       help="""Username Datastream will use to connect to the database.""",
-      required=required)
+      required=required,
+  )
   oracle_profile.add_argument(
       '--database-service',
       help="""Database service for the Oracle connection.""",
-      required=required)
+      required=required,
+  )
   password_group = oracle_profile.add_group(required=required, mutex=True)
   password_group.add_argument(
       '--oracle-password',
@@ -120,11 +131,13 @@ def AddOracleProfileGroup(parser, required=True):
           connect to the database.
           This field is not returned on request, and the value is encrypted
           when stored in Datastream.""",
-      default='')
+      default='',
+  )
   password_group.add_argument(
       '--oracle-prompt-for-password',
       action='store_true',
-      help='Prompt for the password used to connect to the database.')
+      help='Prompt for the password used to connect to the database.',
+  )
   password_group.add_argument(
       '--oracle-secret-manager-stored-password',
       help=(
@@ -158,20 +171,24 @@ def AddPostgresqlProfileGroup(parser, required=True):
   postgresql_profile.add_argument(
       '--postgresql-hostname',
       help="""IP or hostname of the PostgreSQL source database.""",
-      required=required)
+      required=required,
+  )
   postgresql_profile.add_argument(
       '--postgresql-port',
       help="""Network port of the PostgreSQL source database.""",
       required=required,
-      type=int)
+      type=int,
+  )
   postgresql_profile.add_argument(
       '--postgresql-username',
       help="""Username Datastream will use to connect to the database.""",
-      required=required)
+      required=required,
+  )
   postgresql_profile.add_argument(
       '--postgresql-database',
       help="""Database service for the PostgreSQL connection.""",
-      required=required)
+      required=required,
+  )
   password_group = postgresql_profile.add_group(required=required, mutex=True)
   password_group.add_argument(
       '--postgresql-password',
@@ -180,11 +197,13 @@ def AddPostgresqlProfileGroup(parser, required=True):
           connect to the database.
           This field is not returned on request, and the value is encrypted
           when stored in Datastream.""",
-      default='')
+      default='',
+  )
   password_group.add_argument(
       '--postgresql-prompt-for-password',
       action='store_true',
-      help='Prompt for the password used to connect to the database.')
+      help='Prompt for the password used to connect to the database.',
+  )
   password_group.add_argument(
       '--postgresql-secret-manager-stored-password',
       help=(
@@ -201,7 +220,8 @@ def AddPostgresqlProfileGroup(parser, required=True):
           x509 PEM-encoded certificate of the CA that signed the source database
           server's certificate. The replica will use this certificate to verify
           it's connecting to the right host.""",
-      required=required)
+      required=required,
+  )
   ssl_config.add_argument(
       '--postgresql-server-certificate-hostname',
       help="""\
@@ -217,13 +237,15 @@ def AddPostgresqlProfileGroup(parser, required=True):
       help="""\
           x509 PEM-encoded certificate that will be used by the replica to
           authenticate against the source database server.""",
-      required=required)
+      required=required,
+  )
   client_ssl_config.add_argument(
       '--postgresql-client-key',
       help="""\
           Unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with
           the Client Certificate.""",
-      required=required)
+      required=required,
+  )
 
 
 def AddSqlServerProfileGroup(parser, required=True):
@@ -380,6 +402,47 @@ def AddSalesforceProfileGroup(parser, required=True):
   )
 
 
+def AddSpannerProfileCreateGroup(parser):
+  """Adds necessary Spanner profile flags to the given parser.
+
+  Args:
+    parser: The parser for the command line flags.
+  """
+  spanner_profile = parser.add_group()
+  spanner_profile.add_argument(
+      '--spanner-database',
+      help=(
+          'The full project and resource path for Spanner database. Format:'
+          ' projects/{project}/instances/{instance}/databases/{database}.'
+      ),
+      required=True,
+  )
+
+  spanner_profile.add_argument(
+      '--spanner-host',
+      help=(
+          'The regional Spanner endpoint. Format:'
+          ' https://spanner.{region}.rep.googleapis.com.'
+      ),
+  )
+
+
+def AddSpannerProfileUpdateGroup(parser):
+  """Adds necessary Spanner profile flags to the given parser.
+
+  Args:
+    parser: The parser for the command line flags.
+  """
+  spanner_profile = parser.add_group()
+  spanner_profile.add_argument(
+      '--spanner-host',
+      help=(
+          'The regional Spanner endpoint. Format:'
+          ' https://spanner.{region}.rep.googleapis.com.'
+      ),
+  )
+
+
 def AddGcsProfileGroup(parser, release_track, required=True):
   """Adds necessary GCS profile flags to the given parser."""
   gcs_profile = parser.add_group()
@@ -392,12 +455,14 @@ def AddGcsProfileGroup(parser, release_track, required=True):
       bucket_field_name,
       help="""The full project and resource path for Cloud Storage
       bucket including the name.""",
-      required=required)
+      required=required,
+  )
 
   gcs_profile.add_argument(
       '--root-path',
       help="""The root path inside the Cloud Storage bucket.""",
-      required=False)
+      required=False,
+  )
 
 
 def AddMongodbProfileGroup(parser, required=True):
@@ -476,13 +541,15 @@ def AddMongodbProfileGroup(parser, required=True):
       '--mongodb-tls',
       help="""Enable Transport Layer Security for the monogodb connection.""",
       action='store_true',
-      default=False)
+      default=False,
+  )
   ssl_config.add_argument(
       '--mongodb-ca-certificate',
       help="""\
       x509 PEM-encoded certificate of the CA that signed the source database
       server's certificate. The replica will use this certificate to verify
-      it's connecting to the right host.""")
+      it's connecting to the right host.""",
+  )
 
 
 def AddDepthGroup(parser):
@@ -535,15 +602,15 @@ def AddRdbmsGroup(parser):
   rdbms_parser = parser.add_group(mutex=True)
   rdbms_parser.add_argument(
       '--mysql-rdbms-file',
-      help="""Path to a YAML (or JSON) file containing the MySQL RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin. """
+      help="""Path to a YAML (or JSON) file containing the MySQL RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin. """,
   )
   rdbms_parser.add_argument(
       '--oracle-rdbms-file',
-      help="""Path to a YAML (or JSON) file containing the Oracle RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
+      help="""Path to a YAML (or JSON) file containing the Oracle RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin.""",
   )
   rdbms_parser.add_argument(
       '--postgresql-rdbms-file',
-      help="""Path to a YAML (or JSON) file containing the PostgreSQL RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
+      help="""Path to a YAML (or JSON) file containing the PostgreSQL RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin.""",
   )
   rdbms_parser.add_argument(
       '--sqlserver-rdbms-file',
@@ -558,4 +625,5 @@ def AddValidationGroup(parser, verb):
       '--force',
       help="""%s the connection profile without validating it.""" % verb,
       action='store_true',
-      default=False)
+      default=False,
+  )

@@ -14976,6 +14976,67 @@ class GoogleCloudDialogflowV2IngestContextReferencesResponse(_messages.Message):
   ingestedContextReferences = _messages.MessageField('IngestedContextReferencesValue', 1)
 
 
+class GoogleCloudDialogflowV2IngestedContextReferenceDebugInfo(_messages.Message):
+  r"""Debug information related to ingested context reference.
+
+  Fields:
+    contextReferenceRetrieved: The status of context_reference retrieval from
+      database.
+    ingestedParametersDebugInfo: Parameters ingested from the context
+      reference.
+    projectNotAllowlisted: Indicates if the project is allowlisted to use
+      ingested context reference.
+  """
+
+  contextReferenceRetrieved = _messages.BooleanField(1)
+  ingestedParametersDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2IngestedContextReferenceDebugInfoIngestedParameterDebugInfo', 2, repeated=True)
+  projectNotAllowlisted = _messages.BooleanField(3)
+
+
+class GoogleCloudDialogflowV2IngestedContextReferenceDebugInfoIngestedParameterDebugInfo(_messages.Message):
+  r"""Debug information related to ingested parameters from context reference.
+
+  Enums:
+    IngestionStatusValueValuesEnum: The ingestion status for this specific
+      parameter.
+
+  Fields:
+    ingestionStatus: The ingestion status for this specific parameter.
+    parameter: The name of the parameter in the context reference.
+  """
+
+  class IngestionStatusValueValuesEnum(_messages.Enum):
+    r"""The ingestion status for this specific parameter.
+
+    Values:
+      INGESTION_STATUS_UNSPECIFIED: Default value, indicates that the
+        ingestion status is not specified.
+      INGESTION_STATUS_SUCCEEDED: Indicates that the parameter was
+        successfully ingested.
+      INGESTION_STATUS_CONTEXT_NOT_AVAILABLE: Indicates that the parameter was
+        not available for ingestion.
+      INGESTION_STATUS_PARSE_FAILED: Indicates that there was a failure
+        parsing the parameter content.
+      INGESTION_STATUS_INVALID_ENTRY: Indicates that the context reference had
+        an unexpected number of content entries as Context reference should
+        only have one entry.
+      INGESTION_STATUS_INVALID_FORMAT: Indicates that the context reference
+        content was not in the expected format (e.g., JSON).
+      INGESTION_STATUS_LANGUAGE_MISMATCH: Indicates that the context reference
+        language does not match the conversation language.
+    """
+    INGESTION_STATUS_UNSPECIFIED = 0
+    INGESTION_STATUS_SUCCEEDED = 1
+    INGESTION_STATUS_CONTEXT_NOT_AVAILABLE = 2
+    INGESTION_STATUS_PARSE_FAILED = 3
+    INGESTION_STATUS_INVALID_ENTRY = 4
+    INGESTION_STATUS_INVALID_FORMAT = 5
+    INGESTION_STATUS_LANGUAGE_MISMATCH = 6
+
+  ingestionStatus = _messages.EnumField('IngestionStatusValueValuesEnum', 1)
+  parameter = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2InitializeEncryptionSpecMetadata(_messages.Message):
   r"""Metadata for initializing a location-level encryption specification.
 
@@ -16034,6 +16095,8 @@ class GoogleCloudDialogflowV2KnowledgeAssistAnswer(_messages.Message):
   Fields:
     answerRecord: The name of the answer record. Format:
       `projects//locations//answer Records/`.
+    knowledgeAssistDebugInfo: Debug information related to Knowledge Assist
+      feature.
     suggestedQuery: The query suggested based on the context. Suggestion is
       made only if it is different from the previous suggestion.
     suggestedQueryAnswer: The answer generated for the suggested query.
@@ -16042,8 +16105,9 @@ class GoogleCloudDialogflowV2KnowledgeAssistAnswer(_messages.Message):
   """
 
   answerRecord = _messages.StringField(1)
-  suggestedQuery = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerSuggestedQuery', 2)
-  suggestedQueryAnswer = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswer', 3)
+  knowledgeAssistDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistDebugInfo', 2)
+  suggestedQuery = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerSuggestedQuery', 3)
+  suggestedQueryAnswer = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswer', 4)
 
 
 class GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswer(_messages.Message):
@@ -16134,6 +16198,180 @@ class GoogleCloudDialogflowV2KnowledgeAssistAnswerSuggestedQuery(_messages.Messa
   """
 
   queryText = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2KnowledgeAssistDebugInfo(_messages.Message):
+  r"""Debug information related to Knowledge Assist feature.
+
+  Enums:
+    DatastoreResponseReasonValueValuesEnum: Response reason from datastore
+      which indicates data serving status or answer quality degradation.
+    QueryCategorizationFailureReasonValueValuesEnum: Reason for query
+      categorization.
+    QueryGenerationFailureReasonValueValuesEnum: Reason for query generation.
+
+  Fields:
+    datastoreResponseReason: Response reason from datastore which indicates
+      data serving status or answer quality degradation.
+    ingestedContextReferenceDebugInfo: Information about parameters ingested
+      for search knowledge.
+    knowledgeAssistBehavior: Configured behaviors for Knowedge Assist.
+    queryCategorizationFailureReason: Reason for query categorization.
+    queryGenerationFailureReason: Reason for query generation.
+    serviceLatency: The latency of the service.
+  """
+
+  class DatastoreResponseReasonValueValuesEnum(_messages.Enum):
+    r"""Response reason from datastore which indicates data serving status or
+    answer quality degradation.
+
+    Values:
+      DATASTORE_RESPONSE_REASON_UNSPECIFIED: Default value.
+      NONE: No specific response reason from datastore.
+      SEARCH_OUT_OF_QUOTA: Search is blocked due to out of quota.
+      SEARCH_EMPTY_RESULTS: Search returns empty results.
+      ANSWER_GENERATION_GEN_AI_DISABLED: Generative AI is disabled.
+      ANSWER_GENERATION_OUT_OF_QUOTA: Answer generation is blocked due to out
+        of quota.
+      ANSWER_GENERATION_ERROR: Answer generation encounters an error.
+      ANSWER_GENERATION_NOT_ENOUGH_INFO: Answer generation does not have
+        enough information to generate answer.
+      ANSWER_GENERATION_RAI_FAILED: Answer generation is blocked by RAI
+        (Responsible AI) failure.
+      ANSWER_GENERATION_NOT_GROUNDED: Answer generation is not grounded on
+        reliable sources.
+    """
+    DATASTORE_RESPONSE_REASON_UNSPECIFIED = 0
+    NONE = 1
+    SEARCH_OUT_OF_QUOTA = 2
+    SEARCH_EMPTY_RESULTS = 3
+    ANSWER_GENERATION_GEN_AI_DISABLED = 4
+    ANSWER_GENERATION_OUT_OF_QUOTA = 5
+    ANSWER_GENERATION_ERROR = 6
+    ANSWER_GENERATION_NOT_ENOUGH_INFO = 7
+    ANSWER_GENERATION_RAI_FAILED = 8
+    ANSWER_GENERATION_NOT_GROUNDED = 9
+
+  class QueryCategorizationFailureReasonValueValuesEnum(_messages.Enum):
+    r"""Reason for query categorization.
+
+    Values:
+      QUERY_CATEGORIZATION_FAILURE_REASON_UNSPECIFIED: Default value.
+      QUERY_CATEGORIZATION_INVALID_CONFIG: Vertex AI Search config supplied
+        for query categorization is invalid.
+      QUERY_CATEGORIZATION_RESULT_NOT_FOUND: Vertex AI Search result does not
+        contain a query categorization result.
+      QUERY_CATEGORIZATION_FAILED: Vertex AI Search call fails.
+    """
+    QUERY_CATEGORIZATION_FAILURE_REASON_UNSPECIFIED = 0
+    QUERY_CATEGORIZATION_INVALID_CONFIG = 1
+    QUERY_CATEGORIZATION_RESULT_NOT_FOUND = 2
+    QUERY_CATEGORIZATION_FAILED = 3
+
+  class QueryGenerationFailureReasonValueValuesEnum(_messages.Enum):
+    r"""Reason for query generation.
+
+    Values:
+      QUERY_GENERATION_FAILURE_REASON_UNSPECIFIED: Default value.
+      QUERY_GENERATION_OUT_OF_QUOTA: Query generation is blocked due to out of
+        quota.
+      QUERY_GENERATION_FAILED: Call to Knowedge Assist query generation model
+        fails.
+      QUERY_GENERATION_NO_QUERY_GENERATED: Query generation model decides that
+        there is no new topic change or there has been similar queries
+        generated in the previous turns.
+      QUERY_GENERATION_RAI_FAILED: Knowedge Assist generated query is blocked
+        by RAI (Responsible AI).
+      NOT_IN_ALLOWLIST: Query generation is blocked by Knowledge Assist
+        conversation profile level / agent id level filtering.
+      QUERY_GENERATION_QUERY_REDACTED: The generated query is blocked due to
+        redaction.
+      QUERY_GENERATION_LLM_RESPONSE_PARSE_FAILED: Query generation failed due
+        to LLM response parse failure.
+      QUERY_GENERATION_EMPTY_CONVERSATION: The conversation has no messages.
+      QUERY_GENERATION_EMPTY_LAST_MESSAGE: The last message in the
+        conversation is empty.
+      QUERY_GENERATION_TRIGGERING_EVENT_CONDITION_NOT_MET: The trigger event
+        condition is not met. This occurs in the following scenarios: 1. The
+        trigger_event is CUSTOMER_MESSAGE or UNSPECIFIED, but the last message
+        is not from the customer. 2. The trigger_event is AGENT_MESSAGE, but
+        the last message is not from the agent.
+    """
+    QUERY_GENERATION_FAILURE_REASON_UNSPECIFIED = 0
+    QUERY_GENERATION_OUT_OF_QUOTA = 1
+    QUERY_GENERATION_FAILED = 2
+    QUERY_GENERATION_NO_QUERY_GENERATED = 3
+    QUERY_GENERATION_RAI_FAILED = 4
+    NOT_IN_ALLOWLIST = 5
+    QUERY_GENERATION_QUERY_REDACTED = 6
+    QUERY_GENERATION_LLM_RESPONSE_PARSE_FAILED = 7
+    QUERY_GENERATION_EMPTY_CONVERSATION = 8
+    QUERY_GENERATION_EMPTY_LAST_MESSAGE = 9
+    QUERY_GENERATION_TRIGGERING_EVENT_CONDITION_NOT_MET = 10
+
+  datastoreResponseReason = _messages.EnumField('DatastoreResponseReasonValueValuesEnum', 1)
+  ingestedContextReferenceDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2IngestedContextReferenceDebugInfo', 2)
+  knowledgeAssistBehavior = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistDebugInfoKnowledgeAssistBehavior', 3)
+  queryCategorizationFailureReason = _messages.EnumField('QueryCategorizationFailureReasonValueValuesEnum', 4)
+  queryGenerationFailureReason = _messages.EnumField('QueryGenerationFailureReasonValueValuesEnum', 5)
+  serviceLatency = _messages.MessageField('GoogleCloudDialogflowV2ServiceLatency', 6)
+
+
+class GoogleCloudDialogflowV2KnowledgeAssistDebugInfoKnowledgeAssistBehavior(_messages.Message):
+  r"""Configured behaviors for Knowedge Assist.
+
+  Fields:
+    answerGenerationRewriterOn: Whether data store agent rewriter was turned
+      off for the request.
+    appendedSearchContextCount: The number of search contexts appended to the
+      query.
+    conversationTranscriptHasMixedLanguages: Conversation transcript has mixed
+      languages.
+    disableSyncDelivery: Whether customers configured to disable the
+      synchronous delivery of Knowedge Assist response.
+    endUserMetadataIncluded: Whether end_user_metadata is included in the data
+      store agent call.
+    invalidItemsQuerySuggestionSkipped: Indicates that invalid items were
+      skipped when parsing the LLM response.
+    multipleQueriesGenerated: Indicates that the query generation model
+      generated multiple queries.
+    previousQueriesIncluded: Whether previously suggested queries are included
+      in the query generation process.
+    primaryQueryRedactedAndReplaced: True if the primary suggested query was
+      redacted and replaced by an additional query.
+    queryContainedSearchContext: Indicates that the generated query contains
+      search context.
+    queryGenerationAgentLanguageMismatch: Whether the agent language from the
+      translation generator mismatches the end-user language.
+    queryGenerationEndUserLanguageMismatch: Whether the end-user language from
+      the translation generator mismatches the end-user language.
+    returnQueryOnly: Whether customers configured to return query only in the
+      conversation profile.
+    thirdPartyConnectorAllowed: This field indicates whether third party
+      connectors are enabled for the project
+    useCustomSafetyFilterLevel: Safety filter is adjusted by user.
+    usePubsubDelivery: Whether customers configured to use pubsub to deliver.
+    useTranslatedMessage: Translated message is included in query generation
+      process.
+  """
+
+  answerGenerationRewriterOn = _messages.BooleanField(1)
+  appendedSearchContextCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  conversationTranscriptHasMixedLanguages = _messages.BooleanField(3)
+  disableSyncDelivery = _messages.BooleanField(4)
+  endUserMetadataIncluded = _messages.BooleanField(5)
+  invalidItemsQuerySuggestionSkipped = _messages.BooleanField(6)
+  multipleQueriesGenerated = _messages.BooleanField(7)
+  previousQueriesIncluded = _messages.BooleanField(8)
+  primaryQueryRedactedAndReplaced = _messages.BooleanField(9)
+  queryContainedSearchContext = _messages.BooleanField(10)
+  queryGenerationAgentLanguageMismatch = _messages.BooleanField(11)
+  queryGenerationEndUserLanguageMismatch = _messages.BooleanField(12)
+  returnQueryOnly = _messages.BooleanField(13)
+  thirdPartyConnectorAllowed = _messages.BooleanField(14)
+  useCustomSafetyFilterLevel = _messages.BooleanField(15)
+  usePubsubDelivery = _messages.BooleanField(16)
+  useTranslatedMessage = _messages.BooleanField(17)
 
 
 class GoogleCloudDialogflowV2KnowledgeBase(_messages.Message):
@@ -17436,6 +17674,77 @@ class GoogleCloudDialogflowV2SearchKnowledgeAnswerAnswerSource(_messages.Message
   uri = _messages.StringField(4)
 
 
+class GoogleCloudDialogflowV2SearchKnowledgeDebugInfo(_messages.Message):
+  r"""Debug information related to SearchKnowledge feature.
+
+  Enums:
+    DatastoreResponseReasonValueValuesEnum: Response reason from datastore
+      which indicates data serving status or answer quality degradation.
+
+  Fields:
+    datastoreResponseReason: Response reason from datastore which indicates
+      data serving status or answer quality degradation.
+    ingestedContextReferenceDebugInfo: Information about parameters ingested
+      for search knowledge.
+    searchKnowledgeBehavior: Configured behaviors for SearchKnowledge.
+    serviceLatency: The latency of the service.
+  """
+
+  class DatastoreResponseReasonValueValuesEnum(_messages.Enum):
+    r"""Response reason from datastore which indicates data serving status or
+    answer quality degradation.
+
+    Values:
+      DATASTORE_RESPONSE_REASON_UNSPECIFIED: Default value.
+      NONE: No specific response reason from datastore.
+      SEARCH_OUT_OF_QUOTA: Search is blocked due to out of quota.
+      SEARCH_EMPTY_RESULTS: Search returns empty results.
+      ANSWER_GENERATION_GEN_AI_DISABLED: Generative AI is disabled.
+      ANSWER_GENERATION_OUT_OF_QUOTA: Answer generation is blocked due to out
+        of quota.
+      ANSWER_GENERATION_ERROR: Answer generation encounters an error.
+      ANSWER_GENERATION_NOT_ENOUGH_INFO: Answer generation does not have
+        enough information to generate answer.
+      ANSWER_GENERATION_RAI_FAILED: Answer generation is blocked by RAI
+        (Responsible AI) failure.
+      ANSWER_GENERATION_NOT_GROUNDED: Answer generation is not grounded on
+        reliable sources.
+    """
+    DATASTORE_RESPONSE_REASON_UNSPECIFIED = 0
+    NONE = 1
+    SEARCH_OUT_OF_QUOTA = 2
+    SEARCH_EMPTY_RESULTS = 3
+    ANSWER_GENERATION_GEN_AI_DISABLED = 4
+    ANSWER_GENERATION_OUT_OF_QUOTA = 5
+    ANSWER_GENERATION_ERROR = 6
+    ANSWER_GENERATION_NOT_ENOUGH_INFO = 7
+    ANSWER_GENERATION_RAI_FAILED = 8
+    ANSWER_GENERATION_NOT_GROUNDED = 9
+
+  datastoreResponseReason = _messages.EnumField('DatastoreResponseReasonValueValuesEnum', 1)
+  ingestedContextReferenceDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2IngestedContextReferenceDebugInfo', 2)
+  searchKnowledgeBehavior = _messages.MessageField('GoogleCloudDialogflowV2SearchKnowledgeDebugInfoSearchKnowledgeBehavior', 3)
+  serviceLatency = _messages.MessageField('GoogleCloudDialogflowV2ServiceLatency', 4)
+
+
+class GoogleCloudDialogflowV2SearchKnowledgeDebugInfoSearchKnowledgeBehavior(_messages.Message):
+  r"""Configured behaviors for SearchKnowledge.
+
+  Fields:
+    answerGenerationRewriterOn: Whether data store agent rewriter was turned
+      on for the request.
+    endUserMetadataIncluded: Whether end_user_metadata is included in the data
+      store agent call.
+    thirdPartyConnectorAllowed: This field indicates whether third party
+      connectors are enabled for the project. Note that this field only
+      indicates if the project is allowlisted for connectors.
+  """
+
+  answerGenerationRewriterOn = _messages.BooleanField(1)
+  endUserMetadataIncluded = _messages.BooleanField(2)
+  thirdPartyConnectorAllowed = _messages.BooleanField(3)
+
+
 class GoogleCloudDialogflowV2SearchKnowledgeRequest(_messages.Message):
   r"""The request message for Conversations.SearchKnowledge.
 
@@ -17732,10 +18041,12 @@ class GoogleCloudDialogflowV2SearchKnowledgeResponse(_messages.Message):
     answers: Most relevant snippets extracted from articles in the given
       knowledge base, ordered by confidence.
     rewrittenQuery: The rewritten query used to search knowledge.
+    searchKnowledgeDebugInfo: Debug info for SearchKnowledge.
   """
 
   answers = _messages.MessageField('GoogleCloudDialogflowV2SearchKnowledgeAnswer', 1, repeated=True)
   rewrittenQuery = _messages.StringField(2)
+  searchKnowledgeDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2SearchKnowledgeDebugInfo', 3)
 
 
 class GoogleCloudDialogflowV2Sentiment(_messages.Message):
@@ -17784,6 +18095,32 @@ class GoogleCloudDialogflowV2SentimentAnalysisResult(_messages.Message):
   """
 
   queryTextSentiment = _messages.MessageField('GoogleCloudDialogflowV2Sentiment', 1)
+
+
+class GoogleCloudDialogflowV2ServiceLatency(_messages.Message):
+  r"""Message to represent the latency of the service.
+
+  Fields:
+    internalServiceLatencies: A list of internal service latencies.
+  """
+
+  internalServiceLatencies = _messages.MessageField('GoogleCloudDialogflowV2ServiceLatencyInternalServiceLatency', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2ServiceLatencyInternalServiceLatency(_messages.Message):
+  r"""Message to represent the latency of an internal service.
+
+  Fields:
+    completeTime: The completion time of the internal service.
+    latencyMs: The latency of the internal service in milliseconds.
+    startTime: The start time of the internal service.
+    step: The name of the internal service.
+  """
+
+  completeTime = _messages.StringField(1)
+  latencyMs = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  startTime = _messages.StringField(3)
+  step = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
@@ -20971,6 +21308,67 @@ class GoogleCloudDialogflowV2beta1ImportDocumentsResponse(_messages.Message):
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
+class GoogleCloudDialogflowV2beta1IngestedContextReferenceDebugInfo(_messages.Message):
+  r"""Debug information related to ingested context reference.
+
+  Fields:
+    contextReferenceRetrieved: The status of context_reference retrieval from
+      database.
+    ingestedParametersDebugInfo: Parameters ingested from the context
+      reference.
+    projectNotAllowlisted: Indicates if the project is allowlisted to use
+      ingested context reference.
+  """
+
+  contextReferenceRetrieved = _messages.BooleanField(1)
+  ingestedParametersDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2beta1IngestedContextReferenceDebugInfoIngestedParameterDebugInfo', 2, repeated=True)
+  projectNotAllowlisted = _messages.BooleanField(3)
+
+
+class GoogleCloudDialogflowV2beta1IngestedContextReferenceDebugInfoIngestedParameterDebugInfo(_messages.Message):
+  r"""Debug information related to ingested parameters from context reference.
+
+  Enums:
+    IngestionStatusValueValuesEnum: The ingestion status for this specific
+      parameter.
+
+  Fields:
+    ingestionStatus: The ingestion status for this specific parameter.
+    parameter: The name of the parameter in the context reference.
+  """
+
+  class IngestionStatusValueValuesEnum(_messages.Enum):
+    r"""The ingestion status for this specific parameter.
+
+    Values:
+      INGESTION_STATUS_UNSPECIFIED: Default value, indicates that the
+        ingestion status is not specified.
+      INGESTION_STATUS_SUCCEEDED: Indicates that the parameter was
+        successfully ingested.
+      INGESTION_STATUS_CONTEXT_NOT_AVAILABLE: Indicates that the parameter was
+        not available for ingestion.
+      INGESTION_STATUS_PARSE_FAILED: Indicates that there was a failure
+        parsing the parameter content.
+      INGESTION_STATUS_INVALID_ENTRY: Indicates that the context reference had
+        an unexpected number of content entries as Context reference should
+        only have one entry.
+      INGESTION_STATUS_INVALID_FORMAT: Indicates that the context reference
+        content was not in the expected format (e.g., JSON).
+      INGESTION_STATUS_LANGUAGE_MISMATCH: Indicates that the context reference
+        language does not match the conversation language.
+    """
+    INGESTION_STATUS_UNSPECIFIED = 0
+    INGESTION_STATUS_SUCCEEDED = 1
+    INGESTION_STATUS_CONTEXT_NOT_AVAILABLE = 2
+    INGESTION_STATUS_PARSE_FAILED = 3
+    INGESTION_STATUS_INVALID_ENTRY = 4
+    INGESTION_STATUS_INVALID_FORMAT = 5
+    INGESTION_STATUS_LANGUAGE_MISMATCH = 6
+
+  ingestionStatus = _messages.EnumField('IngestionStatusValueValuesEnum', 1)
+  parameter = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2beta1InitializeEncryptionSpecMetadata(_messages.Message):
   r"""Metadata for initializing a location-level encryption specification.
 
@@ -22235,6 +22633,8 @@ class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswer(_messages.Message):
   Fields:
     answerRecord: The name of the answer record. Format:
       `projects//locations//answer Records/`.
+    knowledgeAssistDebugInfo: Debug information related to Knowledge Assist
+      feature.
     suggestedQuery: The query suggested based on the context. Suggestion is
       made only if it is different from the previous suggestion.
     suggestedQueryAnswer: The answer generated for the suggested query.
@@ -22243,8 +22643,9 @@ class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswer(_messages.Message):
   """
 
   answerRecord = _messages.StringField(1)
-  suggestedQuery = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerSuggestedQuery', 2)
-  suggestedQueryAnswer = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswer', 3)
+  knowledgeAssistDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistDebugInfo', 2)
+  suggestedQuery = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerSuggestedQuery', 3)
+  suggestedQueryAnswer = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswer', 4)
 
 
 class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswer(_messages.Message):
@@ -22335,6 +22736,180 @@ class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerSuggestedQuery(_messages.
   """
 
   queryText = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAssistDebugInfo(_messages.Message):
+  r"""Debug information related to Knowledge Assist feature.
+
+  Enums:
+    DatastoreResponseReasonValueValuesEnum: Response reason from datastore
+      which indicates data serving status or answer quality degradation.
+    QueryCategorizationFailureReasonValueValuesEnum: Reason for query
+      categorization.
+    QueryGenerationFailureReasonValueValuesEnum: Reason for query generation.
+
+  Fields:
+    datastoreResponseReason: Response reason from datastore which indicates
+      data serving status or answer quality degradation.
+    ingestedContextReferenceDebugInfo: Information about parameters ingested
+      for search knowledge.
+    knowledgeAssistBehavior: Configured behaviors for Knowedge Assist.
+    queryCategorizationFailureReason: Reason for query categorization.
+    queryGenerationFailureReason: Reason for query generation.
+    serviceLatency: The latency of the service.
+  """
+
+  class DatastoreResponseReasonValueValuesEnum(_messages.Enum):
+    r"""Response reason from datastore which indicates data serving status or
+    answer quality degradation.
+
+    Values:
+      DATASTORE_RESPONSE_REASON_UNSPECIFIED: Default value.
+      NONE: No specific response reason from datastore.
+      SEARCH_OUT_OF_QUOTA: Search is blocked due to out of quota.
+      SEARCH_EMPTY_RESULTS: Search returns empty results.
+      ANSWER_GENERATION_GEN_AI_DISABLED: Generative AI is disabled.
+      ANSWER_GENERATION_OUT_OF_QUOTA: Answer generation is blocked due to out
+        of quota.
+      ANSWER_GENERATION_ERROR: Answer generation encounters an error.
+      ANSWER_GENERATION_NOT_ENOUGH_INFO: Answer generation does not have
+        enough information to generate answer.
+      ANSWER_GENERATION_RAI_FAILED: Answer generation is blocked by RAI
+        (Responsible AI) failure.
+      ANSWER_GENERATION_NOT_GROUNDED: Answer generation is not grounded on
+        reliable sources.
+    """
+    DATASTORE_RESPONSE_REASON_UNSPECIFIED = 0
+    NONE = 1
+    SEARCH_OUT_OF_QUOTA = 2
+    SEARCH_EMPTY_RESULTS = 3
+    ANSWER_GENERATION_GEN_AI_DISABLED = 4
+    ANSWER_GENERATION_OUT_OF_QUOTA = 5
+    ANSWER_GENERATION_ERROR = 6
+    ANSWER_GENERATION_NOT_ENOUGH_INFO = 7
+    ANSWER_GENERATION_RAI_FAILED = 8
+    ANSWER_GENERATION_NOT_GROUNDED = 9
+
+  class QueryCategorizationFailureReasonValueValuesEnum(_messages.Enum):
+    r"""Reason for query categorization.
+
+    Values:
+      QUERY_CATEGORIZATION_FAILURE_REASON_UNSPECIFIED: Default value.
+      QUERY_CATEGORIZATION_INVALID_CONFIG: Vertex AI Search config supplied
+        for query categorization is invalid.
+      QUERY_CATEGORIZATION_RESULT_NOT_FOUND: Vertex AI Search result does not
+        contain a query categorization result.
+      QUERY_CATEGORIZATION_FAILED: Vertex AI Search call fails.
+    """
+    QUERY_CATEGORIZATION_FAILURE_REASON_UNSPECIFIED = 0
+    QUERY_CATEGORIZATION_INVALID_CONFIG = 1
+    QUERY_CATEGORIZATION_RESULT_NOT_FOUND = 2
+    QUERY_CATEGORIZATION_FAILED = 3
+
+  class QueryGenerationFailureReasonValueValuesEnum(_messages.Enum):
+    r"""Reason for query generation.
+
+    Values:
+      QUERY_GENERATION_FAILURE_REASON_UNSPECIFIED: Default value.
+      QUERY_GENERATION_OUT_OF_QUOTA: Query generation is blocked due to out of
+        quota.
+      QUERY_GENERATION_FAILED: Call to Knowedge Assist query generation model
+        fails.
+      QUERY_GENERATION_NO_QUERY_GENERATED: Query generation model decides that
+        there is no new topic change or there has been similar queries
+        generated in the previous turns.
+      QUERY_GENERATION_RAI_FAILED: Knowedge Assist generated query is blocked
+        by RAI (Responsible AI).
+      NOT_IN_ALLOWLIST: Query generation is blocked by Knowledge Assist
+        conversation profile level / agent id level filtering.
+      QUERY_GENERATION_QUERY_REDACTED: The generated query is blocked due to
+        redaction.
+      QUERY_GENERATION_LLM_RESPONSE_PARSE_FAILED: Query generation failed due
+        to LLM response parse failure.
+      QUERY_GENERATION_EMPTY_CONVERSATION: The conversation has no messages.
+      QUERY_GENERATION_EMPTY_LAST_MESSAGE: The last message in the
+        conversation is empty.
+      QUERY_GENERATION_TRIGGERING_EVENT_CONDITION_NOT_MET: The trigger event
+        condition is not met. This occurs in the following scenarios: 1. The
+        trigger_event is CUSTOMER_MESSAGE or UNSPECIFIED, but the last message
+        is not from the customer. 2. The trigger_event is AGENT_MESSAGE, but
+        the last message is not from the agent.
+    """
+    QUERY_GENERATION_FAILURE_REASON_UNSPECIFIED = 0
+    QUERY_GENERATION_OUT_OF_QUOTA = 1
+    QUERY_GENERATION_FAILED = 2
+    QUERY_GENERATION_NO_QUERY_GENERATED = 3
+    QUERY_GENERATION_RAI_FAILED = 4
+    NOT_IN_ALLOWLIST = 5
+    QUERY_GENERATION_QUERY_REDACTED = 6
+    QUERY_GENERATION_LLM_RESPONSE_PARSE_FAILED = 7
+    QUERY_GENERATION_EMPTY_CONVERSATION = 8
+    QUERY_GENERATION_EMPTY_LAST_MESSAGE = 9
+    QUERY_GENERATION_TRIGGERING_EVENT_CONDITION_NOT_MET = 10
+
+  datastoreResponseReason = _messages.EnumField('DatastoreResponseReasonValueValuesEnum', 1)
+  ingestedContextReferenceDebugInfo = _messages.MessageField('GoogleCloudDialogflowV2beta1IngestedContextReferenceDebugInfo', 2)
+  knowledgeAssistBehavior = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistDebugInfoKnowledgeAssistBehavior', 3)
+  queryCategorizationFailureReason = _messages.EnumField('QueryCategorizationFailureReasonValueValuesEnum', 4)
+  queryGenerationFailureReason = _messages.EnumField('QueryGenerationFailureReasonValueValuesEnum', 5)
+  serviceLatency = _messages.MessageField('GoogleCloudDialogflowV2beta1ServiceLatency', 6)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAssistDebugInfoKnowledgeAssistBehavior(_messages.Message):
+  r"""Configured behaviors for Knowedge Assist.
+
+  Fields:
+    answerGenerationRewriterOn: Whether data store agent rewriter was turned
+      off for the request.
+    appendedSearchContextCount: The number of search contexts appended to the
+      query.
+    conversationTranscriptHasMixedLanguages: Conversation transcript has mixed
+      languages.
+    disableSyncDelivery: Whether customers configured to disable the
+      synchronous delivery of Knowedge Assist response.
+    endUserMetadataIncluded: Whether end_user_metadata is included in the data
+      store agent call.
+    invalidItemsQuerySuggestionSkipped: Indicates that invalid items were
+      skipped when parsing the LLM response.
+    multipleQueriesGenerated: Indicates that the query generation model
+      generated multiple queries.
+    previousQueriesIncluded: Whether previously suggested queries are included
+      in the query generation process.
+    primaryQueryRedactedAndReplaced: True if the primary suggested query was
+      redacted and replaced by an additional query.
+    queryContainedSearchContext: Indicates that the generated query contains
+      search context.
+    queryGenerationAgentLanguageMismatch: Whether the agent language from the
+      translation generator mismatches the end-user language.
+    queryGenerationEndUserLanguageMismatch: Whether the end-user language from
+      the translation generator mismatches the end-user language.
+    returnQueryOnly: Whether customers configured to return query only in the
+      conversation profile.
+    thirdPartyConnectorAllowed: This field indicates whether third party
+      connectors are enabled for the project.
+    useCustomSafetyFilterLevel: Safety filter is adjusted by user.
+    usePubsubDelivery: Whether customers configured to use pubsub to deliver.
+    useTranslatedMessage: Translated message is included in query generation
+      process.
+  """
+
+  answerGenerationRewriterOn = _messages.BooleanField(1)
+  appendedSearchContextCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  conversationTranscriptHasMixedLanguages = _messages.BooleanField(3)
+  disableSyncDelivery = _messages.BooleanField(4)
+  endUserMetadataIncluded = _messages.BooleanField(5)
+  invalidItemsQuerySuggestionSkipped = _messages.BooleanField(6)
+  multipleQueriesGenerated = _messages.BooleanField(7)
+  previousQueriesIncluded = _messages.BooleanField(8)
+  primaryQueryRedactedAndReplaced = _messages.BooleanField(9)
+  queryContainedSearchContext = _messages.BooleanField(10)
+  queryGenerationAgentLanguageMismatch = _messages.BooleanField(11)
+  queryGenerationEndUserLanguageMismatch = _messages.BooleanField(12)
+  returnQueryOnly = _messages.BooleanField(13)
+  thirdPartyConnectorAllowed = _messages.BooleanField(14)
+  useCustomSafetyFilterLevel = _messages.BooleanField(15)
+  usePubsubDelivery = _messages.BooleanField(16)
+  useTranslatedMessage = _messages.BooleanField(17)
 
 
 class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
@@ -22904,6 +23479,32 @@ class GoogleCloudDialogflowV2beta1SentimentAnalysisResult(_messages.Message):
   """
 
   queryTextSentiment = _messages.MessageField('GoogleCloudDialogflowV2beta1Sentiment', 1)
+
+
+class GoogleCloudDialogflowV2beta1ServiceLatency(_messages.Message):
+  r"""Message to represent the latency of the service.
+
+  Fields:
+    internalServiceLatencies: A list of internal service latencies.
+  """
+
+  internalServiceLatencies = _messages.MessageField('GoogleCloudDialogflowV2beta1ServiceLatencyInternalServiceLatency', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1ServiceLatencyInternalServiceLatency(_messages.Message):
+  r"""Message to represent the latency of an internal service.
+
+  Fields:
+    completeTime: The completion time of the internal service.
+    latencyMs: The latency of the internal service in milliseconds.
+    startTime: The start time of the internal service.
+    step: The name of the internal service.
+  """
+
+  completeTime = _messages.StringField(1)
+  latencyMs = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  startTime = _messages.StringField(3)
+  step = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowV2beta1SessionEntityType(_messages.Message):

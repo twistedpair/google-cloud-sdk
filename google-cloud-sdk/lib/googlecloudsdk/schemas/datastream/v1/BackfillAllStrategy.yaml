@@ -40,6 +40,9 @@ properties:
   salesforceExcludedObjects:
     description: Salesforce data source objects to avoid backfilling
     $ref: SalesforceOrg.yaml
+  spannerExcludedObjects:
+    description: Spanner data source objects to avoid backfilling.
+    $ref: SpannerDatabase.yaml
   sqlServerExcludedObjects:
     description: SQLServer data source objects to avoid backfilling
     $ref: SqlServerRdbms.yaml

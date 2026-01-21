@@ -47,6 +47,9 @@ properties:
       Source connection profile resource. Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`
     type: string
+  spannerSourceConfig:
+    description: Spanner data source configuration.
+    $ref: SpannerSourceConfig.yaml
   sqlServerSourceConfig:
     description: SQLServer data source configuration.
     $ref: SqlServerSourceConfig.yaml

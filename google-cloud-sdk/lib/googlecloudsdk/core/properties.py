@@ -3615,10 +3615,9 @@ class _SectionStorage(_Section):
         help_text='Enables task graph debugging for gcloud storage commands.',
     )
 
-    # TODO(b/437832680): Enable this property once implementation is complete.
     self.enable_zonal_buckets_bidi_streaming = self._AddBool(
         'enable_zonal_buckets_bidi_streaming',
-        default=False,
+        default=True,
         hidden=True,
         help_text=(
             'Enables zonal buckets bidi streaming for gcloud storage commands.'

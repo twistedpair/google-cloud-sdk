@@ -211,9 +211,8 @@ class AlloyDBClusterDataSourceProperties(_messages.Message):
       by the datasource.
     name: Output only. Name of the AlloyDB cluster backed up by the
       datasource.
-    pitrWindows: Output only. Point in time recovery windows. This is not
-      intended to be exposed to the customers yet. The order is guaranteed to
-      be ascending by start time.
+    pitrWindows: Output only. Point in time recovery windows. The order is
+      guaranteed to be ascending by start time.
   """
 
   clusterUid = _messages.StringField(1)
@@ -5478,7 +5477,7 @@ class ResourceBackupConfig(_messages.Message):
     vaulted: Output only. Whether the target resource is protected by a backup
       vault. This is true if the backup_configs_details is not empty and any
       of the ResourceBackupConfig.backup_configs_details has a backup
-      configuration with BackupConfigDetails.backup_vault set. set.
+      configuration with BackupConfigDetails.backup_vault set.
   """
 
   class TargetResourceTypeValueValuesEnum(_messages.Enum):

@@ -1,0 +1,65 @@
+organization:
+  name: organization
+  collection: edgecontainer.organizations
+  attributes:
+  - &organization
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: The organization name.
+
+orglocation:
+  name: location
+  collection: edgecontainer.organizations.locations
+  attributes:
+  - *organization
+  - &orglocation
+    parameter_name: locationsId
+    attribute_name: location
+    help: The global location name.
+  disable_auto_completers: false
+
+zone:
+  name: zone
+  collection: edgecontainer.organizations.locations.zones
+  request_id_field: zoneId
+  attributes:
+  - *organization
+  - *orglocation
+  - &zone
+    parameter_name: zonesId
+    attribute_name: zone
+    help: The name of the Google Distributed Cloud Edge zone.
+  disable_auto_completers: false
+
+project:
+  name: project
+  collection: edgecontainer.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+
+location:
+  name: location
+  collection: edgecontainer.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The global location name.
+  disable_auto_completers: false
+
+projzone:
+  name: zone
+  collection: edgecontainer.projects.locations.zones
+  request_id_field: zoneId
+  attributes:
+  - *project
+  - *location
+  - &projzone_attr
+    parameter_name: zonesId
+    attribute_name: zone
+    help: The name of the Google Distributed Cloud Edge zone.
+  disable_auto_completers: false

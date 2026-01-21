@@ -217,6 +217,15 @@ OP_AUTOSCALING_METRIC_NAME_MAPPER = {
     'request-counts-per-minute': (
         'aiplatform.googleapis.com/prediction/online/request_count'
     ),
+    'dcgm-fi-dev-gpu-util': (
+        'prometheus.googleapis.com/vertex_dcgm_fi_dev_gpu_util'
+    ),
+    'vllm-gpu-cache-usage-perc': (
+        'prometheus.googleapis.com/vertex_vllm_gpu_cache_usage_perc'
+    ),
+    'vllm-num-requests-waiting': (
+        'prometheus.googleapis.com/vertex_vllm_num_requests_waiting'
+    ),
 }
 
 MODEL_MONITORING_JOB_CREATION_DISPLAY_MESSAGE = """\

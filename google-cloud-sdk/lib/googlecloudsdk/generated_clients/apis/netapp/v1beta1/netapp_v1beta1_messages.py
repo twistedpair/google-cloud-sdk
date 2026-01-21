@@ -3898,6 +3898,9 @@ class StoragePool(_messages.Message):
       creation, it defaults to `DEFAULT`.
     QosTypeValueValuesEnum: Optional. QoS (Quality of Service) Type of the
       storage pool
+    ScaleTierValueValuesEnum: Optional. The effective scale tier of the
+      storage pool. If `scale_tier` is not specified during creation, this
+      defaults to `SCALE_TIER_STANDARD`.
     ServiceLevelValueValuesEnum: Required. Service level of the storage pool
     StateValueValuesEnum: Output only. State of the storage pool
     TypeValueValuesEnum: Optional. Type of the storage pool. This field is
@@ -3957,6 +3960,9 @@ class StoragePool(_messages.Message):
       storagePool.
     satisfiesPzi: Output only. Reserved for future use
     satisfiesPzs: Output only. Reserved for future use
+    scaleTier: Optional. The effective scale tier of the storage pool. If
+      `scale_tier` is not specified during creation, this defaults to
+      `SCALE_TIER_STANDARD`.
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -4018,6 +4024,22 @@ class StoragePool(_messages.Message):
     AUTO = 1
     MANUAL = 2
 
+  class ScaleTierValueValuesEnum(_messages.Enum):
+    r"""Optional. The effective scale tier of the storage pool. If
+    `scale_tier` is not specified during creation, this defaults to
+    `SCALE_TIER_STANDARD`.
+
+    Values:
+      SCALE_TIER_UNSPECIFIED: The default value. This value is unused.
+      SCALE_TIER_STANDARD: The standard capacity and performance tier.
+        Suitable for general purpose workloads.
+      SCALE_TIER_ENTERPRISE: A higher capacity and performance tier. Suitable
+        for more demanding workloads.
+    """
+    SCALE_TIER_UNSPECIFIED = 0
+    SCALE_TIER_STANDARD = 1
+    SCALE_TIER_ENTERPRISE = 2
+
   class ServiceLevelValueValuesEnum(_messages.Enum):
     r"""Required. Service level of the storage pool
 
@@ -4070,7 +4092,8 @@ class StoragePool(_messages.Message):
       STORAGE_POOL_TYPE_UNSPECIFIED: Storage pool type is not specified.
       FILE: Storage pool type is file.
       UNIFIED: Storage pool type is unified.
-      UNIFIED_LARGE_CAPACITY: Storage pool type is unified large capacity.
+      UNIFIED_LARGE_CAPACITY: Deprecated: UNIFIED_LARGE_CAPACITY was
+        previously tag 3.
     """
     STORAGE_POOL_TYPE_UNSPECIFIED = 0
     FILE = 1
@@ -4125,16 +4148,17 @@ class StoragePool(_messages.Message):
   replicaZone = _messages.StringField(22)
   satisfiesPzi = _messages.BooleanField(23)
   satisfiesPzs = _messages.BooleanField(24)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  stateDetails = _messages.StringField(27)
-  totalIops = _messages.IntegerField(28)
-  totalThroughputMibps = _messages.IntegerField(29)
-  type = _messages.EnumField('TypeValueValuesEnum', 30)
-  unifiedPool = _messages.BooleanField(31)
-  volumeCapacityGib = _messages.IntegerField(32)
-  volumeCount = _messages.IntegerField(33, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(34)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 25)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  stateDetails = _messages.StringField(28)
+  totalIops = _messages.IntegerField(29)
+  totalThroughputMibps = _messages.IntegerField(30)
+  type = _messages.EnumField('TypeValueValuesEnum', 31)
+  unifiedPool = _messages.BooleanField(32)
+  volumeCapacityGib = _messages.IntegerField(33)
+  volumeCount = _messages.IntegerField(34, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(35)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):

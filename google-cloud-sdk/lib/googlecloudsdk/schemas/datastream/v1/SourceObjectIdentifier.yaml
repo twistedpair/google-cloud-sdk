@@ -40,6 +40,9 @@ properties:
   salesforceIdentifier:
     description: Salesforce data source object identifier.
     $ref: SalesforceObjectIdentifier.yaml
+  spannerIdentifier:
+    description: Spanner data source object identifier.
+    $ref: SpannerObjectIdentifier.yaml
   sqlServerIdentifier:
     description: SQLServer data source object identifier.
     $ref: SqlServerObjectIdentifier.yaml

@@ -86,6 +86,7 @@ DECLARATIVE_CONFIGURATION_CATEGORY = 'Declarative Resource Management'
 MICROSERVICES_CATEGORY = 'Microservices'
 WEB3_CATEGORY = 'Web3'
 SAAS_CATEGORY = 'SaaS'
+VECTOR_SEARCH_CATEGORY = 'Vector Search'
 
 
 # Common markdown.

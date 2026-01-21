@@ -77,3 +77,17 @@ def AddSalesforceObjectIdentifier(parser):
       help="""Salesforce object name.""",
       required=True,
   )
+
+
+def AddSpannerObjectIdentifier(parser):
+  """Adds a --spanner-schema & --spanner-table flag to the given parser."""
+  spanner_object_parser = parser.add_group()
+  spanner_object_parser.add_argument(
+      '--spanner-schema',
+      help="""Spanner schema name.""",
+  )
+  spanner_object_parser.add_argument(
+      '--spanner-table',
+      help="""Spanner table name.""",
+      required=True,
+  )

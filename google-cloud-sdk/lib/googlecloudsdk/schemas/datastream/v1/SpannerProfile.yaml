@@ -1,0 +1,41 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: datastream v1 SpannerProfile export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- database
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  database:
+    description: |-
+      Immutable. Cloud Spanner database resource. This field is immutable. Must
+      be in the format:
+      projects/{project}/instances/{instance}/databases/{database_id}.
+    type: string
+  host:
+    description: |-
+      The Spanner endpoint to connect to. Defaults to the global endpoint
+      (https://spanner.$$UNIVERSE_DOMAIN$$). Must be in the format:
+      https://spanner.{region}.rep.$$UNIVERSE_DOMAIN$$.
+    type: string

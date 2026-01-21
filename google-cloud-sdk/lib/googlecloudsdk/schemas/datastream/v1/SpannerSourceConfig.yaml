@@ -1,0 +1,64 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: datastream v1 SpannerSourceConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- changeStreamName
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  backfillDataBoostEnabled:
+    description: |-
+      Whether to use Data Boost for Spanner backfills. Defaults to false if not
+      set.
+    type: boolean
+  changeStreamName:
+    description: Immutable. The change stream name to use for the stream.
+    type: string
+  excludeObjects:
+    description: |-
+      Spanner objects to avoid retrieving. If some objects are both included and
+      excluded, an error will be thrown.
+    $ref: SpannerDatabase.yaml
+  fgacRole:
+    description: The FGAC role to use for the stream.
+    type: string
+  includeObjects:
+    description: |-
+      Spanner objects to retrieve from the data source. If some objects are both
+      included and excluded, an error will be thrown.
+    $ref: SpannerDatabase.yaml
+  maxConcurrentBackfillTasks:
+    description: Maximum number of concurrent backfill tasks.
+    type: integer
+  maxConcurrentCdcTasks:
+    description: Maximum number of concurrent CDC tasks.
+    type: integer
+  spannerRpcPriority:
+    description: The RPC priority to use for the stream.
+    type: string
+    enum:
+    - HIGH
+    - LOW
+    - MEDIUM
+    - SPANNER_RPC_PRIORITY_UNSPECIFIED

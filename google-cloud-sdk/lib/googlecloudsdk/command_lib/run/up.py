@@ -15,6 +15,7 @@
 """Wrapper for runcompose binary."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -57,6 +58,7 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
       resources_config=None,
       project_number=None,
       region=None,
+      out: str | None = None,
       **kwargs
   ):
     if command == 'up':
@@ -79,10 +81,14 @@ class RunComposeWrapper(binary_operations.StreamingBinaryBackedOperation):
         exec_args.append('--dry-run')
     if command == 'resource':
       exec_args += ['--region', region]
+      if out:
+        exec_args += ['--out', out]
     if command == 'translate':
       exec_args += ['--resources-config', resources_config]
       exec_args += ['--project-number', str(project_number)]
       exec_args += ['--region', region]
+      if out:
+        exec_args += ['--out', out]
     return exec_args
 
 

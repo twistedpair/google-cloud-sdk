@@ -1902,7 +1902,7 @@ class NetworkConfig(_messages.Message):
       `{octet1}.{octet2}.{octet3}.{octet4}` or IPv6 addresses in the format `{
       block1}:{block2}:{block3}:{block4}:{block5}:{block6}:{block7}:{block8}`.
     modes: Internet protocol versions for which the instance has IP addresses
-      assigned. For this version, only MODE_IPV4 is supported.
+      assigned.
     network: The name of the Google Compute Engine [VPC
       network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
       connected.
@@ -1951,7 +1951,8 @@ class NetworkConfig(_messages.Message):
     Values:
       ADDRESS_MODE_UNSPECIFIED: Internet protocol not set.
       MODE_IPV4: Use the IPv4 internet protocol.
-      MODE_IPV6: Use the IPv6 internet protocol.
+      MODE_IPV6: Use the IPv6 internet protocol. Only supported when using
+        Private Service Connect.
     """
     ADDRESS_MODE_UNSPECIFIED = 0
     MODE_IPV4 = 1

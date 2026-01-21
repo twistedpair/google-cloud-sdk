@@ -30,8 +30,8 @@ from containerregistry.client.v2_2 import docker_session
 from containerregistry.transform.v2_2 import metadata
 from googlecloudsdk.api_lib.container.images import util
 from googlecloudsdk.command_lib.container.binauthz import util as binauthz_util
+from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core.exceptions import Error
-import httplib2
 
 
 DSSE_PAYLOAD_TYPE = 'application/vnd.dsse.envelope.v1+json'
@@ -94,7 +94,7 @@ def UploadAttestationToRegistry(
       authenticating to the registry.
     docker_config_dir: Directory where Docker saves authentication settings.
   """
-  http_obj = httplib2.Http()
+  http_obj = core_requests.GetApitoolsRequests(core_requests.GetSession())
   # The registry name is deduced by splitting on the first '/' char. This will
   # not work properly if the image url has a scheme.
   target_image = docker_name.Digest(

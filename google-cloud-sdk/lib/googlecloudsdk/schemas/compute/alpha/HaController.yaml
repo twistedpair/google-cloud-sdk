@@ -40,12 +40,12 @@ properties:
       forwarding rules will be automatically created with default
       parameters.
     $ref: HaControllerNetworkingAutoConfiguration.yaml
-  secondaryZoneCapacity:
+  failoverCapacity:
     description: Indicates the capacity guarantees in the secondary zone.
     type: string
     enum:
-    - BEST_EFFORT
-    - SECONDARY_ZONE_CAPACITY_UNSPECIFIED
+    - BEST_EFFORT_CAPACITY
+    - FAILOVER_CAPACITY_UNSPECIFIED
   zoneConfigurations:
     description: 'Map of zone configurations Key: name of the zone'
     $ref: ZoneConfigurationsValue.yaml

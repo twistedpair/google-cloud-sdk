@@ -245,7 +245,7 @@ class ApihubV1(base_api.BaseApiClient):
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up an Api Hub instance in a given GCP project. There will always be only one Api Hub instance for a GCP project across all locations.
+      r"""Looks up an Api Hub instance in a given Google Cloud project. There will always be only one Api Hub instance for a Google Cloud project across all locations.
 
       Args:
         request: (ApihubProjectsLocationsApiHubInstancesLookupRequest) input message

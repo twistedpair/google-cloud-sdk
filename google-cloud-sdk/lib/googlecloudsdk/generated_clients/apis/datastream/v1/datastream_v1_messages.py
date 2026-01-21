@@ -178,7 +178,7 @@ class BigQueryPartitioning(_messages.Message):
 
 
 class BigQueryProfile(_messages.Message):
-  r"""BigQuery warehouse profile."""
+  r"""Profile for connecting to a BigQuery destination."""
 
 
 class BinaryLogParser(_messages.Message):
@@ -269,23 +269,23 @@ class ConnectionProfile(_messages.Message):
     LabelsValue: Labels.
 
   Fields:
-    bigqueryProfile: BigQuery Connection Profile configuration.
+    bigqueryProfile: Profile for connecting to a BigQuery destination.
     createTime: Output only. The create time of the resource.
     displayName: Required. Display name.
     forwardSshConnectivity: Forward SSH tunnel connectivity.
-    gcsProfile: Cloud Storage ConnectionProfile configuration.
+    gcsProfile: Profile for connecting to a Cloud Storage destination.
     labels: Labels.
-    mongodbProfile: MongoDB Connection Profile configuration.
-    mysqlProfile: MySQL ConnectionProfile configuration.
+    mongodbProfile: Profile for connecting to a MongoDB source.
+    mysqlProfile: Profile for connecting to a MySQL source.
     name: Output only. Identifier. The resource's name.
-    oracleProfile: Oracle ConnectionProfile configuration.
-    postgresqlProfile: PostgreSQL Connection Profile configuration.
+    oracleProfile: Profile for connecting to an Oracle source.
+    postgresqlProfile: Profile for connecting to a PostgreSQL source.
     privateConnectivity: Private connectivity.
-    salesforceProfile: Salesforce Connection Profile configuration.
+    salesforceProfile: Profile for connecting to a Salesforce source.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
-    spannerProfile: Spanner Connection Profile configuration.
-    sqlServerProfile: SQLServer Connection Profile configuration.
+    spannerProfile: Profile for connecting to a Spanner source.
+    sqlServerProfile: Profile for connecting to a SQLServer source.
     staticServiceIpConnectivity: Static Service IP connectivity.
     updateTime: Output only. The update time of the resource.
   """
@@ -1178,8 +1178,8 @@ class EventFilter(_messages.Message):
 
   Fields:
     sqlWhereClause: An SQL-query Where clause selecting which data should be
-      included, not including the "WHERE" keyword. E.g., "t.key1 = 'value1'
-      AND t.key2 = 'value2'".
+      included, not including the "WHERE" keyword. e.g., `t.key1 = 'value1'
+      AND t.key2 = 'value2'`
   """
 
   sqlWhereClause = _messages.StringField(1)
@@ -1237,11 +1237,11 @@ class GcsDestinationConfig(_messages.Message):
 
 
 class GcsProfile(_messages.Message):
-  r"""Cloud Storage bucket profile.
+  r"""Profile for connecting to a Cloud Storage destination.
 
   Fields:
     bucket: Required. The Cloud Storage bucket name.
-    rootPath: The root path inside the Cloud Storage bucket.
+    rootPath: Optional. The root path inside the Cloud Storage bucket.
   """
 
   bucket = _messages.StringField(1)
@@ -1598,7 +1598,7 @@ class MongodbCollection(_messages.Message):
   r"""MongoDB Collection.
 
   Fields:
-    collection: Collection name.
+    collection: The collection name.
     fields: Fields in the collection.
   """
 
@@ -1611,7 +1611,7 @@ class MongodbDatabase(_messages.Message):
 
   Fields:
     collections: Collections in the database.
-    database: Database name.
+    database: The database name.
   """
 
   collections = _messages.MessageField('MongodbCollection', 1, repeated=True)
@@ -1622,7 +1622,7 @@ class MongodbField(_messages.Message):
   r"""MongoDB Field.
 
   Fields:
-    field: Field name.
+    field: The field name.
   """
 
   field = _messages.StringField(1)
@@ -1641,7 +1641,7 @@ class MongodbObjectIdentifier(_messages.Message):
 
 
 class MongodbProfile(_messages.Message):
-  r"""MongoDB profile.
+  r"""Profile for connecting to a MongoDB source.
 
   Messages:
     AdditionalOptionsValue: Optional. Specifies additional options for the
@@ -1723,15 +1723,15 @@ class MongodbProfile(_messages.Message):
 
 
 class MongodbSourceConfig(_messages.Message):
-  r"""MongoDB source configuration.
+  r"""Configuration for syncing data from a MongoDB source.
 
   Enums:
     JsonModeValueValuesEnum: Optional. MongoDB JSON mode to use for the
       stream.
 
   Fields:
-    excludeObjects: MongoDB collections to exclude from the stream.
-    includeObjects: MongoDB collections to include in the stream.
+    excludeObjects: The MongoDB collections to exclude from the stream.
+    includeObjects: The MongoDB collections to include in the stream.
     jsonMode: Optional. MongoDB JSON mode to use for the stream.
     maxConcurrentBackfillTasks: Optional. Maximum number of concurrent
       backfill tasks. The number should be non-negative and less than or equal
@@ -1802,7 +1802,7 @@ class MysqlColumn(_messages.Message):
 
   Fields:
     collation: Column collation.
-    column: Column name.
+    column: The column name.
     dataType: The MySQL data type. Full data types list can be found here:
       https://dev.mysql.com/doc/refman/8.0/en/data-types.html
     length: Column length.
@@ -1828,7 +1828,7 @@ class MysqlDatabase(_messages.Message):
   r"""MySQL database.
 
   Fields:
-    database: Database name.
+    database: The database name.
     mysqlTables: Tables in the database.
   """
 
@@ -1872,7 +1872,7 @@ class MysqlObjectIdentifier(_messages.Message):
 
 
 class MysqlProfile(_messages.Message):
-  r"""MySQL database profile.
+  r"""Profile for connecting to a MySQL source.
 
   Fields:
     hostname: Required. Hostname for the MySQL connection.
@@ -1905,13 +1905,13 @@ class MysqlRdbms(_messages.Message):
 
 
 class MysqlSourceConfig(_messages.Message):
-  r"""MySQL source configuration
+  r"""Configuration for syncing data from a MySQL source.
 
   Fields:
     binaryLogPosition: Use Binary log position based replication.
-    excludeObjects: MySQL objects to exclude from the stream.
+    excludeObjects: The MySQL objects to exclude from the stream.
     gtid: Use GTID based replication.
-    includeObjects: MySQL objects to retrieve from the source.
+    includeObjects: The MySQL objects to retrieve from the source.
     maxConcurrentBackfillTasks: Maximum number of concurrent backfill tasks.
       The number should be non negative. If not set (or set to 0), the
       system's default value will be used.
@@ -1962,7 +1962,7 @@ class MysqlTable(_messages.Message):
   Fields:
     mysqlColumns: MySQL columns in the database. When unspecified as part of
       include/exclude objects, includes/excludes everything.
-    table: Table name.
+    table: The table name.
   """
 
   mysqlColumns = _messages.MessageField('MysqlColumn', 1, repeated=True)
@@ -2207,7 +2207,7 @@ class OracleColumn(_messages.Message):
   r"""Oracle Column.
 
   Fields:
-    column: Column name.
+    column: The column name.
     dataType: The Oracle data type.
     encoding: Column encoding.
     length: Column length.
@@ -2242,7 +2242,7 @@ class OracleObjectIdentifier(_messages.Message):
 
 
 class OracleProfile(_messages.Message):
-  r"""Oracle database profile.
+  r"""Profile for connecting to an Oracle source.
 
   Messages:
     ConnectionAttributesValue: Connection string attributes
@@ -2314,7 +2314,7 @@ class OracleSchema(_messages.Message):
 
   Fields:
     oracleTables: Tables in the schema.
-    schema: Schema name.
+    schema: The schema name.
   """
 
   oracleTables = _messages.MessageField('OracleTable', 1, repeated=True)
@@ -2332,13 +2332,13 @@ class OracleScnPosition(_messages.Message):
 
 
 class OracleSourceConfig(_messages.Message):
-  r"""Oracle data source configuration
+  r"""Configuration for syncing data from an Oracle source.
 
   Fields:
     binaryLogParser: Use Binary Log Parser.
     dropLargeObjects: Drop large object values.
-    excludeObjects: Oracle objects to exclude from the stream.
-    includeObjects: Oracle objects to include in the stream.
+    excludeObjects: The Oracle objects to exclude from the stream.
+    includeObjects: The Oracle objects to include in the stream.
     logMiner: Use LogMiner.
     maxConcurrentBackfillTasks: Maximum number of concurrent backfill tasks.
       The number should be non-negative. If not set (or set to 0), the
@@ -2387,7 +2387,7 @@ class OracleTable(_messages.Message):
   Fields:
     oracleColumns: Oracle columns in the schema. When unspecified as part of
       include/exclude objects, includes/excludes everything.
-    table: Table name.
+    table: The table name.
   """
 
   oracleColumns = _messages.MessageField('OracleColumn', 1, repeated=True)
@@ -2398,7 +2398,7 @@ class PostgresqlColumn(_messages.Message):
   r"""PostgreSQL Column.
 
   Fields:
-    column: Column name.
+    column: The column name.
     dataType: The PostgreSQL data type.
     length: Column length.
     nullable: Whether or not the column can accept a null value.
@@ -2431,7 +2431,7 @@ class PostgresqlObjectIdentifier(_messages.Message):
 
 
 class PostgresqlProfile(_messages.Message):
-  r"""PostgreSQL database profile.
+  r"""Profile for connecting to a PostgreSQL source.
 
   Fields:
     database: Required. Database for the PostgreSQL connection.
@@ -2474,7 +2474,7 @@ class PostgresqlSchema(_messages.Message):
 
   Fields:
     postgresqlTables: Tables in the schema.
-    schema: Schema name.
+    schema: The schema name.
   """
 
   postgresqlTables = _messages.MessageField('PostgresqlTable', 1, repeated=True)
@@ -2482,11 +2482,11 @@ class PostgresqlSchema(_messages.Message):
 
 
 class PostgresqlSourceConfig(_messages.Message):
-  r"""PostgreSQL data source configuration
+  r"""Configuration for syncing data from a PostgreSQL source.
 
   Fields:
-    excludeObjects: PostgreSQL objects to exclude from the stream.
-    includeObjects: PostgreSQL objects to include in the stream.
+    excludeObjects: The PostgreSQL objects to exclude from the stream.
+    includeObjects: The PostgreSQL objects to include in the stream.
     maxConcurrentBackfillTasks: Maximum number of concurrent backfill tasks.
       The number should be non negative. If not set (or set to 0), the
       system's default value will be used.
@@ -2525,7 +2525,7 @@ class PostgresqlTable(_messages.Message):
   Fields:
     postgresqlColumns: PostgreSQL columns in the schema. When unspecified as
       part of include/exclude objects, includes/excludes everything.
-    table: Table name.
+    table: The table name.
   """
 
   postgresqlColumns = _messages.MessageField('PostgresqlColumn', 1, repeated=True)
@@ -2720,7 +2720,7 @@ class SalesforceField(_messages.Message):
 
   Fields:
     dataType: The data type.
-    name: Field name.
+    name: The field name.
     nillable: Indicates whether the field can accept nil values.
   """
 
@@ -2736,7 +2736,7 @@ class SalesforceObject(_messages.Message):
     fields: Salesforce fields. When unspecified as part of include objects,
       includes everything, when unspecified as part of exclude objects,
       excludes nothing.
-    objectName: Object name.
+    objectName: The object name.
   """
 
   fields = _messages.MessageField('SalesforceField', 1, repeated=True)
@@ -2764,7 +2764,7 @@ class SalesforceOrg(_messages.Message):
 
 
 class SalesforceProfile(_messages.Message):
-  r"""Salesforce profile
+  r"""Profile for connecting to a Salesforce source.
 
   Fields:
     domain: Required. Domain endpoint for the Salesforce connection.
@@ -2778,14 +2778,14 @@ class SalesforceProfile(_messages.Message):
 
 
 class SalesforceSourceConfig(_messages.Message):
-  r"""Salesforce source configuration
+  r"""Configuration for syncing data from a Salesforce source.
 
   Fields:
-    excludeObjects: Salesforce objects to exclude from the stream.
-    includeObjects: Salesforce objects to retrieve from the source.
+    excludeObjects: The Salesforce objects to exclude from the stream.
+    includeObjects: The Salesforce objects to retrieve from the source.
     pollingInterval: Required. Salesforce objects polling interval. The
       interval at which new changes will be polled for each object. The
-      duration must be between 5 minutes and 24 hours.
+      duration must be from `5 minutes` to `24 hours`, inclusive.
   """
 
   excludeObjects = _messages.MessageField('SalesforceOrg', 1)
@@ -2918,7 +2918,7 @@ class SpannerColumn(_messages.Message):
   r"""Spanner column.
 
   Fields:
-    column: Required. Column name.
+    column: Required. The column name.
     dataType: Optional. Spanner data type.
     isPrimaryKey: Optional. Whether or not the column is a primary key.
     ordinalPosition: Optional. The ordinal position of the column in the
@@ -2954,7 +2954,7 @@ class SpannerObjectIdentifier(_messages.Message):
 
 
 class SpannerProfile(_messages.Message):
-  r"""Spanner profile.
+  r"""Profile for connecting to a Spanner source.
 
   Fields:
     database: Required. Immutable. Cloud Spanner database resource. This field
@@ -2973,7 +2973,7 @@ class SpannerSchema(_messages.Message):
   r"""Spanner schema.
 
   Fields:
-    schema: Required. Schema name.
+    schema: Required. The schema name.
     tables: Optional. Spanner tables in the schema.
   """
 
@@ -2982,7 +2982,7 @@ class SpannerSchema(_messages.Message):
 
 
 class SpannerSourceConfig(_messages.Message):
-  r"""Spanner source configuration.
+  r"""Configuration for syncing data from a Spanner source.
 
   Enums:
     SpannerRpcPriorityValueValuesEnum: Optional. The RPC priority to use for
@@ -2993,10 +2993,10 @@ class SpannerSourceConfig(_messages.Message):
       backfills. Defaults to false if not set.
     changeStreamName: Required. Immutable. The change stream name to use for
       the stream.
-    excludeObjects: Optional. Spanner objects to avoid retrieving. If some
+    excludeObjects: Optional. The Spanner objects to avoid retrieving. If some
       objects are both included and excluded, an error will be thrown.
     fgacRole: Optional. The FGAC role to use for the stream.
-    includeObjects: Optional. Spanner objects to retrieve from the data
+    includeObjects: Optional. The Spanner objects to retrieve from the data
       source. If some objects are both included and excluded, an error will be
       thrown.
     maxConcurrentBackfillTasks: Optional. Maximum number of concurrent
@@ -3034,7 +3034,7 @@ class SpannerTable(_messages.Message):
 
   Fields:
     columns: Optional. Spanner columns in the table.
-    table: Required. Table name.
+    table: Required. The table name.
   """
 
   columns = _messages.MessageField('SpannerColumn', 1, repeated=True)
@@ -3069,7 +3069,7 @@ class SqlServerColumn(_messages.Message):
   r"""SQLServer Column.
 
   Fields:
-    column: Column name.
+    column: The column name.
     dataType: The SQLServer data type.
     length: Column length.
     nullable: Whether or not the column can accept a null value.
@@ -3112,7 +3112,7 @@ class SqlServerObjectIdentifier(_messages.Message):
 
 
 class SqlServerProfile(_messages.Message):
-  r"""SQLServer database profile.
+  r"""Profile for connecting to a SQLServer source.
 
   Fields:
     database: Required. Database for the SQLServer connection.
@@ -3150,7 +3150,7 @@ class SqlServerSchema(_messages.Message):
   r"""SQLServer schema.
 
   Fields:
-    schema: Schema name.
+    schema: The schema name.
     tables: Tables in the schema.
   """
 
@@ -3159,12 +3159,12 @@ class SqlServerSchema(_messages.Message):
 
 
 class SqlServerSourceConfig(_messages.Message):
-  r"""SQLServer data source configuration
+  r"""Configuration for syncing data from a SQLServer source.
 
   Fields:
     changeTables: CDC reader reads from change tables.
-    excludeObjects: SQLServer objects to exclude from the stream.
-    includeObjects: SQLServer objects to include in the stream.
+    excludeObjects: The SQLServer objects to exclude from the stream.
+    includeObjects: The SQLServer objects to include in the stream.
     maxConcurrentBackfillTasks: Max concurrent backfill tasks.
     maxConcurrentCdcTasks: Max concurrent CDC tasks.
     transactionLogs: CDC reader reads from transaction logs.
@@ -3203,7 +3203,7 @@ class SqlServerTable(_messages.Message):
   Fields:
     columns: SQLServer columns in the schema. When unspecified as part of
       include/exclude objects, includes/excludes everything.
-    table: Table name.
+    table: The table name.
   """
 
   columns = _messages.MessageField('SqlServerColumn', 1, repeated=True)

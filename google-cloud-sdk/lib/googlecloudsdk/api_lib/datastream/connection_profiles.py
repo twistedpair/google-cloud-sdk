@@ -180,6 +180,12 @@ class ConnectionProfilesClient:
           ),
       )
 
+  def _GetSpannerProfile(self, args):
+    return self._messages.SpannerProfile(
+        database=args.spanner_database,
+        host=args.spanner_host,
+    )
+
   def _GetGCSProfile(self, args, release_track):
     # TODO(b/207467120): remove bucket_name arg check.
     if release_track == base.ReleaseTrack.BETA:
@@ -297,6 +303,14 @@ class ConnectionProfilesClient:
         database=data.get('database'),
     )
 
+  def _ParseSpannerProfile(self, data):
+    if not data:
+      return {}
+    return self._messages.SpannerProfile(
+        database=data.get('database'),
+        host=data.get('host'),
+    )
+
   def _ParseGCSProfile(self, data):
     if not data:
       return {}
@@ -336,6 +350,10 @@ class ConnectionProfilesClient:
       connection_profile_obj.bigqueryProfile = self._messages.BigQueryProfile()
     elif cp_type == 'SALESFORCE':
       connection_profile_obj.salesforceProfile = self._GetSalesforceProfile(
+          args
+      )
+    elif cp_type == 'SPANNER':
+      connection_profile_obj.spannerProfile = self._GetSpannerProfile(
           args
       )
     elif cp_type == 'MONGODB':
@@ -399,8 +417,10 @@ class ConnectionProfilesClient:
     postgresql_profile = self._ParsePostgresqlProfile(
         connection_profile_data.get('postgresql_profile', {}))
     sqlserver_profile = self._ParseSqlServerProfile(
-        connection_profile_data.get('sqlserver_profile', {})
-    )
+        connection_profile_data.get('sqlserver_profile', {}))
+    spanner_profile = self._ParseSpannerProfile(
+        connection_profile_data.get('spanner_profile', {}))
+
     gcs_profile = self._ParseGCSProfile(
         connection_profile_data.get('gcs_profile', {}))
     if oracle_profile:
@@ -411,6 +431,8 @@ class ConnectionProfilesClient:
       connection_profile_msg.postgresqlProfile = postgresql_profile
     elif sqlserver_profile:
       connection_profile_msg.sqlServerProfile = sqlserver_profile
+    elif spanner_profile:
+      connection_profile_msg.spannerProfile = spanner_profile
     elif gcs_profile:
       connection_profile_msg.gcsProfile = gcs_profile
 
@@ -426,6 +448,9 @@ class ConnectionProfilesClient:
       connection_profile_msg.privateConnectivity = connection_profile_data.get(
           'private_connectivity'
       )
+    # Spanner profile does not require connectivity method.
+    elif spanner_profile:
+      pass
     else:
       raise ds_exceptions.ParseError(
           'Cannot parse YAML: missing connectivity method.'
@@ -704,6 +729,12 @@ class ConnectionProfilesClient:
           'salesforceProfile.oauth2ClientCredentials.secretManagerStoredClientSecret'
       )
 
+  def _UpdateSpannerProfile(self, connection_profile, args, update_fields):
+    """Updates Spanner connection profile."""
+    if args.IsSpecified('spanner_host'):
+      connection_profile.spannerProfile.host = args.spanner_host
+      update_fields.append('spannerProfile.host')
+
   def _UpdateMongodbProfile(self, connection_profile, args, update_fields):
     """Updates MongoDB connection profile."""
     if args.IsSpecified('mongodb_host_addresses'):
@@ -785,6 +816,8 @@ class ConnectionProfilesClient:
       self._UpdateSqlServerProfile(connection_profile, args, update_fields)
     elif cp_type == 'SALESFORCE':
       self._UpdateSalesforceProfile(connection_profile, args, update_fields)
+    elif cp_type == 'SPANNER':
+      self._UpdateSpannerProfile(connection_profile, args, update_fields)
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
       self._UpdateGCSProfile(
           connection_profile, release_track, args, update_fields

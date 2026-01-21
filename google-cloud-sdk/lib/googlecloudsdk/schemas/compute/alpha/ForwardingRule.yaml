@@ -32,6 +32,11 @@ properties:
       to the referenced target or backendService. While creating a forwarding
       rule, specifying an IPAddress is required under the following
     type: string
+  IPAddresses:
+    description: A string attribute.
+    type: array
+    items:
+      type: string
   IPProtocol:
     description: |-
       The IP protocol to which this rule applies. For protocol forwarding, valid
@@ -204,6 +209,7 @@ properties:
     enum:
     - EXTERNAL
     - EXTERNAL_MANAGED
+    - EXTERNAL_PASSTHROUGH
     - INTERNAL
     - INTERNAL_MANAGED
     - INTERNAL_SELF_MANAGED

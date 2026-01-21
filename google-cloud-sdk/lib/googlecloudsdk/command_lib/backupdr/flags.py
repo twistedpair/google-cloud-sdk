@@ -16,6 +16,7 @@
 
 import argparse
 import itertools
+import textwrap
 from typing import Any
 
 import frozendict
@@ -570,8 +571,8 @@ def AddBackupRetentionInheritance(parser):
 
 
 def AddUpdateBackupFlags(parser):
-  """Adds the --enforced-retention-end-time and --expire-time flags to the given parser."""
-  group = parser.add_argument_group('Update Backup Flags', required=True)
+  """Adds update backup flags to the given parser."""
+  group = parser.add_argument_group('Update Backup Flags')
   help_text = """
    Backups cannot be deleted until this time or later. This period can be extended, but not shortened.
    It should be specified in the format of "YYYY-MM-DD".
@@ -594,6 +595,44 @@ def AddUpdateBackupFlags(parser):
           ' format of "YYYY-MM-DD".'
       ),
   )
+
+  # A backup can only be updated with one of these flags at a time.
+  label_update_group = parser.add_mutually_exclusive_group()
+
+  label_update_group.add_argument(
+      '--update-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(value_type=str),
+      action=arg_parsers.UpdateAction,
+      help=textwrap.dedent("""\
+      A list of labels to apply to the backup.
+
+      Keys must start with a lowercase letter and contain only lowercase
+      letters, numbers, and hyphens, and must be between 1 and 63 characters
+      long. Values must contain only lowercase letters, numbers, and hyphens,
+      and must be between 0 and 63 characters long.
+
+      For example: `--update-labels=env=prod,team=storage`
+      """))
+
+  label_update_group.add_argument(
+      '--remove-labels',
+      metavar='KEY',
+      type=arg_parsers.ArgList(min_length=1),
+      help="""
+      A list of label keys to remove from the backup.
+
+      If a label does not exist, it is silently ignored.
+      """)
+
+  label_update_group.add_argument(
+      '--clear-labels',
+      action='store_true',
+      help="""
+      Remove all labels from the backup.
+
+      If the backup has no labels, this operation is a no-op.
+      """)
 
 
 def AddOutputFormat(parser, output_format):
@@ -786,7 +825,7 @@ def AddLogRetentionDays(parser, hidden=True):
   )
 
 
-def AddBackupRule(parser, required=True):
+def AddBackupRule(parser, required=False):
   """Adds a positional backup-rule argument to parser.
 
   Args:

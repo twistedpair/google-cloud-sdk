@@ -38,6 +38,7 @@ from googlecloudsdk.core.credentials import transport
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
+from googlecloudsdk.core.util import regional
 
 import grpc
 from six.moves import urllib
@@ -572,6 +573,106 @@ class WrappedStreamingResponse(grpc.Call, grpc.Future):
     return self._fn(lambda: next(self._response))
 
 
+class _UnavailableRegionDnsErrorResponse(grpc.Call, grpc.Future):
+  """Wrapped response that raises a user-friendly error on DNS failure."""
+
+  def __init__(self, response, region, known_available_regions):
+    self._response = response
+    self._region = region
+    self._known_available_regions = known_available_regions
+
+  def initial_metadata(self):
+    return self._response.initial_metadata()
+
+  def trailing_metadata(self):
+    return self._response.trailing_metadata()
+
+  def code(self):
+    return self._response.code()
+
+  def details(self):
+    return self._response.details()
+
+  def debug_error_string(self):
+    return self._response.debug_error_string()
+
+  def cancel(self):
+    return self._response.cancel()
+
+  def cancelled(self):
+    return self._response.cancelled()
+
+  def running(self):
+    return self._response.running()
+
+  def done(self):
+    return self._response.done()
+
+  def result(self, timeout=None):
+    try:
+      return self._response.result(timeout=timeout)
+    except grpc.RpcError as e:
+      regional_error = self._GetRegionalError(e)
+      if regional_error:
+        raise regional_error
+      raise
+
+  def exception(self, timeout=None):
+    e = self._response.exception(timeout=timeout)
+    regional_error = self._GetRegionalError(e)
+    if regional_error:
+      return regional_error
+    return e
+
+  def traceback(self, timeout=None):
+    return self._response.traceback(timeout=timeout)
+
+  def add_done_callback(self, fn):
+    return self._response.add_done_callback(fn)
+
+  def add_callback(self, callback):
+    return self._response.add_callback(callback)
+
+  def is_active(self):
+    return self._response.is_active()
+
+  def time_remaining(self):
+    return self._response.time_remaining()
+
+  def _GetRegionalError(self, error):
+    if error and error.code() == grpc.StatusCode.UNAVAILABLE:
+      return regional.UnavailableRegionError(
+          '{}\n\nNote: the region [{}] may not be available for this service. '
+          'Known available regions are: [{}].'.format(
+              error.details(), self._region,
+              ', '.join(sorted(self._known_available_regions))))
+    return None
+
+
+class UnavailableRegionDnsErrorInterceptor(grpc.UnaryUnaryClientInterceptor,
+                                           grpc.StreamUnaryClientInterceptor):
+  """Interceptor that catches DNS errors for invalid regions."""
+
+  def __init__(self, region, known_available_regions):
+    self._region = region
+    self._known_available_regions = known_available_regions
+
+  def intercept_call(self, continuation, client_call_details, request):
+    response = continuation(client_call_details, request)
+    return _UnavailableRegionDnsErrorResponse(
+        response, self._region, self._known_available_regions)
+
+  def intercept_unary_unary(self, continuation, client_call_details, request):
+    """Intercepts a unary-unary invocation asynchronously."""
+    return self.intercept_call(continuation, client_call_details, request)
+
+  def intercept_stream_unary(self, continuation, client_call_details,
+                             request_iterator):
+    """Intercepts a stream-unary invocation asynchronously."""
+    return self.intercept_call(continuation, client_call_details,
+                               request_iterator)
+
+
 class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor,
                          grpc.UnaryStreamClientInterceptor,
                          grpc.StreamUnaryClientInterceptor,
@@ -928,6 +1029,8 @@ def MakeTransport(
   interceptors.append(QuotaProjectInterceptor(credentials))
   interceptors.append(APIEnablementInterceptor())
   interceptors.append(RequestOrgRestrictionInterceptor())
+  if custom_interceptors is not None:
+    interceptors.extend(custom_interceptors)
   if properties.VALUES.core.log_http.GetBool():
     interceptors.append(
         LoggingInterceptor(
@@ -935,8 +1038,6 @@ def MakeTransport(
             redact_request_body_reason=redact_request_body_reason,
         )
     )
-  if custom_interceptors is not None:
-    interceptors.extend(custom_interceptors)
 
   channel = grpc.intercept_channel(channel, *interceptors)
   return transport_class(channel=channel, host=address)

@@ -20,7 +20,7 @@ import textwrap
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -99,6 +99,34 @@ For example, to clear any restrictions on GMEK:
 _CUSTOM_CONTEXT_FILE_HELP_TEXT = """
 Path to a local JSON or YAML file containing custom contexts one wants to set on
 an object. For example:
+
+1. The following JSON document shows two key value
+pairs, i.e. (key1, value1) and (key2, value2):
+
+  ```
+    {
+      "key1": {"value": "value1"},
+      "key2": {"value": "value2"}
+    }
+  ```
+
+2. The following YAML document shows two key value
+pairs, i.e. (key1, value1) and (key2, value2):
+
+  ```
+    key1:
+      value: value1
+    key2:
+      value: value2
+  ```
+
+Note: Currently object contexts only supports string format for values.
+"""
+
+_SBO_CUSTOM_CONTEXT_FILE_HELP_TEXT = """
+Path to a local JSON or YAML file containing custom contexts one wants to update
+on an object. If an entry is found, any fields set in the payload will be
+updated, otherwise the entry would be added. For example:
 
 1. The following JSON document shows two key value
 pairs, i.e. (key1, value1) and (key2, value2):
@@ -375,7 +403,7 @@ def add_precondition_flags(parser):
 
 
 def add_object_metadata_flags(
-    parser, allow_patch=False, release_track=base.ReleaseTrack.GA
+    parser, allow_patch=False, release_track=calliope_base.ReleaseTrack.GA
 ):
   """Add flags that allow setting object metadata."""
   metadata_group = parser.add_group(category='OBJECT METADATA')
@@ -441,7 +469,7 @@ def add_object_metadata_flags(
           ' `--preserve-posix`, POSIX attributes specified by this flag are not'
           ' preserved.'))
 
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track == calliope_base.ReleaseTrack.ALPHA:
     add_object_contexts_flags(metadata_group)
 
   if allow_patch:
@@ -1313,7 +1341,7 @@ def check_if_use_gsutil_style(args):
   return use_gsutil_style
 
 
-def add_batch_jobs_flags(parser, track=base.ReleaseTrack.GA):
+def add_batch_jobs_flags(parser, track=calliope_base.ReleaseTrack.GA):
   """Adds the flags for the batch-operations jobs create command."""
 
   bucket_source = parser.add_group(mutex=True, required=True)
@@ -1324,7 +1352,7 @@ def add_batch_jobs_flags(parser, track=base.ReleaseTrack.GA):
       ),
       type=str,
   )
-  if track == base.ReleaseTrack.ALPHA:
+  if track == calliope_base.ReleaseTrack.ALPHA:
     bucket_source.add_argument(
         '--bucket-list',
         help=(
@@ -1461,6 +1489,56 @@ def add_batch_jobs_flags(parser, track=base.ReleaseTrack.GA):
       metavar='KEY=VALUE',
       action=arg_parsers.StoreOnceAction,
   )
+  if track == calliope_base.ReleaseTrack.ALPHA:
+    custom_contexts_mutex_group = transformation.add_group(
+        mutex=True,
+        help='Describes options to update object custom contexts.',
+    )
+    custom_context_updates_group = custom_contexts_mutex_group.add_group(
+        help=(
+            'Flags for updating or clearing individual custom contexts. A key'
+            ' cannot be present in both `--update-object-custom-contexts` and'
+            ' `--clear-object-custom-contexts`.'
+        )
+    )
+    custom_context_updates_options_group = custom_context_updates_group.add_group(
+        mutex=True,
+        help=(
+            'Flags for specifying custom context updates in key-value pairs or'
+            ' from a file.'
+        ),
+    )
+    custom_context_updates_options_group.add_argument(
+        '--update-object-custom-contexts',
+        metavar='CUSTOM_CONTEXTS_KEYS_AND_VALUES',
+        type=arg_parsers.ArgDict(),
+        help=(
+            'Inserts or updates object custom contexts. If an'
+            ' existing entry is found, the value will be updated, otherwise the'
+            ' entry would be added.'
+        ),
+    )
+    custom_context_updates_options_group.add_argument(
+        '--update-object-custom-contexts-file',
+        metavar='CUSTOM_CONTEXTS_FILE',
+        type=str,
+        help=_SBO_CUSTOM_CONTEXT_FILE_HELP_TEXT,
+    )
+    custom_context_updates_group.add_argument(
+        '--clear-object-custom-contexts',
+        metavar='CUSTOM_CONTEXTS_KEYS',
+        type=arg_parsers.ArgList(),
+        help=(
+            'Removes object custom contexts by key. If an entry is not found,'
+            ' it will be ignored.'
+        ),
+    )
+    custom_contexts_mutex_group.add_argument(
+        '--clear-all-object-custom-contexts',
+        action='store_true',
+        help='Clears all object custom contexts.',
+    )
+
   parser.add_argument(
       '--description',
       help='Description for the batch job.',

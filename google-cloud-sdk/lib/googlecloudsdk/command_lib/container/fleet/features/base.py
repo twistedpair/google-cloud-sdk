@@ -247,7 +247,7 @@ class DisableCommand(UpdateCommandMixin, calliope_base.DeleteCommand):
       action='store_true',
       help=(
           'Disable the [fleet-default membership configuration]('
-          'https://cloud.google.com/kubernetes-engine/fleet-management/docs/manage-features).'
+          'https://docs.cloud.google.com/kubernetes-engine/fleet-management/docs/manage-features).'
           ' Does not change existing membership configurations.'
           ' Does nothing if the feature is disabled.'
       ),

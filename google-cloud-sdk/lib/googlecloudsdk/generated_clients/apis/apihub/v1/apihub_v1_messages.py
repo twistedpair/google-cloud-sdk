@@ -112,9 +112,10 @@ class ApihubProjectsLocationsApiHubInstancesLookupRequest(_messages.Message):
   r"""A ApihubProjectsLocationsApiHubInstancesLookupRequest object.
 
   Fields:
-    parent: Required. There will always be only one Api Hub instance for a GCP
-      project across all locations. The parent resource for the Api Hub
-      instance resource. Format: `projects/{project}/locations/{location}`
+    parent: Required. There will always be only one Api Hub instance for a
+      Google Cloud project across all locations. The parent resource for the
+      Api Hub instance resource. Format:
+      `projects/{project}/locations/{location}`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -3646,8 +3647,8 @@ class GoogleCloudApihubV1Deployment(_messages.Message):
     sourceMetadata: Output only. The list of sources and metadata from the
       sources of the deployment.
     sourceProject: Optional. The project to which the deployment belongs. For
-      GCP gateways, this will refer to the project identifier. For others like
-      Edge/OPDK, this will refer to the org identifier.
+      Google Cloud gateways, this will refer to the project identifier. For
+      others like Edge/OPDK, this will refer to the org identifier.
     sourceUri: Optional. The uri where additional source specific information
       for this deployment can be found. This maps to the following system
       defined attribute:
@@ -3758,8 +3759,8 @@ class GoogleCloudApihubV1DiscoveredApiObservation(_messages.Message):
     name: Identifier. The name of the discovered API Observation. Format: `pro
       jects/{project}/locations/{location}/discoveredApiObservations/{discover
       ed_api_observation}`
-    origin: Optional. For an observation pushed from a gcp resource, this
-      would be the gcp project id.
+    origin: Optional. For an observation pushed from a Google Cloud resource,
+      this would be the Google Cloud project id.
     serverIps: Optional. The IP address (IPv4 or IPv6) of the origin server
       that the request was sent to. This field can include port information.
       Examples: `"192.168.1.1"`, `"10.0.0.1:80"`,
@@ -3779,8 +3780,8 @@ class GoogleCloudApihubV1DiscoveredApiObservation(_messages.Message):
 
     Values:
       SOURCE_TYPE_UNSPECIFIED: Source type not specified.
-      GCP_XLB: GCP external load balancer.
-      GCP_ILB: GCP internal load balancer.
+      GCP_XLB: Google Cloud external load balancer.
+      GCP_ILB: Google Cloud internal load balancer.
     """
     SOURCE_TYPE_UNSPECIFIED = 0
     GCP_XLB = 1
@@ -5330,9 +5331,9 @@ class GoogleCloudApihubV1PluginInstance(_messages.Message):
       present in the gateway instance linked to the plugin instance. The key
       is the `source_environment` name from the SourceEnvironment message.
     sourceProjectId: Optional. The source project id of the plugin instance.
-      This will be the id of runtime project in case of gcp based plugins and
-      org id in case of non gcp based plugins. This field will be a required
-      field for Google provided on-ramp plugins.
+      This will be the id of runtime project in case of Google Cloud based
+      plugins and org id in case of non-Google Cloud based plugins. This field
+      will be a required field for Google provided on-ramp plugins.
     state: Output only. The current state of the plugin instance (e.g.,
       enabled, disabled, provisioning).
     updateTime: Output only. Timestamp indicating when the plugin instance was
@@ -5460,14 +5461,15 @@ class GoogleCloudApihubV1PluginInstanceAction(_messages.Message):
       instance action done corresponding to an API hub instance.
     resourceConfig: Output only. The configuration of resources created for a
       given plugin instance action. Note these will be returned only in case
-      of Non-GCP plugins like OPDK.
+      of non-Google Cloud plugins like OPDK.
     scheduleCronExpression: Optional. The schedule for this plugin instance
       action. This can only be set if the plugin supports
       API_HUB_SCHEDULE_TRIGGER mode for this action.
     scheduleTimeZone: Optional. The time zone for the schedule cron
       expression. If not provided, UTC will be used.
     serviceAccount: Optional. The service account used to publish data. Note,
-      the service account will only be accepted for non GCP plugins like OPDK.
+      the service account will only be accepted for non-Google Cloud plugins
+      like OPDK.
     state: Output only. The current state of the plugin action in the plugin
       instance.
   """

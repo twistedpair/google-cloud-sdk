@@ -1392,9 +1392,17 @@ class Behavior(_messages.Message):
       missing an underlying file). The operation metadata and response will
       contain a list of skipped version errors that can be inspected for
       details on the failure(s).
+    maxVersionAgeDays: Optional. If set, only versions created within the
+      specified number of days (24-hour periods) up to the operation's start
+      time will be copied. If unset or set to 0, all versions will be copied.
+      This field provides a convenient way to speed up regular repository
+      copies. For example, after an initial full copy operation, this field
+      can be set in recurring calls (e.g., from a cron job) to copy only
+      recent artifacts, rather than the entire repository.
   """
 
   continueOnSkippedVersion = _messages.BooleanField(1)
+  maxVersionAgeDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Binding(_messages.Message):

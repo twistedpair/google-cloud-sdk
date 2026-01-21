@@ -214,6 +214,47 @@ class StorageBatchOperationsApi:
       put_metadata.objectRetention = object_retention
     job.putMetadata = put_metadata
 
+  def _modify_job_update_object_custom_context(
+      self,
+      job,
+      clear_all_object_custom_contexts=None,
+      update_object_custom_contexts=None,
+      update_object_custom_contexts_file=None,
+      clear_object_custom_contexts=None,
+  ):
+    """Modifies a job to update object custom contexts."""
+    update_object_custom_context = self.messages.UpdateObjectCustomContext()
+    if clear_all_object_custom_contexts:
+      update_object_custom_context.clearAll = True
+    else:
+      custom_context_updates = self.messages.CustomContextUpdates()
+      if clear_object_custom_contexts:
+        custom_context_updates.keysToClear = clear_object_custom_contexts
+
+      if update_object_custom_contexts:
+        updates_dict = {}
+        for key, value in update_object_custom_contexts.items():
+          updates_dict[key] = value
+        if updates_dict:
+          updates = self.messages.CustomContextUpdates.UpdatesValue()
+          for key, value in updates_dict.items():
+            updates.additionalProperties.append(
+                self.messages.CustomContextUpdates.UpdatesValue.AdditionalProperty(
+                    key=key,
+                    value=self.messages.ObjectCustomContextPayload(value=value),
+                )
+            )
+          custom_context_updates.updates = updates
+      elif update_object_custom_contexts_file:
+        updates = storage_batch_operations_util.parse_custom_contexts_file(
+            update_object_custom_contexts_file
+        )
+
+        custom_context_updates.updates = updates
+
+      update_object_custom_context.customContextUpdates = custom_context_updates
+    job.updateObjectCustomContext = update_object_custom_context
+
   def _modify_job_logging_config(self, job, log_actions, log_action_states):
     """Modifies a job to create logging config."""
     logging_config = self.messages.LoggingConfig()
@@ -262,6 +303,27 @@ class StorageBatchOperationsApi:
       self._modify_job_rewrite_object(job, args.rewrite_object)
     elif args.put_metadata:
       self._modify_job_put_metadata(job, args.put_metadata)
+    elif (
+        getattr(args, "clear_all_object_custom_contexts", None)
+        or getattr(args, "update_object_custom_contexts", None)
+        or getattr(args, "update_object_custom_contexts_file", None)
+        or getattr(args, "clear_object_custom_contexts", None)
+    ):
+      self._modify_job_update_object_custom_context(
+          job,
+          clear_all_object_custom_contexts=getattr(
+              args, "clear_all_object_custom_contexts", None
+          ),
+          update_object_custom_contexts=getattr(
+              args, "update_object_custom_contexts", None
+          ),
+          update_object_custom_contexts_file=getattr(
+              args, "update_object_custom_contexts_file", None
+          ),
+          clear_object_custom_contexts=getattr(
+              args, "clear_object_custom_contexts", None
+          ),
+      )
     else:
       raise errors.StorageBatchOperationsApiError(
           "Exactly one transformaiton must be specified."
@@ -286,13 +348,16 @@ class StorageBatchOperationsApi:
         )
     )
 
-  def delete_batch_job(self, batch_job_name):
+  def delete_batch_job(self, batch_job_name, force=None):
     """Deletes a batch job by resource name."""
-    return self.client.projects_locations_jobs.Delete(
+    request = (
         self.messages.StoragebatchoperationsProjectsLocationsJobsDeleteRequest(
             name=batch_job_name
         )
     )
+    if force is not None:
+      request.force = force
+    return self.client.projects_locations_jobs.Delete(request)
 
   def list_batch_jobs(self, location=None, page_size=None):
     if location:

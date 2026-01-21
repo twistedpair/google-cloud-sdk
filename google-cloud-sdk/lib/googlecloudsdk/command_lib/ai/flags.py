@@ -621,10 +621,12 @@ allowed per metric.
 
 *METRIC-NAME*::: Resource metric name. Choices are {}.
 
-*TARGET*::: Target value for the given metric. For `cpu-usage` and
-`gpu-duty-cycle`, the target is the target resource utilization in percentage
-(1% - 100%). For `request-counts-per-minute`, the target is the number of
-requests per minute per replica.
+*TARGET*::: Target value for the given metric. For `cpu-usage`, `gpu-duty-cycle`,
+`dcgm-fi-dev-gpu-util`, and `vllm-gpu-cache-usage-perc`, the target is the target
+resource utilization in percentage (1% - 100%). For `request-counts-per-minute`,
+the target is the number of requests per minute per replica. For
+`vllm-num-requests-waiting`, the target is the number of pending requests allowed
+on the replica.
 
 For example, to set target CPU usage to 70% and target requests to 600 per
 minute per replica:

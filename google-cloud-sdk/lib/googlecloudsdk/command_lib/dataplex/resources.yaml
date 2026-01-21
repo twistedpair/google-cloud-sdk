@@ -383,3 +383,32 @@ entry_link:
     attribute_name: entry_link
     help: |
         Entry Link between two entries.
+
+data_product:
+  name: data product
+  collection: dataplex.projects.locations.dataProducts
+  request_id_field: dataProductId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &data_product
+    parameter_name: dataProductsId
+    attribute_name: data_product
+    help: |
+      Identifier of the Dataplex Data Product resource.
+
+data_asset:
+  name: data asset
+  collection: dataplex.projects.locations.dataProducts.dataAssets
+  request_id_field: dataAssetId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *data_product
+  - &data_asset
+    parameter_name: dataAssetsId
+    attribute_name: data_asset
+    help: |
+      Identifier of the Dataplex Data Asset resource.

@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 import os
 import platform
 
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import six
@@ -74,3 +76,15 @@ def CreateEnableFile(ve_dir):
 def RmEnableFile(ve_dir):
   """Remove enable file."""
   os.unlink('{}/{}'.format(ve_dir, ENABLE_FILE))
+
+
+def EnableVirtualEnv(ve_dir):
+  """Enable virtualenv."""
+  if VirtualEnvExists(ve_dir):
+    if not EnableFileExists(ve_dir):
+      CreateEnableFile(ve_dir)
+    log.status.Print('Virtual env enabled.')
+  else:
+    log.error('Virtual env does not exist at {}.'.format(ve_dir))
+    raise exceptions.ExitCodeNoError(exit_code=1)
+

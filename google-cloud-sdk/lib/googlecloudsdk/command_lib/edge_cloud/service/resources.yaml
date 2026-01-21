@@ -1,0 +1,43 @@
+project:
+  name: project
+  collection: edgecontainer.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+
+location:
+  name: location
+  collection: edgecontainer.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: edgecontainer.projects.locations.operations
+  attributes:
+  - *project
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: Edge-container long running operation.
+  disable_auto_completers: false
+
+zonalService:
+  name: Zonal Service
+  collection: edgecontainer.projects.locations.zonalServices
+  request_id_field: enableZonalServiceRequest.zonalServiceId
+  attributes:
+  - *project
+  - *location
+  - &zonalService
+    parameter_name: zonalServicesId
+    attribute_name: zonal_service
+    help: Edge-container zonal service.
+  disable_auto_completers: false

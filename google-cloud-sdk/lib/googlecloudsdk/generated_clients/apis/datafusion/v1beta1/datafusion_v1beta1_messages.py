@@ -1233,12 +1233,16 @@ class LoggingConfig(_messages.Message):
   r"""Logging configuration for a Data Fusion instance.
 
   Fields:
+    enableInstanceV2Logs: Optional. Option to enable the InstanceV2 logging
+      for this instance. This field is supported only in CDF patch revision
+      versions 6.11.1.1 and above.
     instanceCloudLoggingDisabled: Optional. Option to determine whether
       instance logs should be written to Cloud Logging. By default, instance
       logs are written to Cloud Logging.
   """
 
-  instanceCloudLoggingDisabled = _messages.BooleanField(1)
+  enableInstanceV2Logs = _messages.BooleanField(1)
+  instanceCloudLoggingDisabled = _messages.BooleanField(2)
 
 
 class MaintenanceEvent(_messages.Message):

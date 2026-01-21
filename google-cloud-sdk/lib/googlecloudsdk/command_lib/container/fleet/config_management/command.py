@@ -492,15 +492,11 @@ def _validate_meta(configmanagement):
     raise exceptions.Error('Please remove illegal field(s) {}'.format(
         ', '.join(['.'+f for f in illegal_root_fields])
     ))
-  # TODO(b/298461043): Document applySpecVersion better in
-  # https://cloud.google.com/anthos-config-management/docs/reference/gcloud-apply-fields.
   if 'applySpecVersion' not in configmanagement:
     raise exceptions.Error('Missing required field .applySpecVersion')
   if configmanagement['applySpecVersion'] != 1:
     raise exceptions.Error(
-        'Only "applySpecVersion: 1" is supported. To use a later version,'
-        'please fetch the config by running\n'
-        'gcloud container fleet config-management fetch-for-apply'
+        'Only "applySpecVersion: 1" is supported.'
     )
   if 'spec' not in configmanagement:
     raise exceptions.Error('Missing required field .spec')

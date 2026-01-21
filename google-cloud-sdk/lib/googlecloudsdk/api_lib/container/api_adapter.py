@@ -1798,6 +1798,7 @@ class CreateNodePoolOptions(object):
       node_drain_pdb_timeout=None,
       respect_pdb_during_node_pool_deletion=None,
       enable_lustre_multi_nic=None,
+      subnetwork=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1913,6 +1914,7 @@ class CreateNodePoolOptions(object):
         respect_pdb_during_node_pool_deletion
     )
     self.enable_lustre_multi_nic = enable_lustre_multi_nic
+    self.subnetwork = subnetwork
 
 
 class UpdateNodePoolOptions(object):
@@ -7442,6 +7444,7 @@ class APIAdapter(object):
     if (
         options.pod_ipv4_range is None
         and options.create_pod_ipv4_range is None
+        and options.subnetwork is None
         and options.enable_private_nodes is None
         and options.network_performance_config is None
         and options.disable_pod_cidr_overprovision is None
@@ -7465,6 +7468,8 @@ class APIAdapter(object):
       network_config.podIpv4CidrBlock = options.create_pod_ipv4_range.get(
           'range', None
       )
+    if options.subnetwork is not None:
+      network_config.subnetwork = options.subnetwork
     if options.enable_private_nodes is not None:
       network_config.enablePrivateNodes = options.enable_private_nodes
     if options.disable_pod_cidr_overprovision is not None:

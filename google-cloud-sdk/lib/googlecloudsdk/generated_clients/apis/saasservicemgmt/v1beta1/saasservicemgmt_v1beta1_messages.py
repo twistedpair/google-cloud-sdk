@@ -1192,6 +1192,8 @@ class Rollout(_messages.Message):
       Rollout States (such as RUNNING -> SUCCEEDED or RUNNING -> FAILED).
       Requests can only be made when the Rollout is in a non-terminal state.
     createTime: Output only. The timestamp when the resource was created.
+    deleteTime: Output only. The timestamp when the resource was marked for
+      deletion (deletion is an asynchronous operation).
     effectiveUnitFilter: Optional. Output only. Output only snapshot of the
       effective unit filter at Rollout start time. Contains a
       CEL(https://github.com/google/cel-spec) expression consisting of a
@@ -1342,25 +1344,26 @@ class Rollout(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   control = _messages.MessageField('RolloutControl', 2)
   createTime = _messages.StringField(3)
-  effectiveUnitFilter = _messages.StringField(4)
-  endTime = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  flagRelease = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  parentRollout = _messages.StringField(10)
-  release = _messages.StringField(11)
-  rolloutKind = _messages.StringField(12)
-  rolloutOrchestrationStrategy = _messages.StringField(13)
-  rootRollout = _messages.StringField(14)
-  startTime = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateMessage = _messages.StringField(17)
-  stateTransitionTime = _messages.StringField(18)
-  stats = _messages.MessageField('RolloutStats', 19)
-  uid = _messages.StringField(20)
-  unitFilter = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  deleteTime = _messages.StringField(4)
+  effectiveUnitFilter = _messages.StringField(5)
+  endTime = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  flagRelease = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  parentRollout = _messages.StringField(11)
+  release = _messages.StringField(12)
+  rolloutKind = _messages.StringField(13)
+  rolloutOrchestrationStrategy = _messages.StringField(14)
+  rootRollout = _messages.StringField(15)
+  startTime = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateMessage = _messages.StringField(18)
+  stateTransitionTime = _messages.StringField(19)
+  stats = _messages.MessageField('RolloutStats', 20)
+  uid = _messages.StringField(21)
+  unitFilter = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class RolloutControl(_messages.Message):
@@ -3944,6 +3947,8 @@ class UnitOperation(_messages.Message):
     conditions: Optional. Output only. A set of conditions which indicate the
       various conditions this resource can have.
     createTime: Output only. The timestamp when the resource was created.
+    deleteTime: Output only. The timestamp when the resource was marked for
+      deletion (deletion is an asynchronous operation).
     deprovision: A Deprovision attribute.
     engineState: Optional. Output only. The engine state for on-going
       deployment engine operation(s). This field is opaque for external usage.
@@ -4085,22 +4090,23 @@ class UnitOperation(_messages.Message):
   cancel = _messages.BooleanField(2)
   conditions = _messages.MessageField('UnitOperationCondition', 3, repeated=True)
   createTime = _messages.StringField(4)
-  deprovision = _messages.MessageField('Deprovision', 5)
-  engineState = _messages.StringField(6)
-  errorCategory = _messages.EnumField('ErrorCategoryValueValuesEnum', 7)
-  etag = _messages.StringField(8)
-  flagUpdate = _messages.MessageField('FlagUpdate', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  parentUnitOperation = _messages.StringField(12)
-  provision = _messages.MessageField('Provision', 13)
-  rollout = _messages.StringField(14)
-  schedule = _messages.MessageField('Schedule', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  unit = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  upgrade = _messages.MessageField('Upgrade', 20)
+  deleteTime = _messages.StringField(5)
+  deprovision = _messages.MessageField('Deprovision', 6)
+  engineState = _messages.StringField(7)
+  errorCategory = _messages.EnumField('ErrorCategoryValueValuesEnum', 8)
+  etag = _messages.StringField(9)
+  flagUpdate = _messages.MessageField('FlagUpdate', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  parentUnitOperation = _messages.StringField(13)
+  provision = _messages.MessageField('Provision', 14)
+  rollout = _messages.StringField(15)
+  schedule = _messages.MessageField('Schedule', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  unit = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  upgrade = _messages.MessageField('Upgrade', 21)
 
 
 class UnitOperationCondition(_messages.Message):

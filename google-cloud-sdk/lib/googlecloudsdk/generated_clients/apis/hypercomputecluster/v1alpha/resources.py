@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://hypercomputecluster.googleapis.com/v1alpha/'
-DOCS_URL = 'https://cloud.google.com/ai-hypercomputer/docs/cluster-director'
+DOCS_URL = 'https://docs.cloud.google.com/cluster-director/docs'
 
 
 class Collections(enum.Enum):

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.backupdr import util
 from googlecloudsdk.api_lib.backupdr.restore_util import ComputeUtil
 from googlecloudsdk.api_lib.backupdr.restore_util import DiskUtil
@@ -582,13 +583,53 @@ class BackupsClient(util.BackupDrClientBase):
     )
     return self.service.Restore(request)
 
-  def ParseUpdate(self, enforced_retention, expire_time):
-    updated_backup = self.messages.Backup()
-    if enforced_retention is not None:
-      updated_backup.enforcedRetentionEndTime = enforced_retention
-    if expire_time is not None:
-      updated_backup.expireTime = expire_time
+  def ParseUpdate(
+      self,
+      backup,
+      enforced_retention,
+      expire_time,
+      update_labels=None,
+      remove_labels=None,
+      clear_labels=None,
+  ):
+    original_backup = self.Get(backup)
+    updated_backup = self.messages.Backup(
+        enforcedRetentionEndTime=enforced_retention, expireTime=expire_time
+    )
+    updated_backup.etag = original_backup.etag
+
+    if update_labels is not None:
+      updated_backup.labels = self.messages.Backup.LabelsValue(
+          additionalProperties=[
+              self.messages.Backup.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in update_labels.items()
+          ]
+      )
+    elif remove_labels is not None:
+      if original_backup.labels:
+        original_labels_dict = encoding.MessageToDict(original_backup.labels)
+        for key_to_remove in remove_labels:
+          original_labels_dict.pop(key_to_remove, None)
+        updated_backup.labels = self.messages.Backup.LabelsValue(
+            additionalProperties=[
+                self.messages.Backup.LabelsValue.AdditionalProperty(
+                    key=key, value=value
+                )
+                for key, value in original_labels_dict.items()
+            ]
+        )
+    elif clear_labels is not None:
+      # To clear labels, we must send an empty LabelsValue message.
+      updated_backup.labels = self.messages.Backup.LabelsValue()
     return updated_backup
+
+  def Get(self, backup_ref):
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsGetRequest(
+        name=backup_ref.RelativeName()
+    )
+    return self.service.Get(request)
 
   def Update(self, resource, backup, update_mask):
     request_id = command_util.GenerateRequestId()

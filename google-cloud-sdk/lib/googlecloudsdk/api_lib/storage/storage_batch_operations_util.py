@@ -16,8 +16,11 @@
 
 import re
 
+from apitools.base.py import encoding_helper
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.command_lib.storage import errors as storage_errors
 
 
 def process_included_object_prefixes(included_object_prefixes):
@@ -44,4 +47,42 @@ def get_job_id_and_parent_string_from_resource_name(resource_name):
     raise errors.StorageBatchOperationsApiError(
         "Resource name invalid. Please make sure project, location, and job ID"
         " are all provided."
+    )
+
+
+def parse_custom_contexts_file(file_path):
+  """Parses custom contexts from a file, and validate it against the message.
+
+  Args:
+    file_path (str): Path to the file containing the custom contexts.
+
+  Returns:
+    A dictionary containing the custom contexts parsed from the file.
+
+  Raises:
+    errors.StorageBatchOperationsApiError: If the provided file is not a valid
+    json/yaml file or contains invalid custom contexts.
+  """
+  try:
+    messages = core_apis.GetMessagesModule("storagebatchoperations", "v1")
+    parsed_custom_contexts = metadata_util.cached_read_yaml_json_file(file_path)
+
+    for _, value in parsed_custom_contexts.items():
+      if not isinstance(value, dict):
+        raise errors.StorageBatchOperationsApiError(
+            "Invalid format for specified contexts file. Each top-level"
+            " value must be a dictionary."
+        )
+    # Convert the parsed content respect the API message. Unknown fields will
+    # be ignored.
+    updates = encoding_helper.DictToMessage(
+        parsed_custom_contexts,
+        messages.CustomContextUpdates.UpdatesValue,
+    )
+    return updates
+  except (storage_errors.InvalidUrlError, AttributeError, TypeError) as e:
+    print("error: ", e)
+    raise errors.StorageBatchOperationsApiError(
+        "Error while parsing the specified contexts file, please ensure that"
+        " specified file exists and is valid: {}".format(e),
     )

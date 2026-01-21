@@ -36,6 +36,9 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core.util import text
 
 
+LOCATION_ATTRIBUTE_NAMES = frozenset(('location', 'region', 'zone'))
+
+
 class Arguments(object):
   """Everything about cli arguments are registered in this section."""
 
@@ -661,6 +664,29 @@ def _GetAttributeNames(resource_spec):
   return [attr.name for attr in resource_spec.attributes]
 
 
+def _GetLocationParamIds(attributes):
+  """Get the attribute for specifying endpoint location or default."""
+  explicit_params = [
+      attr.param_name for attr in attributes
+      if attr.regional_endpoints_flag]
+  default_params = [
+      attr.param_name for attr in attributes
+      if attr.name in LOCATION_ATTRIBUTE_NAMES]
+  params = explicit_params or default_params
+  return sorted(params)
+
+
+def _ParseLocation(location_param_ids, resource):
+  """Parse the location from the namespace."""
+  if not resource:
+    return None
+  resource_dict = resource.AsDict()
+  for param_id in location_param_ids:
+    if param_id in resource_dict:
+      return resource_dict[param_id]
+  return None
+
+
 def _GetAnchors(resource_spec):
   """Get the anchor for the resource arg."""
   return [a for a in resource_spec.attributes
@@ -956,6 +982,12 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
     """Returns a map of attribute name to normalized flag name."""
     pass
 
+  @property
+  @abc.abstractmethod
+  def location_param_ids(self):
+    """Returns set of the location parameter ids for the resource."""
+    pass
+
   @abc.abstractmethod
   def IsPrimaryResource(self, resource_collection):
     """Determines if this resource arg is the primary resource."""
@@ -966,6 +998,11 @@ class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
       self, method, presentation_flag_name=None, flag_name_override=None,
       shared_resource_flags=None, group_help=None):
     """Generate the resource arg for the given method."""
+    pass
+
+  @abc.abstractmethod
+  def ParseLocation(self, namespace):
+    """Parses the resource ref from namespace (no update flags)."""
     pass
 
   @abc.abstractmethod
@@ -1152,6 +1189,10 @@ class YAMLResourceArgument(YAMLConceptArgument):
     """Returns a map of attribute name to flag name."""
     return _AllRemovedFlags(self._removed_attrs, self.attribute_to_flag_map)
 
+  @property
+  def location_param_ids(self):
+    return _GetLocationParamIds(self._resource_spec.attributes)
+
   def _GetParentResource(self, resource_collection):
     parent_collection, _, _ = resource_collection.full_name.rpartition('.')
     return registry.GetAPICollection(
@@ -1236,6 +1277,11 @@ class YAMLResourceArgument(YAMLConceptArgument):
     return concept_parsers.ConceptParser(
         [presentation_spec],
         command_level_fallthroughs=command_level_fallthroughs)
+
+  def ParseLocation(self, namespace):
+    """Parses the location ref from namespace (no update flags)."""
+    resource = self.ParseResourceArg(namespace)
+    return _ParseLocation(self.location_param_ids, resource)
 
   def ParseResourceArg(self, namespace, group_required=True):
     """Parses the resource ref from namespace (no update flags).
@@ -1439,6 +1485,10 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     return _AllRemovedFlags(self._removed_attrs, self.attribute_to_flag_map)
 
   @property
+  def location_param_ids(self):
+    return _GetLocationParamIds(self._resource_spec.attributes)
+
+  @property
   def _resource_spec(self):
     """Resource spec generated from the YAML."""
 
@@ -1517,6 +1567,11 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     return concept_parsers.ConceptParser(
         [presentation_spec],
         command_level_fallthroughs=command_level_fallthroughs)
+
+  def ParseLocation(self, namespace):
+    """Parses the location ref from namespace (no update flags)."""
+    resource = self.ParseResourceArg(namespace)
+    return  _ParseLocation(self.location_param_ids, resource)
 
   def ParseResourceArg(self, namespace, group_required=True):
     """Parses the resource ref from namespace (no update flags).

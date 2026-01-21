@@ -787,14 +787,14 @@ class DeidentifyDicomStoreRequest(_messages.Message):
   Fields:
     config: Deidentify configuration. Only one of `config` and
       `gcs_config_uri` can be specified.
-    destinationStore: Required. The name of the DICOM store to create and
-      write the redacted data to. For example, `projects/{project_id}/location
-      s/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. *
-      The destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same location. De-identifying data
-      across multiple locations is not supported. * The destination DICOM
-      store must not exist. * The caller must have the necessary permissions
-      to create the destination DICOM store.
+    destinationStore: Required. The name of the DICOM store to write the
+      redacted data to. For example, `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
+      destination dataset and DICOM store must exist. * The source dataset and
+      destination dataset must both reside in the same location. De-
+      identifying data across multiple locations is not supported. * The
+      caller must have the healthcare.dicomStores.dicomWebWrite permission to
+      write to the destination DICOM store.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -807,14 +807,14 @@ class DeidentifyFhirStoreRequest(_messages.Message):
   Fields:
     config: Deidentify configuration. Only one of `config` and
       `gcs_config_uri` can be specified.
-    destinationStore: Required. The name of the FHIR store to create and write
-      the redacted data to. For example, `projects/{project_id}/locations/{loc
-      ation_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
-      destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same location. De-identifying data
-      across multiple locations is not supported. * The destination FHIR store
-      must exist. * The caller must have the healthcare.fhirResources.update
-      permission to write to the destination FHIR store.
+    destinationStore: Required. The name of the FHIR store to write the
+      redacted data to. For example, `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
+      destination dataset and FHIR store must exist. * The source dataset and
+      destination dataset must both reside in the same location. De-
+      identifying data across multiple locations is not supported. * The
+      caller must have the healthcare.fhirResources.update permission to write
+      to the destination FHIR store.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)

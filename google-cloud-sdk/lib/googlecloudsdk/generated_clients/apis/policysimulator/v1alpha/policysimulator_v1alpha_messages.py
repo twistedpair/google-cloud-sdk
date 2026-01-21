@@ -662,15 +662,22 @@ class GoogleCloudPolicysimulatorV1alphaAccessActivityResource(_messages.Message)
   r"""The resource the principal will lose or gain access to.
 
   Fields:
+    external: Indicates if the resource is external to the current
+      organizational scope. This can only be true when analyzing principal
+      activities. E.g. a principal under my organization is accessing a
+      resource outside of my organization.
     fullResourceName: The full resource name of the resource.
+    locations: The locations the resource is in. Example: "us-central1"
     service: The service that the resource belongs to. Example:
       "compute.googleapis.com"
     type: The resource type.
   """
 
-  fullResourceName = _messages.StringField(1)
-  service = _messages.StringField(2)
-  type = _messages.StringField(3)
+  external = _messages.BooleanField(1)
+  fullResourceName = _messages.StringField(2)
+  locations = _messages.StringField(3, repeated=True)
+  service = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class GoogleCloudPolicysimulatorV1alphaAccessChange(_messages.Message):
@@ -1023,6 +1030,8 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestAccessDecisionChangeSumma
   r"""Summary of the access changes detected during the activity backtest.
 
   Fields:
+    impactedLocations: Output only. List of resource locations for which at
+      least one access changed.
     impactedPrincipalsCount: Output only. Principals for which at least one
       access changed.
     impactedResourcesCount: Output only. Resources for which at least one
@@ -1031,9 +1040,10 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestAccessDecisionChangeSumma
       deny.
   """
 
-  impactedPrincipalsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  impactedResourcesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  newlyDeniedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  impactedLocations = _messages.StringField(1, repeated=True)
+  impactedPrincipalsCount = _messages.IntegerField(2)
+  impactedResourcesCount = _messages.IntegerField(3)
+  newlyDeniedCount = _messages.IntegerField(4)
 
 
 class GoogleCloudPolicysimulatorV1alphaActivityBacktestActivityBacktestSummary(_messages.Message):
@@ -1053,6 +1063,13 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestActivityBacktestSummary(_
 class GoogleCloudPolicysimulatorV1alphaActivityBacktestEvaluationSummary(_messages.Message):
   r"""Summary of the access requests evaluated during the activity backtest.
 
+  Messages:
+    EvaluationErrorReasonCountsValue: Output only. Number of failed
+      evaluations organized by ErrorInfo.reason. Known reasons are: -
+      UNSPECIFIED: No reason was provided. See the results list for specific
+      errors. - RAB_UNSUPPORTED: A RAB policy evaluation was requested for an
+      unsupported resource type.
+
   Fields:
     evaluatedAccessesCount: Output only. Number of accesses evaluated for the
       activity backtest. If this number is 0, there were no access activities
@@ -1061,11 +1078,49 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestEvaluationSummary(_messag
       evaluated for the activity backtest.
     evaluatedResourcesCount: Output only. Number of unique resources evaluated
       for the activity backtest.
+    evaluationErrorReasonCounts: Output only. Number of failed evaluations
+      organized by ErrorInfo.reason. Known reasons are: - UNSPECIFIED: No
+      reason was provided. See the results list for specific errors. -
+      RAB_UNSUPPORTED: A RAB policy evaluation was requested for an
+      unsupported resource type.
+    evaluationErrorsCount: Output only. Number of failed evaluations.
   """
 
-  evaluatedAccessesCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  evaluatedPrincipalsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  evaluatedResourcesCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EvaluationErrorReasonCountsValue(_messages.Message):
+    r"""Output only. Number of failed evaluations organized by
+    ErrorInfo.reason. Known reasons are: - UNSPECIFIED: No reason was
+    provided. See the results list for specific errors. - RAB_UNSUPPORTED: A
+    RAB policy evaluation was requested for an unsupported resource type.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        EvaluationErrorReasonCountsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        EvaluationErrorReasonCountsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EvaluationErrorReasonCountsValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  evaluatedAccessesCount = _messages.IntegerField(1)
+  evaluatedPrincipalsCount = _messages.IntegerField(2)
+  evaluatedResourcesCount = _messages.IntegerField(3)
+  evaluationErrorReasonCounts = _messages.MessageField('EvaluationErrorReasonCountsValue', 4)
+  evaluationErrorsCount = _messages.IntegerField(5)
 
 
 class GoogleCloudPolicysimulatorV1alphaActivityBacktestResult(_messages.Message):
@@ -1086,9 +1141,19 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestResult(_messages.Message)
       cations/global/activityBacktests/{activity_backtest_id}` `organizations/
       {organization}/locations/global/activityBacktests/{activity_backtest_id}
       `
+    dailyAccessHistory: Daily aggregations of the access observations. The
+      list is sorted by access_date in ascending order.
     daysAccessedCount: The number of days this access happened in the
       observation period.
-    lastAccessDate: The date when the resource was last accessed.
+    estimatedAccessCount: The estimated number of times the access occurred
+      over the entire observation period. This number is not precise and
+      should not be relied on when precision is needed. It will contain only a
+      single significant digit (e.g. 100,000 or 5,000,000).
+    evaluationError: Output only. Records the status of evaluating the post-
+      change decision. If evaluation was successful, this will be empty. Any
+      non-OK status includes an `ErrorInfo` message in its `details` field to
+      provide machine-readable error details.
+    lastAccessDate: The date when this access activity was last observed.
     lastRecordedDecision: The most recently recorded decision of the access
       under evaluation.
     name: Identifier. The resource name of the `ActivityBacktestResult`.
@@ -1136,11 +1201,29 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestResult(_messages.Message)
 
   accessActivity = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivity', 1)
   activityBacktest = _messages.StringField(2)
-  daysAccessedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  lastAccessDate = _messages.MessageField('GoogleTypeDate', 4)
-  lastRecordedDecision = _messages.EnumField('LastRecordedDecisionValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  postChangeDecision = _messages.EnumField('PostChangeDecisionValueValuesEnum', 7)
+  dailyAccessHistory = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestResultDailyHistory', 3, repeated=True)
+  daysAccessedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  estimatedAccessCount = _messages.IntegerField(5)
+  evaluationError = _messages.MessageField('GoogleRpcStatus', 6)
+  lastAccessDate = _messages.MessageField('GoogleTypeDate', 7)
+  lastRecordedDecision = _messages.EnumField('LastRecordedDecisionValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  postChangeDecision = _messages.EnumField('PostChangeDecisionValueValuesEnum', 10)
+
+
+class GoogleCloudPolicysimulatorV1alphaActivityBacktestResultDailyHistory(_messages.Message):
+  r"""A daily aggregation of the access activity history.
+
+  Fields:
+    accessDate: The date this aggregation is for.
+    estimatedAccessCount: The estimated number of times the access occurred
+      **on this date**. This number is not precise and should not be relied on
+      when precision is needed. It will contain only a single significant
+      digit (e.g. 100,000 or 5,000,000).
+  """
+
+  accessDate = _messages.MessageField('GoogleTypeDate', 1)
+  estimatedAccessCount = _messages.IntegerField(2)
 
 
 class GoogleCloudPolicysimulatorV1alphaBindingExplanation(_messages.Message):

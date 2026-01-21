@@ -72,6 +72,12 @@ class StreamsClient:
               self._messages, args.salesforce_excluded_objects
           )
       )
+    elif args.spanner_excluded_objects:
+      return self._messages.BackfillAllStrategy(
+          spannerExcludedObjects=util.ParseSpannerDatabaseFile(
+              self._messages, args.spanner_excluded_objects
+          )
+      )
     elif args.mongodb_excluded_objects:
       return self._messages.BackfillAllStrategy(
           mongodbExcludedObjects=util.ParseMongodbFile(
@@ -219,6 +225,15 @@ class StreamsClient:
         self._messages.SalesforceSourceConfig,
     )
 
+  def _ParseSpannerSourceConfig(self, spanner_source_config_file):
+    """Parses a spanner_source_config into the SpannerSourceConfig message."""
+
+    return util.ParseMessageAndValidateSchema(
+        spanner_source_config_file,
+        'SpannerSourceConfig',
+        self._messages.SpannerSourceConfig,
+    )
+
   def _ParseMongodbSourceConfig(self, mongodb_source_config_file):
     """Parses a mongodb_source_config into the MongodbSourceConfig message."""
 
@@ -338,6 +353,10 @@ class StreamsClient:
     elif args.salesforce_source_config:
       stream_source_config.salesforceSourceConfig = (
           self._ParseSalesforceSourceConfig(args.salesforce_source_config)
+      )
+    elif args.spanner_source_config:
+      stream_source_config.spannerSourceConfig = (
+          self._ParseSpannerSourceConfig(args.spanner_source_config)
       )
     elif args.mongodb_source_config:
       stream_source_config.mongodbSourceConfig = self._ParseMongodbSourceConfig(
@@ -474,6 +493,13 @@ class StreamsClient:
       )
       update_fields = self._UpdateListWithFieldNamePrefixes(
           update_fields, 'salesforce_source_config', 'source_config.'
+      )
+    elif args.IsSpecified('spanner_source_config'):
+      stream.sourceConfig.spannerSourceConfig = (
+          self._ParseSpannerSourceConfig(args.spanner_source_config)
+      )
+      update_fields = self._UpdateListWithFieldNamePrefixes(
+          update_fields, 'spanner_source_config', 'source_config.'
       )
 
     # TODO(b/207467120): use source field only.
