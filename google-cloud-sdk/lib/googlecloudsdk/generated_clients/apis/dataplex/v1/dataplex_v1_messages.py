@@ -1706,6 +1706,30 @@ class DataplexProjectsLocationsEntryGroupsEntryLinksGetRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class DataplexProjectsLocationsEntryGroupsEntryLinksPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsEntryGroupsEntryLinksPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true and the entry link doesn't exist,
+      the service will create it.
+    aspectKeys: Optional. The map keys of the Aspects which the service should
+      modify. It should be the aspect type reference in the format
+      {project_id_or_number}.{location_id}.{aspect_type_id}.If this field is
+      left empty, the service treats it as specifying exactly those Aspects
+      present in the request.
+    googleCloudDataplexV1EntryLink: A GoogleCloudDataplexV1EntryLink resource
+      to be passed as the request body.
+    name: Output only. Immutable. Identifier. The relative resource name of
+      the Entry Link, of the form: projects/{project_id_or_number}/locations/{
+      location_id}/entryGroups/{entry_group_id}/entryLinks/{entry_link_id}
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  aspectKeys = _messages.StringField(2, repeated=True)
+  googleCloudDataplexV1EntryLink = _messages.MessageField('GoogleCloudDataplexV1EntryLink', 3)
+  name = _messages.StringField(4, required=True)
+
+
 class DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest object.
 
@@ -5911,12 +5935,37 @@ class GoogleCloudDataplexV1DataDocumentationResultTableResult(_messages.Message)
 class GoogleCloudDataplexV1DataDocumentationSpec(_messages.Message):
   r"""DataDocumentation scan related spec.
 
+  Enums:
+    GenerationScopesValueListEntryValuesEnum:
+
   Fields:
     catalogPublishingEnabled: Optional. Whether to publish result to Dataplex
       Catalog.
+    generationScopes: Optional. Specifies which components of the data
+      documentation to generate. Any component that is required to generate
+      the specified components will also be generated. If no generation scope
+      is specified, all available documentation components will be generated.
   """
 
+  class GenerationScopesValueListEntryValuesEnum(_messages.Enum):
+    r"""GenerationScopesValueListEntryValuesEnum enum type.
+
+    Values:
+      GENERATION_SCOPE_UNSPECIFIED: Unspecified generation scope. If no
+        generation scope is specified, all available documentation components
+        will be generated.
+      ALL: All the possible results will be generated.
+      TABLE_AND_COLUMN_DESCRIPTIONS: Table and column descriptions will be
+        generated.
+      SQL_QUERIES: SQL queries will be generated.
+    """
+    GENERATION_SCOPE_UNSPECIFIED = 0
+    ALL = 1
+    TABLE_AND_COLUMN_DESCRIPTIONS = 2
+    SQL_QUERIES = 3
+
   catalogPublishingEnabled = _messages.BooleanField(1)
+  generationScopes = _messages.EnumField('GenerationScopesValueListEntryValuesEnum', 2, repeated=True)
 
 
 class GoogleCloudDataplexV1DataProduct(_messages.Message):
@@ -8230,7 +8279,17 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
 class GoogleCloudDataplexV1EntryLink(_messages.Message):
   r"""EntryLink represents a link between two Entries.
 
+  Messages:
+    AspectsValue: Optional. The aspects that are attached to the entry link.
+      The format of the aspect key has to be the following:
+      {project_id_or_number}.{location_id}.{aspect_type_id} Currently, only a
+      single aspect of a Dataplex-owned Aspect Type is allowed.
+
   Fields:
+    aspects: Optional. The aspects that are attached to the entry link. The
+      format of the aspect key has to be the following:
+      {project_id_or_number}.{location_id}.{aspect_type_id} Currently, only a
+      single aspect of a Dataplex-owned Aspect Type is allowed.
     createTime: Output only. The time when the Entry Link was created.
     entryLinkType: Required. Immutable. Relative resource name of the Entry
       Link Type used to create this Entry Link. For example: Entry link
@@ -8248,11 +8307,39 @@ class GoogleCloudDataplexV1EntryLink(_messages.Message):
     updateTime: Output only. The time when the Entry Link was last updated.
   """
 
-  createTime = _messages.StringField(1)
-  entryLinkType = _messages.StringField(2)
-  entryReferences = _messages.MessageField('GoogleCloudDataplexV1EntryLinkEntryReference', 3, repeated=True)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AspectsValue(_messages.Message):
+    r"""Optional. The aspects that are attached to the entry link. The format
+    of the aspect key has to be the following:
+    {project_id_or_number}.{location_id}.{aspect_type_id} Currently, only a
+    single aspect of a Dataplex-owned Aspect Type is allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a AspectsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AspectsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AspectsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDataplexV1Aspect attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDataplexV1Aspect', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  aspects = _messages.MessageField('AspectsValue', 1)
+  createTime = _messages.StringField(2)
+  entryLinkType = _messages.StringField(3)
+  entryReferences = _messages.MessageField('GoogleCloudDataplexV1EntryLinkEntryReference', 4, repeated=True)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class GoogleCloudDataplexV1EntryLinkEntryReference(_messages.Message):

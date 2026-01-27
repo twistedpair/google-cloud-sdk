@@ -50,6 +50,8 @@ class FeatureCommand(hub_base.HubCommand):
     return super(FeatureCommand,
                  self).FeatureResourceName(self.feature_name, project)
 
+  # TODO(b/440616932): Create custom class for this error so that users can
+  # check for this error by type.
   def FeatureNotEnabledError(self, project=None):
     """Constructs a new Error for reporting when this Feature is not enabled."""
     project = project or properties.VALUES.core.project.GetOrFail()
@@ -76,7 +78,17 @@ class FeatureCommand(hub_base.HubCommand):
 class EnableCommandMixin(FeatureCommand):
   """A mixin for functionality to enable a Feature."""
 
-  def Enable(self, feature):
+  def Enable(self, feature, error_if_feature_exists=False):
+    """Enables feature API and creates the feature.
+
+    Args:
+      feature: Fleet Feature to create.
+      error_if_feature_exists: Whether to error if feature already exists.
+        Example usage if caller populates feature fields that may differ on
+        existing Feature.
+    Returns:
+      Feature creation operation.
+    """
     project = properties.VALUES.core.project.GetOrFail()
     if self.feature.api:
       enable_api.EnableServiceIfDisabled(project, self.feature.api)
@@ -95,9 +107,9 @@ class EnableCommandMixin(FeatureCommand):
           'Retry limit exceeded waiting for {} to enable'.format(
               self.feature.display_name))
     except apitools_exceptions.HttpConflictError as e:
-      # If the error is not due to the object already existing, re-raise.
       error = core_api_exceptions.HttpErrorPayload(e)
-      if error.status_description != 'ALREADY_EXISTS':
+      if (error.status_description != 'ALREADY_EXISTS'
+          or error_if_feature_exists):
         raise
       log.status.Print('{} Feature for project [{}] is already enabled'.format(
           self.feature.display_name, project))

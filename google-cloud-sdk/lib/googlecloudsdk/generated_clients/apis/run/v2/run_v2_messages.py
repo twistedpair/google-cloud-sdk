@@ -443,6 +443,7 @@ class GoogleCloudRunV2Container(_messages.Message):
       (0.0.0.0) within the container to be accessible. If omitted, a port
       number will be chosen and passed to the container through the PORT
       environment variable for the container to listen on.
+    readinessProbe: Readiness probe to be used for health checks.
     resources: Compute Resource requirements by this container.
     sourceCode: Optional. Location of the source.
     startupProbe: Startup probe of application within the container. All other
@@ -464,11 +465,12 @@ class GoogleCloudRunV2Container(_messages.Message):
   livenessProbe = _messages.MessageField('GoogleCloudRunV2Probe', 8)
   name = _messages.StringField(9)
   ports = _messages.MessageField('GoogleCloudRunV2ContainerPort', 10, repeated=True)
-  resources = _messages.MessageField('GoogleCloudRunV2ResourceRequirements', 11)
-  sourceCode = _messages.MessageField('GoogleCloudRunV2SourceCode', 12)
-  startupProbe = _messages.MessageField('GoogleCloudRunV2Probe', 13)
-  volumeMounts = _messages.MessageField('GoogleCloudRunV2VolumeMount', 14, repeated=True)
-  workingDir = _messages.StringField(15)
+  readinessProbe = _messages.MessageField('GoogleCloudRunV2Probe', 11)
+  resources = _messages.MessageField('GoogleCloudRunV2ResourceRequirements', 12)
+  sourceCode = _messages.MessageField('GoogleCloudRunV2SourceCode', 13)
+  startupProbe = _messages.MessageField('GoogleCloudRunV2Probe', 14)
+  volumeMounts = _messages.MessageField('GoogleCloudRunV2VolumeMount', 15, repeated=True)
+  workingDir = _messages.StringField(16)
 
 
 class GoogleCloudRunV2ContainerOverride(_messages.Message):
@@ -501,6 +503,22 @@ class GoogleCloudRunV2ContainerPort(_messages.Message):
   """
 
   containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudRunV2ContainerStatus(_messages.Message):
+  r"""ContainerStatus holds the information of container name and image digest
+  value.
+
+  Fields:
+    imageDigest: ImageDigest holds the resolved digest for the image specified
+      and resolved during the creation of Revision. This field holds the
+      digest value regardless of whether a tag or digest was originally
+      specified in the Container object.
+    name: The name of the container, if specified.
+  """
+
+  imageDigest = _messages.StringField(1)
   name = _messages.StringField(2)
 
 
@@ -1166,6 +1184,296 @@ class GoogleCloudRunV2ImageExportStatus(_messages.Message):
   tag = _messages.StringField(4)
 
 
+class GoogleCloudRunV2Instance(_messages.Message):
+  r"""A Cloud Run Instance represents a single group of containers running in
+  a region.
+
+  Enums:
+    EncryptionKeyRevocationActionValueValuesEnum: The action to take if the
+      encryption key is revoked.
+    IngressValueValuesEnum: Optional. Provides the ingress settings for this
+      Instance. On output, returns the currently observed ingress settings, or
+      INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
+    LaunchStageValueValuesEnum: The launch stage as defined by [Google Cloud
+      Platform Launch Stages](https://cloud.google.com/terms/launch-stages).
+      Cloud Run supports `ALPHA`, `BETA`, and `GA`. If no value is specified,
+      GA is assumed. Set the launch stage to a preview stage on input to allow
+      use of preview features in that stage. On read (or output), describes
+      whether the resource uses preview features. For example, if ALPHA is
+      provided as input, but only BETA and GA-level features are used, this
+      field will be BETA on output.
+
+  Messages:
+    AnnotationsValue: A AnnotationsValue object.
+    LabelsValue: A LabelsValue object.
+
+  Fields:
+    annotations: A AnnotationsValue attribute.
+    binaryAuthorization: Settings for the Binary Authorization feature.
+    client: Arbitrary identifier for the API client.
+    clientVersion: Arbitrary version identifier for the API client.
+    conditions: Output only. The Conditions of all other associated sub-
+      resources. They contain additional diagnostics information in case the
+      Instance does not reach its Serving state. See comments in `reconciling`
+      for additional information on reconciliation process in Cloud Run.
+    containerStatuses: Output only. Status information for each of the
+      specified containers. The status includes the resolved digest for
+      specified images.
+    containers: Required. Holds the single container that defines the unit of
+      execution for this Instance.
+    createTime: Output only. The creation time.
+    creator: Output only. Email address of the authenticated creator.
+    deleteTime: Output only. The deletion time.
+    description: User-provided description of the Instance. This field
+      currently has a 512-character limit.
+    encryptionKey: A reference to a customer managed encryption key (CMEK) to
+      use to encrypt this container image. For more information, go to
+      https://cloud.google.com/run/docs/securing/using-cmek
+    encryptionKeyRevocationAction: The action to take if the encryption key is
+      revoked.
+    encryptionKeyShutdownDuration: If encryption_key_revocation_action is
+      SHUTDOWN, the duration before shutting down all instances. The minimum
+      increment is 1 hour.
+    etag: Optional. A system-generated fingerprint for this version of the
+      resource. May be used to detect modification conflict during updates.
+    expireTime: Output only. For a deleted resource, the time after which it
+      will be permamently deleted.
+    generation: Output only. A number that monotonically increases every time
+      the user modifies the desired state. Please note that unlike v1, this is
+      an int64 value. As with most Google APIs, its JSON representation will
+      be a `string` instead of an `integer`.
+    gpuZonalRedundancyDisabled: Optional. True if GPU zonal redundancy is
+      disabled on this instance.
+    iapEnabled: Optional. IAP settings on the Instance.
+    ingress: Optional. Provides the ingress settings for this Instance. On
+      output, returns the currently observed ingress settings, or
+      INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
+    invokerIamDisabled: Optional. Disables IAM permission check for
+      run.routes.invoke for callers of this Instance. For more information,
+      visit https://cloud.google.com/run/docs/securing/managing-
+      access#invoker_check.
+    labels: A LabelsValue attribute.
+    lastModifier: Output only. Email address of the last authenticated
+      modifier.
+    launchStage: The launch stage as defined by [Google Cloud Platform Launch
+      Stages](https://cloud.google.com/terms/launch-stages). Cloud Run
+      supports `ALPHA`, `BETA`, and `GA`. If no value is specified, GA is
+      assumed. Set the launch stage to a preview stage on input to allow use
+      of preview features in that stage. On read (or output), describes
+      whether the resource uses preview features. For example, if ALPHA is
+      provided as input, but only BETA and GA-level features are used, this
+      field will be BETA on output.
+    logUri: Output only. The Google Console URI to obtain logs for the
+      Instance.
+    name: The fully qualified name of this Instance. In CreateInstanceRequest,
+      this field is ignored, and instead composed from
+      CreateInstanceRequest.parent and CreateInstanceRequest.instance_id.
+      Format: projects/{project}/locations/{location}/instances/{instance_id}
+    nodeSelector: Optional. The node selector for the instance.
+    observedGeneration: Output only. The generation of this Instance currently
+      serving traffic. See comments in `reconciling` for additional
+      information on reconciliation process in Cloud Run. Please note that
+      unlike v1, this is an int64 value. As with most Google APIs, its JSON
+      representation will be a `string` instead of an `integer`.
+    reconciling: Output only. Returns true if the Instance is currently being
+      acted upon by the system to bring it into the desired state. When a new
+      Instance is created, or an existing one is updated, Cloud Run will
+      asynchronously perform all necessary steps to bring the Instance to the
+      desired serving state. This process is called reconciliation. While
+      reconciliation is in process, `observed_generation` will have a
+      transient value that might mismatch the intended state. Once
+      reconciliation is over (and this field is false), there are two possible
+      outcomes: reconciliation succeeded and the serving state matches the
+      Instance, or there was an error, and reconciliation failed. This state
+      can be found in `terminal_condition.state`.
+    satisfiesPzs: Output only. Reserved for future use.
+    serviceAccount: A string attribute.
+    terminalCondition: Output only. The Condition of this Instance, containing
+      its readiness status, and detailed error information in case it did not
+      reach a serving state. See comments in `reconciling` for additional
+      information on reconciliation process in Cloud Run.
+    uid: Output only. Server assigned unique identifier for the trigger. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time.
+    urls: Output only. All URLs serving traffic for this Instance.
+    volumes: A list of Volumes to make available to containers.
+    vpcAccess: Optional. VPC Access configuration to use for this Revision.
+      For more information, visit
+      https://cloud.google.com/run/docs/configuring/connecting-vpc.
+  """
+
+  class EncryptionKeyRevocationActionValueValuesEnum(_messages.Enum):
+    r"""The action to take if the encryption key is revoked.
+
+    Values:
+      ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED: Unspecified
+      PREVENT_NEW: Prevents the creation of new instances.
+      SHUTDOWN: Shuts down existing instances, and prevents creation of new
+        ones.
+    """
+    ENCRYPTION_KEY_REVOCATION_ACTION_UNSPECIFIED = 0
+    PREVENT_NEW = 1
+    SHUTDOWN = 2
+
+  class IngressValueValuesEnum(_messages.Enum):
+    r"""Optional. Provides the ingress settings for this Instance. On output,
+    returns the currently observed ingress settings, or
+    INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
+
+    Values:
+      INGRESS_TRAFFIC_UNSPECIFIED: Unspecified
+      INGRESS_TRAFFIC_ALL: All inbound traffic is allowed.
+      INGRESS_TRAFFIC_INTERNAL_ONLY: Only internal traffic is allowed.
+      INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER: Both internal and Google Cloud
+        Load Balancer traffic is allowed.
+      INGRESS_TRAFFIC_NONE: No ingress traffic is allowed.
+    """
+    INGRESS_TRAFFIC_UNSPECIFIED = 0
+    INGRESS_TRAFFIC_ALL = 1
+    INGRESS_TRAFFIC_INTERNAL_ONLY = 2
+    INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER = 3
+    INGRESS_TRAFFIC_NONE = 4
+
+  class LaunchStageValueValuesEnum(_messages.Enum):
+    r"""The launch stage as defined by [Google Cloud Platform Launch
+    Stages](https://cloud.google.com/terms/launch-stages). Cloud Run supports
+    `ALPHA`, `BETA`, and `GA`. If no value is specified, GA is assumed. Set
+    the launch stage to a preview stage on input to allow use of preview
+    features in that stage. On read (or output), describes whether the
+    resource uses preview features. For example, if ALPHA is provided as
+    input, but only BETA and GA-level features are used, this field will be
+    BETA on output.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
+      EARLY_ACCESS: Early Access features are limited to a closed group of
+        testers. To use these features, you must sign up in advance and sign a
+        Trusted Tester agreement (which includes confidentiality provisions).
+        These features may be unstable, changed in backward-incompatible ways,
+        and are not guaranteed to be released.
+      ALPHA: Alpha is a limited availability test for releases before they are
+        cleared for widespread use. By Alpha, all significant design issues
+        are resolved and we are in the process of verifying functionality.
+        Alpha customers need to apply for access, agree to applicable terms,
+        and have their projects allowlisted. Alpha releases don't have to be
+        feature complete, no SLAs are provided, and there are no technical
+        support obligations, but they will be far enough along that customers
+        can actually use them in test environments or for limited-use tests --
+        just like they would in normal production cases.
+      BETA: Beta is the point at which we are ready to open a release for any
+        customer to use. There are no SLA or technical support obligations in
+        a Beta release. Products will be complete from a feature perspective,
+        but may have some open outstanding issues. Beta releases are suitable
+        for limited production use cases.
+      GA: GA features are open to all developers and are considered stable and
+        fully qualified for production use.
+      DEPRECATED: Deprecated features are scheduled to be shut down and
+        removed. For more information, see the "Deprecation Policy" section of
+        our [Terms of Service](https://cloud.google.com/terms/) and the
+        [Google Cloud Platform Subject to the Deprecation
+        Policy](https://cloud.google.com/terms/deprecation) documentation.
+    """
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A AnnotationsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A LabelsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  binaryAuthorization = _messages.MessageField('GoogleCloudRunV2BinaryAuthorization', 2)
+  client = _messages.StringField(3)
+  clientVersion = _messages.StringField(4)
+  conditions = _messages.MessageField('GoogleCloudRunV2Condition', 5, repeated=True)
+  containerStatuses = _messages.MessageField('GoogleCloudRunV2ContainerStatus', 6, repeated=True)
+  containers = _messages.MessageField('GoogleCloudRunV2Container', 7, repeated=True)
+  createTime = _messages.StringField(8)
+  creator = _messages.StringField(9)
+  deleteTime = _messages.StringField(10)
+  description = _messages.StringField(11)
+  encryptionKey = _messages.StringField(12)
+  encryptionKeyRevocationAction = _messages.EnumField('EncryptionKeyRevocationActionValueValuesEnum', 13)
+  encryptionKeyShutdownDuration = _messages.StringField(14)
+  etag = _messages.StringField(15)
+  expireTime = _messages.StringField(16)
+  generation = _messages.IntegerField(17)
+  gpuZonalRedundancyDisabled = _messages.BooleanField(18)
+  iapEnabled = _messages.BooleanField(19)
+  ingress = _messages.EnumField('IngressValueValuesEnum', 20)
+  invokerIamDisabled = _messages.BooleanField(21)
+  labels = _messages.MessageField('LabelsValue', 22)
+  lastModifier = _messages.StringField(23)
+  launchStage = _messages.EnumField('LaunchStageValueValuesEnum', 24)
+  logUri = _messages.StringField(25)
+  name = _messages.StringField(26)
+  nodeSelector = _messages.MessageField('GoogleCloudRunV2NodeSelector', 27)
+  observedGeneration = _messages.IntegerField(28)
+  reconciling = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  serviceAccount = _messages.StringField(31)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 32)
+  uid = _messages.StringField(33)
+  updateTime = _messages.StringField(34)
+  urls = _messages.StringField(35, repeated=True)
+  volumes = _messages.MessageField('GoogleCloudRunV2Volume', 36, repeated=True)
+  vpcAccess = _messages.MessageField('GoogleCloudRunV2VpcAccess', 37)
+
+
 class GoogleCloudRunV2InstanceSplit(_messages.Message):
   r"""Holds a single instance split entry for the Worker. Allocations can be
   done to a specific Revision name, or pointing to the latest Ready Revision.
@@ -1512,6 +1820,19 @@ class GoogleCloudRunV2ListExecutionsResponse(_messages.Message):
   """
 
   executions = _messages.MessageField('GoogleCloudRunV2Execution', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudRunV2ListInstancesResponse(_messages.Message):
+  r"""Response message containing a list of Instances.
+
+  Fields:
+    instances: The resulting list of Instances.
+    nextPageToken: A token indicating there are more items than page_size. Use
+      it in the next ListInstances request to continue.
+  """
+
+  instances = _messages.MessageField('GoogleCloudRunV2Instance', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2776,6 +3097,36 @@ class GoogleCloudRunV2SourceCode(_messages.Message):
   """
 
   cloudStorageSource = _messages.MessageField('GoogleCloudRunV2CloudStorageSource', 1)
+
+
+class GoogleCloudRunV2StartInstanceRequest(_messages.Message):
+  r"""Request message for starting an Instance.
+
+  Fields:
+    etag: Optional. A system-generated fingerprint for this version of the
+      resource. This may be used to detect modification conflict during
+      updates.
+    validateOnly: Optional. Indicates that the request should be validated
+      without actually stopping any resources.
+  """
+
+  etag = _messages.StringField(1)
+  validateOnly = _messages.BooleanField(2)
+
+
+class GoogleCloudRunV2StopInstanceRequest(_messages.Message):
+  r"""Request message for deleting an Instance.
+
+  Fields:
+    etag: Optional. A system-generated fingerprint for this version of the
+      resource. This may be used to detect modification conflict during
+      updates.
+    validateOnly: Optional. Indicates that the request should be validated
+      without actually stopping any resources.
+  """
+
+  etag = _messages.StringField(1)
+  validateOnly = _messages.BooleanField(2)
 
 
 class GoogleCloudRunV2StorageSource(_messages.Message):
@@ -6118,6 +6469,105 @@ class RunProjectsLocationsExportProjectMetadataRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsInstancesCreateRequest(_messages.Message):
+  r"""A RunProjectsLocationsInstancesCreateRequest object.
+
+  Fields:
+    googleCloudRunV2Instance: A GoogleCloudRunV2Instance resource to be passed
+      as the request body.
+    instanceId: Required. The unique identifier for the Instance. It must
+      begin with letter, and cannot end with hyphen; must contain fewer than
+      50 characters. The name of the instance becomes
+      {parent}/instances/{instance_id}.
+    parent: A string attribute.
+    validateOnly: Optional. Indicates that the request should be validated and
+      default values populated, without persisting the request or creating any
+      resources.
+  """
+
+  googleCloudRunV2Instance = _messages.MessageField('GoogleCloudRunV2Instance', 1)
+  instanceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class RunProjectsLocationsInstancesDeleteRequest(_messages.Message):
+  r"""A RunProjectsLocationsInstancesDeleteRequest object.
+
+  Fields:
+    etag: Optional. A system-generated fingerprint for this version of the
+      resource. May be used to detect modification conflict during updates.
+    name: A string attribute.
+    validateOnly: Optional. Indicates that the request should be validated
+      without actually deleting any resources.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class RunProjectsLocationsInstancesGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsInstancesGetRequest object.
+
+  Fields:
+    name: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsInstancesListRequest(_messages.Message):
+  r"""A RunProjectsLocationsInstancesListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of Instances to return in this call.
+    pageToken: Optional. A page token received from a previous call to
+      ListInstances. All other parameters must match.
+    parent: Required. The location and project to list resources on. Format:
+      projects/{project}/locations/{location}, where {project} can be project
+      id or number.
+    showDeleted: Optional. If true, returns deleted (but unexpired) resources
+      along with active ones.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class RunProjectsLocationsInstancesStartRequest(_messages.Message):
+  r"""A RunProjectsLocationsInstancesStartRequest object.
+
+  Fields:
+    googleCloudRunV2StartInstanceRequest: A
+      GoogleCloudRunV2StartInstanceRequest resource to be passed as the
+      request body.
+    name: Required. The name of the Instance to stop. Format:
+      `projects/{project}/locations/{location}/instances/{instance}`, where
+      `{project}` can be project id or number.
+  """
+
+  googleCloudRunV2StartInstanceRequest = _messages.MessageField('GoogleCloudRunV2StartInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RunProjectsLocationsInstancesStopRequest(_messages.Message):
+  r"""A RunProjectsLocationsInstancesStopRequest object.
+
+  Fields:
+    googleCloudRunV2StopInstanceRequest: A GoogleCloudRunV2StopInstanceRequest
+      resource to be passed as the request body.
+    name: Required. The name of the Instance to stop. Format:
+      `projects/{project}/locations/{location}/instances/{instance}`, where
+      `{project}` can be project id or number.
+  """
+
+  googleCloudRunV2StopInstanceRequest = _messages.MessageField('GoogleCloudRunV2StopInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RunProjectsLocationsJobsCreateRequest(_messages.Message):

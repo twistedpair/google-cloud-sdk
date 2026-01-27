@@ -3006,6 +3006,65 @@ class ImportContext(_messages.Message):
   uri = _messages.StringField(9)
 
 
+class InitialUser(_messages.Message):
+  r"""Configuration for a user created during instance creation.
+
+  Enums:
+    TypeValueValuesEnum: Required. The user type. Cannot be BUILT_IN.
+
+  Fields:
+    name: Required. The name of the user in the Cloud SQL instance.
+    roles: Optional. The database roles to be assigned to the user. If empty,
+      will grant role `cloudsqlsuperuser`.
+    type: Required. The user type. Cannot be BUILT_IN.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The user type. Cannot be BUILT_IN.
+
+    Values:
+      BUILT_IN: The database's built-in user type. Not supported for initial
+        user creation.
+      CLOUD_IAM_USER: Cloud IAM user. MySQL will truncate the @ and domain
+        when it stores the user.
+      CLOUD_IAM_SERVICE_ACCOUNT: Cloud IAM service account. For PostgreSQL,
+        omit the .gserviceaccount.com suffix. MySQL will truncate the @ and
+        domain when it stores the user.
+      CLOUD_IAM_GROUP: Cloud IAM group.
+      CLOUD_IAM_GROUP_USER: Login for a user that belongs to the Cloud IAM
+        group. Not supported for initial user creation.
+      CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Login for a service account that
+        belongs to the Cloud IAM group. Not supported for initial user
+        creation.
+      CLOUD_IAM_WORKFORCE_IDENTITY: Cloud IAM workforce identity.
+      ENTRAID_USER: Microsoft Entra ID user. Not supported for initial user
+        creation.
+    """
+    BUILT_IN = 0
+    CLOUD_IAM_USER = 1
+    CLOUD_IAM_SERVICE_ACCOUNT = 2
+    CLOUD_IAM_GROUP = 3
+    CLOUD_IAM_GROUP_USER = 4
+    CLOUD_IAM_GROUP_SERVICE_ACCOUNT = 5
+    CLOUD_IAM_WORKFORCE_IDENTITY = 6
+    ENTRAID_USER = 7
+
+  name = _messages.StringField(1)
+  roles = _messages.StringField(2, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class InitialUsersConfig(_messages.Message):
+  r"""Configuration for users created during instance creation.
+
+  Fields:
+    initialUsers: Optional. List of users to be created during instance
+      creation. A maximum of 5 users are allowed.
+  """
+
+  initialUsers = _messages.MessageField('InitialUser', 1, repeated=True)
+
+
 class InsightsConfig(_messages.Message):
   r"""Insights configuration. This specifies when Cloud SQL Insights feature
   is enabled and optional configuration.
@@ -4902,6 +4961,8 @@ class Settings(_messages.Message):
       Server instance.
     finalBackupConfig: Optional. The final backup configuration for the
       instance.
+    initialUsersConfig: Optional. Input only. Users to be created on the
+      instance during instance creation.
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
     instanceVersion: The current software version the instance is running on.
@@ -5057,10 +5118,12 @@ class Settings(_messages.Message):
       EDITION_UNSPECIFIED: The instance did not specify the edition.
       ENTERPRISE: The instance is an enterprise edition.
       ENTERPRISE_PLUS: The instance is an Enterprise Plus edition.
+      AI_DEVELOPER: The instance is an AI Developer edition.
     """
     EDITION_UNSPECIFIED = 0
     ENTERPRISE = 1
     ENTERPRISE_PLUS = 2
+    AI_DEVELOPER = 3
 
   class PricingPlanValueValuesEnum(_messages.Enum):
     r"""The pricing plan for this instance. This can be either `PER_USE` or
@@ -5148,29 +5211,30 @@ class Settings(_messages.Message):
   enableGoogleMlIntegration = _messages.BooleanField(26)
   entraidConfig = _messages.MessageField('SqlServerEntraIdConfig', 27)
   finalBackupConfig = _messages.MessageField('FinalBackupConfig', 28)
-  insightsConfig = _messages.MessageField('InsightsConfig', 29)
-  instanceVersion = _messages.StringField(30)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 31)
-  kind = _messages.StringField(32)
-  locationPreference = _messages.MessageField('LocationPreference', 33)
-  maintenanceVersion = _messages.StringField(34)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 35)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 36)
-  performanceCaptureConfig = _messages.MessageField('PerformanceCaptureConfig', 37)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 38)
-  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 39)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(40)
-  replicationLagMaxSeconds = _messages.IntegerField(41, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 42)
-  retainBackupsOnDelete = _messages.BooleanField(43)
-  settingsVersion = _messages.IntegerField(44)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 45)
-  storageAutoResize = _messages.BooleanField(46)
-  storageAutoResizeLimit = _messages.IntegerField(47)
-  tier = _messages.StringField(48)
-  timeZone = _messages.StringField(49)
-  uncMappings = _messages.MessageField('UncMapping', 50, repeated=True)
-  userLabels = _messages.MessageField('UserLabelsValue', 51)
+  initialUsersConfig = _messages.MessageField('InitialUsersConfig', 29)
+  insightsConfig = _messages.MessageField('InsightsConfig', 30)
+  instanceVersion = _messages.StringField(31)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 32)
+  kind = _messages.StringField(33)
+  locationPreference = _messages.MessageField('LocationPreference', 34)
+  maintenanceVersion = _messages.StringField(35)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 36)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 37)
+  performanceCaptureConfig = _messages.MessageField('PerformanceCaptureConfig', 38)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 39)
+  readPoolAutoScaleConfig = _messages.MessageField('ReadPoolAutoScaleConfig', 40)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(41)
+  replicationLagMaxSeconds = _messages.IntegerField(42, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 43)
+  retainBackupsOnDelete = _messages.BooleanField(44)
+  settingsVersion = _messages.IntegerField(45)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 46)
+  storageAutoResize = _messages.BooleanField(47)
+  storageAutoResizeLimit = _messages.IntegerField(48)
+  tier = _messages.StringField(49)
+  timeZone = _messages.StringField(50)
+  uncMappings = _messages.MessageField('UncMapping', 51, repeated=True)
+  userLabels = _messages.MessageField('UserLabelsValue', 52)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

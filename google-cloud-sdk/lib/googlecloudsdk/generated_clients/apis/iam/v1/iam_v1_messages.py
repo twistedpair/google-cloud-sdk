@@ -896,8 +896,8 @@ class IamLocationsWorkforcePoolsProvidersCreateRequest(_messages.Message):
       the request body.
     workforcePoolProviderId: Required. The ID for the provider, which becomes
       the final component of the resource name. This value must be 4-32
-      characters, and may contain the characters [a-z0-9-]. The prefix `gcp-`
-      is reserved for use by Google, and may not be specified.
+      characters, and may contain the characters `[a-z0-9-]`. The prefix
+      `gcp-` is reserved for use by Google, and may not be specified.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -936,7 +936,7 @@ class IamLocationsWorkforcePoolsProvidersKeysCreateRequest(_messages.Message):
       as the request body.
     workforcePoolProviderKeyId: Required. The ID to use for the key, which
       becomes the final component of the resource name. This value must be
-      4-32 characters, and may contain the characters [a-z0-9-].
+      4-32 characters, and may contain the characters `[a-z0-9-]`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1069,7 +1069,7 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsCreateRequest(_messages.Mess
     workforcePoolProviderScimTenantId: Required. Gemini Enterprise only. The
       ID to use for the SCIM tenant, which becomes the final component of the
       resource name. This value should be 4-32 characters, containing the
-      characters [a-z0-9-].
+      characters `[a-z0-9-]`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1160,7 +1160,7 @@ class IamLocationsWorkforcePoolsProvidersScimTenantsTokensCreateRequest(_message
     workforcePoolProviderScimTokenId: Required. Gemini Enterprise only. The ID
       to use for the SCIM token, which becomes the final component of the
       resource name. This value should be 4-32 characters and follow the
-      pattern: "([a-z]([a-z0-9\\-]{2,30}[a-z0-9]))"
+      pattern: `([a-z]([a-z0-9\\-]{2,30}[a-z0-9]))`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -5654,12 +5654,12 @@ class WorkforcePoolProvider(_messages.Message):
       bindings. * `google.posix_username`: The Linux username used by OS
       Login. This is an optional field and the mapped POSIX username cannot
       exceed 32 characters. The key must match the regex
-      "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
+      `^a-zA-Z0-9._{0,31}$`. This attribute cannot be referenced in IAM
       bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
       the custom attribute to be mapped. You can define a maximum of 50 custom
       attributes. The maximum length of a mapped attribute key is 100
-      characters, and the key may only contain the characters [a-z0-9_]. You
+      characters, and the key may only contain the characters `[a-z0-9_]`. You
       can reference these attributes in IAM policies to define fine-grained
       access for a workforce pool to Google Cloud resources. For example: *
       `google.subject`: `principal://iam.googleapis.com/locations/global/workf
@@ -5717,12 +5717,12 @@ class WorkforcePoolProvider(_messages.Message):
       bindings. * `google.posix_username`: The Linux username used by OS
       Login. This is an optional field and the mapped POSIX username cannot
       exceed 32 characters. The key must match the regex
-      "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
+      `^a-zA-Z0-9._{0,31}$`. This attribute cannot be referenced in IAM
       bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
       the custom attribute to be mapped. You can define a maximum of 50 custom
       attributes. The maximum length of a mapped attribute key is 100
-      characters, and the key may only contain the characters [a-z0-9_]. You
+      characters, and the key may only contain the characters `[a-z0-9_]`. You
       can reference these attributes in IAM policies to define fine-grained
       access for a workforce pool to Google Cloud resources. For example: *
       `google.subject`: `principal://iam.googleapis.com/locations/global/workf
@@ -5843,14 +5843,14 @@ class WorkforcePoolProvider(_messages.Message):
     cannot be referenced in IAM bindings. * `google.posix_username`: The Linux
     username used by OS Login. This is an optional field and the mapped POSIX
     username cannot exceed 32 characters. The key must match the regex
-    "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
+    `^a-zA-Z0-9._{0,31}$`. This attribute cannot be referenced in IAM
     bindings. You can also provide custom attributes by specifying
     `attribute.{custom_attribute}`, where {custom_attribute} is the name of
     the custom attribute to be mapped. You can define a maximum of 50 custom
     attributes. The maximum length of a mapped attribute key is 100
-    characters, and the key may only contain the characters [a-z0-9_]. You can
-    reference these attributes in IAM policies to define fine-grained access
-    for a workforce pool to Google Cloud resources. For example: *
+    characters, and the key may only contain the characters `[a-z0-9_]`. You
+    can reference these attributes in IAM policies to define fine-grained
+    access for a workforce pool to Google Cloud resources. For example: *
     `google.subject`: `principal://iam.googleapis.com/locations/global/workfor
     cePools/{pool}/subject/{value}` * `google.groups`: `principalSet://iam.goo
     gleapis.com/locations/global/workforcePools/{pool}/group/{value}` *

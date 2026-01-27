@@ -102,6 +102,7 @@ class StoragePoolsClient(object):
                              unified_pool=None,
                              qos_type=None,
                              storage_pool_type=None,
+                             scale_tier=None,
                              ):
     """Parses the command line arguments for Create Storage Pool into a config."""
     return self._adapter.ParseStoragePoolConfig(
@@ -125,6 +126,7 @@ class StoragePoolsClient(object):
         unified_pool=unified_pool,
         qos_type=qos_type,
         storage_pool_type=storage_pool_type,
+        scale_tier=scale_tier,
     )
 
   def ListStoragePools(self, location_ref, limit=None):
@@ -323,6 +325,7 @@ class StoragePoolsAdapter(object):
       labels,
       unified_pool,
       storage_pool_type,
+      scale_tier,
   ):
     """Parses the command line arguments for Create Storage Pool into a config.
 
@@ -348,6 +351,7 @@ class StoragePoolsAdapter(object):
       labels: the parsed labels value
       unified_pool: Bool on whether the Storage Pool is a unified pool
       storage_pool_type: Type of the Storage Pool
+      scale_tier: Scale tier of the Storage Pool
 
     Returns:
       The configuration that will be used as the request body for creating a
@@ -387,6 +391,8 @@ class StoragePoolsAdapter(object):
       storage_pool.unifiedPool = unified_pool
     if storage_pool_type is not None:
       storage_pool.type = storage_pool_type
+    if scale_tier is not None:
+      storage_pool.scaleTier = scale_tier
     return storage_pool
 
   def ParseUpdatedStoragePoolConfig(

@@ -15,11 +15,13 @@
 """GCS API-specific resource subclasses."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
 import collections
 import json
+from typing import Any
 
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.storage.resources import full_resource_formatter
@@ -245,28 +247,16 @@ class GcsBucketResource(resource_reference.BucketResource):
             self.retention_policy.get('isLocked', False))
 
   @property
-  def gmek_enforcement(self):
-    return (
-        (self.encryption_enforcement_config or {})
-        .get('gmekEnforcement', {})
-        .get('restrictionMode')
-    )
+  def gmek_enforcement(self) -> dict[str, Any] | None:
+    return (self.encryption_enforcement_config or {}).get('gmekEnforcement')
 
   @property
-  def cmek_enforcement(self):
-    return (
-        (self.encryption_enforcement_config or {})
-        .get('cmekEnforcement', {})
-        .get('restrictionMode')
-    )
+  def cmek_enforcement(self) -> dict[str, Any] | None:
+    return (self.encryption_enforcement_config or {}).get('cmekEnforcement')
 
   @property
-  def csek_enforcement(self):
-    return (
-        (self.encryption_enforcement_config or {})
-        .get('csekEnforcement', {})
-        .get('restrictionMode')
-    )
+  def csek_enforcement(self) -> dict[str, Any] | None:
+    return (self.encryption_enforcement_config or {}).get('csekEnforcement')
 
   def __eq__(self, other):
     return (

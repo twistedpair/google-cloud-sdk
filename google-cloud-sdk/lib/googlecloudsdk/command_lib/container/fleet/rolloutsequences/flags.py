@@ -90,17 +90,17 @@ class RolloutSequenceFlags:
               fleet-projects:
               # Expected format: projects/{project}
               - projects/my-dev-project
-              soak-duration: 604800s # 7 days
+              soak-duration: 7d # Or 168h or 604800s
             - stage:
               fleet-projects:
               - projects/my-prod-project
-              soak-duration: 604800s # 7 days
+              soak-duration: 3600s
               label-selector: resource.labels.canary=='true'
             - stage:
               fleet-projects:
               # Expected format: projects/{project}
               - projects/my-prod-project
-              soak-duration: 604800s # 7 days
+              soak-duration: 30m
               ```
         """,
     )
@@ -200,6 +200,14 @@ class RolloutSequenceFlagParser:
       soak_duration = stage_data.get('soak-duration')
       if not soak_duration:
         raise ValueError('soak-duration is required in the yaml file')
+
+      try:
+        # Support duration units like 'm', 'h', 'd'.
+        soak_duration = f'{arg_parsers.Duration()(soak_duration)}s'
+      except (arg_parsers.ArgumentTypeError, TypeError):
+        # Fallback to the raw value if it's already in the 'Ns' format
+        # or if it's invalid (the backend will catch it).
+        pass
 
       fleet_projects = stage_data.get('fleet-projects')
       if not fleet_projects:

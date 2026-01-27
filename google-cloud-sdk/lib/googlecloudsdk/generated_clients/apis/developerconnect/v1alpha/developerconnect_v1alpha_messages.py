@@ -313,6 +313,8 @@ class Connection(_messages.Message):
       `projects/{project}/locations/{location}/connections/{connection_id}`.
     reconciling: Output only. Set to true when the connection is being set up
       or updated in the background.
+    secureSourceManagerInstanceConfig: Configuration for connections to an
+      instance of Secure Source Manager.
     uid: Output only. A system-assigned unique identifier for the Connection.
     updateTime: Output only. [Output only] Update timestamp
   """
@@ -384,8 +386,9 @@ class Connection(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 16)
   name = _messages.StringField(17)
   reconciling = _messages.BooleanField(18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  secureSourceManagerInstanceConfig = _messages.MessageField('SecureSourceManagerInstanceConfig', 19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class CryptoKeyConfig(_messages.Message):
@@ -2404,6 +2407,17 @@ class RuntimeConfig(_messages.Message):
   googleCloudRun = _messages.MessageField('GoogleCloudRun', 4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   uri = _messages.StringField(6)
+
+
+class SecureSourceManagerInstanceConfig(_messages.Message):
+  r"""Configuration for connections to SSM instance
+
+  Fields:
+    instance: Required. Immutable. SSM instance resource, formatted as
+      `projects/*/locations/*/instances/*`
+  """
+
+  instance = _messages.StringField(1)
 
 
 class ServiceDirectoryConfig(_messages.Message):

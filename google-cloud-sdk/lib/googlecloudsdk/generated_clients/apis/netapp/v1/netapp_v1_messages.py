@@ -3668,7 +3668,8 @@ class StoragePool(_messages.Message):
       STORAGE_POOL_TYPE_UNSPECIFIED: Storage pool type is not specified.
       FILE: Storage pool type is file.
       UNIFIED: Storage pool type is unified.
-      UNIFIED_LARGE_CAPACITY: Storage pool type is unified large capacity.
+      UNIFIED_LARGE_CAPACITY: Deprecated: UNIFIED_LARGE_CAPACITY was
+        previously tag 3.
     """
     STORAGE_POOL_TYPE_UNSPECIFIED = 0
     FILE = 1

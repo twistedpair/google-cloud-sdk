@@ -1564,11 +1564,15 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationSubtaskResponse(_messages.Me
       `assignment_state` represents the assignment of the filtered subtasks,
       which might not be all the subtasks.
 
+  Messages:
+    FeatureFlagsValue: The feature flags to pass to the workers.
+
   Fields:
     assignmentState: The status of the subtask assignment. If the `filter`
       field was provided in the request, then the `assignment_state`
       represents the assignment of the filtered subtasks, which might not be
       all the subtasks.
+    featureFlags: The feature flags to pass to the workers.
     migrationSubtask: The assigned subtask, if available. If there was already
       a subtask assigned for the given worker ID, the same subtask will be
       returned.
@@ -1590,8 +1594,34 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationSubtaskResponse(_messages.Me
     NEW_ASSIGNMENT = 2
     EXISTING_ASSIGNMENT = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FeatureFlagsValue(_messages.Message):
+    r"""The feature flags to pass to the workers.
+
+    Messages:
+      AdditionalProperty: An additional property for a FeatureFlagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FeatureFlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FeatureFlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   assignmentState = _messages.EnumField('AssignmentStateValueValuesEnum', 1)
-  migrationSubtask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationSubtask', 2)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 2)
+  migrationSubtask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationSubtask', 3)
 
 
 class GoogleCloudBigqueryMigrationV2ReceiveMigrationTaskRequest(_messages.Message):
@@ -1618,8 +1648,12 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationTaskResponse(_messages.Messa
   Enums:
     AssignmentStateValueValuesEnum: The status of the task assignment.
 
+  Messages:
+    FeatureFlagsValue: The feature flags to pass to the translation worker.
+
   Fields:
     assignmentState: The status of the task assignment.
+    featureFlags: The feature flags to pass to the translation worker.
     migrationTask: The assigned task, if available. If there was already a
       task assigned for the given orchestrator ID, the same task will be
       returned.
@@ -1641,9 +1675,35 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationTaskResponse(_messages.Messa
     NEW_ASSIGNMENT = 2
     EXISTING_ASSIGNMENT = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FeatureFlagsValue(_messages.Message):
+    r"""The feature flags to pass to the translation worker.
+
+    Messages:
+      AdditionalProperty: An additional property for a FeatureFlagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FeatureFlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FeatureFlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   assignmentState = _messages.EnumField('AssignmentStateValueValuesEnum', 1)
-  migrationTask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTask', 2)
-  migrationWorkflow = _messages.StringField(3)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 2)
+  migrationTask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTask', 3)
+  migrationWorkflow = _messages.StringField(4)
 
 
 class GoogleCloudBigqueryMigrationV2RedshiftDialect(_messages.Message):

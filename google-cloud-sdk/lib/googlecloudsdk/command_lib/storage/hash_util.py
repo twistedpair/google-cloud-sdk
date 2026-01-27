@@ -20,10 +20,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import base64
+import binascii
 import enum
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import hashing
@@ -166,6 +168,26 @@ def validate_object_hashes_match(object_path, source_hash, destination_hash):
     HashMismatchError: Hashes are not equal.
   """
   if source_hash != destination_hash:
+    try:
+      source_hash_bytes = get_bytes_from_base64_string(source_hash)
+      destination_hash_bytes = get_bytes_from_base64_string(destination_hash)
+      log.debug(
+          'Hash mismatch for %s. Source hash (%s): %s, Destination hash'
+          ' (%s): %s.',
+          object_path,
+          source_hash,
+          binascii.hexlify(source_hash_bytes).decode('ascii'),
+          destination_hash,
+          binascii.hexlify(destination_hash_bytes).decode('ascii'),
+      )
+    except Exception:  # pylint: disable=broad-except
+      log.debug(
+          'Hash mismatch for %s and could not decode hashes. Source: %s,'
+          ' Destination: %s',
+          object_path,
+          source_hash,
+          destination_hash,
+      )
     raise errors.HashMismatchError(
         'Source hash {} does not match destination hash {}'
         ' for object {}.'.format(source_hash, destination_hash, object_path))

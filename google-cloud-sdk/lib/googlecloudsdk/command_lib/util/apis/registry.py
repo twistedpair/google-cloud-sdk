@@ -88,6 +88,15 @@ class APICallError(Error):
   pass
 
 
+class ClientInitializationError(Error):
+
+  def __init__(self, location):
+    super(ClientInitializationError, self).__init__(
+        f'Location {location} and client were both specified. '
+        'To ensure location is used, remove client or location argument.'
+    )
+
+
 class API(object):
   """A data holder for returning API data for display."""
 
@@ -314,7 +323,7 @@ class APIMethod(object):
     return [f.name for f in self.GetResponseType().all_fields()]
 
   def Call(self, request, client=None, global_params=None, raw=False,
-           limit=None, page_size=None):
+           limit=None, page_size=None, location=None):
     """Executes this method with the given arguments.
 
     Args:
@@ -327,13 +336,24 @@ class APIMethod(object):
       limit: int, The max number of items to return if this is a List method.
       page_size: int, The max number of items to return in a page if this API
         supports paging.
+      location: str, Region, multi-region, or zone for regionalized endpoints
+        (REP).
 
     Returns:
       The response from the API.
+
+    Raises:
+      ClientInitializationError: If a location and client are both specified.
     """
     if client is None:
       client = apis.GetClientInstance(
-          self.collection.api_name, self.collection.api_version)
+          self.collection.api_name,
+          self.collection.api_version,
+          location=location
+      )
+    elif location:
+      raise ClientInitializationError(location)
+
     service = _GetService(client, self.collection.name)
     request_func = self._GetRequestFunc(
         service, request, raw=raw, limit=limit, page_size=page_size)
@@ -582,13 +602,30 @@ def _GetService(client, collection_name):
   return getattr(client, collection_name.replace(NAME_SEPARATOR, '_'), None)
 
 
-def _GetApiClient(api_name, api_version):
-  """Gets the repesctive api client for the api."""
+def _GetApiClientModule(api_name, api_version):
+  """Gets the respective api client module for the api.
+
+  This function only retrieves minimum module information. The http client
+  (apitools) or endpoint (gapic) is not created in this function since it
+  increases runtime / not all runtime variables are available yet.
+
+  Args:
+    api_name: str, The name of the API.
+    api_version: str, The version string of the API.
+
+  Returns:
+    The api client module.
+  """
   api_def = apis_internal.GetApiDef(api_name, api_version)
   if api_def.apitools:
     client = apis.GetClientInstance(api_name, api_version, no_http=True)
   else:
-    client = apis.GetGapicClientInstance(api_name, api_version)
+    def DummyAddressOverride(unused_default_host):
+      """Bypasses endpoint validation during initial module load."""
+      return None
+    client = apis.GetGapicClientInstance(
+        api_name, api_version, address_override_func=DummyAddressOverride
+    )
   return client
 
 
@@ -608,7 +645,8 @@ def GetMethods(
   api_collection = GetAPICollection(full_collection_name,
                                     api_version=api_version)
 
-  client = _GetApiClient(api_collection.api_name, api_collection.api_version)
+  client = _GetApiClientModule(
+      api_collection.api_name, api_collection.api_version)
   service = _GetService(client, api_collection.name)
   if not service:
     # This is a synthetic collection that does not actually have a backing API.

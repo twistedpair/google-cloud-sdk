@@ -3012,6 +3012,11 @@ class ProjectsMetadata(_messages.Message):
       communicated to CLH in the side channel.
     gceTag: The GCE tags associated with the consumer project and those
       inherited due to their ancestry, if any. Not supported by CCFE.
+    isGceProjectDeprovisioning: DEPRECATED: Indicates whether the GCE project
+      is in the DEPROVISIONING state. This field is a temporary workaround
+      (see b/475310865) to allow GCE extensions to bypass certain checks
+      during deprovisioning. It will be replaced by a permanent solution in
+      the future.
     p4ServiceAccount: The service account authorized to operate on the
       consumer project. Note: CCFE only propagates P4SA with default tag to
       CLH.
@@ -3059,11 +3064,12 @@ class ProjectsMetadata(_messages.Message):
   consumerProjectNumber = _messages.IntegerField(2)
   consumerProjectState = _messages.EnumField('ConsumerProjectStateValueValuesEnum', 3)
   gceTag = _messages.MessageField('GceTag', 4, repeated=True)
-  p4ServiceAccount = _messages.StringField(5)
-  producerProjectId = _messages.StringField(6)
-  producerProjectNumber = _messages.IntegerField(7)
-  tenantProjectId = _messages.StringField(8)
-  tenantProjectNumber = _messages.IntegerField(9)
+  isGceProjectDeprovisioning = _messages.BooleanField(5)
+  p4ServiceAccount = _messages.StringField(6)
+  producerProjectId = _messages.StringField(7)
+  producerProjectNumber = _messages.IntegerField(8)
+  tenantProjectId = _messages.StringField(9)
+  tenantProjectNumber = _messages.IntegerField(10)
 
 
 class ReadinessCheck(_messages.Message):

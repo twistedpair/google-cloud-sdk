@@ -52,6 +52,18 @@ class ActivationFailed(_messages.Message):
   error = _messages.MessageField('Status', 1)
 
 
+class ActivationTrigger(_messages.Message):
+  r"""ActivationTrigger represents the different possible activation triggers
+  for the grant.
+
+  Fields:
+    requestedActivationTime: A specific time at which the access should be
+      granted.
+  """
+
+  requestedActivationTime = _messages.StringField(1)
+
+
 class AdditionalNotificationTargets(_messages.Message):
   r"""`AdditionalNotificationTargets` includes email addresses to be notified.
 
@@ -473,6 +485,11 @@ class Grant(_messages.Message):
     StateValueValuesEnum: Output only. Current state of this grant.
 
   Fields:
+    activationTrigger: Optional. The activation trigger for this grant. This
+      field being absent indicates default behavior for the grant, that is,
+      the grant will get activated as soon as the required number of approvals
+      are received or, if approvals are not required, as soon as the grant is
+      created.
     additionalEmailRecipients: Optional. Additional email addresses to notify
       for all the actions performed on the grant.
     auditTrail: Output only. Audit trail of access provided by this grant. If
@@ -546,19 +563,20 @@ class Grant(_messages.Message):
     WITHDRAWING = 11
     WITHDRAWN = 12
 
-  additionalEmailRecipients = _messages.StringField(1, repeated=True)
-  auditTrail = _messages.MessageField('AuditTrail', 2)
-  createTime = _messages.StringField(3)
-  externallyModified = _messages.BooleanField(4)
-  justification = _messages.MessageField('Justification', 5)
-  name = _messages.StringField(6)
-  privilegedAccess = _messages.MessageField('PrivilegedAccess', 7)
-  requestedDuration = _messages.StringField(8)
-  requestedPrivilegedAccess = _messages.MessageField('RequestedPrivilegedAccess', 9, repeated=True)
-  requester = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  timeline = _messages.MessageField('Timeline', 12)
-  updateTime = _messages.StringField(13)
+  activationTrigger = _messages.MessageField('ActivationTrigger', 1)
+  additionalEmailRecipients = _messages.StringField(2, repeated=True)
+  auditTrail = _messages.MessageField('AuditTrail', 3)
+  createTime = _messages.StringField(4)
+  externallyModified = _messages.BooleanField(5)
+  justification = _messages.MessageField('Justification', 6)
+  name = _messages.StringField(7)
+  privilegedAccess = _messages.MessageField('PrivilegedAccess', 8)
+  requestedDuration = _messages.StringField(9)
+  requestedPrivilegedAccess = _messages.MessageField('RequestedPrivilegedAccess', 10, repeated=True)
+  requester = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  timeline = _messages.MessageField('Timeline', 13)
+  updateTime = _messages.StringField(14)
 
 
 class IAMAccessDenied(_messages.Message):

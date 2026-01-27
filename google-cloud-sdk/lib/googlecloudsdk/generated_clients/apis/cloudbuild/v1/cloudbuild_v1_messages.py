@@ -143,6 +143,9 @@ class Artifacts(_messages.Message):
   completion of all build steps.
 
   Fields:
+    genericArtifacts: Optional. A list of generic artifacts to be uploaded to
+      Artifact Registry upon successful completion of all build steps. If any
+      artifacts fail to be pushed, the build is marked FAILURE.
     goModules: Optional. A list of Go modules to be uploaded to Artifact
       Registry upon successful completion of all build steps. If any objects
       fail to be pushed, the build is marked FAILURE.
@@ -182,14 +185,15 @@ class Artifacts(_messages.Message):
       process.
   """
 
-  goModules = _messages.MessageField('GoModule', 1, repeated=True)
-  images = _messages.StringField(2, repeated=True)
-  mavenArtifacts = _messages.MessageField('MavenArtifact', 3, repeated=True)
-  npmPackages = _messages.MessageField('NpmPackage', 4, repeated=True)
-  objects = _messages.MessageField('ArtifactObjects', 5)
-  oci = _messages.MessageField('Oci', 6, repeated=True)
-  pythonPackages = _messages.MessageField('PythonPackage', 7, repeated=True)
-  volumes = _messages.MessageField('Volume', 8, repeated=True)
+  genericArtifacts = _messages.MessageField('GenericArtifact', 1, repeated=True)
+  goModules = _messages.MessageField('GoModule', 2, repeated=True)
+  images = _messages.StringField(3, repeated=True)
+  mavenArtifacts = _messages.MessageField('MavenArtifact', 4, repeated=True)
+  npmPackages = _messages.MessageField('NpmPackage', 5, repeated=True)
+  objects = _messages.MessageField('ArtifactObjects', 6)
+  oci = _messages.MessageField('Oci', 7, repeated=True)
+  pythonPackages = _messages.MessageField('PythonPackage', 8, repeated=True)
+  volumes = _messages.MessageField('Volume', 9, repeated=True)
 
 
 class Autoscale(_messages.Message):
@@ -3023,11 +3027,13 @@ class Dependency(_messages.Message):
   Fields:
     empty: If set to true disable all dependency fetching (ignoring the
       default source as well).
+    genericArtifact: Represents a generic artifact as a build dependency.
     gitSource: Represents a git repository as a build dependency.
   """
 
   empty = _messages.BooleanField(1)
-  gitSource = _messages.MessageField('GitSourceDependency', 2)
+  genericArtifact = _messages.MessageField('GenericArtifactDependency', 2)
+  gitSource = _messages.MessageField('GitSourceDependency', 3)
 
 
 class DeveloperConnectConfig(_messages.Message):
@@ -3161,6 +3167,55 @@ class GCSLocation(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class GenericArtifact(_messages.Message):
+  r"""Generic artifact to upload to Artifact Registry upon successful
+  completion of all build steps.
+
+  Enums:
+    ContentHandlingValueValuesEnum: Optional. Option to specify the content
+      handling of the generic artifact.
+
+  Fields:
+    contentHandling: Optional. Option to specify the content handling of the
+      generic artifact.
+    folder: Required. Path to the generic artifact in the build's workspace to
+      be uploaded to Artifact Registry.
+    registryPath: Required. Registry path to upload the generic artifact to,
+      in the form projects/$PROJECT/locations/$LOCATION/repositories/$REPO/pac
+      kages/$PACKAGE/versions/$VERSION
+  """
+
+  class ContentHandlingValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify the content handling of the generic
+    artifact.
+
+    Values:
+      CONTENT_HANDLING_UNSPECIFIED: If not specified, then the artifact will
+        not have any special handling.
+      VM_IMAGE: Indicates that the contents of the artifact are a VM image.
+    """
+    CONTENT_HANDLING_UNSPECIFIED = 0
+    VM_IMAGE = 1
+
+  contentHandling = _messages.EnumField('ContentHandlingValueValuesEnum', 1)
+  folder = _messages.StringField(2)
+  registryPath = _messages.StringField(3)
+
+
+class GenericArtifactDependency(_messages.Message):
+  r"""Represents a generic artifact as a build dependency.
+
+  Fields:
+    destPath: Required. Where the artifact files should be placed on the
+      worker.
+    resource: Required. The location to download the artifact files from. Ex:
+      projects/p1/locations/us/repositories/r1/packages/p1/versions/v1
+  """
+
+  destPath = _messages.StringField(1)
+  resource = _messages.StringField(2)
 
 
 class GitConfig(_messages.Message):
@@ -4860,6 +4915,8 @@ class Results(_messages.Message):
       produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
       first 50KB of data is stored. Note that the `$BUILDER_OUTPUT` variable
       is read-only and can't be substituted.
+    genericArtifacts: Output only. Generic artifacts uploaded to Artifact
+      Registry at the end of the build.
     goModules: Optional. Go module artifacts uploaded to Artifact Registry at
       the end of the build.
     images: Container images that were built as a part of the build.
@@ -4879,13 +4936,14 @@ class Results(_messages.Message):
   artifactTiming = _messages.MessageField('TimeSpan', 2)
   buildStepImages = _messages.StringField(3, repeated=True)
   buildStepOutputs = _messages.BytesField(4, repeated=True)
-  goModules = _messages.MessageField('UploadedGoModule', 5, repeated=True)
-  images = _messages.MessageField('BuiltImage', 6, repeated=True)
-  mavenArtifacts = _messages.MessageField('UploadedMavenArtifact', 7, repeated=True)
-  npmPackages = _messages.MessageField('UploadedNpmPackage', 8, repeated=True)
-  numArtifacts = _messages.IntegerField(9)
-  ociArtifacts = _messages.MessageField('UploadedOCIArtifact', 10, repeated=True)
-  pythonPackages = _messages.MessageField('UploadedPythonPackage', 11, repeated=True)
+  genericArtifacts = _messages.MessageField('UploadedGenericArtifact', 5, repeated=True)
+  goModules = _messages.MessageField('UploadedGoModule', 6, repeated=True)
+  images = _messages.MessageField('BuiltImage', 7, repeated=True)
+  mavenArtifacts = _messages.MessageField('UploadedMavenArtifact', 8, repeated=True)
+  npmPackages = _messages.MessageField('UploadedNpmPackage', 9, repeated=True)
+  numArtifacts = _messages.IntegerField(10)
+  ociArtifacts = _messages.MessageField('UploadedOCIArtifact', 11, repeated=True)
+  pythonPackages = _messages.MessageField('UploadedPythonPackage', 12, repeated=True)
 
 
 class RetryBuildRequest(_messages.Message):
@@ -5493,6 +5551,62 @@ class UpdateWorkerPoolOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   workerPool = _messages.StringField(3)
+
+
+class UploadedGenericArtifact(_messages.Message):
+  r"""A generic artifact uploaded to Artifact Registry using the
+  GenericArtifact directive.
+
+  Messages:
+    FileHashesValue: Output only. The file hashes that make up the generic
+      artifact.
+
+  Fields:
+    artifactFingerprint: Output only. The hash of the whole artifact.
+    artifactRegistryPackage: Output only. Path to the artifact in Artifact
+      Registry.
+    fileHashes: Output only. The file hashes that make up the generic
+      artifact.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified artifact.
+    uri: Output only. URI of the uploaded artifact. Ex:
+      projects/p1/locations/us/repositories/r1/packages/p1/versions/v1
+    vmImageUri: Output only. If the `content_handling` field of the
+      corresponding `GenericArtifact` in the build request is set to
+      `VM_IMAGE`, this field will be populated with the URI of the image that
+      was uploaded.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FileHashesValue(_messages.Message):
+    r"""Output only. The file hashes that make up the generic artifact.
+
+    Messages:
+      AdditionalProperty: An additional property for a FileHashesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type FileHashesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FileHashesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FileHashes attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FileHashes', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  artifactFingerprint = _messages.MessageField('FileHashes', 1)
+  artifactRegistryPackage = _messages.StringField(2)
+  fileHashes = _messages.MessageField('FileHashesValue', 3)
+  pushTiming = _messages.MessageField('TimeSpan', 4)
+  uri = _messages.StringField(5)
+  vmImageUri = _messages.StringField(6)
 
 
 class UploadedGoModule(_messages.Message):

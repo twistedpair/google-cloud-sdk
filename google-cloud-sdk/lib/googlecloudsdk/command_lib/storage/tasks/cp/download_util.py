@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import symlink_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 SYMLINK_TEMPORARY_PLACEHOLDER_SUFFIX = '_sym'
@@ -169,12 +170,23 @@ def get_crc32c_hash_for_resource(resource):
     if isinstance(
         api, gcs_grpc_bidi_streaming_client.GcsGrpcBidiStreamingClient
     ):
-      return api.get_grpc_bidi_object_metadata(
+      metadata = api.get_grpc_bidi_object_metadata(
           bucket_name=resource.storage_url.bucket_name,
           object_name=resource.storage_url.resource_name,
           source_resource=resource,
           generation=resource.generation,
-      ).crc32c_hash
+      )
+      log.debug(
+          'gRPC Bidi metadata for %s has CRC32C hash: %s',
+          resource.storage_url.resource_name,
+          metadata.crc32c_hash,
+      )
+      log.debug(
+          'Source resource CRC32C hash for %s: %s',
+          resource.storage_url.resource_name,
+          resource.crc32c_hash,
+      )
+      return metadata.crc32c_hash
   except ImportError:
     # Non Zonal buckets not necesarily need to import gRPC dependent libraries.
     # For Non Zonal buckets, we will continue to use the existing flow.

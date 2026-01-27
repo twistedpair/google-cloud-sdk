@@ -72,6 +72,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.instanceSettings = self.InstanceSettingsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
+    self.instantSnapshotGroups = self.InstantSnapshotGroupsService(self)
     self.instantSnapshots = self.InstantSnapshotsService(self)
     self.interconnectAttachmentGroups = self.InterconnectAttachmentGroupsService(self)
     self.interconnectAttachments = self.InterconnectAttachmentsService(self)
@@ -115,6 +116,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionInstanceTemplates = self.RegionInstanceTemplatesService(self)
     self.regionInstances = self.RegionInstancesService(self)
+    self.regionInstantSnapshotGroups = self.RegionInstantSnapshotGroupsService(self)
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
     self.regionMultiMigMembers = self.RegionMultiMigMembersService(self)
     self.regionMultiMigs = self.RegionMultiMigsService(self)
@@ -135,6 +137,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionZones = self.RegionZonesService(self)
     self.regions = self.RegionsService(self)
     self.reservationBlocks = self.ReservationBlocksService(self)
+    self.reservationSlots = self.ReservationSlotsService(self)
     self.reservationSubBlocks = self.ReservationSubBlocksService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
@@ -9292,6 +9295,201 @@ patch format and processing rules.
         request_field='shieldedVmConfig',
         request_type_name='ComputeInstancesUpdateShieldedVmConfigRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class InstantSnapshotGroupsService(base_api.BaseApiService):
+    """Service class for the instantSnapshotGroups resource."""
+
+    _NAME = 'instantSnapshotGroups'
+
+    def __init__(self, client):
+      super(ComputeBeta.InstantSnapshotGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""deletes a Zonal InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.instantSnapshotGroups.delete',
+        ordered_params=['project', 'zone', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{instantSnapshotGroup}',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""returns the specified InstantSnapshotGroup resource in the specified zone.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshotGroups.get',
+        ordered_params=['project', 'zone', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{instantSnapshotGroup}',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsGetRequest',
+        response_type_name='InstantSnapshotGroup',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshotGroups.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""inserts a Zonal InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshotGroups.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'sourceConsistencyGroup'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups',
+        request_field='instantSnapshotGroup',
+        request_type_name='ComputeInstantSnapshotGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""retrieves the list of InstantSnapshotGroup resources contained within.
+the specified zone.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstantSnapshotGroups) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshotGroups.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsListRequest',
+        response_type_name='ListInstantSnapshotGroups',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshotGroups.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeInstantSnapshotGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshotGroups.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstantSnapshotGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -19322,6 +19520,202 @@ instances to create.
         supports_download=False,
     )
 
+  class RegionInstantSnapshotGroupsService(base_api.BaseApiService):
+    """Service class for the regionInstantSnapshotGroups resource."""
+
+    _NAME = 'regionInstantSnapshotGroups'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionInstantSnapshotGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""deletes a Regional InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionInstantSnapshotGroups.delete',
+        ordered_params=['project', 'region', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{instantSnapshotGroup}',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""returns the specified InstantSnapshotGroup resource in the specified.
+region.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshotGroups.get',
+        ordered_params=['project', 'region', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{instantSnapshotGroup}',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsGetRequest',
+        response_type_name='InstantSnapshotGroup',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such.
+policy or resource exists.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshotGroups.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""creates a Regional InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshotGroups.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId', 'sourceConsistencyGroup'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups',
+        request_field='instantSnapshotGroup',
+        request_type_name='ComputeRegionInstantSnapshotGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""retrieves the list of InstantSnapshotGroup resources contained within.
+the specified region.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstantSnapshotGroups) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshotGroups.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsListRequest',
+        response_type_name='ListInstantSnapshotGroups',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource.
+Replaces any existing policy.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshotGroups.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeRegionInstantSnapshotGroupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshotGroups.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionInstantSnapshotGroupsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionInstantSnapshotsService(base_api.BaseApiService):
     """Service class for the regionInstantSnapshots resource."""
 
@@ -23030,6 +23424,97 @@ Replaces any existing policy.
         request_field='testPermissionsRequest',
         request_type_name='ComputeReservationBlocksTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ReservationSlotsService(base_api.BaseApiService):
+    """Service class for the reservationSlots resource."""
+
+    _NAME = 'reservationSlots'
+
+    def __init__(self, client):
+      super(ComputeBeta.ReservationSlotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves information about the specified reservation slot.
+
+      Args:
+        request: (ComputeReservationSlotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationSlotsGetResponse) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}/reservationSlots/{reservationSlot}',
+        http_method='GET',
+        method_id='compute.reservationSlots.get',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSlot'],
+        path_params=['parentName', 'project', 'reservationSlot', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/{+parentName}/reservationSlots/{reservationSlot}',
+        request_field='',
+        request_type_name='ComputeReservationSlotsGetRequest',
+        response_type_name='ReservationSlotsGetResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of reservation slots under a single reservation.
+
+      Args:
+        request: (ComputeReservationSlotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReservationSlotsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}/reservationSlots',
+        http_method='GET',
+        method_id='compute.reservationSlots.list',
+        ordered_params=['project', 'zone', 'parentName'],
+        path_params=['parentName', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/{+parentName}/reservationSlots',
+        request_field='',
+        request_type_name='ComputeReservationSlotsListRequest',
+        response_type_name='ReservationSlotsListResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update a reservation slot in the specified sub-block.
+
+      Args:
+        request: (ComputeReservationSlotsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}/reservationSlots/{reservationSlot}',
+        http_method='POST',
+        method_id='compute.reservationSlots.update',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSlot'],
+        path_params=['parentName', 'project', 'reservationSlot', 'zone'],
+        query_params=['updateMask'],
+        relative_path='projects/{project}/zones/{zone}/{+parentName}/reservationSlots/{reservationSlot}',
+        request_field='reservationSlotResource',
+        request_type_name='ComputeReservationSlotsUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

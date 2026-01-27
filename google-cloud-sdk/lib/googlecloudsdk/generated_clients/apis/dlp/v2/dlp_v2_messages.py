@@ -3306,6 +3306,181 @@ class GooglePrivacyDlpV2ActivateJobTriggerRequest(_messages.Message):
   r"""Request message for ActivateJobTrigger."""
 
 
+class GooglePrivacyDlpV2AdjustByImageFindings(_messages.Message):
+  r"""AdjustmentRule condition for image findings. This rule is silently
+  ignored if the content being inspected is not an image.
+
+  Enums:
+    MinLikelihoodValueValuesEnum: Required. Minimum likelihood of the
+      `adjust_by_image_findings.info_types` finding. If the likelihood is
+      lower than this value, Sensitive Data Protection doesn't adjust the
+      likelihood of the `InspectionRuleSet.info_types` finding.
+
+  Fields:
+    imageContainmentType: Specifies the required spatial relationship between
+      the bounding boxes of the target finding and the context infoType
+      findings.
+    infoTypes: A list of image-supported infoTypes-excluding [document
+      infoTypes](https://cloud.google.com/sensitive-data-
+      protection/docs/infotypes-reference#documents)-to be used as context for
+      the adjustment rule. Sensitive Data Protection adjusts the likelihood of
+      an image finding if its bounding box has the specified spatial
+      relationship (defined by `image_containment_type`) with a finding of an
+      infoType in this list. For example, you can create a rule to adjust the
+      likelihood of a `US_PASSPORT` finding if it is enclosed by a finding of
+      `OBJECT_TYPE/PERSON/PASSPORT`. To configure this, set `US_PASSPORT` in
+      `InspectionRuleSet.info_types`. Add an `adjustment_rule` with an
+      `adjust_by_image_findings.info_types` that contains
+      `OBJECT_TYPE/PERSON/PASSPORT` and `image_containment_type` set to
+      `encloses`. In this case, the likelihood of the `US_PASSPORT` finding is
+      adjusted, but the likelihood of the `OBJECT_TYPE/PERSON/PASSPORT`
+      finding is not.
+    minLikelihood: Required. Minimum likelihood of the
+      `adjust_by_image_findings.info_types` finding. If the likelihood is
+      lower than this value, Sensitive Data Protection doesn't adjust the
+      likelihood of the `InspectionRuleSet.info_types` finding.
+  """
+
+  class MinLikelihoodValueValuesEnum(_messages.Enum):
+    r"""Required. Minimum likelihood of the
+    `adjust_by_image_findings.info_types` finding. If the likelihood is lower
+    than this value, Sensitive Data Protection doesn't adjust the likelihood
+    of the `InspectionRuleSet.info_types` finding.
+
+    Values:
+      LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
+      VERY_UNLIKELY: Highest chance of a false positive.
+      UNLIKELY: High chance of a false positive.
+      POSSIBLE: Some matching signals. The default value.
+      LIKELY: Low chance of a false positive.
+      VERY_LIKELY: Confidence level is high. Lowest chance of a false
+        positive.
+    """
+    LIKELIHOOD_UNSPECIFIED = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  imageContainmentType = _messages.MessageField('GooglePrivacyDlpV2ImageContainmentType', 1)
+  infoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2, repeated=True)
+  minLikelihood = _messages.EnumField('MinLikelihoodValueValuesEnum', 3)
+
+
+class GooglePrivacyDlpV2AdjustByMatchingInfoTypes(_messages.Message):
+  r"""AdjustmentRule condition for matching infoTypes.
+
+  Enums:
+    MatchingTypeValueValuesEnum: How the adjustment rule is applied. Only
+      MATCHING_TYPE_PARTIAL_MATCH is supported: - Partial match: adjusts the
+      findings of infoTypes specified in the inspection rule when they have a
+      nonempty intersection with a finding of an infoType specified in this
+      adjustment rule.
+    MinLikelihoodValueValuesEnum: Required. Minimum likelihood of the
+      `adjust_by_matching_info_types.info_types` finding. If the likelihood is
+      lower than this value, Sensitive Data Protection doesn't adjust the
+      likelihood of the `InspectionRuleSet.info_types` finding.
+
+  Fields:
+    infoTypes: Sensitive Data Protection adjusts the likelihood of a finding
+      if that finding also matches one of these infoTypes. For example, you
+      can create a rule to adjust the likelihood of a `PHONE_NUMBER` finding
+      if the string is found within a document that is classified as
+      `DOCUMENT_TYPE/HR/RESUME`. To configure this, set `PHONE_NUMBER` in
+      `InspectionRuleSet.info_types`. Add an `adjustment_rule` with an
+      `adjust_by_matching_info_types.info_types` that contains
+      `DOCUMENT_TYPE/HR/RESUME`. In this case, the likelihood of the
+      `PHONE_NUMBER` finding is adjusted, but the likelihood of the
+      `DOCUMENT_TYPE/HR/RESUME` finding is not.
+    matchingType: How the adjustment rule is applied. Only
+      MATCHING_TYPE_PARTIAL_MATCH is supported: - Partial match: adjusts the
+      findings of infoTypes specified in the inspection rule when they have a
+      nonempty intersection with a finding of an infoType specified in this
+      adjustment rule.
+    minLikelihood: Required. Minimum likelihood of the
+      `adjust_by_matching_info_types.info_types` finding. If the likelihood is
+      lower than this value, Sensitive Data Protection doesn't adjust the
+      likelihood of the `InspectionRuleSet.info_types` finding.
+  """
+
+  class MatchingTypeValueValuesEnum(_messages.Enum):
+    r"""How the adjustment rule is applied. Only MATCHING_TYPE_PARTIAL_MATCH
+    is supported: - Partial match: adjusts the findings of infoTypes specified
+    in the inspection rule when they have a nonempty intersection with a
+    finding of an infoType specified in this adjustment rule.
+
+    Values:
+      MATCHING_TYPE_UNSPECIFIED: Invalid.
+      MATCHING_TYPE_FULL_MATCH: Full match. - Dictionary: join of Dictionary
+        results matched the complete finding quote - Regex: all regex matches
+        fill a finding quote from start to end - Exclude infoType: completely
+        inside affecting infoTypes findings
+      MATCHING_TYPE_PARTIAL_MATCH: Partial match. - Dictionary: at least one
+        of the tokens in the finding matches - Regex: substring of the finding
+        matches - Exclude infoType: intersects with affecting infoTypes
+        findings
+      MATCHING_TYPE_INVERSE_MATCH: Inverse match. - Dictionary: no tokens in
+        the finding match the dictionary - Regex: finding doesn't match the
+        regex - Exclude infoType: no intersection with affecting infoTypes
+        findings
+      MATCHING_TYPE_RULE_SPECIFIC: Rule-specific match. The matching logic is
+        based on the specific rule being used. This is required for rules
+        where the matching behavior is not a simple string comparison (e.g.,
+        image containment). This matching type can only be used with the
+        `ExcludeByImageFindings` rule. - Exclude by image findings: The
+        matching logic is defined within `ExcludeByImageFindings` based on
+        spatial relationships between bounding boxes.
+    """
+    MATCHING_TYPE_UNSPECIFIED = 0
+    MATCHING_TYPE_FULL_MATCH = 1
+    MATCHING_TYPE_PARTIAL_MATCH = 2
+    MATCHING_TYPE_INVERSE_MATCH = 3
+    MATCHING_TYPE_RULE_SPECIFIC = 4
+
+  class MinLikelihoodValueValuesEnum(_messages.Enum):
+    r"""Required. Minimum likelihood of the
+    `adjust_by_matching_info_types.info_types` finding. If the likelihood is
+    lower than this value, Sensitive Data Protection doesn't adjust the
+    likelihood of the `InspectionRuleSet.info_types` finding.
+
+    Values:
+      LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
+      VERY_UNLIKELY: Highest chance of a false positive.
+      UNLIKELY: High chance of a false positive.
+      POSSIBLE: Some matching signals. The default value.
+      LIKELY: Low chance of a false positive.
+      VERY_LIKELY: Confidence level is high. Lowest chance of a false
+        positive.
+    """
+    LIKELIHOOD_UNSPECIFIED = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  infoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1, repeated=True)
+  matchingType = _messages.EnumField('MatchingTypeValueValuesEnum', 2)
+  minLikelihood = _messages.EnumField('MinLikelihoodValueValuesEnum', 3)
+
+
+class GooglePrivacyDlpV2AdjustmentRule(_messages.Message):
+  r"""Rule that specifies conditions when a certain infoType's finding details
+  should be adjusted.
+
+  Fields:
+    adjustByImageFindings: AdjustmentRule condition for image findings.
+    adjustByMatchingInfoTypes: Set of infoTypes for which findings would
+      affect this rule.
+    likelihoodAdjustment: Likelihood adjustment to apply to the infoType.
+  """
+
+  adjustByImageFindings = _messages.MessageField('GooglePrivacyDlpV2AdjustByImageFindings', 1)
+  adjustByMatchingInfoTypes = _messages.MessageField('GooglePrivacyDlpV2AdjustByMatchingInfoTypes', 2)
+  likelihoodAdjustment = _messages.MessageField('GooglePrivacyDlpV2LikelihoodAdjustment', 3)
+
+
 class GooglePrivacyDlpV2AllInfoTypes(_messages.Message):
   r"""Apply transformation to all findings."""
 
@@ -6762,6 +6937,10 @@ class GooglePrivacyDlpV2Domain(_messages.Message):
   signals = _messages.EnumField('SignalsValueListEntryValuesEnum', 2, repeated=True)
 
 
+class GooglePrivacyDlpV2Encloses(_messages.Message):
+  r"""Defines a condition where one bounding box encloses another."""
+
+
 class GooglePrivacyDlpV2EntityId(_messages.Message):
   r"""An entity in a dataset is a field or set of fields that correspond to a
   single person. For example, in medical records the `EntityId` might be a
@@ -6829,6 +7008,34 @@ class GooglePrivacyDlpV2ExcludeByHotword(_messages.Message):
   proximity = _messages.MessageField('GooglePrivacyDlpV2Proximity', 2)
 
 
+class GooglePrivacyDlpV2ExcludeByImageFindings(_messages.Message):
+  r"""The rule to exclude image findings based on spatial relationships with
+  other image findings. For example, exclude an image finding if it overlaps
+  with another image finding. This rule is silently ignored if the content
+  being inspected is not an image.
+
+  Fields:
+    imageContainmentType: Specifies the required spatial relationship between
+      the bounding boxes of the target finding and the context infoType
+      findings.
+    infoTypes: A list of image-supported infoTypes-excluding [document
+      infoTypes](https://cloud.google.com/sensitive-data-
+      protection/docs/infotypes-reference#documents)-to be used as context for
+      the exclusion rule. A finding is excluded if its bounding box has the
+      specified spatial relationship (defined by `image_containment_type`)
+      with a finding of an infoType in this list. For example, if
+      `InspectionRuleSet.info_types` includes `OBJECT_TYPE/PERSON` and this
+      `exclusion_rule` specifies `info_types` as `OBJECT_TYPE/PERSON/PASSPORT`
+      with `image_containment_type` set to `encloses`, then
+      `OBJECT_TYPE/PERSON` findings will be excluded if they are fully
+      contained within the bounding box of an `OBJECT_TYPE/PERSON/PASSPORT`
+      finding.
+  """
+
+  imageContainmentType = _messages.MessageField('GooglePrivacyDlpV2ImageContainmentType', 1)
+  infoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2, repeated=True)
+
+
 class GooglePrivacyDlpV2ExcludeInfoTypes(_messages.Message):
   r"""List of excluded infoTypes.
 
@@ -6858,6 +7065,9 @@ class GooglePrivacyDlpV2ExclusionRule(_messages.Message):
     dictionary: Dictionary which defines the rule.
     excludeByHotword: Drop if the hotword rule is contained in the proximate
       context. For tabular data, the context includes the column name.
+    excludeByImageFindings: Exclude findings based on image containment rules.
+      For example, exclude an image finding if it overlaps with another image
+      finding.
     excludeInfoTypes: Set of infoTypes for which findings would affect this
       rule.
     matchingType: How the rule is applied, see MatchingType documentation for
@@ -6882,17 +7092,26 @@ class GooglePrivacyDlpV2ExclusionRule(_messages.Message):
         the finding match the dictionary - Regex: finding doesn't match the
         regex - Exclude infoType: no intersection with affecting infoTypes
         findings
+      MATCHING_TYPE_RULE_SPECIFIC: Rule-specific match. The matching logic is
+        based on the specific rule being used. This is required for rules
+        where the matching behavior is not a simple string comparison (e.g.,
+        image containment). This matching type can only be used with the
+        `ExcludeByImageFindings` rule. - Exclude by image findings: The
+        matching logic is defined within `ExcludeByImageFindings` based on
+        spatial relationships between bounding boxes.
     """
     MATCHING_TYPE_UNSPECIFIED = 0
     MATCHING_TYPE_FULL_MATCH = 1
     MATCHING_TYPE_PARTIAL_MATCH = 2
     MATCHING_TYPE_INVERSE_MATCH = 3
+    MATCHING_TYPE_RULE_SPECIFIC = 4
 
   dictionary = _messages.MessageField('GooglePrivacyDlpV2Dictionary', 1)
   excludeByHotword = _messages.MessageField('GooglePrivacyDlpV2ExcludeByHotword', 2)
-  excludeInfoTypes = _messages.MessageField('GooglePrivacyDlpV2ExcludeInfoTypes', 3)
-  matchingType = _messages.EnumField('MatchingTypeValueValuesEnum', 4)
-  regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 5)
+  excludeByImageFindings = _messages.MessageField('GooglePrivacyDlpV2ExcludeByImageFindings', 3)
+  excludeInfoTypes = _messages.MessageField('GooglePrivacyDlpV2ExcludeInfoTypes', 4)
+  matchingType = _messages.EnumField('MatchingTypeValueValuesEnum', 5)
+  regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 6)
 
 
 class GooglePrivacyDlpV2Export(_messages.Message):
@@ -7525,6 +7744,10 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   upperBound = _messages.MessageField('GooglePrivacyDlpV2Value', 3)
 
 
+class GooglePrivacyDlpV2FullyInside(_messages.Message):
+  r"""Defines a condition where one bounding box is fully inside another."""
+
+
 class GooglePrivacyDlpV2GlobalProcessing(_messages.Message):
   r"""Processing occurs in the global region."""
 
@@ -7763,6 +7986,23 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   requiredFindingLabelKeys = _messages.StringField(3, repeated=True)
   tableOptions = _messages.MessageField('GooglePrivacyDlpV2TableOptions', 4)
+
+
+class GooglePrivacyDlpV2ImageContainmentType(_messages.Message):
+  r"""Specifies the relationship between bounding boxes for image findings.
+
+  Fields:
+    encloses: The context finding's bounding box must fully contain the target
+      finding's bounding box.
+    fullyInside: The context finding's bounding box must be fully inside the
+      target finding's bounding box.
+    overlaps: The context finding's bounding box and the target finding's
+      bounding box must have a non-zero intersection.
+  """
+
+  encloses = _messages.MessageField('GooglePrivacyDlpV2Encloses', 1)
+  fullyInside = _messages.MessageField('GooglePrivacyDlpV2FullyInside', 2)
+  overlaps = _messages.MessageField('GooglePrivacyDlpV2Overlap', 3)
 
 
 class GooglePrivacyDlpV2ImageFallbackLocation(_messages.Message):
@@ -8433,12 +8673,14 @@ class GooglePrivacyDlpV2InspectionRule(_messages.Message):
   `InspectionRuleSet`.
 
   Fields:
+    adjustmentRule: Adjustment rule.
     exclusionRule: Exclusion rule.
     hotwordRule: Hotword-based detection rule.
   """
 
-  exclusionRule = _messages.MessageField('GooglePrivacyDlpV2ExclusionRule', 1)
-  hotwordRule = _messages.MessageField('GooglePrivacyDlpV2HotwordRule', 2)
+  adjustmentRule = _messages.MessageField('GooglePrivacyDlpV2AdjustmentRule', 1)
+  exclusionRule = _messages.MessageField('GooglePrivacyDlpV2ExclusionRule', 2)
+  hotwordRule = _messages.MessageField('GooglePrivacyDlpV2HotwordRule', 3)
 
 
 class GooglePrivacyDlpV2InspectionRuleSet(_messages.Message):
@@ -9357,6 +9599,10 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
   outputSchema = _messages.EnumField('OutputSchemaValueValuesEnum', 1)
   storagePath = _messages.MessageField('GooglePrivacyDlpV2CloudStoragePath', 2)
   table = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 3)
+
+
+class GooglePrivacyDlpV2Overlap(_messages.Message):
+  r"""Defines a condition for overlapping bounding boxes."""
 
 
 class GooglePrivacyDlpV2PartitionId(_messages.Message):

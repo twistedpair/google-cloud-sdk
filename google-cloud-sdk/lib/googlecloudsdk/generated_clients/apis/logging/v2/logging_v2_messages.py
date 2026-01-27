@@ -957,6 +957,9 @@ class FieldSource(_messages.Message):
   r"""LINT.IfChange A source that can be used to represent a field in a query
   construct.
 
+  Enums:
+    FieldSourceModifiersValueListEntryValuesEnum:
+
   Fields:
     aliasRef: The alias name for a field that has already been aliased within
       a different ProjectedField type elsewhere in the query model. The alias
@@ -969,6 +972,11 @@ class FieldSource(_messages.Message):
       field (the leaf value). This path is used for primary selection and
       actions like drill-down or projection.Example:
       json_payload.labels.message.
+    fieldSourceModifiers: Optional. Specifies a list of modifiers for the
+      field source. These are used to embellish or decorate a FieldSource
+      rather than be a core characteristic of it.Since this serves as a set,
+      each modifier appears at most once, so the number of modifiers is small
+      and bounded by the number of distinct enum values.
     isJson: Whether the field is a JSON field, or has a parent that is a JSON
       field. This value is used to determine JSON extractions in generated SQL
       queries. Note that this is_json flag may be true when the column_type is
@@ -991,14 +999,50 @@ class FieldSource(_messages.Message):
     variableRef: The variable name for dashboard template variable support.
   """
 
+  class FieldSourceModifiersValueListEntryValuesEnum(_messages.Enum):
+    r"""FieldSourceModifiersValueListEntryValuesEnum enum type.
+
+    Values:
+      FIELD_SOURCE_MODIFIER_UNSPECIFIED: Default value. This value is unused.
+      REJECT_IF_NOT_FOUND_IN_SCHEMA: Indicates that the field source should be
+        rejected if the field is not present in the schema. This is typically
+        used to indicate that the field source is a field that is always
+        expected to be present in the schema. Like a field in the default
+        logging schema.Within the builder, this means that fields marked as
+        REJECT_IF_NOT_FOUND_IN_SCHEMA will be auto validated against the
+        retrieved schema and thus will prevent running a query if they are not
+        present.Fields that are not marked as REJECT_IF_NOT_FOUND_IN_SCHEMA,
+        like manually added fields that are not found during schema inference,
+        will not be auto validated against the schema and will not prevent a
+        query from running if they are not present in the schema. Validation
+        of the entire query will still occur and catch any syntactic errors.
+      WARN_IF_NOT_FOUND_IN_SCHEMA: Indicates that a warning should be
+        generated for this field source if the field is not present in the
+        schema. This is typically used to indicate that the field source is a
+        field that is inferred from the schema and may not always be present
+        based on when the data is sampled, but should not prevent the query
+        from running if it is not present in the inferred schema.Within the
+        builder, this means that fields marked as WARN_IF_NOT_FOUND_IN_SCHEMA
+        will be auto validated against the retrieved schema and will warn the
+        user if they are not present. This will not block the user from
+        running the query like REJECT_IF_NOT_FOUND_IN_SCHEMA will. Instead,
+        the user will see a warning that the field may not be
+        present.Validation of the entire query will still occur and catch any
+        errors.
+    """
+    FIELD_SOURCE_MODIFIER_UNSPECIFIED = 0
+    REJECT_IF_NOT_FOUND_IN_SCHEMA = 1
+    WARN_IF_NOT_FOUND_IN_SCHEMA = 2
+
   aliasRef = _messages.StringField(1)
   columnType = _messages.StringField(2)
   field = _messages.StringField(3)
-  isJson = _messages.BooleanField(4)
-  literalValue = _messages.MessageField('extra_types.JsonValue', 5)
-  parentPath = _messages.StringField(6)
-  projectedField = _messages.MessageField('ProjectedField', 7)
-  variableRef = _messages.StringField(8)
+  fieldSourceModifiers = _messages.EnumField('FieldSourceModifiersValueListEntryValuesEnum', 4, repeated=True)
+  isJson = _messages.BooleanField(5)
+  literalValue = _messages.MessageField('extra_types.JsonValue', 6)
+  parentPath = _messages.StringField(7)
+  projectedField = _messages.MessageField('ProjectedField', 8)
+  variableRef = _messages.StringField(9)
 
 
 class FilterExpression(_messages.Message):
@@ -2033,7 +2077,7 @@ class LogEntry(_messages.Message):
     LabelsValue: Optional. A map of key, value pairs that provides additional
       information about the log entry. The labels can be user-defined or
       system-defined.User-defined labels are arbitrary key, value pairs that
-      you can use to classify logs.System-defined labels are defined by GCP
+      you can use to classify logs.System-defined labels are defined by cloud
       services for platform logs. They have two components - a service
       namespace component and the attribute name. For example:
       compute.googleapis.com/resource_name.Cloud Logging truncates label keys
@@ -2080,7 +2124,7 @@ class LogEntry(_messages.Message):
     labels: Optional. A map of key, value pairs that provides additional
       information about the log entry. The labels can be user-defined or
       system-defined.User-defined labels are arbitrary key, value pairs that
-      you can use to classify logs.System-defined labels are defined by GCP
+      you can use to classify logs.System-defined labels are defined by cloud
       services for platform logs. They have two components - a service
       namespace component and the attribute name. For example:
       compute.googleapis.com/resource_name.Cloud Logging truncates label keys
@@ -2231,9 +2275,9 @@ class LogEntry(_messages.Message):
     r"""Optional. A map of key, value pairs that provides additional
     information about the log entry. The labels can be user-defined or system-
     defined.User-defined labels are arbitrary key, value pairs that you can
-    use to classify logs.System-defined labels are defined by GCP services for
-    platform logs. They have two components - a service namespace component
-    and the attribute name. For example:
+    use to classify logs.System-defined labels are defined by cloud services
+    for platform logs. They have two components - a service namespace
+    component and the attribute name. For example:
     compute.googleapis.com/resource_name.Cloud Logging truncates label keys
     that exceed 512 B and label values that exceed 64 KB upon their associated
     log entry being written. The truncation is indicated by an ellipsis at the

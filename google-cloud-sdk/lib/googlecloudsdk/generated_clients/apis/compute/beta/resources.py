@@ -256,6 +256,14 @@ class Collections(enum.Enum):
       ['project', 'zone', 'instance'],
       True
   )
+  INSTANTSNAPSHOTGROUPS = (
+      'instantSnapshotGroups',
+      'projects/{project}/zones/{zone}/instantSnapshotGroups/'
+      '{instantSnapshotGroup}',
+      {},
+      ['project', 'zone', 'instantSnapshotGroup'],
+      True
+  )
   INSTANTSNAPSHOTS = (
       'instantSnapshots',
       'projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
@@ -581,6 +589,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'instanceTemplate'],
       True
   )
+  REGIONINSTANTSNAPSHOTGROUPS = (
+      'regionInstantSnapshotGroups',
+      'projects/{project}/regions/{region}/instantSnapshotGroups/'
+      '{instantSnapshotGroup}',
+      {},
+      ['project', 'region', 'instantSnapshotGroup'],
+      True
+  )
   REGIONINSTANTSNAPSHOTS = (
       'regionInstantSnapshots',
       'projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}',
@@ -728,11 +744,29 @@ class Collections(enum.Enum):
       ['project', 'zone', 'reservation', 'reservationBlock'],
       True
   )
+  RESERVATIONSLOTS = (
+      'reservationSlots',
+      'projects/{project}/zones/{zone}/{+parentName}/reservationSlots/'
+      '{reservationSlot}',
+      {
+          '':
+              'projects/{project}/zones/{zone}/reservations/{reservationsId}/'
+              'reservationBlocks/{reservationBlocksId}/reservationSubBlocks/'
+              '{reservationSubBlocksId}/reservationSlots/{reservationSlot}',
+      },
+      ['project', 'zone', 'parentName', 'reservationSlot'],
+      True
+  )
   RESERVATIONSUBBLOCKS = (
       'reservationSubBlocks',
       'projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/'
       '{reservationSubBlock}',
-      {},
+      {
+          '':
+              'projects/{project}/zones/{zone}/reservations/{reservationsId}/'
+              'reservationBlocks/{reservationBlocksId}/reservationSubBlocks/'
+              '{reservationSubBlocksId}',
+      },
       ['project', 'zone', 'parentName', 'reservationSubBlock'],
       True
   )

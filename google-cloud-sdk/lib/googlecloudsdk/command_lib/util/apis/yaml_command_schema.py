@@ -129,14 +129,13 @@ class RegionalEndpointsType(Enum):
   """A holder object for regional endpoints information specified in yaml command."""
   REQUIRED = 'REQUIRED'
   SUPPORTED = 'SUPPORTED'
-  NOT_SUPPORTED = 'NOT_SUPPORTED'
 
   @classmethod
   def FromString(cls, name):
     if name:
       return RegionalEndpointsType[name.upper()]
     else:
-      return RegionalEndpointsType.NOT_SUPPORTED
+      return None
 
 
 class Request(object):

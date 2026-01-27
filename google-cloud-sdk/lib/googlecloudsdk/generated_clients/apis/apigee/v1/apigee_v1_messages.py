@@ -12910,10 +12910,12 @@ class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
       EXPORTER_UNSPECIFIED: Exporter unspecified
       JAEGER: Jaeger exporter
       CLOUD_TRACE: Cloudtrace exporter
+      OPEN_TELEMETRY_COLLECTOR: Open Telemetry Collector
     """
     EXPORTER_UNSPECIFIED = 0
     JAEGER = 1
     CLOUD_TRACE = 2
+    OPEN_TELEMETRY_COLLECTOR = 3
 
   endpoint = _messages.StringField(1)
   exporter = _messages.EnumField('ExporterValueValuesEnum', 2)
@@ -14681,6 +14683,13 @@ class GoogleCloudApigeeV1TraceConfig(_messages.Message):
       captured using OpenCensus. An exporter sends traces to any backend that
       is capable of consuming them. Recorded spans can be exported by
       registered exporters.
+    openTelemetryProtocolEnabled: Optional. If true, the runtime uses
+      OpenTelemetry Protocol (OTLP) to send trace data. Configuration
+      Requirements (if open_telemetry_protocol_enabled is true): - Allowed
+      Exporters: CLOUD_TRACE or OPEN_TELEMETRY_COLLECTOR. - If Exporter is
+      OPEN_TELEMETRY_COLLECTOR: - endpoint refers to a valid OTLP collector
+      URL. - If Exporter is CLOUD_TRACE: - endpoint refers to a valid project
+      ID.
     samplingConfig: Distributed trace configuration for all API proxies in an
       environment. You can also override the configuration for a specific API
       proxy using the distributed trace configuration overrides API.
@@ -14695,14 +14704,17 @@ class GoogleCloudApigeeV1TraceConfig(_messages.Message):
       EXPORTER_UNSPECIFIED: Exporter unspecified
       JAEGER: Jaeger exporter
       CLOUD_TRACE: Cloudtrace exporter
+      OPEN_TELEMETRY_COLLECTOR: Open Telemetry Collector
     """
     EXPORTER_UNSPECIFIED = 0
     JAEGER = 1
     CLOUD_TRACE = 2
+    OPEN_TELEMETRY_COLLECTOR = 3
 
   endpoint = _messages.StringField(1)
   exporter = _messages.EnumField('ExporterValueValuesEnum', 2)
-  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1TraceSamplingConfig', 3)
+  openTelemetryProtocolEnabled = _messages.BooleanField(3)
+  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1TraceSamplingConfig', 4)
 
 
 class GoogleCloudApigeeV1TraceConfigOverride(_messages.Message):

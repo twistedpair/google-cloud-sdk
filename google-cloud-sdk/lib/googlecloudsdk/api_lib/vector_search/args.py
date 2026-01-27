@@ -14,6 +14,7 @@
 # limitations under the License.
 """Shared resource arguments and flags."""
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 
 
@@ -72,8 +73,53 @@ def AddJsonFilterFlag(parser, help_verb):
   )
 
 
-def AddDataObjectFlags(parser, command_name):
+def AddOutputFieldsFlags(parser):
+  """Adds output fields flags to the parser."""
+  output_fields_group = parser.add_argument_group('Output fields')
+  output_fields_group.add_argument(
+      '--output-data-fields',
+      type=arg_parsers.ArgList(),
+      metavar='DATA_OUTPUT_FIELD',
+      help=(
+          'List of data fields to include in the output. Use `*` to include all'
+          ' data fields.'
+      ),
+  )
+  output_fields_group.add_argument(
+      '--output-vector-fields',
+      type=arg_parsers.ArgList(),
+      metavar='VECTOR_OUTPUT_FIELD',
+      help=(
+          'List of vector fields to include in the output. Use `*` to include'
+          ' all vector fields.'
+      ),
+  )
+  output_fields_group.add_argument(
+      '--output-metadata-fields',
+      type=arg_parsers.ArgList(),
+      metavar='METADATA_OUTPUT_FIELD',
+      help=(
+          'List of metadata fields to include in the output. Use `*` to include'
+          ' all metadata fields.'
+      ),
+  )
+
+
+def AddDataObjectFlags(parser, command_name, include_json_filter=True):
   """Adds flags for query data object command."""
   AddCollectionFlag(parser, command_name)
   AddLocationFlag(parser)
-  AddJsonFilterFlag(parser, command_name)
+  if include_json_filter:
+    AddJsonFilterFlag(parser, command_name)
+
+
+def ParseOutputFields(args, client):
+  """Parses output fields from the args."""
+  output_fields = client.messages.GoogleCloudVectorsearchV1betaOutputFields()
+  if args.output_data_fields:
+    output_fields.dataFields = args.output_data_fields
+  if args.output_vector_fields:
+    output_fields.vectorFields = args.output_vector_fields
+  if args.output_metadata_fields:
+    output_fields.metadataFields = args.output_metadata_fields
+  return output_fields

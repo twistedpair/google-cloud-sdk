@@ -1252,7 +1252,9 @@ class ConfigManagementSpec(_messages.Message):
   Intended to parallel the ConfigManagement CR.
 
   Enums:
-    ManagementValueValuesEnum: Optional. Enables automatic Feature management.
+    ManagementValueValuesEnum: Optional. Deprecated: From version 1.21.0,
+      automatic Feature management is unavailable, and Config Sync only
+      supports manual upgrades.
 
   Fields:
     binauthz: Optional. Binauthz conifguration for the cluster. Deprecated:
@@ -1269,7 +1271,9 @@ class ConfigManagementSpec(_messages.Message):
       cluster. Deprecated: Configuring Hierarchy Controller through the
       configmanagement feature is no longer recommended. Use
       https://github.com/kubernetes-sigs/hierarchical-namespaces instead.
-    management: Optional. Enables automatic Feature management.
+    management: Optional. Deprecated: From version 1.21.0, automatic Feature
+      management is unavailable, and Config Sync only supports manual
+      upgrades.
     policyController: Optional. Policy Controller configuration for the
       cluster. Deprecated: Configuring Policy Controller through the
       configmanagement feature is no longer recommended. Use the
@@ -1278,7 +1282,8 @@ class ConfigManagementSpec(_messages.Message):
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
-    r"""Optional. Enables automatic Feature management.
+    r"""Optional. Deprecated: From version 1.21.0, automatic Feature
+    management is unavailable, and Config Sync only supports manual upgrades.
 
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified

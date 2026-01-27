@@ -404,7 +404,9 @@ class FaulttestingProjectsLocationsExperimentsListRequest(_messages.Message):
 
   Fields:
     filter: Optional. Filter expression to restrict the experiments returned.
-      Example: 'status=RUNNING'.
+      Returns only experiments matching the expression. Example:
+      'state="INJECTED"'. Follows https://google.aip.dev/160 and supports all
+      fields.
     pageSize: Optional. The maximum number of experiments to return. The
       service may return fewer than this value. If unspecified, at most 1000
       experiments will be returned. The maximum value is 1000; values above
@@ -442,10 +444,8 @@ class FaulttestingProjectsLocationsExperimentsStopAllRequest(_messages.Message):
 
   Fields:
     parent: Required. The parent of the resources to stop. Format:
-      projects/{project}/locations/{location}. If all_locations is true, the
-      location here is just used to determine where to run the command, so it
-      can be any valid Cloud FIT location. If all_locations is false, all
-      experiments under this location are stopped.
+      projects/{project}/locations/{location}. All experiments under this
+      location are stopped.
     stopAllExperimentsRequest: A StopAllExperimentsRequest resource to be
       passed as the request body.
   """
@@ -1213,19 +1213,12 @@ class Status(_messages.Message):
 
 
 class StopAllExperimentsRequest(_messages.Message):
-  r"""Request message for FaultTesting.StopAllExperiments.
-
-  Fields:
-    allLocations: Optional. If true, stop experiments in all locations under
-      the parent project.
-  """
-
-  allLocations = _messages.BooleanField(1)
+  r"""Request message for FaultTesting.StopAllExperiments."""
 
 
 class StopAllExperimentsResponse(_messages.Message):
   r"""Response message for FaultTesting.StopAllExperiments. Response is a
-  complete success only if `errors` and `unreachable` are both empty.
+  complete success only if `errors` is empty.
 
   Fields:
     errors: Errors that occurred while listing or stopping experiments. For
@@ -1234,13 +1227,10 @@ class StopAllExperimentsResponse(_messages.Message):
     stoppedExperimentsCount: The number of experiments in being stopped. These
       are all experiments found in reachable locations with status appropriate
       to be stopped which did not get an error from StopExperiment.
-    unreachable: Unordered list. Locations that could not be reached. Always
-      empty if all_locations is false.
   """
 
   errors = _messages.MessageField('Status', 1, repeated=True)
   stoppedExperimentsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class StopExperimentRequest(_messages.Message):

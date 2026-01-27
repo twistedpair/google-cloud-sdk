@@ -1713,9 +1713,8 @@ class Queue(_messages.Message):
       for [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#
       duration). Queues created by Cloud Tasks have a default `task_ttl` of 31
       days. . Queues created by queue.yaml/xml have a fixed `task_ttl` of the
-      maximum duration, because there is a [storage
-      quota](https://cloud.google.com/appengine/quotas#Task_Queue) for these
-      queues.
+      maximum duration, because there is a [storage quota](https://docs.cloud.
+      google.com/appengine/docs/standard/quotas#Task_Queue) for these queues.
     tombstoneTtl: The task tombstone time to live (TTL). After a task is
       deleted or executed, the task's tombstone is retained for the length of
       time specified by `tombstone_ttl`. The tombstone is used by task de-

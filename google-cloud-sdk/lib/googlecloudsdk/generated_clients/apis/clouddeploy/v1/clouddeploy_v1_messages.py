@@ -676,6 +676,7 @@ class AutomationRun(_messages.Message):
       name.
     timedPromoteReleaseOperation: Output only. Promotes a release to a
       specified 'Target' as defined in a Timed Promote Release rule.
+    uid: Output only. Unique identifier of the `AutomationRun`.
     updateTime: Output only. Time at which the automationRun was updated.
     waitUntilTime: Output only. Earliest time the `AutomationRun` will attempt
       to resume. Wait-time is configured by `wait` in automation rule.
@@ -717,8 +718,9 @@ class AutomationRun(_messages.Message):
   stateDescription = _messages.StringField(14)
   targetId = _messages.StringField(15)
   timedPromoteReleaseOperation = _messages.MessageField('TimedPromoteReleaseOperation', 16)
-  updateTime = _messages.StringField(17)
-  waitUntilTime = _messages.StringField(18)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  waitUntilTime = _messages.StringField(19)
 
 
 class AutomationRunEvent(_messages.Message):
@@ -2507,98 +2509,6 @@ class Config(_messages.Message):
   supportedVersions = _messages.MessageField('SkaffoldVersion', 4, repeated=True)
 
 
-class ConfigTask(_messages.Message):
-  r"""ConfigTask represents either a task in the Deploy Config or a custom
-  action in the Skaffold Config.
-
-  Messages:
-    EnvValue: Optional. Environment variables that are passed into the
-      containers defined for either the task in the Deploy Config or the
-      custom action in the Skaffold Config.
-
-  Fields:
-    env: Optional. Environment variables that are passed into the containers
-      defined for either the task in the Deploy Config or the custom action in
-      the Skaffold Config.
-    id: Required. The name of the task in the Deploy Config or the name of the
-      custom action in the Skaffold Config.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvValue(_messages.Message):
-    r"""Optional. Environment variables that are passed into the containers
-    defined for either the task in the Deploy Config or the custom action in
-    the Skaffold Config.
-
-    Messages:
-      AdditionalProperty: An additional property for a EnvValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type EnvValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a EnvValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  env = _messages.MessageField('EnvValue', 1)
-  id = _messages.StringField(2)
-
-
-class Container(_messages.Message):
-  r"""Container definition for the containers task.
-
-  Messages:
-    EnvValue: Optional. Environment variables that are set in the container.
-
-  Fields:
-    args: Optional. Args is the container arguments to use. This overrides the
-      default arguments defined in the container image.
-    command: Optional. Command is the container entrypoint to use. This
-      overrides the default entrypoint defined in the container image.
-    env: Optional. Environment variables that are set in the container.
-    image: Required. Image is the container image to use.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvValue(_messages.Message):
-    r"""Optional. Environment variables that are set in the container.
-
-    Messages:
-      AdditionalProperty: An additional property for a EnvValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type EnvValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a EnvValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  args = _messages.StringField(1, repeated=True)
-  command = _messages.StringField(2, repeated=True)
-  env = _messages.MessageField('EnvValue', 3)
-  image = _messages.StringField(4)
-
-
 class ContainerTask(_messages.Message):
   r"""This task is represented by a container that is executed in the Cloud
   Build execution environment.
@@ -2643,17 +2553,6 @@ class ContainerTask(_messages.Message):
   command = _messages.StringField(2, repeated=True)
   env = _messages.MessageField('EnvValue', 3)
   image = _messages.StringField(4)
-
-
-class ContainersTask(_messages.Message):
-  r"""This task is represented by a set of containers that are executed in
-  parallel in the Cloud Build execution environment.
-
-  Fields:
-    containers: Required. Set of containers that are executed in parallel.
-  """
-
-  containers = _messages.MessageField('Container', 1, repeated=True)
 
 
 class CreateChildRolloutJob(_messages.Message):
@@ -7206,17 +7105,11 @@ class Task(_messages.Message):
   r"""A Task represents a unit of work that is executed as part of a Job.
 
   Fields:
-    config: Optional. This task is represented by either a task in the Deploy
-      Config or a custom action in the Skaffold Config.
     container: Optional. This task is represented by a container that is
       executed in the Cloud Build execution environment.
-    containersTask: Optional. This task is represented by a set of containers
-      that are executed in parallel in the Cloud Build execution environment.
   """
 
-  config = _messages.MessageField('ConfigTask', 1)
-  container = _messages.MessageField('ContainerTask', 2)
-  containersTask = _messages.MessageField('ContainersTask', 3)
+  container = _messages.MessageField('ContainerTask', 1)
 
 
 class TerminateJobRunRequest(_messages.Message):

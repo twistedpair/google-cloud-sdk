@@ -167,6 +167,8 @@ FLEX_INSTANCE_IP_MODE_REGEX = r'^(EXTERNAL|external|INTERNAL|internal)$'
 
 VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/.+)*$'
 
+VPC_ACCESS_TAGS_REGEX = r'^[a-z\d-]+(,[a-z\d-]+)*$'
+
 ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
 
 # Note(user): This must match api/app_config.py
@@ -256,7 +258,7 @@ LIVENESS_CHECK = 'liveness_check'
 READINESS_CHECK = 'readiness_check'
 NETWORK = 'network'
 VPC_ACCESS_CONNECTOR = 'vpc_access_connector'
-VPC_EGRESS = 'vpc_egress'
+VPC_ACCESS = 'vpc_access'
 VERSION = 'version'
 MAJOR_VERSION = 'major_version'
 MINOR_VERSION = 'minor_version'
@@ -418,12 +420,12 @@ VPC_ACCESS_CONNECTOR_EGRESS_SETTING = 'egress_setting'
 VPC_ACCESS_CONNECTOR_EGRESS_SETTING_ALL_TRAFFIC = 'all-traffic'
 VPC_ACCESS_CONNECTOR_EGRESS_SETTING_PRIVATE_RANGES_ONLY = 'private-ranges-only'
 
-# Attributes for `VpcEgress`.
-VPC_EGRESS_HOST_PROJECT_ID = 'host_project_id'
-VPC_EGRESS_SUBNET = 'subnet'
-VPC_EGRESS_NETWORK_TAGS = 'network_tags'
-VPC_EGRESS_NETWORK_TAG_VALUE = 'value'
-VPC_EGRESS_SETTING = 'egress_setting'
+# Attributes for `VpcAccess`.
+VPC_ACCESS_NETWORK_INTERFACE = 'network_interface'
+VPC_ACCESS_NETWORK = 'network'
+VPC_ACCESS_SUBNET = 'subnet'
+VPC_ACCESS_TAGS = 'tags'
+VPC_EGRESS_SETTING = 'vpc_egress'
 VPC_EGRESS_SETTING_ALL_TRAFFIC = 'all-traffic'
 VPC_EGRESS_SETTING_PRIVATE_RANGES_ONLY = 'private-ranges-only'
 
@@ -2075,21 +2077,25 @@ class VpcAccessConnector(validation.Validated):
   }
 
 
-class VpcEgressNetworkTag(validation.Validated):
-  """Class representing the Direct VPC network tag."""
+class VpcAccessNetworkInterface(validation.Validated):
+  """A Direct VPC network interface."""
 
   ATTRIBUTES = {
-      VPC_EGRESS_NETWORK_TAG_VALUE: validation.TYPE_STR,
+      VPC_ACCESS_NETWORK: validation.Optional(validation.TYPE_STR),
+      VPC_ACCESS_SUBNET: validation.Optional(validation.TYPE_STR),
+      VPC_ACCESS_TAGS: validation.Optional(
+          validation.Regex(VPC_ACCESS_TAGS_REGEX)
+      ),
   }
 
 
-class VpcEgress(validation.Validated):
-  """Class representing the Direct VPC configuration."""
+class VpcAccess(validation.Validated):
+  """A Direct VPC configuration."""
 
   ATTRIBUTES = {
-      VPC_EGRESS_HOST_PROJECT_ID: validation.Regex(GCE_RESOURCE_NAME_REGEX),
-      VPC_EGRESS_SUBNET: validation.Regex(GCE_RESOURCE_NAME_REGEX),
-      VPC_EGRESS_NETWORK_TAGS: validation.Optional(validation.TYPE_STR),
+      VPC_ACCESS_NETWORK_INTERFACE: validation.Optional(
+          VpcAccessNetworkInterface
+      ),
       VPC_EGRESS_SETTING: validation.Optional(
           validation.Options(
               VPC_EGRESS_SETTING_ALL_TRAFFIC,
@@ -2382,7 +2388,7 @@ class AppInfoExternal(validation.Validated):
       READINESS_CHECK: validation.Optional(ReadinessCheck),
       NETWORK: validation.Optional(Network),
       VPC_ACCESS_CONNECTOR: validation.Optional(VpcAccessConnector),
-      VPC_EGRESS: validation.Optional(VpcEgress),
+      VPC_ACCESS: validation.Optional(VpcAccess),
       ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),
       INCLUDES: validation.Optional(validation.Type(list)),

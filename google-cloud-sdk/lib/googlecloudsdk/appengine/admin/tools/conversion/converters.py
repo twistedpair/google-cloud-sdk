@@ -14,6 +14,7 @@
 """Conversions to translate between legacy YAML and OnePlatform protos."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 import re
 
 # pylint:disable=g-import-not-at-top
@@ -531,60 +532,17 @@ def ConvertEntrypoint(entrypoint):
   return {'shell': entrypoint}
 
 
-def ConvertVpcEgressSubnetworkKey(vpc_egress):
-  """Converts the subnetwork key to a nested value.
-
-  For example:
-  Input {
-    hostProjectId: "my-project",
-    subnet: "my-subnet"
-  }
-  Output {
-    subnetworkKey: {
-      hostProjectId: "my-project",
-      subnet: "my-subnet"
-    }
-  }
+def CommaSeparatedStringToList(input_str: str | None) -> list[str]:
+  """Converts a comma-separated string to a list of strings.
 
   Args:
-    vpc_egress: Result of converting vpc_egress according to schema.
+    input_str: A string containing one or more tags, separated by commas, or
+      None. Handles empty strings and None by returning an empty list.
 
   Returns:
-    VpcEgress which has moved subnetwork key fields to a submessage.
+    A list of strings. The returned strings are stripped and empty strings are
+    filtered from the list.
   """
-
-  def MoveFieldsTo(field_names, target_field_name):
-    target = {}
-    for field_name in field_names:
-      if field_name in vpc_egress:
-        target[field_name] = vpc_egress[field_name]
-        del vpc_egress[field_name]
-    if target:
-      vpc_egress[target_field_name] = target
-
-  MoveFieldsTo(_SUBNETWORK_KEY_FIELDS, 'subnetworkKey')
-  return vpc_egress
-
-
-def ToVpcNetworkTags(network_tags_str):
-  """Converts a comma-separated string of network tags to a list of VpcNetworkTag dicts.
-
-  Args:
-    network_tags_str: A string containing one or more network tags,
-      separated by commas.
-
-  Returns:
-    A list of dictionaries, where each dictionary has a 'value' key
-    representing a network tag.
-  """
-  if not network_tags_str:
+  if not input_str:
     return []
-  tags = network_tags_str.split(',')
-  vpc_network_tags = []
-  for tag in tags:
-    # Remove any whitespace from the tag.
-    tag = tag.strip()
-    if not tag:
-      raise ValueError('Network tags cannot be empty.')
-    vpc_network_tags.append({'value': tag})
-  return vpc_network_tags
+  return [v.strip() for v in input_str.split(',') if v.strip()]

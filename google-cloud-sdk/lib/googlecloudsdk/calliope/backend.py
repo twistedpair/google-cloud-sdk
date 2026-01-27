@@ -149,9 +149,6 @@ class CommandCommon(object):
         self._common_type._regional_endpoint_compatibility = (
             parent_group.RegionalEndpointCompatibility())
         self._common_type.SetRegionalEndpointHelp()
-      # Propagate down the unicode supported attribute.
-      if parent_group.IsUnicodeSupported():
-        self._common_type._is_unicode_supported = True
       # Propagate down notices from the deprecation decorator.
       if parent_group.Notices():
         for tag, msg in six.iteritems(parent_group.Notices()):
@@ -191,10 +188,6 @@ class CommandCommon(object):
   def RegionalEndpointCompatibility(self):
     """Gets the regional endpoint compatibility of this command or group."""
     return self._common_type.RegionalEndpointCompatibility()
-
-  def IsUnicodeSupported(self):
-    """Gets the unicode supported status of this command or group."""
-    return self._common_type.IsUnicodeSupported()
 
   def IsRoot(self):
     """Returns True if this is the root element in the CLI tree."""

@@ -14,7 +14,7 @@ package = 'auditmanager'
 
 
 class AuditReport(_messages.Message):
-  r"""Represents an audit report.
+  r"""An audit report.
 
   Enums:
     ReportGenerationStateValueValuesEnum: Output only. The state of Audit
@@ -73,12 +73,12 @@ class AuditReport(_messages.Message):
 
 
 class AuditScopeReport(_messages.Message):
-  r"""Response message containing the Audit Scope Report.
+  r"""The audit scope report.
 
   Fields:
     name: Identifier. The name of this Audit Report, in the format of scope
       given in request.
-    scopeReportContents: Audit Scope report content in byte format.
+    scopeReportContents: The audit scope report content in byte format.
   """
 
   name = _messages.StringField(1)
@@ -589,7 +589,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Control(_messages.Message):
-  r"""Represents a control.
+  r"""A control.
 
   Enums:
     FamilyValueValuesEnum: Output only. Group where the control belongs. E.g.
@@ -672,7 +672,7 @@ class Control(_messages.Message):
 
 
 class ControlDetails(_messages.Message):
-  r"""Evaluation details for a control
+  r"""The evaluation details for a control.
 
   Enums:
     ComplianceStateValueValuesEnum: Output only. Overall status of the
@@ -710,11 +710,11 @@ class ControlDetails(_messages.Message):
 
 
 class ControlFamily(_messages.Message):
-  r"""Regulatory Family of the control
+  r"""The regulatory family of the control.
 
   Fields:
-    displayName: Display name of the regulatory control family.
-    familyId: ID of the regulatory control family.
+    displayName: The display name of the regulatory control family.
+    familyId: The ID of the regulatory control family.
   """
 
   displayName = _messages.StringField(1)
@@ -722,7 +722,7 @@ class ControlFamily(_messages.Message):
 
 
 class DestinationDetails(_messages.Message):
-  r"""Represents the locations where the generated reports is saved.
+  r"""The locations where the generated reports are saved.
 
   Fields:
     gcsBucketUri: The Cloud Storage bucket where the audit report is/will be
@@ -733,12 +733,11 @@ class DestinationDetails(_messages.Message):
 
 
 class EligibleDestination(_messages.Message):
-  r"""Message containing the destination details where audit report should be
-  uploaded.
+  r"""The destination details where the audit report must be uploaded.
 
   Fields:
-    eligibleGcsBucket: Cloud storage bucket location where audit report and
-      evidences can be uploaded if specified during the GenerateAuditReport
+    eligibleGcsBucket: The Cloud Storage bucket location where the audit
+      report and evidences can be uploaded during the `GenerateAuditReport`
       API call.
   """
 
@@ -772,9 +771,7 @@ class EnrollResourceRequest(_messages.Message):
 
 
 class Enrollment(_messages.Message):
-  r"""In case of success client will be notified with HTTP 200 response code
-  but for failure scenario relevant exception message is thrown with the
-  corresponding response code
+  r"""The enrollment resource.
 
   Fields:
     destinationDetails: Output only. The locations where the generated reports
@@ -1114,7 +1111,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
+  r"""The metadata of the long-running operation.
 
   Fields:
     apiVersion: Output only. API version used to start the operation.
@@ -1141,12 +1138,12 @@ class OperationMetadata(_messages.Message):
 
 
 class ReportGenerationProgress(_messages.Message):
-  r"""The ReportGenerationProgress is part of {google.longrunning.Operation}
-  returned to client for every GET Operation request.
+  r"""The `ReportGenerationProgress` is part of google.longrunning.Operation
+  returned to the client for every `GetOperation` request.
 
   Enums:
-    StateValueValuesEnum: Output only. Highlights the current state of
-      executation for report generation.
+    StateValueValuesEnum: Output only. The current state of execution for
+      report generation.
 
   Fields:
     auditReport: Output only. The name of the audit report.
@@ -1169,13 +1166,11 @@ class ReportGenerationProgress(_messages.Message):
       report_uploading_in_progress is non zero then
       evaluation_percent_complete and report_generation_percent_complete will
       be 100%.
-    state: Output only. Highlights the current state of executation for report
-      generation.
+    state: Output only. The current state of execution for report generation.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Highlights the current state of executation for report
-    generation.
+    r"""Output only. The current state of execution for report generation.
 
     Values:
       OPERATION_STATE_UNSPECIFIED: Unspecified. Invalid state.
@@ -1214,7 +1209,7 @@ class ReportGenerationProgress(_messages.Message):
 
 
 class ReportSummary(_messages.Message):
-  r"""Represents additional information for an audit operation.
+  r"""The additional information for an audit operation.
 
   Fields:
     compliantCount: Number of compliant checks.
@@ -1233,8 +1228,7 @@ class ReportSummary(_messages.Message):
 
 
 class ResourceEnrollmentStatus(_messages.Message):
-  r"""Represents a resource (project or folder or organization) with its
-  enrollment status.
+  r"""A resource with its enrollment status.
 
   Enums:
     EnrollmentStateValueValuesEnum: Output only. Enrollment state of the

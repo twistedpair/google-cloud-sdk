@@ -18749,6 +18749,8 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummary(_messages
     baselineModelVersion: The baseline model version used to generate this
       summary. It is empty if a baseline model was not used to generate this
       summary.
+    sortedTextSections: Same as text_sections, but in an order that is
+      consistent with the order of the sections in the generator.
     text: The summary content that is concatenated into one string.
     textSections: The summary content that is divided into sections. The key
       is the section's name and the value is the section's content. There is
@@ -18784,8 +18786,21 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummary(_messages
 
   answerRecord = _messages.StringField(1)
   baselineModelVersion = _messages.StringField(2)
-  text = _messages.StringField(3)
-  textSections = _messages.MessageField('TextSectionsValue', 4)
+  sortedTextSections = _messages.MessageField('GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummarySummarySection', 3, repeated=True)
+  text = _messages.StringField(4)
+  textSections = _messages.MessageField('TextSectionsValue', 5)
+
+
+class GoogleCloudDialogflowV2SuggestConversationSummaryResponseSummarySummarySection(_messages.Message):
+  r"""A component of the generated summary.
+
+  Fields:
+    section: Output only. Name of the section.
+    summary: Output only. Summary text for the section.
+  """
+
+  section = _messages.StringField(1)
+  summary = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2SuggestFaqAnswersRequest(_messages.Message):

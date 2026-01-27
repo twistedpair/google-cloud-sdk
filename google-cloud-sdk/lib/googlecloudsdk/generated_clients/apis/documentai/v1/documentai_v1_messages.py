@@ -3816,14 +3816,18 @@ class GoogleCloudDocumentaiV1DocumentSchema(_messages.Message):
   Fields:
     description: Description of the schema.
     displayName: Display name to show to users.
+    documentPrompt: Optional. Document level prompt provided by the user. This
+      custom text is injected into the AI model's prompt to provide extra,
+      document-wide guidance for processing.
     entityTypes: Entity types of the schema.
     metadata: Metadata of the schema.
   """
 
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  entityTypes = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchemaEntityType', 3, repeated=True)
-  metadata = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchemaMetadata', 4)
+  documentPrompt = _messages.StringField(3)
+  entityTypes = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchemaEntityType', 4, repeated=True)
+  metadata = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchemaMetadata', 5)
 
 
 class GoogleCloudDocumentaiV1DocumentSchemaEntityType(_messages.Message):
@@ -5813,14 +5817,18 @@ class GoogleCloudDocumentaiV1beta3DocumentSchema(_messages.Message):
   Fields:
     description: Description of the schema.
     displayName: Display name to show to users.
+    documentPrompt: Optional. Document level prompt provided by the user. This
+      custom text is injected into the AI model's prompt to provide extra,
+      document-wide guidance for processing.
     entityTypes: Entity types of the schema.
     metadata: Metadata of the schema.
   """
 
   description = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  entityTypes = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaEntityType', 3, repeated=True)
-  metadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaMetadata', 4)
+  documentPrompt = _messages.StringField(3)
+  entityTypes = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaEntityType', 4, repeated=True)
+  metadata = _messages.MessageField('GoogleCloudDocumentaiV1beta3DocumentSchemaMetadata', 5)
 
 
 class GoogleCloudDocumentaiV1beta3DocumentSchemaEntityType(_messages.Message):

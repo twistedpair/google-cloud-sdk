@@ -191,13 +191,17 @@ SCHEMA = s.Message(
     vm_settings=s.Map('beta_settings'),
     vpc_access_connector=s.Message(
         name=s.Value(converter=c.ToJsonString),
-        egress_setting=s.Value(converter=c.ToVpcEgressSettingEnum)),
-    vpc_egress=s.Message(
-        converter=c.ConvertVpcEgressSubnetworkKey,
-        host_project_id=s.Value(converter=c.ToJsonString),
-        subnet=s.Value(converter=c.ToJsonString),
         egress_setting=s.Value(converter=c.ToVpcEgressSettingEnum),
-        network_tags=s.Value(converter=c.ToVpcNetworkTags),
+    ),
+    vpc_access=s.Message(
+        network_interface=s.Message(
+            'network_interfaces',
+            converter=lambda x: [x],
+            network=s.Value(converter=c.ToJsonString),
+            subnet=s.Value(converter=c.ToJsonString),
+            tags=s.Value(converter=c.CommaSeparatedStringToList),
+        ),
+        vpc_egress=s.Value(converter=c.ToVpcEgressSettingEnum),
     ),
     zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     app_engine_bundled_services=s.RepeatedField(

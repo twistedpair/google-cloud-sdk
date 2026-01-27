@@ -103,6 +103,12 @@ INVALID_NC_FLAG_CONFIG_OVERLAP = (
     'or the value in the config file.'
 )
 
+INVALID_NC_KERNEL_MODULE_LOADING_FLAG_CONFIG_OVERLAP = (
+    'enable-kernel-module-signature-enforcement specified in both config '
+    'file and by flag. Please specify either command line option '
+    'or the value in the config file.'
+)
+
 
 GKE_DEFAULT_POD_RANGE = 14
 GKE_DEFAULT_POD_RANGE_PER_NODE = 24
@@ -204,6 +210,9 @@ NC_EVICTION_SOFT = 'evictionSoft'
 NC_EVICTION_SOFT_GRACE_PERIOD = 'evictionSoftGracePeriod'
 NC_EVICTION_MINIMUM_RECLAIM = 'evictionMinimumReclaim'
 NC_EVICTION_MAX_POD_GRACE_PERIOD_SECONDS = 'evictionMaxPodGracePeriodSeconds'
+
+NC_KERNEL_MODULE_LOADING = 'nodeKernelModuleLoading'
+NC_KERNEL_MODULE_LOADING_POLICY = 'policy'
 
 
 class Error(core_exceptions.Error):
@@ -859,7 +868,11 @@ def LoadEvictionMapConfig(parent_name, opts, msg_type, field_spec):
 
 
 def LoadSystemConfigFromYAML(
-    node_config, content, opt_readonly_port_flag, messages
+    node_config,
+    content,
+    opt_readonly_port_flag,
+    opt_enable_kernel_module_signature_enforcement,
+    messages
 ):
   """Load system configuration (sysctl & kubelet config) from YAML/JSON file.
 
@@ -867,6 +880,8 @@ def LoadSystemConfigFromYAML(
     node_config: The node config object to be populated.
     content: The YAML/JSON string that contains sysctl and kubelet options.
     opt_readonly_port_flag: kubelet readonly port enabled.
+    opt_enable_kernel_module_signature_enforcement: enable kernel module
+      signature enforcement.
     messages: The message module.
 
   Raises:
@@ -1049,6 +1064,7 @@ def LoadSystemConfigFromYAML(
             NC_ADDITIONAL_ETC_RESOLV_CONF: list,
             NC_TIME_ZONE: str,
             NC_CUSTOM_NODE_INIT: dict,
+            NC_KERNEL_MODULE_LOADING: dict,
         },
     )
     node_config.linuxNodeConfig = messages.LinuxNodeConfig()
@@ -1471,6 +1487,45 @@ def LoadSystemConfigFromYAML(
         init_args = init_script_opts.get(NC_CUSTOM_NODE_INIT_SCRIPT_ARGS)
         if init_args is not None:
           node_config.linuxNodeConfig.customNodeInit.initScript.args = init_args
+
+    kernel_module_loading_opts = linux_config_opts.get(NC_KERNEL_MODULE_LOADING)
+    if kernel_module_loading_opts:
+      module_loading_config = messages.NodeKernelModuleLoading()
+      _CheckNodeConfigFields(
+          NC_KERNEL_MODULE_LOADING,
+          kernel_module_loading_opts,
+          {
+              NC_KERNEL_MODULE_LOADING_POLICY: str,
+          },
+      )
+      policy = kernel_module_loading_opts.get(NC_KERNEL_MODULE_LOADING_POLICY)
+      if policy is not None and opt_enable_kernel_module_signature_enforcement:
+        raise NodeConfigError(
+            INVALID_NC_KERNEL_MODULE_LOADING_FLAG_CONFIG_OVERLAP
+        )
+      if policy is not None:
+        policy_enum = messages.NodeKernelModuleLoading.PolicyValueValuesEnum
+        kernel_module_loading_policy_mapping = {
+            'ENFORCE_SIGNED_MODULES': policy_enum.ENFORCE_SIGNED_MODULES,
+            'DO_NOT_ENFORCE_SIGNED_MODULES': (
+                policy_enum.DO_NOT_ENFORCE_SIGNED_MODULES
+            ),
+            'POLICY_UNSPECIFIED': policy_enum.POLICY_UNSPECIFIED,
+        }
+        if policy not in kernel_module_loading_policy_mapping:
+          raise NodeConfigError(
+              'kernel module loading policy "{0}" is not supported, the'
+              ' supported options are ENFORCE_SIGNED_MODULES,'
+              ' DO_NOT_ENFORCE_SIGNED_MODULES, POLICY_UNSPECIFIED'.format(
+                  policy
+              )
+          )
+        module_loading_config.policy = kernel_module_loading_policy_mapping[
+            policy
+        ]
+        node_config.linuxNodeConfig.nodeKernelModuleLoading = (
+            module_loading_config
+        )
 
 
 def CheckForCgroupModeV1(pool):

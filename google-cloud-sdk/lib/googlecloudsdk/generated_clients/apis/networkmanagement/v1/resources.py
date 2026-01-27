@@ -41,13 +41,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  ORGANIZATIONS_LOCATIONS_OPERATIONS = (
-      'organizations.locations.operations',
+  ORGANIZATIONS_LOCATIONS_GLOBAL_OPERATIONS = (
+      'organizations.locations.global.operations',
       '{+name}',
       {
           '':
-              'organizations/{organizationsId}/locations/{locationsId}/'
-              'operations/{operationsId}',
+              'organizations/{organizationsId}/locations/global/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

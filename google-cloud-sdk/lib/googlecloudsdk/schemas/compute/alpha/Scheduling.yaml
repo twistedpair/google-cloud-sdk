@@ -29,17 +29,15 @@ properties:
     description: |-
       Specifies whether the instance should be automatically restarted if it is
       terminated by Compute Engine (not terminated by a user). You can only set
-      the automatic restart option for standard instances. Preemptible instances
-      cannot be automatically restarted. By default, this is set to true so an
+      the automatic restart option for standard instances.Preemptible instances
+      cannot be automatically restarted.  By default, this is set to true so an
       instance is automatically restarted if it is terminated by Compute Engine.
     type: boolean
   availabilityDomain:
     description: |-
-      Specifies the availability domain (AD), which this instance should be
-      scheduled on. The AD belongs to the spread GroupPlacementPolicy resource
-      policy that has been assigned to the instance. Specify a value between
-      1-max count of availability domains in your GroupPlacementPolicy. See
-      go/placement-policy-extension for more details.
+      Specifies the availability domain to place the instance in. The value must
+      be a number between 1 and the number of availability domains specified in
+      the spread placement policy attached to the instance.
     type: integer
   currentCpus:
     description: |-
@@ -51,6 +49,9 @@ properties:
       Current amount of memory (in MB) available for VM. 0 or unset means
       default amount of memory of the current machine type.
     type: integer
+  gracefulShutdown:
+    description: A SchedulingGracefulShutdown attribute.
+    $ref: SchedulingGracefulShutdown.yaml
   hostErrorTimeoutSeconds:
     description: |-
       Specify the time in seconds for host error detection, the value must be
@@ -66,11 +67,18 @@ properties:
     - STOP
   latencyTolerant:
     description: |-
-      Defines whether the instance is tolerant of higher cpu latency. This can
+      Defines whether the instance is tolerant of higher cpu latency.  This can
       only be set during instance creation, or when the instance is not
-      currently running. It must not be set if the preemptible option is also
+      currently running.  It must not be set if thepreemptible option is also
       set.
     type: boolean
+  localSsdRecoveryTimeout:
+    description: |-
+      Specifies the maximum amount of time a Local Ssd Vm should wait while
+      recovery of the Local Ssd state is attempted. Its value should be in
+      between 0 and 168 hours with hour granularity and the default value being
+      1 hour.
+    $ref: Duration.yaml
   locationHint:
     description: |-
       An opaque location hint used to place the instance close to other
@@ -84,10 +92,11 @@ properties:
     type: integer
   maintenanceInterval:
     description: |-
-      For more information about maintenance intervals, see Setting maintenance
-      intervals.
+      Specifies the frequency of planned maintenance events. The accepted values
+      are: `PERIODIC`.
     type: string
     enum:
+    - AS_NEEDED
     - PERIODIC
     - RECURRENT
   maxRunDuration:
@@ -96,13 +105,6 @@ properties:
       instance termination action will be performed at the end of the run
       duration.
     $ref: Duration.yaml
-  localSsdRecoveryTimeout:
-    description: |-
-      Specifies the maximum amount of time a Local Ssd Vm should wait while
-      recovery of the Local Ssd state is attempted. Its value should be in
-      between 0 and 168 hours with hour granularity and the default value being 1
-      hour.
-    $ref: Duration.yaml
   minNodeCpus:
     description: |-
       The minimum number of virtual CPUs this instance will consume when running
@@ -110,8 +112,8 @@ properties:
     type: integer
   nodeAffinities:
     description: |-
-      A set of node affinity and anti-affinity configurations. Refer to
-      Configuring node affinity for more information. Overrides
+      A set of node affinity and anti-affinity configurations. Refer
+      toConfiguring node affinity for more information. Overrides
       reservationAffinity.
     type: array
     items:
@@ -119,36 +121,69 @@ properties:
   onHostMaintenance:
     description: |-
       Defines the maintenance behavior for this instance. For standard
-      instances, the default behavior is MIGRATE. For preemptible instances,
+      instances, the default behavior is MIGRATE. Forpreemptible instances,
       the default and only possible behavior is TERMINATE. For more
-      information, see Set VM availability policies.
+      information, see  Set  VM host maintenance policy.
     type: string
     enum:
     - MIGRATE
     - TERMINATE
   onInstanceStopAction:
-    description: |-
-        Defines the behaviour for instances at termination timestamp when used with auto termination
-        and instance_termination_action STOP
-    $ref: OnInstanceStopAction.yaml
+    description: A SchedulingOnInstanceStopAction attribute.
+    $ref: SchedulingOnInstanceStopAction.yaml
   preemptible:
     description: |-
       Defines whether the instance is preemptible. This can only be set
-      during instance creation or while the instance is stopped and
-      therefore, in a `TERMINATED` state. See Instance Life Cycle for more
+      during instance creation or while the instance isstopped and
+      therefore, in a `TERMINATED` state. SeeInstance Life Cycle for more
       information on the possible instance states.
     type: boolean
+  preemptionNoticeDuration:
+    description: |-
+      Specifies the Metadata Service preemption notice duration before the
+      GCE ACPI G2 Soft  Off signal is triggered for Spot VMs only. If not
+      specified, there will be no wait before the G2 Soft Off signal is
+      triggered.
+    $ref: Duration.yaml
   provisioningModel:
     description: Specifies the provisioning model of the instance.
     type: string
     enum:
+    - FLEX_START
+    - RESERVATION_BOUND
     - SPOT
     - STANDARD
-    - RESERVATION_BOUND
-    - FLEX_START
+  shutdownTimeout:
+    description: |-
+      DEPRECATED: please use skipGuestOsShutdown. Timeout between GCE ACPI
+      G2 Soft Off and ACPI G3 Mechanical Off during shutdown operation of
+      VM.  For Standard VMs values between 0s and 120s are allowed. For Spot
+      and Preemptible VMs supported values are between 0s and 30s.  If no
+      value is specified for shutdownDuration, default values are 90s for
+      Standard VMs and 30s for Spot/Preemptible VMs.
+    $ref: Duration.yaml
+  skipGuestOsShutdown:
+    description: |-
+      Default is false and there will be 120 seconds between GCE ACPI G2
+      Soft Off and ACPI G3 Mechanical Off for Standard VMs and 30 seconds
+      for Spot VMs.
+    type: boolean
   terminationTime:
     description: |-
-      Specifies the timestamp, when the instance will be terminated, in
-      RFC3339 text format. If specified, the instance termination action
+      Specifies the timestamp, when the instance will be terminated,
+      inRFC3339 text format. If specified, the instance termination action
       will be performed at the termination time.
     type: string
+  windowsLicenseOptimizationMode:
+    description: |-
+      Represents the Windows Server License Optimization Mode of the VM. If
+      unspecified, the default mode is `OFF`.
+    type: string
+    enum:
+    - AUTO
+    - BALANCED
+    - COST_OPTIMIZED
+    - MANAGED
+    - OFF
+    - PERFORMANCE
+    - UNSPECIFIED

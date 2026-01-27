@@ -517,6 +517,30 @@ def AddVolumeMultipleEndpointsArg(parser):
   )
 
 
+def AddVolumeLargeCapacityConfigArg(parser):
+  """Adds the --large-capacity-config arg to the arg parser."""
+  large_capacity_config_arg_spec = {
+      'constituent-count': int,
+  }
+  large_capacity_config_help = textwrap.dedent("""\
+      Large Capacity Config contains configuration for large capacity volumes.
+
+      Large Capacity Config has the following format:
+      `--large-capacity-config=constituent-count=CONSTITUENT_COUNT`
+      `--large-capacity-config`
+
+      *constituent-count*::: (optional) The number of constituents for a large capacity volume.
+  """)
+  parser.add_argument(
+      '--large-capacity-config',
+      type=arg_parsers.ArgDict(spec=large_capacity_config_arg_spec),
+      nargs='?',
+      const={},
+      help=large_capacity_config_help,
+      hidden=True,
+  )
+
+
 def AddVolumeBlockDevicesArg(parser, messages):
   """Adds the --block-devices arg to the arg parser."""
   block_device_arg_spec = {
@@ -794,6 +818,11 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeCachePrePopulateArg(parser)
   AddVolumeBlockDevicesArg(parser, messages)
   labels_util.AddCreateLabelsFlags(parser)
+  if release_track in [
+      calliope_base.ReleaseTrack.ALPHA,
+      calliope_base.ReleaseTrack.BETA,
+  ]:
+    AddVolumeLargeCapacityConfigArg(parser)
 
 
 def AddVolumeDeleteArgs(parser):

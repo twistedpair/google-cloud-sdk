@@ -39,6 +39,7 @@ class SecuritypostureV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_global = self.OrganizationsLocationsGlobalService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_postureDeployments = self.OrganizationsLocationsPostureDeploymentsService(self)
     self.organizations_locations_postureTemplates = self.OrganizationsLocationsPostureTemplatesService(self)
@@ -50,6 +51,70 @@ class SecuritypostureV1(base_api.BaseApiClient):
     self.organizations = self.OrganizationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class OrganizationsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global resource."""
+
+    _NAME = 'organizations_locations_global'
+
+    def __init__(self, client):
+      super(SecuritypostureV1.OrganizationsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIacValidationFailureCriteria(self, request, global_params=None):
+      r"""Gets the IaCValidationFailureCriteria singleton resource.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsGlobalGetIacValidationFailureCriteriaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IacValidationFailureCriteria) The response message.
+      """
+      config = self.GetMethodConfig('GetIacValidationFailureCriteria')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIacValidationFailureCriteria.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/global/iacValidationFailureCriteria',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.global.getIacValidationFailureCriteria',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsGlobalGetIacValidationFailureCriteriaRequest',
+        response_type_name='IacValidationFailureCriteria',
+        supports_download=False,
+    )
+
+    def UpdateIacValidationFailureCriteria(self, request, global_params=None):
+      r"""Updates the IaCValidationFailureCriteria singleton resource. This method can also create the resource if it does not already exist, provided that `allow_missing` is set to `true` in the request.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsGlobalUpdateIacValidationFailureCriteriaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateIacValidationFailureCriteria')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateIacValidationFailureCriteria.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/global/iacValidationFailureCriteria',
+        http_method='PATCH',
+        method_id='securityposture.organizations.locations.global.updateIacValidationFailureCriteria',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing'],
+        relative_path='v1/{+name}',
+        request_field='iacValidationFailureCriteria',
+        request_type_name='SecuritypostureOrganizationsLocationsGlobalUpdateIacValidationFailureCriteriaRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class OrganizationsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_operations resource."""

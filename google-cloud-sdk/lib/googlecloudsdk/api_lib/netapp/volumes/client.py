@@ -150,6 +150,7 @@ class VolumesClient(object):
       cache_pre_populate=None,
       labels=None,
       block_devices=None,
+      large_capacity_config=None,
   ):
     """Parses the command line arguments for Create Volume into a config."""
     return self._adapter.ParseVolumeConfig(
@@ -180,6 +181,7 @@ class VolumesClient(object):
         cache_pre_populate=cache_pre_populate,
         labels=labels,
         block_devices=block_devices,
+        large_capacity_config=large_capacity_config,
     )
 
   def GetVolume(self, volume_ref):
@@ -554,6 +556,7 @@ class VolumesAdapter(object):
       cache_pre_populate=None,
       labels=None,
       block_devices=None,
+      large_capacity_config=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
 
@@ -586,6 +589,7 @@ class VolumesAdapter(object):
       cache_pre_populate: the cache pre-populate parameters for the volume.
       labels: the parsed labels value.
       block_devices: the block devices for the volume.
+      large_capacity_config: The large capacity config for the volume.
 
     Returns:
       the configuration that will be used as the request body for creating a
@@ -635,6 +639,13 @@ class VolumesAdapter(object):
       self.ParseCacheParameters(volume, cache_parameters)
     if cache_pre_populate is not None:
       self.ParseCachePrePopulate(volume, cache_pre_populate)
+    if large_capacity_config is not None:
+      large_capacity_config_message = self.messages.LargeCapacityConfig()
+      if 'constituent-count' in large_capacity_config:
+        large_capacity_config_message.constituentCount = large_capacity_config[
+            'constituent-count'
+        ]
+      volume.largeCapacityConfig = large_capacity_config_message
     return volume
 
   def ParseUpdatedVolumeConfig(

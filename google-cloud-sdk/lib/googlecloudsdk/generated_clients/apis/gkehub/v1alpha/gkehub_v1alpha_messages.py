@@ -426,7 +426,7 @@ class ClusterStatus(_messages.Message):
       related Rollout-specific details for the cluster were updated.
     membership: Output only. The name of the fleet Membership resource
       associated to the updated cluster. Membership names are formatted as
-      projects//locations//memberships/.
+      projects/{project_number}/locations/{location}/memberships/{cluster_id}.
     operation: Optional. Output only. The operation resource name performing
       the mutation.
     reason: Optional. Output only. A human-readable description of the current
@@ -1926,7 +1926,9 @@ class ConfigManagementMembershipSpec(_messages.Message):
   Intended to parallel the ConfigManagement CR.
 
   Enums:
-    ManagementValueValuesEnum: Optional. Enables automatic Feature management.
+    ManagementValueValuesEnum: Optional. Deprecated: From version 1.21.0,
+      automatic Feature management is unavailable, and Config Sync only
+      supports manual upgrades.
 
   Fields:
     binauthz: Optional. Binauthz conifguration for the cluster. Deprecated:
@@ -1943,7 +1945,9 @@ class ConfigManagementMembershipSpec(_messages.Message):
       cluster. Deprecated: Configuring Hierarchy Controller through the
       configmanagement feature is no longer recommended. Use
       https://github.com/kubernetes-sigs/hierarchical-namespaces instead.
-    management: Optional. Enables automatic Feature management.
+    management: Optional. Deprecated: From version 1.21.0, automatic Feature
+      management is unavailable, and Config Sync only supports manual
+      upgrades.
     policyController: Optional. Policy Controller configuration for the
       cluster. Deprecated: Configuring Policy Controller through the
       configmanagement feature is no longer recommended. Use the
@@ -1952,7 +1956,8 @@ class ConfigManagementMembershipSpec(_messages.Message):
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
-    r"""Optional. Enables automatic Feature management.
+    r"""Optional. Deprecated: From version 1.21.0, automatic Feature
+    management is unavailable, and Config Sync only supports manual upgrades.
 
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified
@@ -8095,14 +8100,12 @@ class RolloutTarget(_messages.Message):
 
   Fields:
     cluster: Optional. Output only. The resource link of the Cluster resource
-      upgraded in this Rollout. It is formatted as:
-      ///projects//locations//clusters/. I.e. for GKE clusters, it is
-      formatted as: //container.googleapis.com/projects//locations//clusters/.
-      For GDCE, it is formatted as:
-      //edgecontainer.googleapis.com/projects//locations//clusters/.
+      upgraded in this Rollout. It is formatted as: `//{api_service}/projects/
+      {project_number}/locations/{location}/clusters/{cluster_name}`. .
     nodePool: Optional. Output only. The resource link of the NodePool
-      resource upgraded in this Rollout. It is formatted as:
-      ///projects//locations//clusters//nodePools/.
+      resource upgraded in this Rollout. It is formatted as: `//{api_service}/
+      projects/{project_number}/locations/{location}/clusters/{cluster_name}/n
+      odePools/{node_pool_name}`.
     operation: Optional. Output only. The operation resource name performing
       the mutation.
     reason: Optional. Output only. A human-readable description of the current
@@ -9508,14 +9511,14 @@ class UIPRRolloutConfig(_messages.Message):
     excludedMembershipNames: Optional. The excluded memberships from the
       rollout. If not set, all memberships will be considered for inclusion in
       the rollout (exclude tags on memberships will still be respected)
-      Membership names are expected in the format of
-      `projects//locations/{locations}/memberships/`.
+      Membership names are expected in the format of `projects/{project_number
+      }/locations/{location}/memberships/{cluster_id}`.
     includeMembershipNames: Optional. The included memberships from the
       rollout. If not set, all memberships will be considered for inclusion in
       the rollout. If included in excluded_membership_names or tagged with
       excluded_clusters and included in included_membership_names, the rollout
-      creation will error. Membership names are expected in the format of
-      `projects//locations/{locations}/memberships/`
+      creation will error. Membership names are expected in the format of `pro
+      jects/{project_number}/locations/{location}/memberships/{cluster_id}`
   """
 
   customWaves = _messages.MessageField('WaveTemplate', 1, repeated=True)

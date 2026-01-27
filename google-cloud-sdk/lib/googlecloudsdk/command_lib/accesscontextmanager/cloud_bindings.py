@@ -477,18 +477,31 @@ def _ProcessScopesInScopedAccessSettings(req):
   def _IsClientScopeSet(client_scope):
     if not client_scope:
       return False
-    if not client_scope.restrictedClientApplication:
-      return False
-    restricted_client_application_dict = encoding.MessageToDict(
-        client_scope.restrictedClientApplication
-    )
-    if not restricted_client_application_dict:
-      return False
-    # Check for None or empty string
-    for key in restricted_client_application_dict.keys():
-      if not restricted_client_application_dict[key]:
+    if client_scope.restrictedClientApplication:
+      restricted_client_application_dict = encoding.MessageToDict(
+          client_scope.restrictedClientApplication
+      )
+      if not restricted_client_application_dict:
         return False
-    return True
+      # Check for None or empty string
+      for key in restricted_client_application_dict.keys():
+        if not restricted_client_application_dict[key]:
+          return False
+      return True
+    elif (
+        hasattr(client_scope, 'restrictedProject')
+        and client_scope.restrictedProject
+    ):
+      restricted_project_dict = encoding.MessageToDict(
+          client_scope.restrictedProject
+      )
+      if not restricted_project_dict:
+        return False
+      for key in restricted_project_dict.keys():
+        if not restricted_project_dict[key]:
+          return False
+      return True
+    return False
 
   def _ValidateScopeInScopedAccessSettingIsNotEmpty(scoped_access_setting):
     if not scoped_access_setting.scope or not _IsClientScopeSet(
@@ -808,6 +821,33 @@ def _ProcessSessionSettingsInScopedAccessSettings(req):
   _Start(req)
 
 
+def _ValidatePrincipalForRestrictedProject(args, req):
+  """Validate principal for restricted project."""
+  if req.gcpUserAccessBinding and req.gcpUserAccessBinding.scopedAccessSettings:
+    for sas in req.gcpUserAccessBinding.scopedAccessSettings:
+      if (
+          sas.scope
+          and sas.scope.clientScope
+          and getattr(sas.scope.clientScope, 'restrictedProject', None)
+      ):
+        break
+    else:
+      # No restricted project scope found.
+      return
+
+  if properties.VALUES.access_context_manager.enable_gcsl.GetBool():
+    # hasattr(args, 'group_key') checks if we are in create command which has
+    # principal args.
+    if hasattr(args, 'group_key') and not args.IsKnownAndSpecified(
+        'federated_principal'
+    ):
+      raise calliope_exceptions.InvalidArgumentException(
+          '--binding-file',
+          'When using a restricted project scope, --federated-principal must be'
+          ' specified.',
+      )
+
+
 def ProcessScopedAccessSettings(unused_ref, args, req):
   """Hook to process and validate scoped access settings from the request."""
 
@@ -835,6 +875,7 @@ def ProcessScopedAccessSettings(unused_ref, args, req):
     _ProcessAccessSettingsInScopedAccessSettings(req)
     _ProcessAccessLevelsInScopedAccessSettings(args, req)
     _ProcessSessionSettingsInScopedAccessSettings(req)
+    _ValidatePrincipalForRestrictedProject(args, req)
 
     return req
 
@@ -946,11 +987,21 @@ class GcpUserAccessBindingStructureValidator:
       self._ValidateRestrictedClientApplication(
           client_scope.restrictedClientApplication
       )
+      if (
+          properties.VALUES.access_context_manager.enable_gcsl.GetBool()
+          and hasattr(client_scope, 'restrictedProject')
+      ):
+        self._ValidateProject(client_scope.restrictedProject)
 
   def _ValidateRestrictedClientApplication(self, restricted_client_application):
     """Validates the RestrictedClientApplications."""
     if restricted_client_application:
       self._ValidateAllFieldsRecognized(restricted_client_application)
+
+  def _ValidateProject(self, restricted_project):
+    """Validates the Project."""
+    if restricted_project:
+      self._ValidateAllFieldsRecognized(restricted_project)
 
   def _ValidateSessionSettings(self, session_settings):
     """Validate the SessionSettings."""
@@ -1022,15 +1073,23 @@ class GcpUserAccessBindingStructureValidator:
     Raises:
       InvalidFormatError: if the message contains unrecognized fields
     """
-    if message.all_unrecognized_fields():
-      message_type = type(message)
-      valid_fields = [f.name for f in message_type.all_fields()]
+    unrecognized_fields_set = set(message.all_unrecognized_fields())
+    message_type = type(message)
+    valid_fields_list = [f.name for f in message_type.all_fields()]
+    if message_type.__name__ == 'ClientScope':
+      if not properties.VALUES.access_context_manager.enable_gcsl.GetBool():
+        if 'restrictedProject' in valid_fields_list:
+          valid_fields_list.remove('restrictedProject')
+        if hasattr(message, 'restrictedProject') and message.restrictedProject:
+          unrecognized_fields_set.add('restrictedProject')
+
+    if unrecognized_fields_set:
       raise InvalidFormatError(
           self.path,
           '"{}" contains unrecognized fields: [{}]. Valid fields are: [{}]'
           .format(
               message_type.__name__,
-              ', '.join(message.all_unrecognized_fields()),
-              ', '.join(valid_fields),
+              ', '.join(sorted(unrecognized_fields_set)),
+              ', '.join(sorted(valid_fields_list)),
           ),
       )

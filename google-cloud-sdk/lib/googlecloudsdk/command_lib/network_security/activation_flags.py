@@ -22,23 +22,30 @@ from googlecloudsdk.api_lib.network_security.firewall_endpoints import activatio
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps as deps_lib
+from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 
 ENDPOINT_RESOURCE_NAME = "FIREWALL_ENDPOINT"
+ORG_ENDPOINT_RESOURCE_COLLECTION = (
+    "networksecurity.organizations.locations.firewallEndpoints"
+)
+PROJECT_ENDPOINT_RESOURCE_COLLECTION = (
+    "networksecurity.projects.locations.firewallEndpoints"
+)
 BILLING_HELP_TEST = (
     "The Google Cloud project ID to use for API enablement check, quota, and"
     " endpoint uptime billing."
 )
 
 
-def AddEndpointResource(release_track, parser):
-  """Adds Firewall Plus endpoint resource."""
-  api_version = activation_api.GetApiVersion(release_track)
-  resource_spec = concepts.ResourceSpec(
-      "networksecurity.organizations.locations.firewallEndpoints",
+def OrgEndpointResourceSpec(api_version):
+  """Returns the resource spec for an organization level firewall endpoint."""
+  return concepts.ResourceSpec(
+      ORG_ENDPOINT_RESOURCE_COLLECTION,
       "firewall endpoint",
       api_version=api_version,
       organizationsId=concepts.ResourceParameterAttributeConfig(
@@ -57,7 +64,53 @@ def AddEndpointResource(release_track, parser):
           parameter_name="firewallEndpointsId",
       ),
   )
-  presentation_spec = presentation_specs.ResourcePresentationSpec(
+
+
+def ProjectEndpointResourceSpec(api_version):
+  """Returns the resource spec for a project level firewall endpoint."""
+  return concepts.ResourceSpec(
+      PROJECT_ENDPOINT_RESOURCE_COLLECTION,
+      "firewall endpoint",
+      api_version=api_version,
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          name="project",
+          help_text=(
+              "Project ID of the Google Cloud project for the {resource}."
+          ),
+          fallthroughs=[
+              # Do not fallthrough to the --project flag, as this will prompt
+              # the user to choose between project and org scoped endpoints when
+              # supplying both --organization and --project.
+              deps_lib.PropertyFallthrough(properties.VALUES.core.project),
+          ],
+      ),
+      locationsId=concepts.ResourceParameterAttributeConfig(
+          "zone",
+          "Zone of the {resource}.",
+          parameter_name="locationsId",
+      ),
+      firewallEndpointsId=concepts.ResourceParameterAttributeConfig(
+          "endpoint-name",
+          "Name of the {resource}",
+          parameter_name="firewallEndpointsId",
+      ),
+  )
+
+
+def AddEndpointResource(release_track, parser, project_scope_supported=False):
+  """Adds Firewall Plus endpoint resource."""
+  api_version = activation_api.GetApiVersion(release_track)
+  concept_specs = [
+      OrgEndpointResourceSpec(api_version),
+  ]
+  if project_scope_supported:
+    concept_specs.append(ProjectEndpointResourceSpec(api_version))
+  resource_spec = multitype.MultitypeResourceSpec(
+      "firewall endpoint",
+      *concept_specs,
+      allow_inactive=True,
+  )
+  presentation_spec = presentation_specs.MultitypeResourcePresentationSpec(
       name=ENDPOINT_RESOURCE_NAME,
       concept_spec=resource_spec,
       required=True,

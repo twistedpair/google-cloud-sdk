@@ -530,6 +530,8 @@ apis:
           path: projects/{project}/zones/{zone}
         zoneVmExtensionPolicies:
           path: projects/{project}/zones/{zone}/vmExtensionPolicies/{vmExtensionPolicy}
+        reservationSubBlocks:
+          path: projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}
     v1:
       discovery_doc: compute_v1.json
       default: true
@@ -538,6 +540,8 @@ apis:
           path: projects/{project}/global/gateways/{nextHopGateway}
         regionSecurityPolicyRules:
           path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
+        reservationSubBlocks:
+          path: projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         zones:

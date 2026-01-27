@@ -93,7 +93,6 @@ class AvroFormat(_messages.Message):
   """
 
 
-
 class AwsKinesis(_messages.Message):
   r"""Ingestion settings for Amazon Kinesis Data Streams.
 
@@ -346,6 +345,76 @@ class BigQueryConfig(_messages.Message):
   useTableSchema = _messages.BooleanField(5)
   useTopicSchema = _messages.BooleanField(6)
   writeMetadata = _messages.BooleanField(7)
+
+
+class BigtableConfig(_messages.Message):
+  r"""Configuration for a Bigtable subscription.
+
+  The Pub/Sub message will be written to a Bigtable row as follows: - row key:
+  subscription name and message ID delimited by #. - columns: message bytes
+  written to a single column family "data" with an empty-string column
+  qualifier. - cell timestamp: the message publish timestamp.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates
+      whether or not the subscription can receive messages.
+
+  Fields:
+    appProfileId: Optional. The app profile to use for the Bigtable writes. If
+      not specified, the "default" application profile will be used. The app
+      profile must use single-cluster routing.
+    serviceAccountEmail: Optional. The service account to use to write to
+      Bigtable. The subscription creator or updater that specifies this field
+      must have `iam.serviceAccounts.actAs` permission on the service account.
+      If not specified, the Pub/Sub [service agent]({$universe.dns_names.final
+      _documentation_domain}/iam/docs/service-agents),
+      service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com, is used.
+    state: Output only. An output-only field that indicates whether or not the
+      subscription can receive messages.
+    table: Optional. The unique name of the table to write messages to. Values
+      are of the form `projects//instances//tables/`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only.
+
+    An output-only field that indicates whether or not the subscription can
+    receive messages.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The subscription can actively send messages to Bigtable.
+      NOT_FOUND: Cannot write to Bigtable because the instance, table, or app
+        profile does not exist.
+      APP_PROFILE_MISCONFIGURED: Cannot write to Bigtable because the app
+        profile is not configured for single-cluster routing.
+      PERMISSION_DENIED: Cannot write to Bigtable because of permission denied
+        errors. This can happen if: - The Pub/Sub service agent has not been
+        granted the [appropriate Bigtable IAM permission bigtable.tables.mutat
+        eRows]({$universe.dns_names.final_documentation_domain}/bigtable/docs/
+        access-control#permissions) - The bigtable.googleapis.com API is not
+        enabled for the project ([instructions]({$universe.dns_names.final_doc
+        umentation_domain}/service-usage/docs/enable-disable))
+      SCHEMA_MISMATCH: Cannot write to Bigtable because of a missing column
+        family ("data") or if there is no structured row key for the
+        subscription name + message ID.
+      IN_TRANSIT_LOCATION_RESTRICTION: Cannot write to the destination because
+        enforce_in_transit is set to true and the destination locations are
+        not in the allowed regions.
+    """
+
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    NOT_FOUND = 2
+    APP_PROFILE_MISCONFIGURED = 3
+    PERMISSION_DENIED = 4
+    SCHEMA_MISMATCH = 5
+    IN_TRANSIT_LOCATION_RESTRICTION = 6
+
+  appProfileId = _messages.StringField(1)
+  serviceAccountEmail = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  table = _messages.StringField(4)
 
 
 class Binding(_messages.Message):
@@ -776,7 +845,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class ExpirationPolicy(_messages.Message):
@@ -1231,7 +1299,6 @@ class PubSubAvroFormat(_messages.Message):
   and attributes fields of the originally exported Pub/Sub message will be
   restored when publishing.
   """
-
 
 
 class PubSubExportConfig(_messages.Message):
@@ -2227,7 +2294,6 @@ class PubsubWrapper(_messages.Message):
   """
 
 
-
 class PullRequest(_messages.Message):
   r"""Request for the `Pull` method.
 
@@ -2846,9 +2912,11 @@ class Status(_messages.Message):
 
 
 class Subscription(_messages.Message):
-  r"""A subscription resource. If none of `push_config`, `bigquery_config`, or
-  `cloud_storage_config` is set, then the subscriber will pull and ack
-  messages using API methods. At most one of these fields may be set.
+  r"""A subscription resource.
+
+  If none of `push_config`, `bigquery_config`, or `cloud_storage_config` is set,
+  then the subscriber will pull and ack messages using API methods. At most one
+  of these fields may be set.
 
   Enums:
     StateValueValuesEnum: Output only. An output-only field indicating whether
@@ -2882,6 +2950,8 @@ class Subscription(_messages.Message):
       associated Analytics Hub subscription. Only set if the subscription is
       created by Analytics Hub.
     bigqueryConfig: Optional. If delivery to BigQuery is used with this
+      subscription, this field is used to configure it.
+    bigtableConfig: Optional. If delivery to Bigtable is used with this
       subscription, this field is used to configure it.
     cloudStorageConfig: Optional. If delivery to Google Cloud Storage is used
       with this subscription, this field is used to configure it.
@@ -3045,26 +3115,29 @@ class Subscription(_messages.Message):
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   analyticsHubSubscriptionInfo = _messages.MessageField('AnalyticsHubSubscriptionInfo', 2)
   bigqueryConfig = _messages.MessageField('BigQueryConfig', 3)
-  cloudStorageConfig = _messages.MessageField('CloudStorageConfig', 4)
-  deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 5)
-  detached = _messages.BooleanField(6)
-  enableExactlyOnceDelivery = _messages.BooleanField(7)
-  enableMessageOrdering = _messages.BooleanField(8)
-  expirationPolicy = _messages.MessageField('ExpirationPolicy', 9)
-  filter = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  messageRetentionDuration = _messages.StringField(12)
-  messageTransforms = _messages.MessageField('MessageTransform', 13, repeated=True)
-  name = _messages.StringField(14)
-  pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 15)
-  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 16)
-  pushConfig = _messages.MessageField('PushConfig', 17)
-  retainAckedMessages = _messages.BooleanField(18)
-  retryPolicy = _messages.MessageField('RetryPolicy', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  tags = _messages.MessageField('TagsValue', 21)
-  topic = _messages.StringField(22)
-  topicMessageRetentionDuration = _messages.StringField(23)
+  bigtableConfig = _messages.MessageField('BigtableConfig', 4)
+  cloudStorageConfig = _messages.MessageField('CloudStorageConfig', 5)
+  deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 6)
+  detached = _messages.BooleanField(7)
+  enableExactlyOnceDelivery = _messages.BooleanField(8)
+  enableMessageOrdering = _messages.BooleanField(9)
+  expirationPolicy = _messages.MessageField('ExpirationPolicy', 10)
+  filter = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  messageRetentionDuration = _messages.StringField(13)
+  messageTransforms = _messages.MessageField(
+      'MessageTransform', 14, repeated=True
+  )
+  name = _messages.StringField(15)
+  pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 16)
+  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 17)
+  pushConfig = _messages.MessageField('PushConfig', 18)
+  retainAckedMessages = _messages.BooleanField(19)
+  retryPolicy = _messages.MessageField('RetryPolicy', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  tags = _messages.MessageField('TagsValue', 22)
+  topic = _messages.StringField(23)
+  topicMessageRetentionDuration = _messages.StringField(24)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -3127,7 +3200,6 @@ class TextConfig(_messages.Message):
   r"""Configuration for writing message data in text format. Message payloads
   will be written to files as raw text, separated by a newline.
   """
-
 
 
 class TextFormat(_messages.Message):

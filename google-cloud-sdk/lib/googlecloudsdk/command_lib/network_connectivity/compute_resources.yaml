@@ -20,6 +20,7 @@ region:
 
 network:
   name: network
+  api_version: v1
   collection: compute.networks
   attributes:
   - *project
@@ -30,6 +31,7 @@ network:
 
 subnetwork:
   name: subnetwork
+  api_version: v1
   collection: compute.subnetworks
   attributes:
   - *project

@@ -2417,6 +2417,33 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates an Entry Link.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntryLinksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1EntryLink) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entryLinks/{entryLinksId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.entryGroups.entryLinks.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'aspectKeys'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1EntryLink',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntryLinksPatchRequest',
+        response_type_name='GoogleCloudDataplexV1EntryLink',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups resource."""
 

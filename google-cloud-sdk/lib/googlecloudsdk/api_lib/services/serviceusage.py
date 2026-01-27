@@ -1112,22 +1112,23 @@ def AddEnableRule(
   try:
     policy = GetConsumerPolicyV2Beta(policy_name)
 
+    prefixed_services = _GetPrefixedServiceNames(services)
     services_to_enabled = set()
     existing_services = set()
     if policy.enableRules:
       existing_services = set(policy.enableRules[0].services)
 
-    for service in services:
+    for service in prefixed_services:
       # Check if services to add is not already present in the policy.
-      if _SERVICE_RESOURCE % service not in existing_services:
-        services_to_enabled.add(_SERVICE_RESOURCE % service)
+      if service not in existing_services:
+        services_to_enabled.add(service)
 
     dependent_services = set()
 
     if not skip_dependency:
-      for service in services:
+      for service in prefixed_services:
         list_expanded_members = ListExpandedMembers(
-            resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
+            resource_name, service + _DEPENDENCY_GROUP
         )
         for dependent_service in list_expanded_members:
           # dependent_service is in format services/{service_name}
@@ -1301,23 +1302,20 @@ def RemoveEnableRule(
   try:
     current_policy = GetConsumerPolicyV2Beta(policy_name)
 
+    prefixed_services = _GetPrefixedServiceNames(services)
     services_to_remove = {
         service
-        for service in services
+        for service in prefixed_services
         if any(
-            _SERVICE_RESOURCE % service in enable_rule.services
+            service in enable_rule.services
             for enable_rule in current_policy.enableRules
         )
     }
 
-    services = [
-        service for service in services if service not in services_to_remove
-    ]
-
     if not services_to_remove:
       log.warning(
           'The service(s) '
-          + ','.join(services)
+          + ','.join(prefixed_services)
           + ' are not enabled in the consumer policy.'
       )
       return None
@@ -1325,8 +1323,8 @@ def RemoveEnableRule(
     proposed_policy = copy.deepcopy(current_policy)
     for enable_rule in proposed_policy.enableRules:
       for service in services_to_remove:
-        if _SERVICE_RESOURCE % service in enable_rule.services:
-          enable_rule.services.remove(_SERVICE_RESOURCE % service)
+        if service in enable_rule.services:
+          enable_rule.services.remove(service)
 
     to_remove = []
 
@@ -1345,7 +1343,7 @@ def RemoveEnableRule(
           for warning in analysis['analysisResult']['warnings']:
             for service in services_to_remove:
               ## check if analysis is related to service to be removed.
-              if _SERVICE_RESOURCE % service == warning['missingDependency']:
+              if service == warning['missingDependency']:
                 if service not in missing_dependency:
                   missing_dependency[service] = []
                 missing_dependency[service].append(analysis['service'])
@@ -2238,3 +2236,10 @@ def _GetClientInstance(version='v1'):
       enable_resource_quota=enable_resource_quota)
   return apis_internal._GetClientInstance(
       'serviceusage', version, http_client=http_client)
+
+
+def _GetPrefixedServiceNames(services: List[str]) -> List[str]:
+  """Prefixes service names with 'services/' if not already present."""
+  return [
+      f'services/{s}' if not s.startswith('services/') else s for s in services
+  ]

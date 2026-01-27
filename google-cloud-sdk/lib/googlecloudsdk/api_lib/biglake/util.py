@@ -73,7 +73,7 @@ def GetCatalogTypeEnumMapper(release_track):
       custom_mappings={
           'CATALOG_TYPE_GCS_BUCKET': (
               'gcs-bucket',
-              'A catalog backed by a GCS bucket.',
+              'A catalog backed by a Cloud Storage bucket.',
           ),
       },
   )

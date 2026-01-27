@@ -41,7 +41,7 @@ projects_locations_collections:
     parameter_name: collectionsId
     attribute_name: collection
     help: The collection id of the {resource} resource.
-  disable_auto_completers: true
+  disable_auto_completers: false
 projects_locations_collections_data_objects:
   name: dataObject
   plural_name: dataObjects

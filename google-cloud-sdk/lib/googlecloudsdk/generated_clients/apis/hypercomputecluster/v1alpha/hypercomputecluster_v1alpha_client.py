@@ -40,6 +40,7 @@ class HypercomputeclusterV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
+    self.projects_locations_machineLearningRuns_monitoredEvents = self.ProjectsLocationsMachineLearningRunsMonitoredEventsService(self)
     self.projects_locations_machineLearningRuns_profileSessions = self.ProjectsLocationsMachineLearningRunsProfileSessionsService(self)
     self.projects_locations_machineLearningRuns_profilerSessions = self.ProjectsLocationsMachineLearningRunsProfilerSessionsService(self)
     self.projects_locations_machineLearningRuns_profilerTargets = self.ProjectsLocationsMachineLearningRunsProfilerTargetsService(self)
@@ -190,6 +191,151 @@ class HypercomputeclusterV1alpha(base_api.BaseApiClient):
         request_field='cluster',
         request_type_name='HypercomputeclusterProjectsLocationsClustersPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMachineLearningRunsMonitoredEventsService(base_api.BaseApiService):
+    """Service class for the projects_locations_machineLearningRuns_monitoredEvents resource."""
+
+    _NAME = 'projects_locations_machineLearningRuns_monitoredEvents'
+
+    def __init__(self, client):
+      super(HypercomputeclusterV1alpha.ProjectsLocationsMachineLearningRunsMonitoredEventsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Monitored Event.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MonitoredEvent) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/monitoredEvents',
+        http_method='POST',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.monitoredEvents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['monitoredEventId'],
+        relative_path='v1alpha/{+parent}/monitoredEvents',
+        request_field='monitoredEvent',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsCreateRequest',
+        response_type_name='MonitoredEvent',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Monitored Event.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/monitoredEvents/{monitoredEventsId}',
+        http_method='DELETE',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.monitoredEvents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a specific Monitored Event.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MonitoredEvent) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/monitoredEvents/{monitoredEventsId}',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.monitoredEvents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsGetRequest',
+        response_type_name='MonitoredEvent',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Monitored Events for a run.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMonitoredEventsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/monitoredEvents',
+        http_method='GET',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.monitoredEvents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/monitoredEvents',
+        request_field='',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsListRequest',
+        response_type_name='ListMonitoredEventsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Monitored Event.
+
+      Args:
+        request: (HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MonitoredEvent) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/machineLearningRuns/{machineLearningRunsId}/monitoredEvents/{monitoredEventsId}',
+        http_method='PATCH',
+        method_id='hypercomputecluster.projects.locations.machineLearningRuns.monitoredEvents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='monitoredEvent',
+        request_type_name='HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsPatchRequest',
+        response_type_name='MonitoredEvent',
         supports_download=False,
     )
 

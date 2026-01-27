@@ -16,6 +16,9 @@
 
 from googlecloudsdk.calliope import base
 
+# Category in help text for flags that specify Memberships. Note b/433819462.
+MEMBERSHIP_CATEGORY = 'MEMBERSHIP'
+
 ALL_MEMBERSHIPS_FLAG = base.Argument(
     '--all-memberships',
     action='store_const',

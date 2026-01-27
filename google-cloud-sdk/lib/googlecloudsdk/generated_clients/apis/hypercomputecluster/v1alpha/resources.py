@@ -63,6 +63,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MACHINELEARNINGRUNS_MONITOREDEVENTS = (
+      'projects.locations.machineLearningRuns.monitoredEvents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'machineLearningRuns/{machineLearningRunsId}/monitoredEvents/'
+              '{monitoredEventsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MACHINELEARNINGRUNS_PROFILESESSIONS = (
       'projects.locations.machineLearningRuns.profileSessions',
       '{+name}',

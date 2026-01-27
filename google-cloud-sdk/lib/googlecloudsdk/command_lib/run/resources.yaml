@@ -45,6 +45,17 @@ job:
     attribute_name: job
     help: The name of the Cloud Run job.
 
+instance:
+  name: instance
+  collection: run.projects.locations.instances
+  attributes:
+  - *project
+  - *region
+  - &instance
+    parameter_name: instancesId
+    attribute_name: instance
+    help: The name of the Cloud Run instance.
+
 workerpool:
   name: workerpool
   collection: run.projects.locations.workerpools

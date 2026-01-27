@@ -3972,6 +3972,102 @@ class ListOperationsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListRegionalMulticastConsumerAssociationsResponse(_messages.Message):
+  r"""Response message for ListRegionalMulticastConsumerAssociations.
+
+  Fields:
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    regionalMulticastConsumerAssociations: The list of regional multicast
+      consumer associations.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalMulticastConsumerAssociations = _messages.MessageField('RegionalMulticastConsumerAssociation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRegionalMulticastDomainActivationsResponse(_messages.Message):
+  r"""Response message for ListRegionalMulticastDomainActivations.
+
+  Fields:
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    regionalMulticastDomainActivations: The list of multicast domain
+      activations.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalMulticastDomainActivations = _messages.MessageField('RegionalMulticastDomainActivation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRegionalMulticastGroupConsumerActivationsResponse(_messages.Message):
+  r"""Response message for ListRegionalMulticastGroupConsumerActivations.
+
+  Fields:
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    regionalMulticastGroupConsumerActivations: The list of regional multicast
+      group consumer activations.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalMulticastGroupConsumerActivations = _messages.MessageField('RegionalMulticastGroupConsumerActivation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRegionalMulticastGroupProducerActivationsResponse(_messages.Message):
+  r"""Response message for ListRegionalMulticastGroupProducerActivations.
+
+  Fields:
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    regionalMulticastGroupProducerActivations: The list of regional multicast
+      group producer activations.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalMulticastGroupProducerActivations = _messages.MessageField('RegionalMulticastGroupProducerActivation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRegionalMulticastGroupRangeActivationsResponse(_messages.Message):
+  r"""Response message for ListRegionalMulticastGroupRangeActivations.
+
+  Fields:
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    regionalMulticastGroupRangeActivations: The list of regional multicast
+      group range activations.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalMulticastGroupRangeActivations = _messages.MessageField('RegionalMulticastGroupRangeActivation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRegionalMulticastProducerAssociationsResponse(_messages.Message):
+  r"""Response message for ListRegionalMulticastProducerAssociations.
+
+  Fields:
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    regionalMulticastProducerAssociations: The list of regional multicast
+      producer associations.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalMulticastProducerAssociations = _messages.MessageField('RegionalMulticastProducerAssociation', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListServiceBindingsResponse(_messages.Message):
   r"""Response returned by the ListServiceBindings method.
 
@@ -7828,6 +7924,832 @@ class NetworkservicesProjectsLocationsOperationsListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(5)
 
 
+class NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsC
+  reateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the regional multicast consumer
+      association. Use the following format: `projects/*/locations/*`.
+    regionalMulticastConsumerAssociation: A
+      RegionalMulticastConsumerAssociation resource to be passed as the
+      request body.
+    regionalMulticastConsumerAssociationId: Required. A unique name for the
+      regional multicast consumer association. The name is restricted to
+      letters, numbers, and hyphen, with the first character a letter, and the
+      last a letter or a number. The name must not exceed 48 characters.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  regionalMulticastConsumerAssociation = _messages.MessageField('RegionalMulticastConsumerAssociation', 2)
+  regionalMulticastConsumerAssociationId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsD
+  eleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast consumer
+      association to delete. Use the following format:
+      `projects/*/locations/*/regionalMulticastConsumerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsG
+  etRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast consumer
+      association to get. Use the following format:
+      `projects/*/locations/*/regionalMulticastConsumerAssociations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsL
+  istRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of regional multicast consumer
+      associations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list regional multicast
+      consumer associations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsP
+  atchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the regional multicast consumer
+      association. Use the following format:
+      `projects/*/locations/*/regionalMulticastConsumerAssociations/*`.
+    regionalMulticastConsumerAssociation: A
+      RegionalMulticastConsumerAssociation resource to be passed as the
+      request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the RegionalMulticastConsumerAssociation resource by the
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all mutable fields
+      present in the request will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  regionalMulticastConsumerAssociation = _messages.MessageField('RegionalMulticastConsumerAssociation', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsCrea
+  teRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the regional multicast domain
+      activation. Use the following format: `projects/*/locations/*`.
+    regionalMulticastDomainActivation: A RegionalMulticastDomainActivation
+      resource to be passed as the request body.
+    regionalMulticastDomainActivationId: Required. A unique name for the
+      regional multicast domain activation. The name is restricted to letters,
+      numbers, and hyphen, with the first character a letter, and the last a
+      letter or a number. The name must not exceed 48 characters.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  regionalMulticastDomainActivation = _messages.MessageField('RegionalMulticastDomainActivation', 2)
+  regionalMulticastDomainActivationId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsDele
+  teRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast domain
+      activation to delete. Use the following format:
+      `projects/*/locations/*/regionalMulticastDomainActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast domain
+      activation to get. Use the following format:
+      `projects/*/locations/*/regionalMulticastDomainActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsList
+  Request object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of regional multicast domain
+      activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list regional multicast
+      domain activations. Use the following format: `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsPatc
+  hRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the regional multicast domain
+      activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastDomainActivations/*`.
+    regionalMulticastDomainActivation: A RegionalMulticastDomainActivation
+      resource to be passed as the request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the RegionalMulticastDomainActivation resource by the
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all mutable fields
+      present in the request will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  regionalMulticastDomainActivation = _messages.MessageField('RegionalMulticastDomainActivation', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivati
+  onsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the regional multicast group
+      consumer activation. Use the following format: `projects/*/locations/*`.
+    regionalMulticastGroupConsumerActivation: A
+      RegionalMulticastGroupConsumerActivation resource to be passed as the
+      request body.
+    regionalMulticastGroupConsumerActivationId: Required. A unique name for
+      the regional multicast group consumer activation. The name is restricted
+      to letters, numbers, and hyphen, with the first character a letter, and
+      the last a letter or a number. The name must not exceed 48 characters.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  regionalMulticastGroupConsumerActivation = _messages.MessageField('RegionalMulticastGroupConsumerActivation', 2)
+  regionalMulticastGroupConsumerActivationId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivati
+  onsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast group consumer
+      activation to delete. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupConsumerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivati
+  onsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast group consumer
+      activation to get. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupConsumerActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivati
+  onsListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of regional multicast group
+      consumer activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      consumer activations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivati
+  onsPatchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the regional multicast group
+      consumer activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupConsumerActivations/*`.
+    regionalMulticastGroupConsumerActivation: A
+      RegionalMulticastGroupConsumerActivation resource to be passed as the
+      request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the RegionalMulticastGroupConsumerActivation resource by
+      the update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all mutable fields
+      present in the request will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  regionalMulticastGroupConsumerActivation = _messages.MessageField('RegionalMulticastGroupConsumerActivation', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivati
+  onsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the regional multicast group
+      producer activation. Use the following format: `projects/*/locations/*`.
+    regionalMulticastGroupProducerActivation: A
+      RegionalMulticastGroupProducerActivation resource to be passed as the
+      request body.
+    regionalMulticastGroupProducerActivationId: Required. A unique name for
+      the regional multicast group producer activation. The name is restricted
+      to letters, numbers, and hyphen, with the first character a letter, and
+      the last a letter or a number. The name must not exceed 48 characters.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  regionalMulticastGroupProducerActivation = _messages.MessageField('RegionalMulticastGroupProducerActivation', 2)
+  regionalMulticastGroupProducerActivationId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivati
+  onsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast group producer
+      activation to delete. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupProducerActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivati
+  onsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast group producer
+      activation to get. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupProducerActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivati
+  onsListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of regional multicast group
+      producer activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list regional multicast
+      group producer activations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivati
+  onsPatchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the regional multicast group
+      producer activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupProducerActivations/*`.
+    regionalMulticastGroupProducerActivation: A
+      RegionalMulticastGroupProducerActivation resource to be passed as the
+      request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the RegionalMulticastGroupProducerActivation resource by
+      the update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all mutable fields
+      present in the request will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  regionalMulticastGroupProducerActivation = _messages.MessageField('RegionalMulticastGroupProducerActivation', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivations
+  CreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the regional multicast group
+      range activation. Use the following format: `projects/*/locations/*`.
+    regionalMulticastGroupRangeActivation: A
+      RegionalMulticastGroupRangeActivation resource to be passed as the
+      request body.
+    regionalMulticastGroupRangeActivationId: Required. A unique name for the
+      regional multicast group range activation. The name is restricted to
+      letters, numbers, and hyphen, with the first character a letter, and the
+      last a letter or a number. The name must not exceed 48 characters.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  regionalMulticastGroupRangeActivation = _messages.MessageField('RegionalMulticastGroupRangeActivation', 2)
+  regionalMulticastGroupRangeActivationId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivations
+  DeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast group range
+      activation to delete. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupRangeActivations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivations
+  GetRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast group range
+      activation to get. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupRangeActivations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivations
+  ListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of regional multicast group range
+      activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list regional multicast
+      group range activations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivations
+  PatchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the regional multicast group range
+      activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupRangeActivations/*`.
+    regionalMulticastGroupRangeActivation: A
+      RegionalMulticastGroupRangeActivation resource to be passed as the
+      request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the RegionalMulticastGroupRangeActivation resource by the
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all mutable fields
+      present in the request will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  regionalMulticastGroupRangeActivation = _messages.MessageField('RegionalMulticastGroupRangeActivation', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsC
+  reateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the regional multicast producer
+      association. Use the following format: `projects/*/locations/*`.
+    regionalMulticastProducerAssociation: A
+      RegionalMulticastProducerAssociation resource to be passed as the
+      request body.
+    regionalMulticastProducerAssociationId: Required. A unique name for the
+      regional multicast producer association. The name is restricted to
+      letters, numbers, and hyphen, with the first character a letter, and the
+      last a letter or a number. The name must not exceed 48 characters.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  regionalMulticastProducerAssociation = _messages.MessageField('RegionalMulticastProducerAssociation', 2)
+  regionalMulticastProducerAssociationId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsD
+  eleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast producer
+      association to delete. Use the following format:
+      `projects/*/locations/*/regionalMulticastProducerAssociations/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsG
+  etRequest object.
+
+  Fields:
+    name: Required. The resource name of the regional multicast producer
+      association to get. Use the following format:
+      `projects/*/locations/*/regionalMulticastProducerAssociations/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsL
+  istRequest object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of regional multicast producer
+      associations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list regional multicast
+      producer associations. Use the following format:
+      `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsP
+  atchRequest object.
+
+  Fields:
+    name: Identifier. The resource name of the regional multicast producer
+      association. Use the following format:
+      `projects/*/locations/*/regionalMulticastProducerAssociations/*`.
+    regionalMulticastProducerAssociation: A
+      RegionalMulticastProducerAssociation resource to be passed as the
+      request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the RegionalMulticastProducerAssociation resource by the
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all mutable fields
+      present in the request will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  regionalMulticastProducerAssociation = _messages.MessageField('RegionalMulticastProducerAssociation', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsServiceBindingsCreateRequest object.
 
@@ -8555,6 +9477,51 @@ class PathMatcher(_messages.Message):
   routeRules = _messages.MessageField('RouteRule', 3, repeated=True)
 
 
+class PimSpec(_messages.Message):
+  r"""Specification for the PIM (Protocol Independent Multicast) protocol.
+
+  Enums:
+    MulticastSourceLocationValueValuesEnum: Required. Indicates the location
+      of the multicast source.
+    PimModeValueValuesEnum: Optional. Specifies the PIM mode. If not
+      specified, the service will default to SPARSE. Only SPARSE is supported.
+
+  Fields:
+    multicastSourceLocation: Required. Indicates the location of the multicast
+      source.
+    pimMode: Optional. Specifies the PIM mode. If not specified, the service
+      will default to SPARSE. Only SPARSE is supported.
+    rpAddress: Optional. The IP address of the PIM-SM Rendezvous Point (RP).
+  """
+
+  class MulticastSourceLocationValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the location of the multicast source.
+
+    Values:
+      MULTICAST_SOURCE_LOCATION_UNSPECIFIED: The producer type is unspecified.
+      MULTICAST_SOURCE_GCP: The producer is within GCP.
+      MULTICAST_SOURCE_NON_GCP: The producer is outside of GCP.
+    """
+    MULTICAST_SOURCE_LOCATION_UNSPECIFIED = 0
+    MULTICAST_SOURCE_GCP = 1
+    MULTICAST_SOURCE_NON_GCP = 2
+
+  class PimModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the PIM mode. If not specified, the service will
+    default to SPARSE. Only SPARSE is supported.
+
+    Values:
+      PIM_MODE_UNSPECIFIED: The PIM mode is unspecified.
+      PIM_MODE_SPARSE: The PIM mode is PIM Sparse Mode.
+    """
+    PIM_MODE_UNSPECIFIED = 0
+    PIM_MODE_SPARSE = 1
+
+  multicastSourceLocation = _messages.EnumField('MulticastSourceLocationValueValuesEnum', 1)
+  pimMode = _messages.EnumField('PimModeValueValuesEnum', 2)
+  rpAddress = _messages.StringField(3)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -8680,6 +9647,446 @@ class QueryParameterMatcher(_messages.Message):
   exactMatch = _messages.StringField(1)
   name = _messages.StringField(2)
   presentMatch = _messages.BooleanField(3)
+
+
+class RegionalMulticastConsumerAssociation(_messages.Message):
+  r"""Regional multicast consumer association resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the regional
+      multicast consumer association was created.
+    description: Optional. An optional text description of the regional
+      multicast consumer association.
+    labels: Optional. Labels as key-value pairs
+    name: Identifier. The resource name of the regional multicast consumer
+      association. Use the following format:
+      `projects/*/locations/*/regionalMulticastConsumerAssociations/*`.
+    network: Required. Immutable. The resource name of the multicast consumer
+      VPC network. Use following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    regionalMulticastDomainActivation: Required. Immutable. The resource name
+      of the regional multicast domain activation that is in the same region
+      as this regional multicast consumer association. Use the following
+      format: `projects/*/locations/*/regionalMulticastDomainActivations/*`.
+    state: Output only. [Output only] The state of the resource.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all regional multicast consumer
+      association resources. If a consumer association is deleted and another
+      with the same name is created, the new consumer association is assigned
+      a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the regional
+      multicast consumer association was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  regionalMulticastDomainActivation = _messages.StringField(6)
+  state = _messages.MessageField('MulticastResourceState', 7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class RegionalMulticastDomainActivation(_messages.Message):
+  r"""Regional multicast domain activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    adminNetwork: Output only. [Output only] The URL of the admin network.
+    createTime: Output only. [Output only] The timestamp when the regional
+      multicast domain activation was created.
+    description: Optional. An optional text description of the regional
+      multicast domain activation.
+    labels: Optional. Labels as key-value pairs
+    multicastDomain: Required. Immutable. The resource name of the multicast
+      domain to activate. Use the following format:
+      `projects/*/locations/global/multicastDomains/*`.
+    name: Identifier. The resource name of the regional multicast domain
+      activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastDomainActivations/*`.
+    state: Output only. [Output only] The state of the resource.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all regional multicast domain
+      activation resources. If a regional multicast domain activation is
+      deleted and another with the same name is created, the new regional
+      multicast domain activation is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the regional
+      multicast domain activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  adminNetwork = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  multicastDomain = _messages.StringField(5)
+  name = _messages.StringField(6)
+  state = _messages.MessageField('MulticastResourceState', 7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class RegionalMulticastGroupConsumerActivation(_messages.Message):
+  r"""Regional multicast group consumer activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the regional
+      multicast group consumer activation was created.
+    description: Optional. An optional text description of the regional
+      multicast group consumer activation.
+    interconnectAttachments: Required. The resource name of the interconnect
+      attachments that are in the same region as this regional multicast group
+      consumer activation and are used by on-premises consumers to receive
+      multicast traffic. These attachments must have multicast functionality
+      enabled. Use the following format:
+      `projects/*/regions/*/interconnectAttachments/*`.
+    labels: Optional. Labels as key-value pairs
+    logConfig: Optional. Specifies the logging options for the activities
+      performed related to the regional multicast group consumer activation.
+      Defaults to false. If logging is enabled, logs are exported to Cloud
+      Logging.
+    name: Identifier. The resource name of the regional multicast group
+      consumer activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupConsumerActivations/*`.
+    regionalMulticastConsumerAssociation: Required. Immutable. The resource
+      name of the regional multicast consumer association that is in the same
+      region as this regional multicast group consumer activation. Use the
+      following format:
+      `projects/*/locations/*/regionalMulticastConsumerAssociations/*`.
+    regionalMulticastGroupRangeActivation: Required. Immutable. The resource
+      name of the regional multicast group range activation created by the
+      admin in the same region as this regional multicast group consumer
+      activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupRangeActivations/*`.
+    state: Output only. [Output only] The state of the resource.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all regional multicast group
+      consumer activation resources. If a regional multicast group consumer
+      activation is deleted and another with the same name is created, the new
+      regional multicast group consumer activation is assigned a different
+      unique_id.
+    updateTime: Output only. [Output only] The timestamp when the regional
+      multicast group consumer activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  interconnectAttachments = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  logConfig = _messages.MessageField('MulticastLogConfig', 5)
+  name = _messages.StringField(6)
+  regionalMulticastConsumerAssociation = _messages.StringField(7)
+  regionalMulticastGroupRangeActivation = _messages.StringField(8)
+  state = _messages.MessageField('MulticastResourceState', 9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class RegionalMulticastGroupProducerActivation(_messages.Message):
+  r"""Regional multicast group producer activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the regional
+      multicast group producer activation was created.
+    description: Optional. An optional text description of the regional
+      multicast group producer activation.
+    interconnectAttachments: Required. The resource name of the interconnect
+      attachments that are in the same region as this regional multicast group
+      producer activation and are used with the on-premises multicast source.
+      These attachments must have multicast functionality enabled. Use the
+      following format: `projects/*/regions/*/interconnectAttachments/*`.
+    labels: Optional. Labels as key-value pairs
+    name: Identifier. The resource name of the regional multicast group
+      producer activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupProducerActivations/*`.
+    regionalMulticastGroupRangeActivation: Required. Immutable. The resource
+      name of the regional multicast group range activation created by the
+      admin in the same region as this regional multicast group producer
+      activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupRangeActivations/*`.
+    regionalMulticastProducerAssociation: Required. Immutable. The resource
+      name of the regional multicast producer association that is in the same
+      region as this regional multicast group producer activation. Use the
+      following format:
+      `projects/*/locations/*/regionalMulticastProducerAssociations/*`.
+    state: Output only. [Output only] The state of the resource.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all regional multicast group
+      producer activation resources. If a regional multicast group producer
+      activation is deleted and another with the same name is created, the new
+      regional multicast group producer activation is assigned a different
+      unique_id.
+    updateTime: Output only. [Output only] The timestamp when the regional
+      multicast group producer activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  interconnectAttachments = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  regionalMulticastGroupRangeActivation = _messages.StringField(6)
+  regionalMulticastProducerAssociation = _messages.StringField(7)
+  state = _messages.MessageField('MulticastResourceState', 8)
+  uniqueId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class RegionalMulticastGroupRangeActivation(_messages.Message):
+  r"""Regional multicast group range activation resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs.
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the regional
+      multicast group range activation was created.
+    description: Optional. An optional text description of the regional
+      multicast group range activation.
+    ipCidrRange: Output only. [Output only] The multicast group IP address
+      range.
+    labels: Optional. Labels as key-value pairs.
+    logConfig: Optional. Specifies the logging options for the activities
+      performed regarding the regional multicast group range activation.
+      Defaults to false. If not specified, inherit the logging options from
+      the global multicast group range resource. If logging is enabled, logs
+      are exported to Cloud Logging. If the log config is explicitly set for
+      the regional multicast group range activation, regardless if it is
+      enabled or not, the value overrides what is configured by the multicast
+      group range resource.
+    multicastGroupRange: Required. Immutable. The resource name of the global
+      multicast group range for the group. Use the following format:
+      `projects/*/locations/global/multicastGroupRanges/*`
+    name: Identifier. The resource name of the regional multicast group range
+      activation. Use the following format:
+      `projects/*/locations/*/regionalMulticastGroupRangeActivations/*`.
+    pimSpec: Required. The PIM specification for the multicast group range
+      activation.
+    regionalMulticastDomainActivation: Required. Immutable. The resource name
+      of a regional multicast domain activation that is in the same region as
+      this regional multicast group range activation. Use the following
+      format: `projects/*/locations/*/regionalMulticastDomainActivations/*`
+    state: Output only. [Output only] The state of the resource.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all regional multicast group range
+      activation resources. If a regional multicast group range activation is
+      deleted and another with the same name is created, the new regional
+      multicast group range activation is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the regional
+      multicast group range activation was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  ipCidrRange = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  logConfig = _messages.MessageField('MulticastLogConfig', 5)
+  multicastGroupRange = _messages.StringField(6)
+  name = _messages.StringField(7)
+  pimSpec = _messages.MessageField('PimSpec', 8)
+  regionalMulticastDomainActivation = _messages.StringField(9)
+  state = _messages.MessageField('MulticastResourceState', 10)
+  uniqueId = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+
+
+class RegionalMulticastProducerAssociation(_messages.Message):
+  r"""Regional multicast producer association resource.
+
+  Messages:
+    LabelsValue: Optional. Labels as key-value pairs
+
+  Fields:
+    createTime: Output only. [Output only] The timestamp when the regional
+      multicast producer association was created.
+    description: Optional. An optional text description of the regional
+      multicast producer association.
+    labels: Optional. Labels as key-value pairs
+    name: Identifier. The resource name of the regional multicast producer
+      association. Use the following format:
+      `projects/*/locations/*/regionalMulticastProducerAssociations/*`.
+    network: Required. Immutable. The resource name of the multicast producer
+      VPC network. Use the following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    regionalMulticastDomainActivation: Required. Immutable. The resource name
+      of the regional multicast domain activation that is in the same region
+      as this regional multicast producer association. Use the following
+      format: `projects/*/locations/*/regionalMulticastDomainActivations/*`.
+    state: Output only. [Output only] The state of the resource.
+    uniqueId: Output only. [Output only] The Google-generated UUID for the
+      resource. This value is unique across all regional multicast producer
+      association resources. If a regional multicast producer association is
+      deleted and another with the same name is created, the new regional
+      multicast producer association is assigned a different unique_id.
+    updateTime: Output only. [Output only] The timestamp when the regional
+      multicast producer association was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key-value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  regionalMulticastDomainActivation = _messages.StringField(6)
+  state = _messages.MessageField('MulticastResourceState', 7)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class RetryFilterPerRouteConfig(_messages.Message):

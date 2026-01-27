@@ -1583,12 +1583,13 @@ class RolloutStats(_messages.Message):
   r"""RolloutStats contains information about the progress of a rollout.
 
   Fields:
-    operationsByState: Output only. A breakdown of the progress of operations
-      triggered by the rollout. Provides a count of Operations by their state.
-      This can be used to determine the number of units which have been
-      updated, or are scheduled to be updated. There will be at most one entry
-      per group. Possible values for operation groups are: - "SCHEDULED" -
-      "PENDING" - "RUNNING" - "SUCCEEDED" - "FAILED" - "CANCELLED"
+    operationsByState: Optional. Output only. Unordered list. A breakdown of
+      the progress of operations triggered by the rollout. Provides a count of
+      Operations by their state. This can be used to determine the number of
+      units which have been updated, or are scheduled to be updated. There
+      will be at most one entry per group. Possible values for operation
+      groups are: - "SCHEDULED" - "PENDING" - "RUNNING" - "SUCCEEDED" -
+      "FAILED" - "CANCELLED"
   """
 
   operationsByState = _messages.MessageField('Aggregate', 1, repeated=True)

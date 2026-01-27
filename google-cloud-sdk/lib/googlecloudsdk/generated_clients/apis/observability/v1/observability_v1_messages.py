@@ -154,6 +154,188 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class ObservabilityFoldersLocationsGetRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityFoldersLocationsListRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsListRequest object.
+
+  Fields:
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class ObservabilityFoldersLocationsOperationsCancelRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ObservabilityFoldersLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityFoldersLocationsOperationsGetRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityFoldersLocationsOperationsListRequest(_messages.Message):
+  r"""A ObservabilityFoldersLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
+
+
+class ObservabilityOrganizationsLocationsGetRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityOrganizationsLocationsListRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsListRequest object.
+
+  Fields:
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class ObservabilityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ObservabilityOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A ObservabilityOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
+
+
 class ObservabilityProjectsLocationsGetRequest(_messages.Message):
   r"""A ObservabilityProjectsLocationsGetRequest object.
 

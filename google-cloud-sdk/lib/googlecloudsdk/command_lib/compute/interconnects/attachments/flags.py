@@ -15,7 +15,6 @@
 """Flags and helpers for the compute interconnects commands."""
 
 import collections
-import copy
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -38,6 +37,23 @@ _BANDWIDTH_CHOICES = collections.OrderedDict([
     ('20g', '20 Gbit/s'),
     ('50g', '50 Gbit/s'),
     ('100g', '100 Gbit/s'),
+])
+
+_BANDWIDTH_CHOICES_400G = collections.OrderedDict([
+    ('50m', '50 Mbit/s'),
+    ('100m', '100 Mbit/s'),
+    ('200m', '200 Mbit/s'),
+    ('300m', '300 Mbit/s'),
+    ('400m', '400 Mbit/s'),
+    ('500m', '500 Mbit/s'),
+    ('1g', '1 Gbit/s'),
+    ('2g', '2 Gbit/s'),
+    ('5g', '5 Gbit/s'),
+    ('10g', '10 Gbit/s'),
+    ('20g', '20 Gbit/s'),
+    ('50g', '50 Gbit/s'),
+    ('100g', '100 Gbit/s'),
+    ('400g', '400 Gbit/s'),
 ])
 
 _EDGE_AVAILABILITY_DOMAIN_CHOICES = {
@@ -151,28 +167,27 @@ def AddEnableAdmin(parser):
       """)
 
 
-def AddBandwidth(parser, required, release_track=base.ReleaseTrack.GA):
+def AddBandwidth(parser, required, supports_400g=False):
   """Adds bandwidth flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.
     required: A boolean indicates whether the Bandwidth is required.
-    release_track: Depending on which release track is specified, different
-      bandwidth options will be surfaced to customers.
+    supports_400g: Whether the 400G bandwidth option is supported.
   """
   help_text = """\
       Provisioned capacity of the attachment.
       """
-  choices = copy.deepcopy(_BANDWIDTH_CHOICES)
-  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    choices['400g'] = '400 Gbit/s'
-
+  bandwidth_choices = _BANDWIDTH_CHOICES
+  if supports_400g:
+    bandwidth_choices = _BANDWIDTH_CHOICES_400G
   base.ChoiceArgument(
       '--bandwidth',
       # TODO(b/80311900): use arg_parsers.BinarySize()
-      choices=choices,
+      choices=bandwidth_choices,
       required=required,
-      help_str=help_text).AddToParser(parser)
+      help_str=help_text,
+  ).AddToParser(parser)
 
 
 def AddVlan(parser):

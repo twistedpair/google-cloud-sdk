@@ -423,3 +423,16 @@ full:
     enum_value: CLUSTER_VIEW_FULL
   - arg_value: false
     enum_value: CLUSTER_VIEW_BASIC
+
+consumer_group_view:
+  arg_name: view
+  api_field: view
+  help_text: |
+    The level of detail to return for consumer groups.
+  choices:
+  - arg_value: basic
+    enum_value: CONSUMER_GROUP_VIEW_BASIC
+    help_text: Include only the names of consumer groups.
+  - arg_value: full
+    enum_value: CONSUMER_GROUP_VIEW_FULL
+    help_text: Include all available fields (topics, partitions).

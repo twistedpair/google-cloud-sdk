@@ -3048,7 +3048,9 @@ class MembershipConfig(_messages.Message):
   ConfigManagement CR.
 
   Enums:
-    ManagementValueValuesEnum: Enables automatic Feature management.
+    ManagementValueValuesEnum: Optional. Deprecated: From version 1.21.0,
+      automatic Feature management is unavailable, and Config Sync only
+      supports manual upgrades.
 
   Fields:
     binauthz: Binauthz conifguration for the cluster. Deprecated: This field
@@ -3065,7 +3067,9 @@ class MembershipConfig(_messages.Message):
       Deprecated: Configuring Hierarchy Controller through the
       configmanagement feature is no longer recommended. Use
       https://github.com/kubernetes-sigs/hierarchical-namespaces instead.
-    management: Enables automatic Feature management.
+    management: Optional. Deprecated: From version 1.21.0, automatic Feature
+      management is unavailable, and Config Sync only supports manual
+      upgrades.
     policyController: Policy Controller configuration for the cluster.
       Deprecated: Configuring Policy Controller through the configmanagement
       feature is no longer recommended. Use the policycontroller feature
@@ -3074,7 +3078,8 @@ class MembershipConfig(_messages.Message):
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
-    r"""Enables automatic Feature management.
+    r"""Optional. Deprecated: From version 1.21.0, automatic Feature
+    management is unavailable, and Config Sync only supports manual upgrades.
 
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified

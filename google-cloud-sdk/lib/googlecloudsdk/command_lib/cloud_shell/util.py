@@ -122,30 +122,37 @@ def PrepareEnvironment(args):
     time.sleep(5)
 
   # If the environment isn't running, start it.
+  start_operation = None
   if environment.state != messages.Environment.StateValueValuesEnum.RUNNING:
     log.Print('Starting your Cloud Shell machine...')
 
     access_token = None
     if args.IsKnownAndSpecified('authorize_session') and args.authorize_session:
       access_token = store.GetFreshAccessTokenIfEnabled(
-          min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
+          min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS
+      )
 
     start_operation = client.users_environments.Start(
         messages.CloudshellUsersEnvironmentsStartRequest(
             name=DEFAULT_ENVIRONMENT_NAME,
             startEnvironmentRequest=messages.StartEnvironmentRequest(
-                accessToken=access_token)))
+                accessToken=access_token
+            ),
+        )
+    )
 
     environment = waiter.WaitFor(
-        EnvironmentPoller(client.users_environments,
-                          operations_client.operations),
+        EnvironmentPoller(
+            client.users_environments, operations_client.operations
+        ),
         start_operation,
         'Waiting for your Cloud Shell machine to start',
         sleep_ms=500,
-        max_wait_ms=None)
+        max_wait_ms=None,
+    )
 
   if not environment.sshHost:
-    raise core_exceptions.Error('The Cloud Shell machine did not start.')
+    _RaiseExceptionDueToStartOperationError(start_operation)
 
   return ConnectionInfo(
       ssh_env=ssh_env,
@@ -154,6 +161,78 @@ def PrepareEnvironment(args):
       port=environment.sshPort,
       key=keys.key_file,
   )
+
+
+def _GetDetail(details, type_class):
+  if details is None:
+    return None
+
+  for detail in details:
+    for additional_property in detail.additionalProperties:
+      if (
+          additional_property.key == '@type'
+          and additional_property.value.string_value == type_class
+      ):
+        return detail
+  return None
+
+
+def _GetAdditionalPropertyFromDetail(detail, key):
+  if detail is None:
+    return None
+
+  for additional_property in detail.additionalProperties:
+    if additional_property.key == key:
+      return additional_property.value
+  return None
+
+
+def _RaiseExceptionDueToStartOperationError(operation):
+  """Raises a core_exceptions.Error based on the start operation's error details.
+
+  If the error is due to an unverified account, a detailed error including the
+  verification URL (if it exists) will be raised. Otherwise, a generic error is
+  raised.
+
+  Args:
+    operation: The operation object returned from the Cloud Shell API.
+  """
+  details = None
+  if operation and operation.error:
+    details = operation.error.details
+
+  error_info = _GetDetail(details, 'type.googleapis.com/google.rpc.ErrorInfo')
+  reason_property = _GetAdditionalPropertyFromDetail(error_info, 'reason')
+  error_reason = reason_property.string_value if reason_property else None
+
+  if error_reason != 'ACCOUNT_UNVERIFIED':
+    raise core_exceptions.Error('The Cloud Shell machine did not start.')
+
+  verify_url = None
+  help_message = _GetDetail(details, 'type.googleapis.com/google.rpc.Help')
+
+  # Attempt to retrieve the uplevel link from the operation help message.
+  # If it doesn't exist, use the Cloud Shell homepage as a fallback.
+  if help_message:
+    links = _GetAdditionalPropertyFromDetail(help_message, 'links')
+    if links:
+      for entries in links.array_value.entries:
+        if verify_url:
+          break
+        for link in entries.object_value.properties:
+          if link.key == 'url':
+            verify_url = link.value.string_value
+            break
+  if verify_url:
+    raise core_exceptions.Error(
+        'Your account is unverified. Please verify your account at'
+        f' {verify_url} or at https://shell.cloud.google.com.'
+    )
+  else:
+    raise core_exceptions.Error(
+        'Your account is unverified. Please verify your account at'
+        ' https://shell.cloud.google.com.'
+    )
 
 
 def AuthorizeEnvironment():

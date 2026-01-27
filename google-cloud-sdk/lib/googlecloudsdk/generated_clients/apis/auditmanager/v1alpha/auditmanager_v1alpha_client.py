@@ -390,7 +390,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def EnrollResource(self, request, global_params=None):
-      r"""Enrolls the customer resource(folder/project/organization) to the audit manager service by creating the audit managers P4SA in customers workload and granting required permissions to the P4SA. Please note that if enrollment request is made on the already enrolled workload then enrollment is executed overriding the existing set of destinations. As per https://google.aip.dev/127 recommendation, we are having multiple URI binding for Enroll API.
+      r"""Enrolls the customer resource(folder/project/organization) to the audit manager service by creating the audit managers P4 service account in customers workload and granting required permissions to the P4 service account. Please note that if enrollment request is made on the already enrolled workload then enrollment is executed overriding the existing set of destinations. As per https://google.aip.dev/127 recommendation, we are having multiple URI binding for Enroll API.
 
       Args:
         request: (AuditmanagerFoldersLocationsEnrollResourceRequest) input message
@@ -703,7 +703,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def EnrollResource(self, request, global_params=None):
-      r"""Enrolls the customer resource(folder/project/organization) to the audit manager service by creating the audit managers P4SA in customers workload and granting required permissions to the P4SA. Please note that if enrollment request is made on the already enrolled workload then enrollment is executed overriding the existing set of destinations. As per https://google.aip.dev/127 recommendation, we are having multiple URI binding for Enroll API.
+      r"""Enrolls the customer resource(folder/project/organization) to the audit manager service by creating the audit managers P4 service account in customers workload and granting required permissions to the P4 service account. Please note that if enrollment request is made on the already enrolled workload then enrollment is executed overriding the existing set of destinations. As per https://google.aip.dev/127 recommendation, we are having multiple URI binding for Enroll API.
 
       Args:
         request: (AuditmanagerOrganizationsLocationsEnrollResourceRequest) input message
@@ -1154,7 +1154,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def EnrollResource(self, request, global_params=None):
-      r"""Enrolls the customer resource(folder/project/organization) to the audit manager service by creating the audit managers P4SA in customers workload and granting required permissions to the P4SA. Please note that if enrollment request is made on the already enrolled workload then enrollment is executed overriding the existing set of destinations. As per https://google.aip.dev/127 recommendation, we are having multiple URI binding for Enroll API.
+      r"""Enrolls the customer resource(folder/project/organization) to the audit manager service by creating the audit managers P4 service account in customers workload and granting required permissions to the P4 service account. Please note that if enrollment request is made on the already enrolled workload then enrollment is executed overriding the existing set of destinations. As per https://google.aip.dev/127 recommendation, we are having multiple URI binding for Enroll API.
 
       Args:
         request: (AuditmanagerProjectsLocationsEnrollResourceRequest) input message

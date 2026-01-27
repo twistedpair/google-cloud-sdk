@@ -467,7 +467,10 @@ def ListDockerImages(parent: str, page_size: int, limit: int):
 
 
 def CopyRepository(
-    source_repo, dest_repo_name, continue_on_skipped_version=False
+    source_repo,
+    dest_repo_name,
+    continue_on_skipped_version=False,
+    max_version_age_days=0,
 ):
   """Copies a repository."""
   client = GetClient()
@@ -475,7 +478,8 @@ def CopyRepository(
   copy_req = messages.CopyRepositoryRequest(sourceRepository=source_repo)
   if continue_on_skipped_version:  # Remove condition once behaviors rolled out.
     copy_req.behavior = messages.Behavior(
-        continueOnSkippedVersion=continue_on_skipped_version
+        continueOnSkippedVersion=continue_on_skipped_version,
+        maxVersionAgeDays=max_version_age_days,
     )
   req = messages.ArtifactregistryProjectsLocationsRepositoriesCopyRepositoryRequest(
       destinationRepository=dest_repo_name,

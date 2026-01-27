@@ -1100,17 +1100,49 @@ class GoogleCloudVectorsearchV1betaSparseVectorField(_messages.Message):
 class GoogleCloudVectorsearchV1betaTextSearch(_messages.Message):
   r"""Defines a text search operation.
 
+  Messages:
+    FilterValue: Optional. A JSON filter expression, e.g. `{"genre": {"$eq":
+      "sci-fi"}}`, represented as a `google.protobuf.Struct`.
+
   Fields:
     dataFieldNames: Required. The data field names to search.
+    filter: Optional. A JSON filter expression, e.g. `{"genre": {"$eq": "sci-
+      fi"}}`, represented as a `google.protobuf.Struct`.
     outputFields: Optional. The fields to return in the search results.
     searchText: Required. The query text.
     topK: Optional. The number of results to return.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FilterValue(_messages.Message):
+    r"""Optional. A JSON filter expression, e.g. `{"genre": {"$eq": "sci-
+    fi"}}`, represented as a `google.protobuf.Struct`.
+
+    Messages:
+      AdditionalProperty: An additional property for a FilterValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FilterValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   dataFieldNames = _messages.StringField(1, repeated=True)
-  outputFields = _messages.MessageField('GoogleCloudVectorsearchV1betaOutputFields', 2)
-  searchText = _messages.StringField(3)
-  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  filter = _messages.MessageField('FilterValue', 2)
+  outputFields = _messages.MessageField('GoogleCloudVectorsearchV1betaOutputFields', 3)
+  searchText = _messages.StringField(4)
+  topK = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudVectorsearchV1betaUpdateDataObjectRequest(_messages.Message):

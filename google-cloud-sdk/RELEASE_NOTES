@@ -5,6 +5,68 @@ Copyright 2014-2026 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 554.0.0 (2026-01-27)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Deprecated Python 3.9. The minimum supported Python version is Python 3.10.
+*   **(Dataproc Metastore)** Deprecated `--read-write-regions` and `--read-only-regions` flags of `gcloud
+    metastore services create`. Use single region metastore instead.
+
+
+### Cloud Code
+
+* Promoted `gcloud biglake iceberg` to beta.
+
+### Cloud Dataflow
+
+*   Added support for various flags `--additional-experiments`,
+    `--additional-pipeline-options`, `--additional-user-labels`,
+    `--disable-public-ips`, `--temp-location`,
+    `--staging-location`, `--num-workers`, `--max-workers`,
+    `--worker-machine-type`, `--launcher-machine-type`, `--dataflow-kms-key`,
+    `--enable-streaming-engine`, `--update`,
+    `--transform-name-mappings` to `gcloud dataflow yaml run` command.
+
+### Cloud Managed Kafka
+
+* Added `--view` flag to `gcloud managed-kafka consumer-groups list` to allow for full and basic views of consumer groups.
+
+### Cloud Resource Manager
+
+*   Added Dynamic tags support to `gcloud resource-manager tags bindings delete ` command. This command can be used to detach a tag from a resource.
+
+### Cloud SQL
+
+* Updated 'cloud-sql-proxy' packaged component to use 2.21.0 of the Cloud SQL Proxy.
+*   Modified `gcloud sql connect` command to use Cloud SQL Proxy V2 API.
+    * Added support for `--auto-iam-authn`, `--private-ip`, `--psc`, `--auto-ip`, `--run-connection-test` and `--debug-logs` flags.
+
+### Compute Engine
+
+* Added `400g` as an additional option for `--bandwidth` of
+  `gcloud compute interconnects attachments dedicated create` and
+  `gcloud compute interconnects attachments dedicated update`.
+* Added `--resource-manager-tags` flag for alpha to
+  `gcloud compute storage-pools create` to allow users to add Resource Manager
+  tags to the storage pool resource during creation.
+* Added support to update graceful shutdown configuration in `gcloud beta compute instances update-from-file` command.
+
+### Kubernetes Engine
+
+* Added support for setting kernel module signature enforcement in node pools
+  via system config file using `--system-config-from-file` flag in
+  `gcloud container cluster create` and
+  `gcloud container node-pools create|update` commands.
+
+### Network Connectivity
+
+*   Fix flags for `gcloud beta network-connectivity transports create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 553.0.0 (2026-01-21)
 
 ### AI

@@ -39,7 +39,8 @@ class NetworkmanagementV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations_global_operations = self.OrganizationsLocationsGlobalOperationsService(self)
+    self.organizations_locations_global = self.OrganizationsLocationsGlobalService(self)
     self.organizations_locations_vpcFlowLogsConfigs = self.OrganizationsLocationsVpcFlowLogsConfigsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
@@ -50,13 +51,13 @@ class NetworkmanagementV1(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
-  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
-    """Service class for the organizations_locations_operations resource."""
+  class OrganizationsLocationsGlobalOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global_operations resource."""
 
-    _NAME = 'organizations_locations_operations'
+    _NAME = 'organizations_locations_global_operations'
 
     def __init__(self, client):
-      super(NetworkmanagementV1.OrganizationsLocationsOperationsService, self).__init__(client)
+      super(NetworkmanagementV1.OrganizationsLocationsGlobalOperationsService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -64,7 +65,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
       r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
 
       Args:
-        request: (NetworkmanagementOrganizationsLocationsOperationsCancelRequest) input message
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsCancelRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -74,15 +75,15 @@ class NetworkmanagementV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        flat_path='v1/organizations/{organizationsId}/locations/global/operations/{operationsId}:cancel',
         http_method='POST',
-        method_id='networkmanagement.organizations.locations.operations.cancel',
+        method_id='networkmanagement.organizations.locations.global.operations.cancel',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}:cancel',
         request_field='cancelOperationRequest',
-        request_type_name='NetworkmanagementOrganizationsLocationsOperationsCancelRequest',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsCancelRequest',
         response_type_name='Empty',
         supports_download=False,
     )
@@ -91,7 +92,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
       r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
-        request: (NetworkmanagementOrganizationsLocationsOperationsDeleteRequest) input message
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -101,15 +102,15 @@ class NetworkmanagementV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        flat_path='v1/organizations/{organizationsId}/locations/global/operations/{operationsId}',
         http_method='DELETE',
-        method_id='networkmanagement.organizations.locations.operations.delete',
+        method_id='networkmanagement.organizations.locations.global.operations.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
         request_field='',
-        request_type_name='NetworkmanagementOrganizationsLocationsOperationsDeleteRequest',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsDeleteRequest',
         response_type_name='Empty',
         supports_download=False,
     )
@@ -118,7 +119,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
       r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
-        request: (NetworkmanagementOrganizationsLocationsOperationsGetRequest) input message
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -128,15 +129,15 @@ class NetworkmanagementV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        flat_path='v1/organizations/{organizationsId}/locations/global/operations/{operationsId}',
         http_method='GET',
-        method_id='networkmanagement.organizations.locations.operations.get',
+        method_id='networkmanagement.organizations.locations.global.operations.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
         request_field='',
-        request_type_name='NetworkmanagementOrganizationsLocationsOperationsGetRequest',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsGetRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -145,7 +146,7 @@ class NetworkmanagementV1(base_api.BaseApiClient):
       r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
-        request: (NetworkmanagementOrganizationsLocationsOperationsListRequest) input message
+        request: (NetworkmanagementOrganizationsLocationsGlobalOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListOperationsResponse) The response message.
@@ -155,18 +156,28 @@ class NetworkmanagementV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations',
+        flat_path='v1/organizations/{organizationsId}/locations/global/operations',
         http_method='GET',
-        method_id='networkmanagement.organizations.locations.operations.list',
+        method_id='networkmanagement.organizations.locations.global.operations.list',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
         relative_path='v1/{+name}/operations',
         request_field='',
-        request_type_name='NetworkmanagementOrganizationsLocationsOperationsListRequest',
+        request_type_name='NetworkmanagementOrganizationsLocationsGlobalOperationsListRequest',
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
+
+  class OrganizationsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the organizations_locations_global resource."""
+
+    _NAME = 'organizations_locations_global'
+
+    def __init__(self, client):
+      super(NetworkmanagementV1.OrganizationsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OrganizationsLocationsVpcFlowLogsConfigsService(base_api.BaseApiService):
     """Service class for the organizations_locations_vpcFlowLogsConfigs resource."""

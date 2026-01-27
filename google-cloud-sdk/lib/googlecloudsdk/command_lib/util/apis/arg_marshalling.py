@@ -327,8 +327,18 @@ class DeclarativeArgumentGenerator(object):
 
     return args
 
-  def GetPrimaryResource(self, methods, namespace):
-    """Gets primary resource based on user input and returns single method.
+  def GetPrimaryResourceArgs(self, methods):
+    """Gets list of primary resource args."""
+    resource_args = {}
+    for method in methods:
+      resource_arg = _GetPrimaryResource(
+          self.resource_args, method.resource_argument_collection)
+      if resource_arg:
+        resource_args[resource_arg.presentation_name] = resource_arg
+    return list(resource_args.values())
+
+  def GetSpecifiedPrimaryResource(self, methods, namespace):
+    """Gets specified primary resource and associated method.
 
     This determines which api method to use to make api request. If there
     is only one potential request method, return the one request method.
@@ -466,7 +476,8 @@ class DeclarativeArgumentGenerator(object):
       resources.Resource, The parsed resource reference.
     """
     methods = [method] if method else []
-    parent_ref = self.GetPrimaryResource(methods, namespace).Parse(namespace)
+    parent_ref = self.GetSpecifiedPrimaryResource(
+        methods, namespace).Parse(namespace)
     return resources.REGISTRY.Parse(
         id_value,
         collection=method.collection.full_name,
@@ -480,6 +491,15 @@ class DeclarativeArgumentGenerator(object):
   def PageSize(self, namespace):
     """Gets the value of the page size flag (if present)."""
     return getattr(namespace, 'page_size', None)
+
+  def EndpointLocation(self, namespace, resource):
+    """Gets the value of the endpoint location flag (if present)."""
+    if resource_location := (resource and resource.ParseLocation(namespace)):
+      return resource_location
+    elif namespace.IsKnownAndSpecified('endpoint_location'):
+      return namespace.endpoint_location
+    else:
+      return None
 
 
 class AutoArgumentGenerator(object):

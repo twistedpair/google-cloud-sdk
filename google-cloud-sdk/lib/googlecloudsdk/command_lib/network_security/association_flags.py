@@ -24,8 +24,10 @@ from googlecloudsdk.api_lib.network_security.firewall_endpoints import activatio
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -36,8 +38,11 @@ ASSOCIATION_RESOURCE_COLLECTION = (
 ASSOCIATION_PARENT_RESOURCE_COLLECTION = "networksecurity.projects.locations"
 ENDPOINT_RESOURCE_NAME = "FIREWALL_ENDPOINT"
 TLS_INSPECTION_POLICY_RESOURCE_NAME = "--tls-inspection-policy"
-ENDPOINT_RESOURCE_COLLECTION = (
+ORG_ENDPOINT_RESOURCE_COLLECTION = (
     "networksecurity.organizations.locations.firewallEndpoints"
+)
+PROJECT_ENDPOINT_RESOURCE_COLLECTION = (
+    "networksecurity.projects.locations.firewallEndpoints"
 )
 TLS_INSPECTION_POLICY_RESOURCE_COLLECTION = (
     "networksecurity.projects.locations.tlsInspectionPolicies"
@@ -79,14 +84,10 @@ def AddAssociationIDArg(
   parser.add_argument("association_id", help=help_text, nargs="?", default=None)
 
 
-def AddEndpointResource(release_track, parser):
-  """Adds Firewall Plus endpoint resource."""
-  api_version = activation_api.GetApiVersion(release_track)
-  collection_info = resources.REGISTRY.Clone().GetCollectionInfo(
-      ASSOCIATION_RESOURCE_COLLECTION, api_version
-  )
-  resource_spec = concepts.ResourceSpec(
-      ENDPOINT_RESOURCE_COLLECTION,
+def OrgEndpointResourceSpec(api_version, collection_info):
+  """Returns the resource spec for an organization level firewall endpoint."""
+  return concepts.ResourceSpec(
+      ORG_ENDPOINT_RESOURCE_COLLECTION,
       "firewall endpoint",
       api_version=api_version,
       organizationsId=concepts.ResourceParameterAttributeConfig(
@@ -113,7 +114,70 @@ def AddEndpointResource(release_track, parser):
           parameter_name="firewallEndpointsId",
       ),
   )
-  presentation_spec = presentation_specs.ResourcePresentationSpec(
+
+
+def ProjectEndpointResourceSpec(api_version, collection_info):
+  """Returns the resource spec for a project level firewall endpoint."""
+  return concepts.ResourceSpec(
+      PROJECT_ENDPOINT_RESOURCE_COLLECTION,
+      "firewall endpoint",
+      api_version=api_version,
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          "endpoint-project",
+          "Project ID of the {resource}.",
+          parameter_name="projectsId",
+          fallthroughs=[
+              # Do not fallthrough to the --project flag, as this will prompt
+              # the user to choose between project and org scoped endpoints when
+              # supplying both --organization and --project.
+              deps.PropertyFallthrough(properties.VALUES.core.project),
+              deps.FullySpecifiedAnchorFallthrough(
+                  [deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME)],
+                  collection_info,
+                  "projectsId",
+              ),
+          ],
+      ),
+      locationsId=concepts.ResourceParameterAttributeConfig(
+          "endpoint-zone",
+          "Zone of the {resource}.",
+          parameter_name="locationsId",
+          fallthroughs=[
+              deps.ArgFallthrough("--zone"),
+              deps.FullySpecifiedAnchorFallthrough(
+                  [deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME)],
+                  collection_info,
+                  "locationsId",
+              ),
+          ],
+      ),
+      firewallEndpointsId=concepts.ResourceParameterAttributeConfig(
+          "endpoint-name",
+          "Name of the {resource}",
+          parameter_name="firewallEndpointsId",
+      ),
+  )
+
+
+def AddEndpointResource(release_track, parser, project_scope_supported=False):
+  """Adds Firewall Plus endpoint resource."""
+  api_version = activation_api.GetApiVersion(release_track)
+  collection_info = resources.REGISTRY.Clone().GetCollectionInfo(
+      ASSOCIATION_RESOURCE_COLLECTION, api_version
+  )
+  concept_specs = [
+      OrgEndpointResourceSpec(api_version, collection_info),
+  ]
+  if project_scope_supported:
+    concept_specs.append(
+        ProjectEndpointResourceSpec(api_version, collection_info)
+    )
+  resource_spec = multitype.MultitypeResourceSpec(
+      "firewall endpoint",
+      *concept_specs,
+      allow_inactive=True,
+  )
+  presentation_spec = presentation_specs.MultitypeResourcePresentationSpec(
       name="--endpoint",
       concept_spec=resource_spec,
       required=True,

@@ -132,6 +132,35 @@ def GetStoragePoolTypeEnumFromArg(choice, messages):
   )
 
 
+def GetStoragePoolScaleTierArg(messages):
+  """Returns the ChoiceEnumMapper for StoragePoolScaleTier."""
+  return arg_utils.ChoiceEnumMapper(
+      '--scale-tier',
+      messages.StoragePool.ScaleTierValueValuesEnum,
+      help_str=(
+          'The scale tier of the Storage Pool. `standard` scale tier'
+          ' is for standard capacity and performance tier.'
+          ' `enterprise` scale tier is for higher capacity and'
+          ' performance tier.'
+      ),
+      custom_mappings={
+          'SCALE_TIER_STANDARD': 'standard',
+          'SCALE_TIER_ENTERPRISE': 'enterprise',
+      },
+      hidden=True,
+  )
+
+
+def GetStoragePoolScaleTierEnumFromArg(choice, messages):
+  """Returns the Choice Enum for StoragePoolScaleTier."""
+  return GetStoragePoolScaleTierArg(messages).GetEnumForChoice(choice)
+
+
+def AddStoragePoolScaleTierArg(parser, messages):
+  """Adds the --scale-tier arg to the arg parser for Storage Pools."""
+  GetStoragePoolScaleTierArg(messages).choice_arg.AddToParser(parser)
+
+
 def AddStoragePoolTypeArg(parser, messages):
   """Adds the --type arg to the arg parser for Storage Pools."""
   type_arg = arg_utils.ChoiceEnumMapper(
@@ -368,6 +397,7 @@ def AddStoragePoolCreateArgs(parser, release_track):
     AddStoragePoolHotTierSizeArg(parser)
     AddStoragePoolEnableHotTierAutoResizeArg(parser)
     AddStoragePoolUnifiedPoolArg(parser)
+    AddStoragePoolScaleTierArg(parser, messages)
 
 
 def AddStoragePoolDeleteArgs(parser):

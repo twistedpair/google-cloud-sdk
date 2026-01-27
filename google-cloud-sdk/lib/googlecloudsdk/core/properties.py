@@ -1132,6 +1132,15 @@ class _SectionAccessContextManager(_Section):
         validator=self.OrganizationValidator,
         help_text=('Default organization cloud-bindings command group will '
                    'operate on.'))
+    self.enable_gcsl = self._AddBool(
+        'enable_gcsl',
+        default=False,
+        help_text=(
+            'If True, enable Google Cloud Session Length features for Access'
+            ' Context Manager.'
+        ),
+        hidden=True,
+    )
 
 
 class _SectionAccessibility(_Section):

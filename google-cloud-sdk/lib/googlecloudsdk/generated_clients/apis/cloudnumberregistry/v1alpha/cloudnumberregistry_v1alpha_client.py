@@ -112,30 +112,30 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def FindFreeIpRange(self, request, global_params=None):
+    def FindFreeIpRanges(self, request, global_params=None):
       r"""Finds free IP ranges in a single CustomRange.
 
       Args:
-        request: (CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest) input message
+        request: (CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (FindCustomRangeFreeIpRangeResponse) The response message.
+        (FindCustomRangeFreeIpRangesResponse) The response message.
       """
-      config = self.GetMethodConfig('FindFreeIpRange')
+      config = self.GetMethodConfig('FindFreeIpRanges')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    FindFreeIpRange.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/customRanges/{customRangesId}:findFreeIpRange',
+    FindFreeIpRanges.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/customRanges/{customRangesId}:findFreeIpRanges',
         http_method='GET',
-        method_id='cloudnumberregistry.projects.locations.customRanges.findFreeIpRange',
+        method_id='cloudnumberregistry.projects.locations.customRanges.findFreeIpRanges',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['cidrPrefixLength', 'rangeCount', 'requestId'],
-        relative_path='v1alpha/{+name}:findFreeIpRange',
+        relative_path='v1alpha/{+name}:findFreeIpRanges',
         request_field='',
-        request_type_name='CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest',
-        response_type_name='FindCustomRangeFreeIpRangeResponse',
+        request_type_name='CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangesRequest',
+        response_type_name='FindCustomRangeFreeIpRangesResponse',
         supports_download=False,
     )
 
@@ -257,30 +257,30 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def FindFreeIpRange(self, request, global_params=None):
+    def FindFreeIpRanges(self, request, global_params=None):
       r"""Finds free IP ranges in a single DiscoveredRange.
 
       Args:
-        request: (CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest) input message
+        request: (CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (FindDiscoveredRangeFreeIpRangeResponse) The response message.
+        (FindDiscoveredRangeFreeIpRangesResponse) The response message.
       """
-      config = self.GetMethodConfig('FindFreeIpRange')
+      config = self.GetMethodConfig('FindFreeIpRanges')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    FindFreeIpRange.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredRanges/{discoveredRangesId}:findFreeIpRange',
+    FindFreeIpRanges.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredRanges/{discoveredRangesId}:findFreeIpRanges',
         http_method='GET',
-        method_id='cloudnumberregistry.projects.locations.discoveredRanges.findFreeIpRange',
+        method_id='cloudnumberregistry.projects.locations.discoveredRanges.findFreeIpRanges',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['cidrPrefixLength', 'rangeCount', 'requestId'],
-        relative_path='v1alpha/{+name}:findFreeIpRange',
+        relative_path='v1alpha/{+name}:findFreeIpRanges',
         request_field='',
-        request_type_name='CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest',
-        response_type_name='FindDiscoveredRangeFreeIpRangeResponse',
+        request_type_name='CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangesRequest',
+        response_type_name='FindDiscoveredRangeFreeIpRangesResponse',
         supports_download=False,
     )
 
@@ -374,6 +374,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
       super(CloudnumberregistryV1alpha.ProjectsLocationsIpamAdminScopesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def CheckAvailability(self, request, global_params=None):
+      r"""Checks the availability of IPAM admin scopes in a given project and location.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsIpamAdminScopesCheckAvailabilityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckAvailabilityIpamAdminScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckAvailability')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckAvailability.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/ipamAdminScopes:checkAvailability',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.ipamAdminScopes.checkAvailability',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['scopes'],
+        relative_path='v1alpha/{+parent}/ipamAdminScopes:checkAvailability',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsIpamAdminScopesCheckAvailabilityRequest',
+        response_type_name='CheckAvailabilityIpamAdminScopesResponse',
+        supports_download=False,
+    )
 
     def Cleanup(self, request, global_params=None):
       r"""Cleans up a single IpamAdminScope.
@@ -987,13 +1014,13 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
 
     SearchIpResources.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}:searchIpResources',
-        http_method='GET',
+        http_method='POST',
         method_id='cloudnumberregistry.projects.locations.registryBooks.searchIpResources',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['attributeText', 'ipAddress', 'ipVersion', 'orderBy', 'pageSize', 'pageToken', 'query', 'realm', 'showUtilization'],
-        relative_path='v1alpha/{+parent}:searchIpResources',
-        request_field='',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:searchIpResources',
+        request_field='searchIpResourcesRequest',
         request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksSearchIpResourcesRequest',
         response_type_name='SearchIpResourcesResponse',
         supports_download=False,
@@ -1008,33 +1035,6 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
       super(CloudnumberregistryV1alpha.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def CheckAdminScopeAvailability(self, request, global_params=None):
-      r"""Checks the availability of IPAM admin scopes in a given project and location.
-
-      Args:
-        request: (CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CheckAvailabilityIpamAdminScopesResponse) The response message.
-      """
-      config = self.GetMethodConfig('CheckAdminScopeAvailability')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CheckAdminScopeAvailability.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:checkAdminScopeAvailability',
-        http_method='GET',
-        method_id='cloudnumberregistry.projects.locations.checkAdminScopeAvailability',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['scopes'],
-        relative_path='v1alpha/{+parent}:checkAdminScopeAvailability',
-        request_field='',
-        request_type_name='CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest',
-        response_type_name='CheckAvailabilityIpamAdminScopesResponse',
-        supports_download=False,
-    )
 
     def Get(self, request, global_params=None):
       r"""Gets information about a location.

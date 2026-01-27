@@ -406,3 +406,12 @@ reliability_risk:
   - parameter_name: reliabilityRisk
     attribute_name: reliability_risk
     help: The name of the Google Compute reliability risk.
+
+rollout_plan:
+  name: Rollout Plan
+  collection: compute.rolloutPlans
+  attributes:
+  - *compute_project
+  - parameter_name: rolloutPlan
+    attribute_name: rollout_plan
+    help: The name of the Google Compute Engine rollout plan.

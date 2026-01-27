@@ -39,11 +39,401 @@ class ObservabilityV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
+    self.folders_locations = self.FoldersLocationsService(self)
+    self.folders = self.FoldersService(self)
+    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
     self.projects_locations_traceScopes = self.ProjectsLocationsTraceScopesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the folders_locations_operations resource."""
+
+    _NAME = 'folders_locations_operations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.FoldersLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (ObservabilityFoldersLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='observability.folders.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='ObservabilityFoldersLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (ObservabilityFoldersLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='observability.folders.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityFoldersLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (ObservabilityFoldersLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='observability.folders.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityFoldersLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (ObservabilityFoldersLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='observability.folders.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='ObservabilityFoldersLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsService(base_api.BaseApiService):
+    """Service class for the folders_locations resource."""
+
+    _NAME = 'folders_locations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.FoldersLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a location.
+
+      Args:
+        request: (ObservabilityFoldersLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='observability.folders.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityFoldersLocationsGetRequest',
+        response_type_name='Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (ObservabilityFoldersLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations',
+        http_method='GET',
+        method_id='observability.folders.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
+        request_field='',
+        request_type_name='ObservabilityFoldersLocationsListRequest',
+        response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(ObservabilityV1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operations resource."""
+
+    _NAME = 'organizations_locations_operations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.OrganizationsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='observability.organizations.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='ObservabilityOrganizationsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='observability.organizations.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityOrganizationsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='observability.organizations.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityOrganizationsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='observability.organizations.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken', 'returnPartialSuccess'],
+        relative_path='v1/{+name}/operations',
+        request_field='',
+        request_type_name='ObservabilityOrganizationsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a location.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}',
+        http_method='GET',
+        method_id='observability.organizations.locations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityOrganizationsLocationsGetRequest',
+        response_type_name='Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (ObservabilityOrganizationsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations',
+        http_method='GET',
+        method_id='observability.organizations.locations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['extraLocationTypes', 'filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}/locations',
+        request_field='',
+        request_type_name='ObservabilityOrganizationsLocationsListRequest',
+        response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(ObservabilityV1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

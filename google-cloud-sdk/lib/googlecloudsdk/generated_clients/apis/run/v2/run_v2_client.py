@@ -40,6 +40,7 @@ class RunV2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_builds = self.ProjectsLocationsBuildsService(self)
+    self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_jobs_executions_tasks = self.ProjectsLocationsJobsExecutionsTasksService(self)
     self.projects_locations_jobs_executions = self.ProjectsLocationsJobsExecutionsService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
@@ -85,6 +86,178 @@ class RunV2(base_api.BaseApiClient):
         request_field='googleCloudRunV2SubmitBuildRequest',
         request_type_name='RunProjectsLocationsBuildsSubmitRequest',
         response_type_name='GoogleCloudRunV2SubmitBuildResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances resource."""
+
+    _NAME = 'projects_locations_instances'
+
+    def __init__(self, client):
+      super(RunV2.ProjectsLocationsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Instance.
+
+      Args:
+        request: (RunProjectsLocationsInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='POST',
+        method_id='run.projects.locations.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['instanceId', 'validateOnly'],
+        relative_path='v2/{+parent}/instances',
+        request_field='googleCloudRunV2Instance',
+        request_type_name='RunProjectsLocationsInstancesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Instance.
+
+      Args:
+        request: (RunProjectsLocationsInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='run.projects.locations.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'validateOnly'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='RunProjectsLocationsInstancesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Instance.
+
+      Args:
+        request: (RunProjectsLocationsInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2Instance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='run.projects.locations.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='RunProjectsLocationsInstancesGetRequest',
+        response_type_name='GoogleCloudRunV2Instance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Instances. Results are sorted by creation time, descending.
+
+      Args:
+        request: (RunProjectsLocationsInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2ListInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method='GET',
+        method_id='run.projects.locations.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v2/{+parent}/instances',
+        request_field='',
+        request_type_name='RunProjectsLocationsInstancesListRequest',
+        response_type_name='GoogleCloudRunV2ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def Start(self, request, global_params=None):
+      r"""Starts an Instance.
+
+      Args:
+        request: (RunProjectsLocationsInstancesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:start',
+        http_method='POST',
+        method_id='run.projects.locations.instances.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:start',
+        request_field='googleCloudRunV2StartInstanceRequest',
+        request_type_name='RunProjectsLocationsInstancesStartRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      r"""Stops an Instance.
+
+      Args:
+        request: (RunProjectsLocationsInstancesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:stop',
+        http_method='POST',
+        method_id='run.projects.locations.instances.stop',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:stop',
+        request_field='googleCloudRunV2StopInstanceRequest',
+        request_type_name='RunProjectsLocationsInstancesStopRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

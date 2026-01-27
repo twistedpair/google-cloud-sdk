@@ -618,11 +618,29 @@ class Collections(enum.Enum):
       ['project', 'zone', 'reservation', 'reservationBlock'],
       True
   )
+  RESERVATIONSLOTS = (
+      'reservationSlots',
+      'projects/{project}/zones/{zone}/{+parentName}/reservationSlots/'
+      '{reservationSlot}',
+      {
+          '':
+              'projects/{project}/zones/{zone}/reservations/{reservationsId}/'
+              'reservationBlocks/{reservationBlocksId}/reservationSubBlocks/'
+              '{reservationSubBlocksId}/reservationSlots/{reservationSlot}',
+      },
+      ['project', 'zone', 'parentName', 'reservationSlot'],
+      True
+  )
   RESERVATIONSUBBLOCKS = (
       'reservationSubBlocks',
       'projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/'
       '{reservationSubBlock}',
-      {},
+      {
+          '':
+              'projects/{project}/zones/{zone}/reservations/{reservationsId}/'
+              'reservationBlocks/{reservationBlocksId}/reservationSubBlocks/'
+              '{reservationSubBlocksId}',
+      },
       ['project', 'zone', 'parentName', 'reservationSubBlock'],
       True
   )

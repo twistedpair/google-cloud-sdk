@@ -878,6 +878,20 @@ class LookerProjectsLocationsInstancesRestoreRequest(_messages.Message):
   restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
 
 
+class LookerProjectsLocationsInstancesUndeleteRequest(_messages.Message):
+  r"""A LookerProjectsLocationsInstancesUndeleteRequest object.
+
+  Fields:
+    name: Required. Format:
+      projects/{project}/locations/{location}/instances/{instance}
+    undeleteInstanceRequest: A UndeleteInstanceRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteInstanceRequest = _messages.MessageField('UndeleteInstanceRequest', 2)
+
+
 class LookerProjectsLocationsListRequest(_messages.Message):
   r"""A LookerProjectsLocationsListRequest object.
 
@@ -1584,6 +1598,10 @@ class TimeOfDay(_messages.Message):
   minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class UndeleteInstanceRequest(_messages.Message):
+  r"""Request options for undeleting an instance."""
 
 
 class UserMetadata(_messages.Message):

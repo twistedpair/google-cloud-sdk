@@ -467,7 +467,7 @@ class Platform(object):
 class PythonVersion(object):
   """Class to validate the Python version we are using.
 
-  The Cloud CLI officially supports Python 3.9.
+  The Cloud CLI officially supports Python 3.10.
 
   However, many commands do work with Python 3.6, so we don't error out when
   users are using this (we consider it sometimes "compatible" but not
@@ -476,11 +476,11 @@ class PythonVersion(object):
 
   # See class docstring for descriptions of what these mean
   MIN_REQUIRED_PY3_VERSION = (3, 6)
-  MIN_SUPPORTED_PY3_VERSION = (3, 9)
+  MIN_SUPPORTED_PY3_VERSION = (3, 10)
   MAX_SUPPORTED_PY3_VERSION = (3, 14)
-  UPCOMING_SUNSET_PY3_VERSION = (3, 9)
-  UPCOMING_PY3_MIN_SUPPORTED_VERSION = (3, 10)
-  UPCOMING_PY3_DEPRECATION_DATE = 'January 27th, 2026'
+  UPCOMING_SUNSET_PY3_VERSION = None
+  UPCOMING_PY3_MIN_SUPPORTED_VERSION = None
+  UPCOMING_PY3_DEPRECATION_DATE = None
   ENV_VAR_MESSAGE = """\
 
 If you have a compatible Python interpreter installed, you can use it by setting

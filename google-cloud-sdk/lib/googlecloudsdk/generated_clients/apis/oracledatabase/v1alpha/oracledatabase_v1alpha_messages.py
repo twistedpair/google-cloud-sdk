@@ -502,8 +502,9 @@ class AutonomousDatabaseProperties(_messages.Message):
     localAdgAutoFailoverMaxDataLossLimitDuration: Optional. This field
       indicates the maximum data loss limit for an Autonomous Database, in
       seconds.
-    localDataGuardEnabled: Optional. This field indicates whether the
-      Autonomous Database has local (in-region) Data Guard enabled.
+    localDataGuardEnabled: Optional. Indicates whether the Autonomous Database
+      has a local (in-region) standby database. Not applicable to cross-region
+      Data Guard or dedicated Exadata infrastructure.
     localDisasterRecoveryType: Output only. This field indicates the local
       disaster recovery (DR) type of an Autonomous Database.
     localStandbyDb: Output only. The details of the Autonomous Data Guard
@@ -1606,6 +1607,12 @@ class Database(_messages.Message):
       UI Interface.
     opsInsightsStatus: Output only. The Status of Operations Insights for this
       Database.
+    pluggableDatabaseId: Optional. The ID of the pluggable database associated
+      with the Database. The ID must be unique within the project and
+      location.
+    pluggableDatabaseName: Optional. The pluggable database associated with
+      the Database. The name must begin with an alphabetic character and can
+      contain a maximum of thirty alphanumeric characters.
     properties: Optional. The properties of the Database.
     tdeWalletPassword: Optional. The TDE wallet password for the database.
   """
@@ -1644,8 +1651,10 @@ class Database(_messages.Message):
   ncharacterSet = _messages.StringField(10)
   ociUrl = _messages.StringField(11)
   opsInsightsStatus = _messages.EnumField('OpsInsightsStatusValueValuesEnum', 12)
-  properties = _messages.MessageField('DatabaseProperties', 13)
-  tdeWalletPassword = _messages.StringField(14)
+  pluggableDatabaseId = _messages.StringField(13)
+  pluggableDatabaseName = _messages.StringField(14)
+  properties = _messages.MessageField('DatabaseProperties', 15)
+  tdeWalletPassword = _messages.StringField(16)
 
 
 class DatabaseCharacterSet(_messages.Message):
@@ -3484,6 +3493,8 @@ class GoldenGateDeploymentProperties(_messages.Message):
     description: Optional. The description of the GoldenGateDeployment.
     environmentType: Optional. The environment type of the
       GoldenGateDeployment.
+    fqdn: Output only. The Fully Qualified Domain Name of the
+      GoldenGateDeployment.
     isAutoScalingEnabled: Optional. Indicates if auto scaling is enabled for
       the Deployment's CPU core count.
     licenseModel: Optional. The Oracle license model that applies to a
@@ -3548,13 +3559,14 @@ class GoldenGateDeploymentProperties(_messages.Message):
   deploymentType = _messages.StringField(2)
   description = _messages.StringField(3)
   environmentType = _messages.StringField(4)
-  isAutoScalingEnabled = _messages.BooleanField(5)
-  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 6)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 7)
-  maintenanceConfig = _messages.MessageField('GoldenGateMaintenanceConfig', 8)
-  maintenanceWindow = _messages.MessageField('GoldenGateMaintenanceWindow', 9)
-  ocid = _messages.StringField(10)
-  oggData = _messages.MessageField('GoldenGateOggDeployment', 11)
+  fqdn = _messages.StringField(5)
+  isAutoScalingEnabled = _messages.BooleanField(6)
+  licenseModel = _messages.EnumField('LicenseModelValueValuesEnum', 7)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 8)
+  maintenanceConfig = _messages.MessageField('GoldenGateMaintenanceConfig', 9)
+  maintenanceWindow = _messages.MessageField('GoldenGateMaintenanceWindow', 10)
+  ocid = _messages.StringField(11)
+  oggData = _messages.MessageField('GoldenGateOggDeployment', 12)
 
 
 class GoldenGateGenericConnectionProperties(_messages.Message):

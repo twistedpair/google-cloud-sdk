@@ -21,13 +21,15 @@ from googlecloudsdk.api_lib.container.fleet.packages import variants as variants
 from googlecloudsdk.api_lib.util import waiter
 
 _LIST_REQUEST_BATCH_SIZE_ATTRIBUTE = 'pageSize'
-_VARIANT_STORAGE_STRATEGY_LABEL_KEY = 'configdelivery-variant-storage-strategy'
-_VARIANT_STORAGE_STRATEGY_LABEL_VALUE_NESTED = 'nested'
-_SKIP_CREATING_VARIANT_RESOURCES_LABEL_KEY = 'configdelivery-skip-creating-variant-resources'
-_SKIP_CREATING_VARIANT_RESOURCES_LABEL_VALUE = 'true'
+_SKIP_CREATING_VARIANT_RESOURCES_LABEL_KEY = (
+    'configdelivery-skip-creating-variant-resources'
+)
+_SKIP_CREATING_VARIANT_RESOURCES_LABEL_VALUE = 'false'
 
 
-RELEASE_COLLECTION = 'configdelivery.projects.locations.resourceBundles.releases'
+RELEASE_COLLECTION = (
+    'configdelivery.projects.locations.resourceBundles.releases'
+)
 
 
 def _ParentPath(project, location, parent_bundle):
@@ -106,8 +108,8 @@ class ReleasesClient(object):
       location: Valid GCP location (e.g., uc-central1)
       lifecycle: Lifecycle of the Release.
       variants: Variants of the Release.
-      skip_creating_variant_resources: Whether to use the crane upload strategy
-        to upload variant images.
+      skip_creating_variant_resources: [DISALLOWED] Whether to use the crane
+        upload strategy to upload variant images.
 
     Returns:
       Created Release resource.
@@ -115,6 +117,12 @@ class ReleasesClient(object):
     fully_qualified_path = _FullyQualifiedPath(
         project, location, resource_bundle, version
     )
+
+    if skip_creating_variant_resources:
+      raise ValueError(
+          'Creating Releases with --skip-creating-variant-resources flag is not'
+          ' supported yet.'
+      )
 
     # Create Draft Release, create nested Variant resources, then updates
     # release to have those variants. Publishes release at update step, if
@@ -125,21 +133,13 @@ class ReleasesClient(object):
           ' directory and variants pattern, or create the release with'
           ' --lifecycle=DRAFT.'
       )
-    labels = self.messages.Release.LabelsValue(
-        additionalProperties=[
-            self.messages.Release.LabelsValue.AdditionalProperty(
-                key=_VARIANT_STORAGE_STRATEGY_LABEL_KEY,
-                value=_VARIANT_STORAGE_STRATEGY_LABEL_VALUE_NESTED,
-            )
-        ]
+    labels = self.messages.Release.LabelsValue(additionalProperties=[])
+    labels.additionalProperties.append(
+        self.messages.Release.LabelsValue.AdditionalProperty(
+            key=_SKIP_CREATING_VARIANT_RESOURCES_LABEL_KEY,
+            value=_SKIP_CREATING_VARIANT_RESOURCES_LABEL_VALUE,
+        )
     )
-    if skip_creating_variant_resources:
-      labels.additionalProperties.append(
-          self.messages.Release.LabelsValue.AdditionalProperty(
-              key=_SKIP_CREATING_VARIANT_RESOURCES_LABEL_KEY,
-              value=_SKIP_CREATING_VARIANT_RESOURCES_LABEL_VALUE,
-          )
-      )
     release = self.messages.Release(
         name=fully_qualified_path,
         labels=labels,

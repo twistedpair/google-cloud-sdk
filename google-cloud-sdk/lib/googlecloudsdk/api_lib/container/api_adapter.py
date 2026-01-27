@@ -825,6 +825,7 @@ class CreateClusterOptions(object):
       enable_managed_prometheus=None,
       auto_monitoring_scope=None,
       managed_otel_scope=None,
+      enable_managed_mldiagnostics=None,
       maintenance_interval=None,
       disable_pod_cidr_overprovision=None,
       stack_type=None,
@@ -1113,6 +1114,7 @@ class CreateClusterOptions(object):
     self.enable_managed_prometheus = enable_managed_prometheus
     self.auto_monitoring_scope = auto_monitoring_scope
     self.managed_otel_scope = managed_otel_scope
+    self.enable_managed_mldiagnostics = enable_managed_mldiagnostics
     self.maintenance_interval = maintenance_interval
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.stack_type = stack_type
@@ -1331,6 +1333,7 @@ class UpdateClusterOptions(object):
       disable_managed_prometheus=None,
       auto_monitoring_scope=None,
       managed_otel_scope=None,
+      enable_managed_mldiagnostics=None,
       maintenance_interval=None,
       dataplane_v2=None,
       enable_dataplane_v2_metrics=None,
@@ -1535,6 +1538,7 @@ class UpdateClusterOptions(object):
     self.disable_managed_prometheus = disable_managed_prometheus
     self.auto_monitoring_scope = auto_monitoring_scope
     self.managed_otel_scope = managed_otel_scope
+    self.enable_managed_mldiagnostics = enable_managed_mldiagnostics
     self.maintenance_interval = maintenance_interval
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
@@ -3145,6 +3149,13 @@ class APIAdapter(object):
       cluster.managedOpentelemetryConfig = _GetManagedOpenTelemetryConfig(
           options, self.messages
       )
+    managed_mldiagnostics_config = _GetManagedMachineLearningDiagnosticsConfig(
+        options, self.messages
+    )
+    if managed_mldiagnostics_config is not None:
+      cluster.managedMachineLearningDiagnosticsConfig = (
+          managed_mldiagnostics_config
+      )
 
     if options.enable_service_externalips is not None:
       if cluster.networkConfig is None:
@@ -3670,6 +3681,7 @@ class APIAdapter(object):
           node_config,
           options.system_config_from_file,
           options.enable_insecure_kubelet_readonly_port,
+          options.enable_kernel_module_signature_enforcement,
           self.messages,
       )
 
@@ -5021,6 +5033,14 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredManagedOpentelemetryConfig=managed_otel_config
       )
+    elif options.enable_managed_mldiagnostics is not None:
+      managed_mldiagnostics_config = (
+          _GetManagedMachineLearningDiagnosticsConfig(options, self.messages)
+      )
+      if managed_mldiagnostics_config is not None:
+        update = self.messages.ClusterUpdate(
+            desiredManagedMachineLearningDiagnosticsConfig=managed_mldiagnostics_config
+        )
 
     if options.enable_pod_snapshots is not None:
       addons = self.messages.AddonsConfig(
@@ -6722,6 +6742,7 @@ class APIAdapter(object):
           node_config,
           options.system_config_from_file,
           options.enable_insecure_kubelet_readonly_port,
+          options.enable_kernel_module_signature_enforcement,
           self.messages,
       )
 
@@ -7093,6 +7114,7 @@ class APIAdapter(object):
             node_config,
             options.system_config_from_file,
             options.enable_insecure_kubelet_readonly_port,
+            options.enable_kernel_module_signature_enforcement,
             self.messages,
         )
       if options.enable_insecure_kubelet_readonly_port is not None:
@@ -9027,6 +9049,14 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredManagedOpentelemetryConfig=managed_otel_config
       )
+    elif options.enable_managed_mldiagnostics is not None:
+      managed_mldiagnostics_config = (
+          _GetManagedMachineLearningDiagnosticsConfig(options, self.messages)
+      )
+      if managed_mldiagnostics_config is not None:
+        update = self.messages.ClusterUpdate(
+            desiredManagedMachineLearningDiagnosticsConfig=managed_mldiagnostics_config
+        )
 
     if (
         options.security_profile is not None
@@ -11619,6 +11649,16 @@ def _GetManagedOpenTelemetryConfig(options, messages):
   elif otel_scope == 'COLLECTION_AND_INSTRUMENTATION_COMPONENTS':
     scope = scope_value_enum.COLLECTION_AND_INSTRUMENTATION_COMPONENTS
   return messages.ManagedOpenTelemetryConfig(scope=scope)
+
+
+def _GetManagedMachineLearningDiagnosticsConfig(options, messages):
+  """Gets the ManagedMachineLearningDiagnosticsConfig from create and update options."""
+  if options.enable_managed_mldiagnostics is None:
+    return None
+
+  return messages.ManagedMachineLearningDiagnosticsConfig(
+      enabled=options.enable_managed_mldiagnostics
+  )
 
 
 def _GetMonitoringConfig(options, messages, is_update, is_prometheus_enabled):

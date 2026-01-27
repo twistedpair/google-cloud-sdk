@@ -7693,6 +7693,8 @@ class StreamingConfigTask(_messages.Message):
     operationalLimits: Operational limits for the streaming job. Can be used
       by the worker to validate outputs sent to the backend.
     streamingComputationConfigs: Set of computation configuration information.
+    streamingEngineStateTagEncodingVersion: Optional. The state tag encoding
+      format version for streaming engine jobs.
     userStepToStateFamilyNameMap: Map from user step names to state families.
     userWorkerRunnerV1Settings: Binary encoded proto to control runtime
       behavior of the java runner v1 user worker.
@@ -7738,11 +7740,12 @@ class StreamingConfigTask(_messages.Message):
   maxWorkItemCommitBytes = _messages.IntegerField(3)
   operationalLimits = _messages.MessageField('StreamingOperationalLimits', 4)
   streamingComputationConfigs = _messages.MessageField('StreamingComputationConfig', 5, repeated=True)
-  userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 6)
-  userWorkerRunnerV1Settings = _messages.BytesField(7)
-  userWorkerRunnerV2Settings = _messages.BytesField(8)
-  windmillServiceEndpoint = _messages.StringField(9)
-  windmillServicePort = _messages.IntegerField(10)
+  streamingEngineStateTagEncodingVersion = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 7)
+  userWorkerRunnerV1Settings = _messages.BytesField(8)
+  userWorkerRunnerV2Settings = _messages.BytesField(9)
+  windmillServiceEndpoint = _messages.StringField(10)
+  windmillServicePort = _messages.IntegerField(11)
 
 
 class StreamingOperationalLimits(_messages.Message):

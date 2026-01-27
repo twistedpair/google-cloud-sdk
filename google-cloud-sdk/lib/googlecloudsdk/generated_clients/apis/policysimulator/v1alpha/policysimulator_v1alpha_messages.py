@@ -977,6 +977,7 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktest(_messages.Message):
   r"""ActivityBacktest resource.
 
   Enums:
+    PolicyKindsValueListEntryValuesEnum:
     StateValueValuesEnum: Output only. The state of the ActivityBacktest.
       Output only.
 
@@ -991,6 +992,8 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktest(_messages.Message):
     observationPeriod: Output only. The observation period for access requests
       evaluated during the activity backtest. Will only be at a day
       granunlarity.
+    policyKinds: Output only. The unique set of policy kinds that this
+      backtest is evaluating. Automatically populated from proposed_changes.
     proposedChanges: Required. Immutable. The proposed changes we are
       evaluating. Only a single change is currently supported.
     runTimeInterval: Output only. The time when the ActivityBacktest started
@@ -998,6 +1001,16 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktest(_messages.Message):
     state: Output only. The state of the ActivityBacktest. Output only.
     summary: Output only. Summary of activity backtest results. Output only.
   """
+
+  class PolicyKindsValueListEntryValuesEnum(_messages.Enum):
+    r"""PolicyKindsValueListEntryValuesEnum enum type.
+
+    Values:
+      POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
+      REGIONAL_ACCESS_BOUNDARY: Regional access boundary policy kind
+    """
+    POLICY_KIND_UNSPECIFIED = 0
+    REGIONAL_ACCESS_BOUNDARY = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the ActivityBacktest. Output only.
@@ -1020,10 +1033,11 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktest(_messages.Message):
   createTime = _messages.StringField(1)
   name = _messages.StringField(2)
   observationPeriod = _messages.MessageField('GoogleTypeInterval', 3)
-  proposedChanges = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaProposedChange', 4, repeated=True)
-  runTimeInterval = _messages.MessageField('GoogleTypeInterval', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  summary = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestActivityBacktestSummary', 7)
+  policyKinds = _messages.EnumField('PolicyKindsValueListEntryValuesEnum', 4, repeated=True)
+  proposedChanges = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaProposedChange', 5, repeated=True)
+  runTimeInterval = _messages.MessageField('GoogleTypeInterval', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  summary = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestActivityBacktestSummary', 8)
 
 
 class GoogleCloudPolicysimulatorV1alphaActivityBacktestAccessDecisionChangeSummary(_messages.Message):
@@ -1143,8 +1157,6 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestResult(_messages.Message)
       `
     dailyAccessHistory: Daily aggregations of the access observations. The
       list is sorted by access_date in ascending order.
-    daysAccessedCount: The number of days this access happened in the
-      observation period.
     estimatedAccessCount: The estimated number of times the access occurred
       over the entire observation period. This number is not precise and
       should not be relied on when precision is needed. It will contain only a
@@ -1202,13 +1214,12 @@ class GoogleCloudPolicysimulatorV1alphaActivityBacktestResult(_messages.Message)
   accessActivity = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaAccessActivity', 1)
   activityBacktest = _messages.StringField(2)
   dailyAccessHistory = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaActivityBacktestResultDailyHistory', 3, repeated=True)
-  daysAccessedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  estimatedAccessCount = _messages.IntegerField(5)
-  evaluationError = _messages.MessageField('GoogleRpcStatus', 6)
-  lastAccessDate = _messages.MessageField('GoogleTypeDate', 7)
-  lastRecordedDecision = _messages.EnumField('LastRecordedDecisionValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  postChangeDecision = _messages.EnumField('PostChangeDecisionValueValuesEnum', 10)
+  estimatedAccessCount = _messages.IntegerField(4)
+  evaluationError = _messages.MessageField('GoogleRpcStatus', 5)
+  lastAccessDate = _messages.MessageField('GoogleTypeDate', 6)
+  lastRecordedDecision = _messages.EnumField('LastRecordedDecisionValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  postChangeDecision = _messages.EnumField('PostChangeDecisionValueValuesEnum', 9)
 
 
 class GoogleCloudPolicysimulatorV1alphaActivityBacktestResultDailyHistory(_messages.Message):
@@ -4968,10 +4979,12 @@ class PolicysimulatorFoldersLocationsActivityBacktestsListRequest(_messages.Mess
 
   Fields:
     filter: Optional. A filter expression that filters the ActivityBacktests
-      to return. The only supported filter is `CreatedByMe()`, which returns
-      only ActivityBacktests that were created by the authenticated user
-      making this API call. Example: `filter="CreatedByMe()"`. Operators,
-      fields and other expressions are not supported.
+      to return. Only two filters are supported: - `createdByMe()`, which
+      returns only ActivityBacktests that were created by the authenticated
+      user making this API call. Example: `filter="createdByMe()"`. - Has
+      operator on the `policy_kinds` field only. Example:
+      `filter="policy_kinds:REGIONAL_ACCESS_BOUNDARY"`. Additional operators,
+      fields, and other expressions are not supported.
     pageSize: Optional. The maximum number of ActivityBacktest objects to
       return. Defaults to 100. Maximum value is 100. Values above the maximum
       are reduced to the maximum value.
@@ -5422,10 +5435,12 @@ class PolicysimulatorOrganizationsLocationsActivityBacktestsListRequest(_message
 
   Fields:
     filter: Optional. A filter expression that filters the ActivityBacktests
-      to return. The only supported filter is `CreatedByMe()`, which returns
-      only ActivityBacktests that were created by the authenticated user
-      making this API call. Example: `filter="CreatedByMe()"`. Operators,
-      fields and other expressions are not supported.
+      to return. Only two filters are supported: - `createdByMe()`, which
+      returns only ActivityBacktests that were created by the authenticated
+      user making this API call. Example: `filter="createdByMe()"`. - Has
+      operator on the `policy_kinds` field only. Example:
+      `filter="policy_kinds:REGIONAL_ACCESS_BOUNDARY"`. Additional operators,
+      fields, and other expressions are not supported.
     pageSize: Optional. The maximum number of ActivityBacktest objects to
       return. Defaults to 100. Maximum value is 100. Values above the maximum
       are reduced to the maximum value.
@@ -5991,10 +6006,12 @@ class PolicysimulatorProjectsLocationsActivityBacktestsListRequest(_messages.Mes
 
   Fields:
     filter: Optional. A filter expression that filters the ActivityBacktests
-      to return. The only supported filter is `CreatedByMe()`, which returns
-      only ActivityBacktests that were created by the authenticated user
-      making this API call. Example: `filter="CreatedByMe()"`. Operators,
-      fields and other expressions are not supported.
+      to return. Only two filters are supported: - `createdByMe()`, which
+      returns only ActivityBacktests that were created by the authenticated
+      user making this API call. Example: `filter="createdByMe()"`. - Has
+      operator on the `policy_kinds` field only. Example:
+      `filter="policy_kinds:REGIONAL_ACCESS_BOUNDARY"`. Additional operators,
+      fields, and other expressions are not supported.
     pageSize: Optional. The maximum number of ActivityBacktest objects to
       return. Defaults to 100. Maximum value is 100. Values above the maximum
       are reduced to the maximum value.

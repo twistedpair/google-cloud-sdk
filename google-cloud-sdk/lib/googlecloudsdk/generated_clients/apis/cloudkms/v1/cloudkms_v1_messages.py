@@ -1850,9 +1850,9 @@ class CloudkmsProjectsLocationsSingleTenantHsmInstancesProposalsListRequest(_mes
       default.
     pageToken: Optional. Optional pagination token, returned earlier via
       ListSingleTenantHsmInstanceProposalsResponse.next_page_token.
-    parent: Required. The resource name of the location associated with the
-      SingleTenantHsmInstanceProposals to list, in the format
-      `projects/*/locations/*/singleTenantHsmInstances/*`.
+    parent: Required. The resource name of the single tenant HSM instance
+      associated with the SingleTenantHsmInstanceProposals to list, in the
+      format `projects/*/locations/*/singleTenantHsmInstances/*`.
     showDeleted: Optional. If set to true,
       HsmManagement.ListSingleTenantHsmInstanceProposals will also return
       SingleTenantHsmInstanceProposals in DELETED state.
@@ -3341,7 +3341,8 @@ class ImportJob(_messages.Message):
       related cryptographic operations are performed. Currently, this field is
       only populated for keys stored in HSM_SINGLE_TENANT. Note, this list is
       non-exhaustive and may apply to additional ProtectionLevels in the
-      future.
+      future. Supported resources: *
+      `"projects/*/locations/*/singleTenantHsmInstances/*"`
     expireEventTime: Output only. The time this ImportJob expired. Only
       present if state is EXPIRED.
     expireTime: Output only. The time at which this ImportJob is scheduled for

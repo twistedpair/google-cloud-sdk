@@ -33,6 +33,8 @@ _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.GA: 'v1',
 }
 _API_NAME = 'networksecurity'
+ORG_OPERATIONS_COLLECTION = 'networksecurity.organizations.locations.operations'
+PROJECT_OPERATIONS_COLLECTION = 'networksecurity.projects.locations.operations'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
@@ -66,17 +68,54 @@ class Client:
     messages: API messages class, The Firewall Plus API messages.
   """
 
-  def __init__(self, release_track):
+  def __init__(self, release_track, project_scope=False):
     self._client = GetClientInstance(release_track)
-    self._endpoint_client = (
-        self._client.organizations_locations_firewallEndpoints
-    )
-    self._operations_client = self._client.organizations_locations_operations
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName(
         'networksecurity', _API_VERSION_FOR_TRACK.get(release_track)
     )
+
+    if project_scope:
+      self._endpoint_client = self._client.projects_locations_firewallEndpoints
+      self._operations_client = self._client.projects_locations_operations
+      self._operations_collection = PROJECT_OPERATIONS_COLLECTION
+      self._create_request = (
+          self.messages.NetworksecurityProjectsLocationsFirewallEndpointsCreateRequest
+      )
+      self._patch_request = (
+          self.messages.NetworksecurityProjectsLocationsFirewallEndpointsPatchRequest
+      )
+      self._delete_request = (
+          self.messages.NetworksecurityProjectsLocationsFirewallEndpointsDeleteRequest
+      )
+      self._get_request = (
+          self.messages.NetworksecurityProjectsLocationsFirewallEndpointsGetRequest
+      )
+      self._list_request = (
+          self.messages.NetworksecurityProjectsLocationsFirewallEndpointsListRequest
+      )
+    else:
+      self._endpoint_client = (
+          self._client.organizations_locations_firewallEndpoints
+      )
+      self._operations_client = self._client.organizations_locations_operations
+      self._operations_collection = ORG_OPERATIONS_COLLECTION
+      self._create_request = (
+          self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest
+      )
+      self._patch_request = (
+          self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest
+      )
+      self._delete_request = (
+          self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsDeleteRequest
+      )
+      self._get_request = (
+          self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsGetRequest
+      )
+      self._list_request = (
+          self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsListRequest
+      )
 
   def _ParseEndpointType(self, endpoint_type):
     if endpoint_type is None:
@@ -131,7 +170,7 @@ class Client:
       endpoint.endpointSettings = self._ParseEndpointSettings(
           enable_jumbo_frames
       )
-    create_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest(
+    create_request = self._create_request(
         firewallEndpoint=endpoint, firewallEndpointId=name, parent=parent
     )
     return self._endpoint_client.Create(create_request)
@@ -155,7 +194,7 @@ class Client:
         description=description,
         billingProjectId=billing_project_id,
     )
-    update_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(
+    update_request = self._patch_request(
         name=name,
         firewallEndpoint=endpoint,
         updateMask=update_mask,
@@ -164,23 +203,17 @@ class Client:
 
   def DeleteEndpoint(self, name):
     """Calls the DeleteEndpoint API."""
-    delete_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsDeleteRequest(
-        name=name
-    )
+    delete_request = self._delete_request(name=name)
     return self._endpoint_client.Delete(delete_request)
 
   def DescribeEndpoint(self, name):
     """Calls the GetEndpoint API."""
-    get_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsGetRequest(
-        name=name
-    )
+    get_request = self._get_request(name=name)
     return self._endpoint_client.Get(get_request)
 
   def ListEndpoints(self, parent, limit=None, page_size=None, list_filter=None):
     """Calls the ListEndpoints API."""
-    list_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsListRequest(
-        parent=parent, filter=list_filter
-    )
+    list_request = self._list_request(parent=parent, filter=list_filter)
     return list_pager.YieldFromList(
         self._endpoint_client,
         list_request,
@@ -193,7 +226,7 @@ class Client:
   def GetOperationRef(self, operation):
     """Converts an Operation to a Resource that can be used with `waiter.WaitFor`."""
     return self._resource_parser.ParseRelativeName(
-        operation.name, 'networksecurity.organizations.locations.operations'
+        operation.name, self._operations_collection
     )
 
   def WaitForOperation(

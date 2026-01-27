@@ -310,6 +310,78 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REGIONALMULTICASTCONSUMERASSOCIATIONS = (
+      'projects.locations.regionalMulticastConsumerAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'regionalMulticastConsumerAssociations/'
+              '{regionalMulticastConsumerAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REGIONALMULTICASTDOMAINACTIVATIONS = (
+      'projects.locations.regionalMulticastDomainActivations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'regionalMulticastDomainActivations/'
+              '{regionalMulticastDomainActivationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REGIONALMULTICASTGROUPCONSUMERACTIVATIONS = (
+      'projects.locations.regionalMulticastGroupConsumerActivations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'regionalMulticastGroupConsumerActivations/'
+              '{regionalMulticastGroupConsumerActivationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REGIONALMULTICASTGROUPPRODUCERACTIVATIONS = (
+      'projects.locations.regionalMulticastGroupProducerActivations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'regionalMulticastGroupProducerActivations/'
+              '{regionalMulticastGroupProducerActivationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REGIONALMULTICASTGROUPRANGEACTIVATIONS = (
+      'projects.locations.regionalMulticastGroupRangeActivations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'regionalMulticastGroupRangeActivations/'
+              '{regionalMulticastGroupRangeActivationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REGIONALMULTICASTPRODUCERASSOCIATIONS = (
+      'projects.locations.regionalMulticastProducerAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'regionalMulticastProducerAssociations/'
+              '{regionalMulticastProducerAssociationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVICEBINDINGS = (
       'projects.locations.serviceBindings',
       '{+name}',

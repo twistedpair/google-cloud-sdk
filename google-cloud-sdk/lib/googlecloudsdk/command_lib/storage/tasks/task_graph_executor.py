@@ -600,7 +600,7 @@ class TaskGraphExecutor:
 
       for task_wrapper in submittable_tasks:
         task_wrapper.is_submitted = True
-        self._executable_tasks.put(task_wrapper)
+        self._executable_tasks.put(task_wrapper, prioritize=True)
 
   def _clean_worker_process_spawner(self, worker_process_spawner):
     """Common method which carries out the required steps to clean up worker processes.

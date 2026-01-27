@@ -205,8 +205,14 @@ def _GetClientInstance(api_name,
         )
 
   client_class = _GetClientClass(api_name, api_version)
+  if no_http:
+    endpoint = client_class.BASE_URL
+  else:
+    endpoint = _GetEffectiveApiEndpoint(
+        api_name, api_version, client_class, region)
+
   client_instance = client_class(
-      url=_GetEffectiveApiEndpoint(api_name, api_version, client_class, region),
+      url=endpoint,
       get_credentials=False,
       http=http_client)
   if check_response_func is not None:

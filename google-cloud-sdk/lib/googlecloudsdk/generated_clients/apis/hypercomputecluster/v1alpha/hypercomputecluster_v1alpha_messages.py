@@ -13,6 +13,39 @@ from apitools.base.py import extra_types
 package = 'hypercomputecluster'
 
 
+class AnalyzerReport(_messages.Message):
+  r"""A detailed report from a specific analyzer.
+
+  Enums:
+    AnalyzerIdentityValueValuesEnum: Required. The identity of the analyzer
+      that found the issue.
+
+  Fields:
+    analyzerIdentity: Required. The identity of the analyzer that found the
+      issue.
+    confidenceScore: Optional. Confidence score of the analysis. The value is
+      between 0.0 and 1.0.
+    recommendedActions: Optional. Recommended actions to take.
+    rootCauseFound: Optional. Indicates whether a root cause was found for the
+      event.
+    thermalDetails: Optional. Thermal analysis details.
+  """
+
+  class AnalyzerIdentityValueValuesEnum(_messages.Enum):
+    r"""Required. The identity of the analyzer that found the issue.
+
+    Values:
+      ANALYZER_IDENTITY_UNSPECIFIED: Analyzer identity is not specified.
+    """
+    ANALYZER_IDENTITY_UNSPECIFIED = 0
+
+  analyzerIdentity = _messages.EnumField('AnalyzerIdentityValueValuesEnum', 1)
+  confidenceScore = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  recommendedActions = _messages.MessageField('RecommendedAction', 3, repeated=True)
+  rootCauseFound = _messages.BooleanField(4)
+  thermalDetails = _messages.MessageField('ThermalAnalysisDetails', 5)
+
+
 class Artifacts(_messages.Message):
   r"""Represents information about the artifacts of the Machine Learning Run.
 
@@ -41,13 +74,15 @@ class BootDisk(_messages.Message):
   the boot disk for a Compute Engine VM instance.
 
   Fields:
-    effectiveImage: Output only. The image or image family that will be used
-      for new VM instances. If image is empty, this will be the default image
-      family for the VM's machine type. Otherwise, it will be equal to image.
-    image: Optional. Immutable. Source image used to create this disk. Must be
-      a supported disk family for the VM instance's machine type. If this is
-      empty, the system will select a supported image family based on the
-      machine type.
+    effectiveImage: Output only. The specific image family that will be used
+      for new VM instances using this disk. If image is non-empty, this field
+      will be set to the same value as `image`. Otherwise, this field will be
+      set to a system-selected image.
+    image: Optional. Source image family used to create this disk. Must be a
+      supported disk family for the VM instance's machine type. If no family
+      is specified, the system will select a supported image family based on
+      the machine type. If this field is cleared, the system will continue to
+      use the current image family.
     sizeGb: Required. Immutable. Size of the disk in gigabytes. Must be at
       least 10GB.
     type: Required. Immutable. [Persistent disk
@@ -316,6 +351,11 @@ class ComputeInstanceSlurmNodeSet(_messages.Message):
     startupScript: Optional. [Startup
       script](https://cloud.google.com/compute/docs/instances/startup-
       scripts/linux) to be run on each VM instance in the nodeset. Max 256KB.
+    startupScriptTimeout: Optional. The maximum time to wait for the startup
+      script to complete. If the script exceeds this duration, the instance
+      setup will be considered failed. This value must be positive. If this
+      value is unset, a default timeout of 5 minutes (300 seconds) will be
+      used by the system.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -346,6 +386,7 @@ class ComputeInstanceSlurmNodeSet(_messages.Message):
   bootDisk = _messages.MessageField('BootDisk', 1)
   labels = _messages.MessageField('LabelsValue', 2)
   startupScript = _messages.StringField(3)
+  startupScriptTimeout = _messages.StringField(4)
 
 
 class ComputeResource(_messages.Message):
@@ -355,25 +396,17 @@ class ComputeResource(_messages.Message):
   Fields:
     config: Required. Immutable. Configuration for this compute resource,
       which describes how it should be created at runtime.
-    newDwsFlexInstances: Deprecated: Use config.
     newOnDemandInstances: Deprecated: Use config.
-    newReservedInstances: Deprecated: Use config.
-    newSpotInstances: Deprecated: Use config.
   """
 
   config = _messages.MessageField('ComputeResourceConfig', 1)
-  newDwsFlexInstances = _messages.MessageField('NewDWSFlexInstancesConfig', 2)
-  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 3)
-  newReservedInstances = _messages.MessageField('NewReservedInstancesConfig', 4)
-  newSpotInstances = _messages.MessageField('NewSpotInstancesConfig', 5)
+  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 2)
 
 
 class ComputeResourceConfig(_messages.Message):
   r"""Describes how a compute resource should be created at runtime.
 
   Fields:
-    newDwsFlexInstances: Optional. Immutable. If set, indicates that this
-      resource should use flex-start VMs.
     newFlexStartInstances: Optional. Immutable. If set, indicates that this
       resource should use flex-start VMs.
     newOnDemandInstances: Optional. Immutable. If set, indicates that this
@@ -384,11 +417,10 @@ class ComputeResourceConfig(_messages.Message):
       resource should use spot VMs.
   """
 
-  newDwsFlexInstances = _messages.MessageField('NewDWSFlexInstancesConfig', 1)
-  newFlexStartInstances = _messages.MessageField('NewFlexStartInstancesConfig', 2)
-  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 3)
-  newReservedInstances = _messages.MessageField('NewReservedInstancesConfig', 4)
-  newSpotInstances = _messages.MessageField('NewSpotInstancesConfig', 5)
+  newFlexStartInstances = _messages.MessageField('NewFlexStartInstancesConfig', 1)
+  newOnDemandInstances = _messages.MessageField('NewOnDemandInstancesConfig', 2)
+  newReservedInstances = _messages.MessageField('NewReservedInstancesConfig', 3)
+  newSpotInstances = _messages.MessageField('NewSpotInstancesConfig', 4)
 
 
 class Configs(_messages.Message):
@@ -1244,6 +1276,94 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsListRequest(_messag
   parent = _messages.StringField(5, required=True)
 
 
+class HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsCreateRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEvents
+  CreateRequest object.
+
+  Fields:
+    monitoredEvent: A MonitoredEvent resource to be passed as the request
+      body.
+    monitoredEventId: Optional. Optional ID for the event.
+    parent: Required. Parent resource where the event will be created. Format:
+      projects/{project}/locations/{location}/machineLearningRuns/{machine_lea
+      rning_run}
+  """
+
+  monitoredEvent = _messages.MessageField('MonitoredEvent', 1)
+  monitoredEventId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsDeleteRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEvents
+  DeleteRequest object.
+
+  Fields:
+    name: Required. The name of the monitored event to delete. Format: project
+      s/{project}/locations/{location}/machineLearningRuns/{machine_learning_r
+      un}/monitoredEvents/{monitored_event}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsGetRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEvents
+  GetRequest object.
+
+  Fields:
+    name: Required. The name of the monitored event to retrieve. Format: proje
+      cts/{project}/locations/{location}/machineLearningRuns/{machine_learning
+      _run}/monitoredEvents/{monitored_event}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsListRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEvents
+  ListRequest object.
+
+  Fields:
+    filter: Optional. A filter expression for filtering results.
+    orderBy: Optional. Order by field for sorting results.
+    pageSize: Optional. The maximum number of events to return. The service
+      may return fewer than this value. If unspecified, at most 50 events will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListMonitoredEvents` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListMonitoredEvents` must match the call that provided the page token.
+    parent: Required. Parent resource to list events from. Format: projects/{p
+      roject}/locations/{location}/machineLearningRuns/{machine_learning_run}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEventsPatchRequest(_messages.Message):
+  r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsMonitoredEvents
+  PatchRequest object.
+
+  Fields:
+    monitoredEvent: A MonitoredEvent resource to be passed as the request
+      body.
+    name: Identifier. Resource name of the monitored event. Format: projects/{
+      project}/locations/{location}/machineLearningRuns/{machine_learning_run}
+      /monitoredEvents/{monitored_event}
+    updateMask: Optional. The list of fields to be updated.
+  """
+
+  monitoredEvent = _messages.MessageField('MonitoredEvent', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class HypercomputeclusterProjectsLocationsMachineLearningRunsPatchRequest(_messages.Message):
   r"""A HypercomputeclusterProjectsLocationsMachineLearningRunsPatchRequest
   object.
@@ -1330,8 +1450,8 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsGet
 
   Fields:
     name: Required. projects/{project}/locations/{location}/machineLearningRun
-      s/{machine_learning_run}/profilerTargets/{profiler_target}/profileSessio
-      ns/{profiler_session}
+      s/{machine_learning_run}/profilerTargets/{profiler_target}/profilerSessi
+      ons/{profiler_session}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1470,9 +1590,9 @@ class HypercomputeclusterProjectsLocationsOperationsListRequest(_messages.Messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -1525,6 +1645,18 @@ class ListMachineLearningRunsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMonitoredEventsResponse(_messages.Message):
+  r"""Response message for ListMonitoredEvents.
+
+  Fields:
+    monitoredEvents: The list of monitored events.
+    nextPageToken: Token to retrieve the next page of results.
+  """
+
+  monitoredEvents = _messages.MessageField('MonitoredEvent', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -1534,8 +1666,8 @@ class ListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1819,17 +1951,85 @@ class Metrics(_messages.Message):
   r"""Metrics for a Machine Learning run.
 
   Fields:
+    avgHbmUtilization: Output only. Average HBM (High Bandwidth Memory)
+      utilization.
     avgLatency: Output only. Average latency.
     avgMfu: Output only. Average Model Flops Utilization (MFU).
     avgStep: Output only. Average step time.
     avgThroughput: Output only. Average throughput. Value depends on the kind
       of workload ran on TPU.
+    avgTpuTensorcoreUtilization: Output only. Average TPU TensorCore
+      utilization.
   """
 
-  avgLatency = _messages.StringField(1)
-  avgMfu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  avgStep = _messages.StringField(3)
-  avgThroughput = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  avgHbmUtilization = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  avgLatency = _messages.StringField(2)
+  avgMfu = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  avgStep = _messages.StringField(4)
+  avgThroughput = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  avgTpuTensorcoreUtilization = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+
+
+class MonitoredEvent(_messages.Message):
+  r"""Represents a single Monitored Event (Incident) detected by the system.
+
+  Enums:
+    SeverityValueValuesEnum: Optional. Severity of the event.
+    TypeValueValuesEnum: Optional. High-level type of the event.
+
+  Fields:
+    analyzerReports: Optional. Detailed reports from one or more analyzers
+      regarding this event.
+    displayName: Optional. Display name of the event. If not provided, this
+      will default to the Monitored Event ID from the resource name.
+    endTime: Optional. Exclusive timestamp when the event ended. If unset, the
+      event is ongoing.
+    name: Identifier. Resource name of the monitored event. Format: projects/{
+      project}/locations/{location}/machineLearningRuns/{machine_learning_run}
+      /monitoredEvents/{monitored_event}
+    performanceDegradation: Optional. Performance degradation event details.
+    severity: Optional. Severity of the event.
+    startTime: Optional. Inclusive timestamp when the event started.
+    summary: Optional. High-level summary (e.g., "Thermal Throttling
+      Detected"). The summary can be up to 512 characters long.
+    type: Optional. High-level type of the event.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. Severity of the event.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Severity is not specified.
+      LOW: Low severity.
+      MEDIUM: Medium severity.
+      HIGH: High severity.
+      CRITICAL: Critical severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. High-level type of the event.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Event type not specified.
+      PERFORMANCE_DEGRADATION: Performance degradation event.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    PERFORMANCE_DEGRADATION = 1
+
+  analyzerReports = _messages.MessageField('AnalyzerReport', 1, repeated=True)
+  displayName = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  performanceDegradation = _messages.MessageField('PerformanceDegradationEvent', 5)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+  startTime = _messages.StringField(7)
+  summary = _messages.StringField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class Network(_messages.Message):
@@ -1962,81 +2162,6 @@ class NewBucketConfig(_messages.Message):
   bucket = _messages.StringField(2)
   hierarchicalNamespace = _messages.MessageField('GcsHierarchicalNamespaceConfig', 3)
   storageClass = _messages.EnumField('StorageClassValueValuesEnum', 4)
-
-
-class NewDWSFlexInstancesConfig(_messages.Message):
-  r"""When set in a ComputeResourceConfig, indicates that VM instances should
-  be created using [Flex
-  Start](https://cloud.google.com/compute/docs/instances/provisioning-models)
-  with Dynamic Workload Scheduler.
-
-  Enums:
-    TerminationActionValueValuesEnum: Optional. Immutable. Deprecated: Do not
-      use.
-
-  Messages:
-    AtmTagsValue: Optional. Immutable. Unstable: Contact hypercompute-service-
-      eng@ before using.
-
-  Fields:
-    atmTags: Optional. Immutable. Unstable: Contact hypercompute-service-eng@
-      before using.
-    bootDisk: Optional. Immutable. Deprecated: set disks in node config
-      instead.
-    machineType: Required. Immutable. Name of the Compute Engine [machine
-      type](https://cloud.google.com/compute/docs/machine-resource) to use,
-      e.g. `n2-standard-2`.
-    maxDuration: Required. Immutable. Specifies the time limit for created
-      instances. Instances will be terminated at the end of this duration.
-    terminationAction: Optional. Immutable. Deprecated: Do not use.
-    zone: Required. Immutable. Name of the zone in which VM instances should
-      run, e.g., `us-central1-a`. Must be in the same region as the cluster,
-      and must match the zone of any other resources specified in the cluster.
-  """
-
-  class TerminationActionValueValuesEnum(_messages.Enum):
-    r"""Optional. Immutable. Deprecated: Do not use.
-
-    Values:
-      TERMINATION_ACTION_UNSPECIFIED: Deprecated: Do not use.
-      STOP: Deprecated: Do not use.
-      DELETE: Deprecated: Do not use.
-    """
-    TERMINATION_ACTION_UNSPECIFIED = 0
-    STOP = 1
-    DELETE = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AtmTagsValue(_messages.Message):
-    r"""Optional. Immutable. Unstable: Contact hypercompute-service-eng@
-    before using.
-
-    Messages:
-      AdditionalProperty: An additional property for a AtmTagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type AtmTagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AtmTagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  atmTags = _messages.MessageField('AtmTagsValue', 1)
-  bootDisk = _messages.MessageField('Disk', 2)
-  machineType = _messages.StringField(3)
-  maxDuration = _messages.StringField(4)
-  terminationAction = _messages.EnumField('TerminationActionValueValuesEnum', 5)
-  zone = _messages.StringField(6)
 
 
 class NewFilestoreConfig(_messages.Message):
@@ -2682,6 +2807,13 @@ class Orchestrator(_messages.Message):
   slurm = _messages.MessageField('SlurmOrchestrator', 1)
 
 
+class PerformanceDegradationEvent(_messages.Message):
+  r"""Metadata specific to Performance Degradation events. Reserved for future
+  degradation-specific metadata.
+  """
+
+
+
 class ProfileSession(_messages.Message):
   r"""Represents a single profiling session.
 
@@ -2707,13 +2839,29 @@ class ProfileSession(_messages.Message):
 class ProfilerSession(_messages.Message):
   r"""Represents a single profiler session.
 
+  Enums:
+    DeviceTracerLevelValueValuesEnum: Optional. Device tracer level for the
+      session. If the field is not set or unspecified, the default is
+      `DEVICE_TRACER_LEVEL_ENABLED`.
+    HostTracerLevelValueValuesEnum: Optional. Host tracer level for the
+      session. If the field is not set or unspecified, the default is
+      `HOST_TRACER_LEVEL_INFO`.
+    PythonTracerLevelValueValuesEnum: Optional. Python tracer level for the
+      session. If the field is not set or unspecified, the default is
+      `PYTHON_TRACER_LEVEL_DISABLED`.
+
   Fields:
     createTime: Output only. The creation time of the session.
     dashboardUri: Output only. The URI to dashboard to see session specific
       data. Not specified if URI is not ready yet. Form https://? Could
       contain user information like bucket name etc.
+    deviceTracerLevel: Optional. Device tracer level for the session. If the
+      field is not set or unspecified, the default is
+      `DEVICE_TRACER_LEVEL_ENABLED`.
     duration: Optional. Duration for the profiler session.
     etag: Optional. Etag for optimistic concurrency control.
+    hostTracerLevel: Optional. Host tracer level for the session. If the field
+      is not set or unspecified, the default is `HOST_TRACER_LEVEL_INFO`.
     isTraceEnabled: Optional. Customer setting to enable trace level details
       for the session.
     name: Identifier. The name of the profiler session. Format: projects/{proj
@@ -2722,18 +2870,67 @@ class ProfilerSession(_messages.Message):
     profilerTargets: Optional. List of profiler targets. Targets on which
       profiler session to be started. If empty, control plan shall start
       profiler session on all the targets associated with ML Run.
+    pythonTracerLevel: Optional. Python tracer level for the session. If the
+      field is not set or unspecified, the default is
+      `PYTHON_TRACER_LEVEL_DISABLED`.
     storageFolderUri: Output only. The cloud storage path of the session.
       Example: `gs://my-bucket/my-run-directory/session-1`.
   """
 
+  class DeviceTracerLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Device tracer level for the session. If the field is not set
+    or unspecified, the default is `DEVICE_TRACER_LEVEL_ENABLED`.
+
+    Values:
+      DEVICE_TRACER_LEVEL_UNSPECIFIED: Tracer level is unspecified.
+      DEVICE_TRACER_LEVEL_DISABLED: Tracer level is disabled.
+      DEVICE_TRACER_LEVEL_ENABLED: Tracer level is enabled.
+    """
+    DEVICE_TRACER_LEVEL_UNSPECIFIED = 0
+    DEVICE_TRACER_LEVEL_DISABLED = 1
+    DEVICE_TRACER_LEVEL_ENABLED = 2
+
+  class HostTracerLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Host tracer level for the session. If the field is not set
+    or unspecified, the default is `HOST_TRACER_LEVEL_INFO`.
+
+    Values:
+      HOST_TRACER_LEVEL_UNSPECIFIED: Tracer level is unspecified.
+      HOST_TRACER_LEVEL_DISABLED: Tracer level is disabled.
+      HOST_TRACER_LEVEL_CRITICAL: Tracer level is critical.
+      HOST_TRACER_LEVEL_INFO: Tracer level is info.
+      HOST_TRACER_LEVEL_VERBOSE: Tracer level is verbose.
+    """
+    HOST_TRACER_LEVEL_UNSPECIFIED = 0
+    HOST_TRACER_LEVEL_DISABLED = 1
+    HOST_TRACER_LEVEL_CRITICAL = 2
+    HOST_TRACER_LEVEL_INFO = 3
+    HOST_TRACER_LEVEL_VERBOSE = 4
+
+  class PythonTracerLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Python tracer level for the session. If the field is not set
+    or unspecified, the default is `PYTHON_TRACER_LEVEL_DISABLED`.
+
+    Values:
+      PYTHON_TRACER_LEVEL_UNSPECIFIED: Tracer level is unspecified.
+      PYTHON_TRACER_LEVEL_DISABLED: Tracer level is disabled.
+      PYTHON_TRACER_LEVEL_ENABLED: Tracer level is enabled.
+    """
+    PYTHON_TRACER_LEVEL_UNSPECIFIED = 0
+    PYTHON_TRACER_LEVEL_DISABLED = 1
+    PYTHON_TRACER_LEVEL_ENABLED = 2
+
   createTime = _messages.StringField(1)
   dashboardUri = _messages.StringField(2)
-  duration = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  isTraceEnabled = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  profilerTargets = _messages.StringField(7, repeated=True)
-  storageFolderUri = _messages.StringField(8)
+  deviceTracerLevel = _messages.EnumField('DeviceTracerLevelValueValuesEnum', 3)
+  duration = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  hostTracerLevel = _messages.EnumField('HostTracerLevelValueValuesEnum', 6)
+  isTraceEnabled = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  profilerTargets = _messages.StringField(9, repeated=True)
+  pythonTracerLevel = _messages.EnumField('PythonTracerLevelValueValuesEnum', 10)
+  storageFolderUri = _messages.StringField(11)
 
 
 class ProfilerTarget(_messages.Message):
@@ -2754,6 +2951,20 @@ class ProfilerTarget(_messages.Message):
   isMaster = _messages.BooleanField(3)
   name = _messages.StringField(4)
   nodeIndex = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class RecommendedAction(_messages.Message):
+  r"""Represents a recommended action.
+
+  Fields:
+    description: Optional. Description of the recommended action. The
+      description can be up to 1024 characters long.
+    documentationUrl: Optional. Optional link to documentation or more details
+      about the action.
+  """
+
+  description = _messages.StringField(1)
+  documentationUrl = _messages.StringField(2)
 
 
 class ReservationAffinity(_messages.Message):
@@ -2878,6 +3089,15 @@ class SlurmConfig(_messages.Message):
     accountingStorageEnforceFlags: Optional. Flags to control the level of
       association to impose on job submissions. By default no flags are set.
       Corresponds to AccountingStorageEnforce.
+    healthCheckInterval: Optional. The interval in seconds between executions
+      of HealthCheckProgram. If provided, must be > 0. To disable health
+      checks, use disable_health_check_program instead.
+    healthCheckNodeState: Optional. The node state to check for. Allowed
+      values are "ALLOC", "ANY", "CYCLE", "IDLE", "NONDRAINED_IDLE", "MIXED",
+      and "START_ONLY". Multiple state values may be specified with a comma
+      separator.
+    healthCheckProgram: Optional. The fully-qualified path to the health check
+      program to be executed.
     preemptExemptTime: Optional. Specifies minimum run time of jobs before
       they are considered for preemption.
     preemptMode: Optional. Specifies the mechanism used to preempt jobs or
@@ -3050,21 +3270,24 @@ class SlurmConfig(_messages.Message):
     X11 = 8
 
   accountingStorageEnforceFlags = _messages.EnumField('AccountingStorageEnforceFlagsValueListEntryValuesEnum', 1, repeated=True)
-  preemptExemptTime = _messages.StringField(2)
-  preemptMode = _messages.EnumField('PreemptModeValueListEntryValuesEnum', 3, repeated=True)
-  preemptType = _messages.EnumField('PreemptTypeValueValuesEnum', 4)
-  priorityType = _messages.EnumField('PriorityTypeValueValuesEnum', 5)
-  priorityWeightAge = _messages.IntegerField(6)
-  priorityWeightAssoc = _messages.IntegerField(7)
-  priorityWeightFairshare = _messages.IntegerField(8)
-  priorityWeightJobSize = _messages.IntegerField(9)
-  priorityWeightPartition = _messages.IntegerField(10)
-  priorityWeightQos = _messages.IntegerField(11)
-  priorityWeightTres = _messages.StringField(12)
-  prologEpilogTimeout = _messages.StringField(13)
-  prologFlags = _messages.EnumField('PrologFlagsValueListEntryValuesEnum', 14, repeated=True)
-  requeueExitCodes = _messages.IntegerField(15, repeated=True)
-  requeueHoldExitCodes = _messages.IntegerField(16, repeated=True)
+  healthCheckInterval = _messages.IntegerField(2)
+  healthCheckNodeState = _messages.StringField(3)
+  healthCheckProgram = _messages.StringField(4)
+  preemptExemptTime = _messages.StringField(5)
+  preemptMode = _messages.EnumField('PreemptModeValueListEntryValuesEnum', 6, repeated=True)
+  preemptType = _messages.EnumField('PreemptTypeValueValuesEnum', 7)
+  priorityType = _messages.EnumField('PriorityTypeValueValuesEnum', 8)
+  priorityWeightAge = _messages.IntegerField(9)
+  priorityWeightAssoc = _messages.IntegerField(10)
+  priorityWeightFairshare = _messages.IntegerField(11)
+  priorityWeightJobSize = _messages.IntegerField(12)
+  priorityWeightPartition = _messages.IntegerField(13)
+  priorityWeightQos = _messages.IntegerField(14)
+  priorityWeightTres = _messages.StringField(15)
+  prologEpilogTimeout = _messages.StringField(16)
+  prologFlags = _messages.EnumField('PrologFlagsValueListEntryValuesEnum', 17, repeated=True)
+  requeueExitCodes = _messages.IntegerField(18, repeated=True)
+  requeueHoldExitCodes = _messages.IntegerField(19, repeated=True)
 
 
 class SlurmLoginNodes(_messages.Message):
@@ -3099,7 +3322,10 @@ class SlurmLoginNodes(_messages.Message):
       before using.
     startupScript: Optional. [Startup
       script](https://cloud.google.com/compute/docs/instances/startup-
-      scripts/linux) to be run on each login node instance. Max 256KB.
+      scripts/linux) to be run on each login node instance. Max 256KB. The
+      script must complete within the system-defined default timeout of 5
+      minutes. For tasks that require more time, consider running them in the
+      background using methods such as `&` or `nohup`.
     storageConfigs: Optional. How storage resources should be mounted on each
       login node.
     zone: Required. Name of the zone in which login nodes should run, e.g.,
@@ -3242,6 +3468,10 @@ class SlurmOrchestrator(_messages.Message):
       that do not explicitly specify a partition. Required if and only if
       there is more than one partition, in which case it must match the id of
       one of the partitions.
+    disableHealthCheckProgram: Optional. Unstable: Contact hypercompute-
+      service-eng@ before using. If true, health checking is disabled, and
+      health_check_interval, health_check_node_state, and health_check_program
+      should not be passed in.
     epilogBashScripts: Optional. Slurm [epilog
       scripts](https://slurm.schedmd.com/prolog_epilog.html), which will be
       executed by compute nodes whenever a node finishes running a job. Values
@@ -3266,13 +3496,14 @@ class SlurmOrchestrator(_messages.Message):
 
   config = _messages.MessageField('SlurmConfig', 1)
   defaultPartition = _messages.StringField(2)
-  epilogBashScripts = _messages.StringField(3, repeated=True)
-  loginNodes = _messages.MessageField('SlurmLoginNodes', 4)
-  nodeSets = _messages.MessageField('SlurmNodeSet', 5, repeated=True)
-  partitions = _messages.MessageField('SlurmPartition', 6, repeated=True)
-  prologBashScripts = _messages.StringField(7, repeated=True)
-  taskEpilogBashScripts = _messages.StringField(8, repeated=True)
-  taskPrologBashScripts = _messages.StringField(9, repeated=True)
+  disableHealthCheckProgram = _messages.BooleanField(3)
+  epilogBashScripts = _messages.StringField(4, repeated=True)
+  loginNodes = _messages.MessageField('SlurmLoginNodes', 5)
+  nodeSets = _messages.MessageField('SlurmNodeSet', 6, repeated=True)
+  partitions = _messages.MessageField('SlurmPartition', 7, repeated=True)
+  prologBashScripts = _messages.StringField(8, repeated=True)
+  taskEpilogBashScripts = _messages.StringField(9, repeated=True)
+  taskPrologBashScripts = _messages.StringField(10, repeated=True)
 
 
 class SlurmPartition(_messages.Message):
@@ -3294,6 +3525,39 @@ class SlurmPartition(_messages.Message):
   exclusive = _messages.BooleanField(1)
   id = _messages.StringField(2)
   nodeSetIds = _messages.StringField(3, repeated=True)
+
+
+class Smon(_messages.Message):
+  r"""Smon Tool Metadata
+
+  Enums:
+    WorstSeverityValueValuesEnum: Output only. The worst severity among all
+      active monitored events.
+
+  Fields:
+    monitoringSummary: Output only. A summary of the monitoring findings.
+    worstSeverity: Output only. The worst severity among all active monitored
+      events.
+  """
+
+  class WorstSeverityValueValuesEnum(_messages.Enum):
+    r"""Output only. The worst severity among all active monitored events.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Severity is not specified.
+      LOW: Low severity.
+      MEDIUM: Medium severity.
+      HIGH: High severity.
+      CRITICAL: Critical severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+  monitoringSummary = _messages.StringField(1)
+  worstSeverity = _messages.EnumField('WorstSeverityValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3521,14 +3785,24 @@ class StorageSource(_messages.Message):
   lustre = _messages.StringField(3)
 
 
+class ThermalAnalysisDetails(_messages.Message):
+  r"""Metadata specific to Thermal Analysis. Placeholder for thermal sensor
+  readings and thresholds.
+  """
+
+
+
 class Tool(_messages.Message):
   r"""A tool for a Machine Learning run.
 
   Fields:
-    xprof: Required. XProf related metadata
+    smon: Optional. Smon (System Monitored) tool Signifies that the workload
+      is under active monitoring.
+    xprof: Optional. XProf related metadata
   """
 
-  xprof = _messages.MessageField('Xprof', 1)
+  smon = _messages.MessageField('Smon', 1)
+  xprof = _messages.MessageField('Xprof', 2)
 
 
 class UpdateLoginNode(_messages.Message):

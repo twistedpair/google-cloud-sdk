@@ -1026,6 +1026,27 @@ class IaCValidationReportMetrics(_messages.Message):
   totalViolations = _messages.IntegerField(10)
 
 
+class IacValidationFailureCriteria(_messages.Message):
+  r"""Represents the criteria for considering an IaC validation as a failure.
+
+  Fields:
+    createTime: Output only. The time at which the resource was created.
+    etag: Optional. The etag for optimistic concurrency.
+    name: Identifier. The resource name of the IacValidationFailureCriteria.
+      Format: organizations/{organization}/locations/global/iacValidationFailu
+      reCriteria
+    severityCountThresholds: Optional. A list of severity thresholds. An IaC
+      validation fails if any threshold is exceeded.
+    updateTime: Output only. The time at which the resource was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  severityCountThresholds = _messages.MessageField('SeverityCountThreshold', 4, repeated=True)
+  updateTime = _messages.StringField(5)
+
+
 class IndustryStandard(_messages.Message):
   r"""Industry Standards with standard and version.
 
@@ -2288,6 +2309,38 @@ class SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest(
   name = _messages.StringField(2, required=True)
 
 
+class SecuritypostureOrganizationsLocationsGlobalGetIacValidationFailureCriteriaRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsGlobalGetIacValidationFailureCrit
+  eriaRequest object.
+
+  Fields:
+    name: Required. The name of the singleton resource. Format:
+      organizations/{organization}/locations/global/iacValidationFailureCriter
+      ia
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritypostureOrganizationsLocationsGlobalUpdateIacValidationFailureCriteriaRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsGlobalUpdateIacValidationFailureC
+  riteriaRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the resource is not found, a
+      new resource will be created.
+    iacValidationFailureCriteria: A IacValidationFailureCriteria resource to
+      be passed as the request body.
+    name: Identifier. The resource name of the IacValidationFailureCriteria.
+      Format: organizations/{organization}/locations/global/iacValidationFailu
+      reCriteria
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  iacValidationFailureCriteria = _messages.MessageField('IacValidationFailureCriteria', 2)
+  name = _messages.StringField(3, required=True)
+
+
 class SecuritypostureOrganizationsLocationsHcptIacvReportsCreateHCPTIaCValidationReportRequest(_messages.Message):
   r"""A SecuritypostureOrganizationsLocationsHcptIacvReportsCreateHCPTIaCValid
   ationReportRequest object.
@@ -2811,6 +2864,40 @@ class SecuritypostureOrganizationsLocationsReportsListRequest(_messages.Message)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class SeverityCountThreshold(_messages.Message):
+  r"""Represents a threshold for a specific severity.
+
+  Enums:
+    SeverityValueValuesEnum: Optional. The severity level, reusing the
+      existing Violation.Severity.
+
+  Fields:
+    severity: Optional. The severity level, reusing the existing
+      Violation.Severity.
+    thresholdCount: Optional. If violation count meets or exceeds this
+      threshold, validation fails.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. The severity level, reusing the existing Violation.Severity.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Default value. This value is unused.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  severity = _messages.EnumField('SeverityValueValuesEnum', 1)
+  thresholdCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

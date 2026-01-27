@@ -511,7 +511,6 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
   _cli_generator = None
   _is_hidden = False
   _is_auto_generated = False
-  _is_unicode_supported = False
   _release_track = None
   _universe_compatible = None
   _default_universe_compatible = True
@@ -562,13 +561,6 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
   @classmethod
   def RegionalEndpointCompatibility(cls):
     return cls._regional_endpoint_compatibility
-
-  @classmethod
-  def IsUnicodeSupported(cls):
-    if six.PY2:
-      return cls._is_unicode_supported
-    # We always support unicode on Python 3.
-    return True
 
   @classmethod
   def ReleaseTrack(cls):
@@ -1038,24 +1030,6 @@ def RegionalEndpointsRequired(cmd_class):
   decorator = _RegionalEndpointCompatibility(
       properties.VALUES.regional.REQUIRED)
   return decorator(cmd_class)
-
-
-def UnicodeIsSupported(cmd_class):
-  """Decorator for calliope commands and groups that support unicode.
-
-  Decorate a subclass of base.Command or base.Group with this function, and the
-  decorated command or group will not raise the argparse unicode command line
-  argument exception.
-
-  Args:
-    cmd_class: base._Common, A calliope command or group.
-
-  Returns:
-    A modified version of the provided class.
-  """
-  # pylint: disable=protected-access
-  cmd_class._is_unicode_supported = True
-  return cmd_class
 
 
 def ReleaseTracks(*tracks):

@@ -1483,6 +1483,26 @@ def AddManagedOTelScopeFlags(parser, hidden):
   )
 
 
+def AddManagedMLDiagnosticsFlags(parser, hidden=True):
+  """Adds --enable-managed-mldiagnostics flag to parser."""
+
+  enable_help_text = """
+  Enables managed machine learning diagnostics in the cluster.
+  Use `--no-enable-managed-mldiagnostics` to disable.
+  See https://github.com/AI-Hypercomputer/google-cloud-mldiagnostics
+  for more info.
+
+  """
+
+  parser.add_argument(
+      '--enable-managed-mldiagnostics',
+      action='store_true',
+      default=None,
+      help=enable_help_text,
+      hidden=hidden,
+  )
+
+
 def AddEnableMasterSignalsFlags(parser, for_create=False):
   """Adds --master-logs and --enable-master-metrics flags to parser."""
 
@@ -5508,6 +5528,8 @@ Examples:
         bootDiskProfile:
           swapSizeGib: 8
       cgroupMode: 'CGROUP_MODE_V2'
+      nodeKernelModuleLoading:
+        policy: 'ENFORCE_SIGNED_MODULES'
 
 List of supported kubelet configs in 'kubeletConfig'.
 
@@ -5679,6 +5701,12 @@ KEY                                        | VALUE
 ------------------------------------------ | ------------------------------------------
 diskCount                                  | integer
 
+List of supported keys in 'nodeKernelModuleLoading'.
+
+KEY                                        | VALUE
+------------------------------------------ | ------------------------------------------
+policy                                     | ENFORCE_SIGNED_MODULES, DO_NOT_ENFORCE_SIGNED_MODULES, POLICY_UNSPECIFIED
+
 
 The upper limit for total allocated hugepage size differs based upon machine size.
 
@@ -5709,6 +5737,12 @@ Supported values for 'transparentHugepageDefrag' under 'linuxConfig' which defin
 * `TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE`: It means that an application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
 * `TRANSPARENT_HUGEPAGE_DEFRAG_NEVER`: It means that an application will never enter direct reclaim or compaction.
 * `TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED`: Default value. GKE will not modify the kernel configuration.
+
+Supported values for 'policy' under 'nodeKernelModuleLoading'.
+
+* `POLICY_UNSPECIFIED`: Default behavior. GKE selects the image based on node type. For CPU and TPU nodes, the image will not allow loading external kernel modules. For GPU nodes, the image will allow loading any module, whether it is signed or not.
+* `ENFORCE_SIGNED_MODULES`: Enforced signature verification: Node pools will use a Container-Optimized OS image configured to allow loading of *Google-signed* external kernel modules. Loadpin is enabled but configured to exclude modules, and kernel module signature checking is enforced.
+* `DO_NOT_ENFORCE_SIGNED_MODULES`: Do not enforce kernel module signature enforcement. Mirrors existing DEFAULT behavior.
 
 Note, updating the system configuration of an existing node pool requires recreation of the nodes which which might cause a disruption.
 """,

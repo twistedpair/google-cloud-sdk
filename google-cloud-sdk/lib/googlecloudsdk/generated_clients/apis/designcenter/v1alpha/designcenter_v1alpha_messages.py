@@ -3002,10 +3002,12 @@ class GenerateApplicationIaCResponse(_messages.Message):
     artifactLocation: The destination where the generated IaC was written.
     gcsUri: The Cloud Storage URI of the generated IaC. DEPRECATED: Use the
       'artifact_location' field instead.
+    rootModulesMetadata: Root modules metadata of the application.
   """
 
   artifactLocation = _messages.MessageField('ArtifactLocation', 1)
   gcsUri = _messages.StringField(2)
+  rootModulesMetadata = _messages.MessageField('RootModulesMetadata', 3)
 
 
 class GenerateApplicationTemplateIaCRequest(_messages.Message):
@@ -3046,10 +3048,12 @@ class GenerateApplicationTemplateIaCResponse(_messages.Message):
     artifactLocation: The destination where the generated IaC was written.
     gcsUri: The Cloud Storage URI of the generated IaC. DEPRECATED: Use the
       'artifact_location' field instead.
+    rootModulesMetadata: Root modules metadata of the application template.
   """
 
   artifactLocation = _messages.MessageField('ArtifactLocation', 1)
   gcsUri = _messages.StringField(2)
+  rootModulesMetadata = _messages.MessageField('RootModulesMetadata', 3)
 
 
 class GenerateApplicationTemplateRevisionIaCRequest(_messages.Message):
@@ -3085,9 +3089,12 @@ class GenerateApplicationTemplateRevisionIaCResponse(_messages.Message):
 
   Fields:
     artifactLocation: The destination where the generated IaC was written.
+    rootModulesMetadata: Root modules metadata of the application template
+      revision.
   """
 
   artifactLocation = _messages.MessageField('ArtifactLocation', 1)
+  rootModulesMetadata = _messages.MessageField('RootModulesMetadata', 2)
 
 
 class GitReference(_messages.Message):
@@ -4226,6 +4233,78 @@ class Resource(_messages.Message):
   name = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   type = _messages.StringField(3)
+
+
+class RootInputVariable(_messages.Message):
+  r"""Input variable of a root module.
+
+  Fields:
+    defaultValue: Default value of the input variable.
+    value: Value for the input variable.
+    variable: Name of the input variable.
+    variableType: Type of the input variable.
+  """
+
+  defaultValue = _messages.MessageField('extra_types.JsonValue', 1)
+  value = _messages.MessageField('extra_types.JsonValue', 2)
+  variable = _messages.StringField(3)
+  variableType = _messages.StringField(4)
+
+
+class RootModule(_messages.Message):
+  r"""Metadata for a root module.
+
+  Fields:
+    components: List of ADC component names associated with this root module.
+      For standard app template type components, this list will have a single
+      element. For service / workload / asset components, this list will
+      contain all such component names.
+    dependencies: Dependencies of this root module. The dependency graph of
+      root modules must be acyclic.
+    id: Identifier of the root module. This is the directory name of the root
+      module in the generated terraform which is also same as the
+      corresponding component ID.
+    inputVariables: List of input variables of this root module.
+    outputVariables: List of output variables of this root module.
+  """
+
+  components = _messages.StringField(1, repeated=True)
+  dependencies = _messages.MessageField('RootModuleDependency', 2, repeated=True)
+  id = _messages.StringField(3)
+  inputVariables = _messages.MessageField('RootInputVariable', 4, repeated=True)
+  outputVariables = _messages.MessageField('RootOutputVariable', 5, repeated=True)
+
+
+class RootModuleDependency(_messages.Message):
+  r"""Root module dependency.
+
+  Fields:
+    parameters: Parameters associated with this dependency.
+    rootModuleId: Identifier of the root module.
+  """
+
+  parameters = _messages.MessageField('Parameter', 1, repeated=True)
+  rootModuleId = _messages.StringField(2)
+
+
+class RootModulesMetadata(_messages.Message):
+  r"""Root modules metadata.
+
+  Fields:
+    rootModules: List of terraform root modules.
+  """
+
+  rootModules = _messages.MessageField('RootModule', 1, repeated=True)
+
+
+class RootOutputVariable(_messages.Message):
+  r"""Output variable of a root module.
+
+  Fields:
+    variable: Name of the output variable.
+  """
+
+  variable = _messages.StringField(1)
 
 
 class SaaSRuntimeContext(_messages.Message):

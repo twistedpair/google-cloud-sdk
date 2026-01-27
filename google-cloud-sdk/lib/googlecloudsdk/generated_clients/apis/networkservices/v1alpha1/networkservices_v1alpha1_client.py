@@ -39,6 +39,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_agentGateways = self.ProjectsLocationsAgentGatewaysService(self)
     self.projects_locations_authzExtensions = self.ProjectsLocationsAuthzExtensionsService(self)
     self.projects_locations_edgeCacheKeysets = self.ProjectsLocationsEdgeCacheKeysetsService(self)
     self.projects_locations_edgeCacheOrigins = self.ProjectsLocationsEdgeCacheOriginsService(self)
@@ -70,6 +71,12 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_multicastProducerAssociations = self.ProjectsLocationsMulticastProducerAssociationsService(self)
     self.projects_locations_observabilityPolicies = self.ProjectsLocationsObservabilityPoliciesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_regionalMulticastConsumerAssociations = self.ProjectsLocationsRegionalMulticastConsumerAssociationsService(self)
+    self.projects_locations_regionalMulticastDomainActivations = self.ProjectsLocationsRegionalMulticastDomainActivationsService(self)
+    self.projects_locations_regionalMulticastGroupConsumerActivations = self.ProjectsLocationsRegionalMulticastGroupConsumerActivationsService(self)
+    self.projects_locations_regionalMulticastGroupProducerActivations = self.ProjectsLocationsRegionalMulticastGroupProducerActivationsService(self)
+    self.projects_locations_regionalMulticastGroupRangeActivations = self.ProjectsLocationsRegionalMulticastGroupRangeActivationsService(self)
+    self.projects_locations_regionalMulticastProducerAssociations = self.ProjectsLocationsRegionalMulticastProducerAssociationsService(self)
     self.projects_locations_serviceBindings = self.ProjectsLocationsServiceBindingsService(self)
     self.projects_locations_serviceLbPolicies = self.ProjectsLocationsServiceLbPoliciesService(self)
     self.projects_locations_swpSecurityExtensions = self.ProjectsLocationsSwpSecurityExtensionsService(self)
@@ -80,6 +87,151 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_wasmPlugins = self.ProjectsLocationsWasmPluginsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAgentGatewaysService(base_api.BaseApiService):
+    """Service class for the projects_locations_agentGateways resource."""
+
+    _NAME = 'projects_locations_agentGateways'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsAgentGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new AgentGateway in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAgentGatewaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/agentGateways',
+        http_method='POST',
+        method_id='networkservices.projects.locations.agentGateways.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['agentGatewayId'],
+        relative_path='v1alpha1/{+parent}/agentGateways',
+        request_field='agentGateway',
+        request_type_name='NetworkservicesProjectsLocationsAgentGatewaysCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single AgentGateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAgentGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/agentGateways/{agentGatewaysId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.agentGateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsAgentGatewaysDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single AgentGateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAgentGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AgentGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/agentGateways/{agentGatewaysId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.agentGateways.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsAgentGatewaysGetRequest',
+        response_type_name='AgentGateway',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists AgentGateways in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAgentGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAgentGatewaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/agentGateways',
+        http_method='GET',
+        method_id='networkservices.projects.locations.agentGateways.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'returnPartialSuccess'],
+        relative_path='v1alpha1/{+parent}/agentGateways',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsAgentGatewaysListRequest',
+        response_type_name='ListAgentGatewaysResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single AgentGateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsAgentGatewaysPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/agentGateways/{agentGatewaysId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.agentGateways.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='agentGateway',
+        request_type_name='NetworkservicesProjectsLocationsAgentGatewaysPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsAuthzExtensionsService(base_api.BaseApiService):
     """Service class for the projects_locations_authzExtensions resource."""
@@ -4573,6 +4725,876 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegionalMulticastConsumerAssociationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_regionalMulticastConsumerAssociations resource."""
+
+    _NAME = 'projects_locations_regionalMulticastConsumerAssociations'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsRegionalMulticastConsumerAssociationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new regional multicast consumer association in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastConsumerAssociations',
+        http_method='POST',
+        method_id='networkservices.projects.locations.regionalMulticastConsumerAssociations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['regionalMulticastConsumerAssociationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastConsumerAssociations',
+        request_field='regionalMulticastConsumerAssociation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single regional multicast consumer association.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastConsumerAssociations/{regionalMulticastConsumerAssociationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.regionalMulticastConsumerAssociations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single regional multicast consumer association.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionalMulticastConsumerAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastConsumerAssociations/{regionalMulticastConsumerAssociationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastConsumerAssociations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsGetRequest',
+        response_type_name='RegionalMulticastConsumerAssociation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists regional multicast consumer associations in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRegionalMulticastConsumerAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastConsumerAssociations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastConsumerAssociations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastConsumerAssociations',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsListRequest',
+        response_type_name='ListRegionalMulticastConsumerAssociationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single regional multicast consumer association.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastConsumerAssociations/{regionalMulticastConsumerAssociationsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.regionalMulticastConsumerAssociations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='regionalMulticastConsumerAssociation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastConsumerAssociationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegionalMulticastDomainActivationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_regionalMulticastDomainActivations resource."""
+
+    _NAME = 'projects_locations_regionalMulticastDomainActivations'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsRegionalMulticastDomainActivationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new regional multicast domain activation in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastDomainActivations',
+        http_method='POST',
+        method_id='networkservices.projects.locations.regionalMulticastDomainActivations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['regionalMulticastDomainActivationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastDomainActivations',
+        request_field='regionalMulticastDomainActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single regional multicast domain activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastDomainActivations/{regionalMulticastDomainActivationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.regionalMulticastDomainActivations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single regional multicast domain activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionalMulticastDomainActivation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastDomainActivations/{regionalMulticastDomainActivationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastDomainActivations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsGetRequest',
+        response_type_name='RegionalMulticastDomainActivation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists regional multicast domain activations in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRegionalMulticastDomainActivationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastDomainActivations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastDomainActivations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastDomainActivations',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsListRequest',
+        response_type_name='ListRegionalMulticastDomainActivationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single regional multicast domain activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastDomainActivations/{regionalMulticastDomainActivationsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.regionalMulticastDomainActivations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='regionalMulticastDomainActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastDomainActivationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegionalMulticastGroupConsumerActivationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_regionalMulticastGroupConsumerActivations resource."""
+
+    _NAME = 'projects_locations_regionalMulticastGroupConsumerActivations'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsRegionalMulticastGroupConsumerActivationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new regional multicast group consumer activation in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupConsumerActivations',
+        http_method='POST',
+        method_id='networkservices.projects.locations.regionalMulticastGroupConsumerActivations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['regionalMulticastGroupConsumerActivationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastGroupConsumerActivations',
+        request_field='regionalMulticastGroupConsumerActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single regional multicast group consumer activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupConsumerActivations/{regionalMulticastGroupConsumerActivationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.regionalMulticastGroupConsumerActivations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single regional multicast group consumer activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionalMulticastGroupConsumerActivation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupConsumerActivations/{regionalMulticastGroupConsumerActivationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastGroupConsumerActivations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsGetRequest',
+        response_type_name='RegionalMulticastGroupConsumerActivation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists regional multicast group consumer activations in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRegionalMulticastGroupConsumerActivationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupConsumerActivations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastGroupConsumerActivations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastGroupConsumerActivations',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsListRequest',
+        response_type_name='ListRegionalMulticastGroupConsumerActivationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single regional multicast group consumer activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupConsumerActivations/{regionalMulticastGroupConsumerActivationsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.regionalMulticastGroupConsumerActivations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='regionalMulticastGroupConsumerActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupConsumerActivationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegionalMulticastGroupProducerActivationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_regionalMulticastGroupProducerActivations resource."""
+
+    _NAME = 'projects_locations_regionalMulticastGroupProducerActivations'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsRegionalMulticastGroupProducerActivationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new regional multicast group producer activation in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupProducerActivations',
+        http_method='POST',
+        method_id='networkservices.projects.locations.regionalMulticastGroupProducerActivations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['regionalMulticastGroupProducerActivationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastGroupProducerActivations',
+        request_field='regionalMulticastGroupProducerActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single regional multicast group producer activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupProducerActivations/{regionalMulticastGroupProducerActivationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.regionalMulticastGroupProducerActivations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single regional multicast group producer activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionalMulticastGroupProducerActivation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupProducerActivations/{regionalMulticastGroupProducerActivationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastGroupProducerActivations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsGetRequest',
+        response_type_name='RegionalMulticastGroupProducerActivation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists regional multicast group producer activations in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRegionalMulticastGroupProducerActivationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupProducerActivations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastGroupProducerActivations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastGroupProducerActivations',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsListRequest',
+        response_type_name='ListRegionalMulticastGroupProducerActivationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single regional multicast group producer activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupProducerActivations/{regionalMulticastGroupProducerActivationsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.regionalMulticastGroupProducerActivations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='regionalMulticastGroupProducerActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupProducerActivationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegionalMulticastGroupRangeActivationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_regionalMulticastGroupRangeActivations resource."""
+
+    _NAME = 'projects_locations_regionalMulticastGroupRangeActivations'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsRegionalMulticastGroupRangeActivationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new regional multicast group range activation in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupRangeActivations',
+        http_method='POST',
+        method_id='networkservices.projects.locations.regionalMulticastGroupRangeActivations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['regionalMulticastGroupRangeActivationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastGroupRangeActivations',
+        request_field='regionalMulticastGroupRangeActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single regional multicast group range activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupRangeActivations/{regionalMulticastGroupRangeActivationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.regionalMulticastGroupRangeActivations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single regional multicast group range activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionalMulticastGroupRangeActivation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupRangeActivations/{regionalMulticastGroupRangeActivationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastGroupRangeActivations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsGetRequest',
+        response_type_name='RegionalMulticastGroupRangeActivation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists regional multicast group range activations in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRegionalMulticastGroupRangeActivationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupRangeActivations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastGroupRangeActivations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastGroupRangeActivations',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsListRequest',
+        response_type_name='ListRegionalMulticastGroupRangeActivationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single regional multicast group range activation.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastGroupRangeActivations/{regionalMulticastGroupRangeActivationsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.regionalMulticastGroupRangeActivations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='regionalMulticastGroupRangeActivation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastGroupRangeActivationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegionalMulticastProducerAssociationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_regionalMulticastProducerAssociations resource."""
+
+    _NAME = 'projects_locations_regionalMulticastProducerAssociations'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsRegionalMulticastProducerAssociationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new regional multicast producer association in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastProducerAssociations',
+        http_method='POST',
+        method_id='networkservices.projects.locations.regionalMulticastProducerAssociations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['regionalMulticastProducerAssociationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastProducerAssociations',
+        request_field='regionalMulticastProducerAssociation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single regional multicast producer association.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastProducerAssociations/{regionalMulticastProducerAssociationsId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.regionalMulticastProducerAssociations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single regional multicast producer association.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionalMulticastProducerAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastProducerAssociations/{regionalMulticastProducerAssociationsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastProducerAssociations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsGetRequest',
+        response_type_name='RegionalMulticastProducerAssociation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists regional multicast producer associations in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRegionalMulticastProducerAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastProducerAssociations',
+        http_method='GET',
+        method_id='networkservices.projects.locations.regionalMulticastProducerAssociations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/regionalMulticastProducerAssociations',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsListRequest',
+        response_type_name='ListRegionalMulticastProducerAssociationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single regional multicast producer association.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/regionalMulticastProducerAssociations/{regionalMulticastProducerAssociationsId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.regionalMulticastProducerAssociations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='regionalMulticastProducerAssociation',
+        request_type_name='NetworkservicesProjectsLocationsRegionalMulticastProducerAssociationsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

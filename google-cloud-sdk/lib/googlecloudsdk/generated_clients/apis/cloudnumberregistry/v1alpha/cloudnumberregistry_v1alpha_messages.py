@@ -59,19 +59,6 @@ class CleanupIpamAdminScopeRequest(_messages.Message):
   requestId = _messages.StringField(1)
 
 
-class CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest(_messages.Message):
-  r"""A CloudnumberregistryProjectsLocationsCheckAdminScopeAvailabilityRequest
-  object.
-
-  Fields:
-    parent: Required. Parent value for the IpamAdminScopes.
-    scopes: Required. The scopes of the IpamAdminScopes to look for.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  scopes = _messages.StringField(2, repeated=True)
-
-
 class CloudnumberregistryProjectsLocationsCustomRangesCreateRequest(_messages.Message):
   r"""A CloudnumberregistryProjectsLocationsCustomRangesCreateRequest object.
 
@@ -122,8 +109,9 @@ class CloudnumberregistryProjectsLocationsCustomRangesDeleteRequest(_messages.Me
   requestId = _messages.StringField(3)
 
 
-class CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest(_messages.Message):
-  r"""A CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangeRequest
+class CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangesRequest(_messages.Message):
+  r"""A
+  CloudnumberregistryProjectsLocationsCustomRangesFindFreeIpRangesRequest
   object.
 
   Fields:
@@ -221,9 +209,9 @@ class CloudnumberregistryProjectsLocationsCustomRangesShowUtilizationRequest(_me
   name = _messages.StringField(1, required=True)
 
 
-class CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest(_messages.Message):
+class CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangesRequest(_messages.Message):
   r"""A
-  CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangeRequest
+  CloudnumberregistryProjectsLocationsDiscoveredRangesFindFreeIpRangesRequest
   object.
 
   Fields:
@@ -301,6 +289,20 @@ class CloudnumberregistryProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudnumberregistryProjectsLocationsIpamAdminScopesCheckAvailabilityRequest(_messages.Message):
+  r"""A
+  CloudnumberregistryProjectsLocationsIpamAdminScopesCheckAvailabilityRequest
+  object.
+
+  Fields:
+    parent: Required. Parent value for the IpamAdminScopes.
+    scopes: Required. The scopes of the IpamAdminScopes to look for.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  scopes = _messages.StringField(2, repeated=True)
 
 
 class CloudnumberregistryProjectsLocationsIpamAdminScopesCleanupRequest(_messages.Message):
@@ -731,48 +733,14 @@ class CloudnumberregistryProjectsLocationsRegistryBooksSearchIpResourcesRequest(
   CloudnumberregistryProjectsLocationsRegistryBooksSearchIpResourcesRequest
   object.
 
-  Enums:
-    IpVersionValueValuesEnum: Optional. The IP version to search for.
-
   Fields:
-    attributeText: Optional. The attribute text to search for in keys or
-      values.
-    ipAddress: Optional. The IP address to search for.
-    ipVersion: Optional. The IP version to search for.
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for SearchIpResourcesRequest
-    query: Optional. Search query.
-    realm: Optional. Realm name to search for.
-    showUtilization: Optional. Whether to show the utilization of the ranges
-      in the response.
+    name: Required. The name of the RegistryBook to search in.
+    searchIpResourcesRequest: A SearchIpResourcesRequest resource to be passed
+      as the request body.
   """
 
-  class IpVersionValueValuesEnum(_messages.Enum):
-    r"""Optional. The IP version to search for.
-
-    Values:
-      IP_VERSION_UNSPECIFIED: Unspecified IP version.
-      IPV4: IPv4.
-      IPV6: IPv6.
-    """
-    IP_VERSION_UNSPECIFIED = 0
-    IPV4 = 1
-    IPV6 = 2
-
-  attributeText = _messages.StringField(1)
-  ipAddress = _messages.StringField(2)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 3)
-  orderBy = _messages.StringField(4)
-  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(6)
-  parent = _messages.StringField(7, required=True)
-  query = _messages.StringField(8)
-  realm = _messages.StringField(9)
-  showUtilization = _messages.BooleanField(10)
+  name = _messages.StringField(1, required=True)
+  searchIpResourcesRequest = _messages.MessageField('SearchIpResourcesRequest', 2)
 
 
 class CustomRange(_messages.Message):
@@ -788,9 +756,18 @@ class CustomRange(_messages.Message):
     ipv6CidrRange: Optional. The IPv6 CIDR range of the CustomRange.
     labels: Optional. Labels as key value pairs
     name: Required. Identifier. name of resource
-    parentRange: Optional. The parent range of the CustomRange.
-    realm: Required. The realm of the CustomRange.
-    registryBook: Required. The registry book of the CustomRange.
+    parentRange: Optional. The parent range of the CustomRange. Do not allow
+      setting parent range if realm is specified. Format must follow this
+      pattern:
+      projects/{project}/locations/{location}/customRanges/{custom_range}
+    realm: Optional. The realm of the CustomRange. The realm must be in the
+      same project as the custom range. Do not allow setting realm if parent
+      range is specified, since the realm should be inherited from the parent
+      range. Format must follow this pattern:
+      projects/{project}/locations/{location}/realms/{realm}
+    registryBook: Output only. The registry book of the CustomRange. This
+      field is inherited from the realm or parent range depending on which one
+      is specified.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -872,8 +849,8 @@ class DiscoveredRange(_messages.Message):
     labels: Optional. Labels as key value pairs
     name: Required. Identifier. Name of the DiscoveredRange.
     parentRange: Optional. The parent range of the DiscoveredRange.
-    realm: Required. The realm of the DiscoveredRange.
-    registryBook: Required. The registry book of the DiscoveredRange.
+    realm: Optional. The realm of the DiscoveredRange.
+    registryBook: Output only. The registry book of the DiscoveredRange.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -930,15 +907,13 @@ class DiscoveryMetadata(_messages.Message):
       "projects/{project_number}/networks/{network_id}".
     resourceUri: Output only. The resource uri of the discovered resource.
     sourceId: Output only. The canonical google.aip.dev/122 name of the source
-      resource. https://docs.google.com/document/d/1GuWokyKkXqOKIwRxvsQTSkmON7
-      R9nfDezaxouG4QAP0/edit?tab=t.0#bookmark=id.wt75ca9ffaeh
+      resource.
     sourceSubId: Output only. A single source resource can be the source of
       multiple CNR resources. This sub_id is used to distinguish between the
       different CNR resources derived from the same upstream resource. For
       example, a single subnetwork can be the source of multiple ranges, one
       for each protocol. In this case, the sub_id could be "private-ipv4" or
-      "private-ipv6". https://docs.google.com/document/d/1GuWokyKkXqOKIwRxvsQT
-      SkmON7R9nfDezaxouG4QAP0/edit?tab=t.0#bookmark=id.wt75ca9ffaeh
+      "private-ipv6".
     state: Output only. The state of the resource.
     updateTime: Output only. The time when the resource was last modified.
   """
@@ -981,7 +956,7 @@ class Empty(_messages.Message):
 
 
 
-class FindCustomRangeFreeIpRangeResponse(_messages.Message):
+class FindCustomRangeFreeIpRangesResponse(_messages.Message):
   r"""Message for the response to finding free IP ranges.
 
   Fields:
@@ -992,7 +967,7 @@ class FindCustomRangeFreeIpRangeResponse(_messages.Message):
   freeIpCidrRanges = _messages.StringField(1, repeated=True)
 
 
-class FindDiscoveredRangeFreeIpRangeResponse(_messages.Message):
+class FindDiscoveredRangeFreeIpRangesResponse(_messages.Message):
   r"""Message for the response to finding free IP ranges.
 
   Fields:
@@ -1051,6 +1026,8 @@ class IpamAdminScope(_messages.Message):
       RECOVERING: Recovering.
       DISABLED: Disabled.
       DELETION_COMPLETED: Deleting completed.
+      CLEANUP_IN_PROGRESS: Cleanup in progress.
+      READY_FOR_DELETION: Ready for deletion.
     """
     DISCOVERY_PIPELINE_STATE_UNSPECIFIED = 0
     INTERNAL_FAILURE = 1
@@ -1062,6 +1039,8 @@ class IpamAdminScope(_messages.Message):
     RECOVERING = 7
     DISABLED = 8
     DELETION_COMPLETED = 9
+    CLEANUP_IN_PROGRESS = 10
+    READY_FOR_DELETION = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1464,9 +1443,13 @@ class RangeUtilization(_messages.Message):
   r"""Message for the utilization of an IP range
 
   Fields:
-    totalConsumed: The total number of IP addresses consumed in the range.
-    totalProduced: The total number of IP addresses produced in the range.
-    usage: The usage of the range as a percentage.
+    totalConsumed: Output only. The total number of IP addresses consumed in
+      the range.
+    totalProduced: Output only. The total number of IP addresses produced in
+      the range.
+    usage: Output only. The usage of the range as a percentage. This is marked
+      as optional so that we have presence tracking and API responses show 0.0
+      instead of NULL.
   """
 
   totalConsumed = _messages.StringField(1)
@@ -1502,8 +1485,8 @@ class Realm(_messages.Message):
 
     Values:
       IP_VERSION_UNSPECIFIED: Unspecified IP version.
-      IPV4: IPv4.
-      IPV6: IPv6.
+      IPV4: IPv4 IP version.
+      IPV6: IPv6 IP version.
     """
     IP_VERSION_UNSPECIFIED = 0
     IPV4 = 1
@@ -1619,6 +1602,40 @@ class RegistryBook(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class SearchIpResourcesRequest(_messages.Message):
+  r"""Message for searching IP resources
+
+  Fields:
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    query: Optional. Search query. This string filters resources in an
+      AIP-160-like format. It has some limitations. You can only specify top
+      level conjunctions or attribute level negations. Each restriction can
+      only be used once except the attribute restriction. The available
+      restrictions are: - `realm`: The realm name to search in. -
+      `ip_address`: The IP address to search for within ranges. -
+      `ip_version`: The IP version to filter by (e.g., "IPV4", "IPV6"). -
+      `attribute_text`: The attribute text to search for within ranges. -
+      `attribute`: The attribute key and value to filter by. Only one of
+      attribute_text or multiple attribute filters can be specified. Examples:
+      - realm=test-realm - realm=test-realm AND ip_address=10.0.0.0 -
+      realm=test-realm AND ip_version=IPV6 - realm=test-realm AND
+      attribute_text=test - realm=test-realm AND attribute_text=test AND
+      ip_version=IPV4 - ip_address=10.0.0.0 AND NOT attribute:(key1=value1)
+    showUtilization: Optional. Whether to show the utilization of the ranges
+      in the response.
+  """
+
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  query = _messages.StringField(4)
+  showUtilization = _messages.BooleanField(5)
 
 
 class SearchIpResourcesResponse(_messages.Message):
