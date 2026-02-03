@@ -22,7 +22,6 @@ import datetime
 import enum
 import re
 
-from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from apitools.base.py.exceptions import HttpForbiddenError
 from googlecloudsdk.api_lib.cloudresourcemanager import organizations
@@ -33,7 +32,6 @@ from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.resource_manager import tags
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.projects import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
@@ -313,7 +311,7 @@ def GetEnvironmentTag(project_id):
             effective_tag.namespacedTagKey.split('/')[-1],
             effective_tag.namespacedTagValue.split('/')[-1],
         )
-  except (apitools_exceptions.HttpError, core_exceptions.Error) as e:
+  except Exception as e:  # pylint: disable=broad-except
     # Gracefully print a warning message.
     log.info(
         'Unable to get environment tag for project [{0}]: {1}'.format(

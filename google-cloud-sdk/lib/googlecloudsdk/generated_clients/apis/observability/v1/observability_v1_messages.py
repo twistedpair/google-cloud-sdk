@@ -15,8 +15,82 @@ from apitools.base.py import extra_types
 package = 'observability'
 
 
+class Bucket(_messages.Message):
+  r"""Bucket configuration for storing observability data.
+
+  Fields:
+    cmekSettings: Optional. Settings for configuring CMEK on a bucket.
+    createTime: Output only. Create timestamp.
+    deleteTime: Output only. Delete timestamp.
+    description: Optional. Description of the bucket.
+    displayName: Optional. User friendly display name.
+    name: Identifier. Name of the bucket. The format is:
+      projects/[PROJECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]
+    purgeTime: Output only. Timestamp when the bucket in soft-deleted state is
+      purged.
+    updateTime: Output only. Update timestamp.
+  """
+
+  cmekSettings = _messages.MessageField('CmekSettings', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  purgeTime = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CmekSettings(_messages.Message):
+  r"""Settings for configuring CMEK for a bucket.
+
+  Fields:
+    kmsKey: Optional. The resource name for the configured Cloud KMS key. The
+      format is: projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]
+      /cryptoKeys/[KEY] For example: projects/my-project/locations/us-
+      central1/keyRings/my-ring/cryptoKeys/my-key
+    kmsKeyVersion: Output only. The CryptoKeyVersion resource name for the
+      configured Cloud KMS key. The format is: projects/[PROJECT_ID]/locations
+      /[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]/cryptoKeyVersions/[VERSI
+      ON] For example: projects/my-project/locations/us-central1/keyRings/my-
+      ring/cryptoKeys/my-key/cryptoKeyVersions/1 This read-only field is used
+      to convey the specific configured CryptoKeyVersion of the `kms_key` that
+      has been configured. It is populated when the CMEK settings are bound to
+      a single key version.
+    serviceAccountId: Output only. The service account used to access the key.
+  """
+
+  kmsKey = _messages.StringField(1)
+  kmsKeyVersion = _messages.StringField(2)
+  serviceAccountId = _messages.StringField(3)
+
+
+class Dataset(_messages.Message):
+  r"""A dataset is a collection of data that has a specific configuration. A
+  dataset can be backed by multiple tables. One bucket can have multiple
+  datasets.
+
+  Fields:
+    createTime: Output only. Create timestamp.
+    deleteTime: Output only. Delete timestamp.
+    description: Optional. Description of the dataset.
+    displayName: Optional. User friendly display name.
+    name: Identifier. Name of the dataset. The format is: projects/[PROJECT_ID
+      ]/locations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_ID]
+    purgeTime: Output only. Timestamp when the dataset in soft-deleted state
+      is purged.
+  """
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  purgeTime = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -26,6 +100,66 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class Link(_messages.Message):
+  r"""A link lets a dataset be accessible to BigQuery via usage of linked
+  datasets.
+
+  Fields:
+    createTime: Output only. Create timestamp.
+    description: Optional. Description of the link.
+    displayName: Optional. A user friendly display name.
+    name: Identifier. Name of the link. The format is: projects/[PROJECT_ID]/l
+      ocations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_ID]/links/[LIN
+      K_ID]
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+
+
+class ListBucketsResponse(_messages.Message):
+  r"""Response for listing buckets.
+
+  Fields:
+    buckets: Optional. The list of buckets.
+    nextPageToken: Optional. A token that can be sent as `page_token` to
+      retrieve the next page. When this field is omitted, there are no
+      subsequent pages.
+  """
+
+  buckets = _messages.MessageField('Bucket', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDatasetsResponse(_messages.Message):
+  r"""Response for listing datasets.
+
+  Fields:
+    datasets: The list of datasets.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. When this field is omitted, there are no subsequent pages.
+  """
+
+  datasets = _messages.MessageField('Dataset', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListLinksResponse(_messages.Message):
+  r"""Response for listing links.
+
+  Fields:
+    links: The list of links.
+    nextPageToken: Optional. A token that can be sent as `page_token` to
+      retrieve the next page. When this field is omitted, there are no
+      subsequent pages.
+  """
+
+  links = _messages.MessageField('Link', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -72,6 +206,20 @@ class ListTraceScopesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   traceScopes = _messages.MessageField('TraceScope', 2, repeated=True)
+
+
+class ListViewsResponse(_messages.Message):
+  r"""Response for listing views.
+
+  Fields:
+    nextPageToken: Optional. A token that can be sent as `page_token` to
+      retrieve the next page. When this field is omitted, there are no
+      subsequent pages.
+    views: The list of views.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  views = _messages.MessageField('View', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -334,6 +482,180 @@ class ObservabilityOrganizationsLocationsOperationsListRequest(_messages.Message
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   returnPartialSuccess = _messages.BooleanField(5)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsGetRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsGetRequest object.
+
+  Fields:
+    name: Required. Name of the dataset to retrieve. The format is: projects/[
+      PROJECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_I
+      D]
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsLinksCreateRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsLinksCreateRequest
+  object.
+
+  Fields:
+    link: A Link resource to be passed as the request body.
+    linkId: Required. Id of the link to create.
+    parent: Required. Name of the containing dataset for this link. The format
+      is: projects/[PROJECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]/datas
+      ets/[DATASET_ID]
+  """
+
+  link = _messages.MessageField('Link', 1)
+  linkId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsLinksDeleteRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsLinksDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the link to delete. The format is: projects/[PROJE
+      CT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_ID]/li
+      nks/[LINK_ID]
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsLinksGetRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsLinksGetRequest object.
+
+  Fields:
+    name: Required. Name of the link to retrieve. The format is: projects/[PRO
+      JECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_ID]/
+      links/[LINK_ID]
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsLinksListRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsLinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of links to return. If unspecified,
+      then at most 100 links are returned. The maximum value is 1000; values
+      above 1000 are coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListLinks`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent dataset that owns this collection of links.
+      The format is: projects/[PROJECT_ID]/locations/[LOCATION]/buckets/[BUCKE
+      T_ID]/datasets/[DATASET_ID]
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsLinksPatchRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsLinksPatchRequest object.
+
+  Fields:
+    link: A Link resource to be passed as the request body.
+    name: Identifier. Name of the link. The format is: projects/[PROJECT_ID]/l
+      ocations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_ID]/links/[LIN
+      K_ID]
+    updateMask: Optional. The list of fields to update.
+  """
+
+  link = _messages.MessageField('Link', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsListRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of datasets to return. If
+      unspecified, then at most 100 datasets are returned. The maximum value
+      is 1000; values above 1000 are coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListDatasets`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent bucket that owns this collection of datasets.
+      The format is:
+      projects/[PROJECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]
+    showDeleted: Optional. If true, then the response will include deleted
+      datasets.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsViewsGetRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsViewsGetRequest object.
+
+  Fields:
+    name: Required. Name of the view to retrieve. The format is: projects/[PRO
+      JECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_ID]/
+      views/[VIEW_ID]
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsDatasetsViewsListRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsDatasetsViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of views to return. If unspecified,
+      then at most 100 views are returned. The maximum value is 1000; values
+      above 1000 are coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListViews`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. Dataset whose views are to be listed. The format is: pro
+      jects/[PROJECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DA
+      TASET_ID]
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsGetRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsGetRequest object.
+
+  Fields:
+    name: Required. Name of the bucket to retrieve. The format is:
+      projects/[PROJECT_ID]/locations/[LOCATION]/buckets/[BUCKET_ID]
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ObservabilityProjectsLocationsBucketsListRequest(_messages.Message):
+  r"""A ObservabilityProjectsLocationsBucketsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of buckets to return. If
+      unspecified, then at most 100 buckets are returned. The maximum value is
+      1000; values above 1000 are coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListBuckets`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent, which owns this collection of buckets. The
+      format is: projects/[PROJECT_ID]/locations/[LOCATION]
+    showDeleted: Optional. If true, then the response will include deleted
+      buckets.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
 
 
 class ObservabilityProjectsLocationsGetRequest(_messages.Message):
@@ -832,6 +1154,27 @@ class TraceScope(_messages.Message):
   description = _messages.StringField(2)
   name = _messages.StringField(3)
   resourceNames = _messages.StringField(4, repeated=True)
+  updateTime = _messages.StringField(5)
+
+
+class View(_messages.Message):
+  r"""A view corresponds to a read-only representation of a subset of the data
+  in a dataset.
+
+  Fields:
+    createTime: Output only. Create timestamp.
+    description: Optional. Description of the view.
+    displayName: Optional. User friendly display name.
+    name: Identifier. Name of the view. The format is: projects/[PROJECT_ID]/l
+      ocations/[LOCATION]/buckets/[BUCKET_ID]/datasets/[DATASET_ID]/views/[VIE
+      W_ID]
+    updateTime: Output only. Update timestamp.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
 
 

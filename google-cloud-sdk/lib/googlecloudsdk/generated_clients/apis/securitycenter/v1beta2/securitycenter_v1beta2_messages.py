@@ -121,6 +121,43 @@ class AdaptiveProtection(_messages.Message):
   confidence = _messages.FloatField(1)
 
 
+class AdcApplication(_messages.Message):
+  r"""Represents an ADC application associated with the finding.
+
+  Fields:
+    attributes: Consumer provided attributes for the AppHub application.
+    name: The resource name of an ADC Application. Format: projects/{project}/
+      locations/{location}/spaces/{space}/applications/{application}
+  """
+
+  attributes = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplicationAttributes', 1)
+  name = _messages.StringField(2)
+
+
+class AdcApplicationTemplateRevision(_messages.Message):
+  r"""Represents an ADC template associated with the finding.
+
+  Fields:
+    name: The resource name of an ADC Application Template Revision. Format: p
+      rojects/{project}/locations/{location}/spaces/{space}/applicationTemplat
+      es/{application_template}/revisions/{revision}
+  """
+
+  name = _messages.StringField(1)
+
+
+class AdcSharedTemplateRevision(_messages.Message):
+  r"""Represents an ADC shared template associated with the finding.
+
+  Fields:
+    name: The resource name of an ADC Shared Template Revision. Format: projec
+      ts/{project}/locations/{location}/spaces/{space}/applicationTemplates/{a
+      pplication_template}/revisions/{revision}
+  """
+
+  name = _messages.StringField(1)
+
+
 class AffectedResources(_messages.Message):
   r"""Details about resources affected by this finding.
 
@@ -2722,6 +2759,9 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
       resides in.
 
   Fields:
+    adcApplication: The ADC application associated with the finding.
+    adcApplicationTemplate: The ADC template associated with the finding.
+    adcSharedTemplate: The ADC shared template associated with the finding.
     application: The App Hub application this resource belongs to.
     awsMetadata: The AWS metadata associated with the finding.
     azureMetadata: The Azure metadata associated with the finding.
@@ -2769,23 +2809,26 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     AMAZON_WEB_SERVICES = 2
     MICROSOFT_AZURE = 3
 
-  application = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplication', 1)
-  awsMetadata = _messages.MessageField('AwsMetadata', 2)
-  azureMetadata = _messages.MessageField('AzureMetadata', 3)
-  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 4)
-  displayName = _messages.StringField(5)
-  folders = _messages.MessageField('Folder', 6, repeated=True)
-  location = _messages.StringField(7)
-  name = _messages.StringField(8)
-  organization = _messages.StringField(9)
-  parent = _messages.StringField(10)
-  parentDisplayName = _messages.StringField(11)
-  project = _messages.StringField(12)
-  projectDisplayName = _messages.StringField(13)
-  resourcePath = _messages.MessageField('ResourcePath', 14)
-  resourcePathString = _messages.StringField(15)
-  service = _messages.StringField(16)
-  type = _messages.StringField(17)
+  adcApplication = _messages.MessageField('AdcApplication', 1)
+  adcApplicationTemplate = _messages.MessageField('AdcApplicationTemplateRevision', 2)
+  adcSharedTemplate = _messages.MessageField('AdcSharedTemplateRevision', 3)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV1ResourceApplication', 4)
+  awsMetadata = _messages.MessageField('AwsMetadata', 5)
+  azureMetadata = _messages.MessageField('AzureMetadata', 6)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 7)
+  displayName = _messages.StringField(8)
+  folders = _messages.MessageField('Folder', 9, repeated=True)
+  location = _messages.StringField(10)
+  name = _messages.StringField(11)
+  organization = _messages.StringField(12)
+  parent = _messages.StringField(13)
+  parentDisplayName = _messages.StringField(14)
+  project = _messages.StringField(15)
+  projectDisplayName = _messages.StringField(16)
+  resourcePath = _messages.MessageField('ResourcePath', 17)
+  resourcePathString = _messages.StringField(18)
+  service = _messages.StringField(19)
+  type = _messages.StringField(20)
 
 
 class GoogleCloudSecuritycenterV1ResourceApplication(_messages.Message):
@@ -3614,6 +3657,43 @@ class GoogleCloudSecuritycenterV2AdaptiveProtection(_messages.Message):
   """
 
   confidence = _messages.FloatField(1)
+
+
+class GoogleCloudSecuritycenterV2AdcApplication(_messages.Message):
+  r"""Represents an ADC application associated with the finding.
+
+  Fields:
+    attributes: Consumer provided attributes for the AppHub application.
+    name: The resource name of an ADC Application. Format: projects/{project}/
+      locations/{location}/spaces/{space}/applications/{application}
+  """
+
+  attributes = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplicationAttributes', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2AdcApplicationTemplateRevision(_messages.Message):
+  r"""Represents an ADC template associated with the finding.
+
+  Fields:
+    name: The resource name of an ADC Application Template Revision. Format: p
+      rojects/{project}/locations/{location}/spaces/{space}/applicationTemplat
+      es/{application_template}/revisions/{revision}
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2AdcSharedTemplateRevision(_messages.Message):
+  r"""Represents an ADC shared template associated with the finding.
+
+  Fields:
+    name: The resource name of an ADC Shared Template Revision. Format: projec
+      ts/{project}/locations/{location}/spaces/{space}/applicationTemplates/{a
+      pplication_template}/revisions/{revision}
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleCloudSecuritycenterV2AffectedResources(_messages.Message):
@@ -6010,6 +6090,9 @@ class GoogleCloudSecuritycenterV2IssueResource(_messages.Message):
       associated with the issue.
 
   Fields:
+    adcApplication: The ADC application associated with the finding.
+    adcApplicationTemplate: The ADC template associated with the finding.
+    adcSharedTemplate: The ADC shared template associated with the finding.
     application: The AppHub application associated with the resource, if any.
       Only populated for the primary resource.
     awsMetadata: The AWS metadata of the resource associated with the issue.
@@ -6040,14 +6123,54 @@ class GoogleCloudSecuritycenterV2IssueResource(_messages.Message):
     AMAZON_WEB_SERVICES = 2
     MICROSOFT_AZURE = 3
 
-  application = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplication', 1)
-  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAwsMetadata', 2)
-  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAzureMetadata', 3)
-  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 4)
-  displayName = _messages.StringField(5)
-  googleCloudMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceGoogleCloudMetadata', 6)
-  name = _messages.StringField(7)
-  type = _messages.StringField(8)
+  adcApplication = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAdcApplication', 1)
+  adcApplicationTemplate = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAdcApplicationTemplateRevision', 2)
+  adcSharedTemplate = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAdcSharedTemplateRevision', 3)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplication', 4)
+  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAwsMetadata', 5)
+  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceAzureMetadata', 6)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 7)
+  displayName = _messages.StringField(8)
+  googleCloudMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceGoogleCloudMetadata', 9)
+  name = _messages.StringField(10)
+  type = _messages.StringField(11)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceAdcApplication(_messages.Message):
+  r"""Represents an ADC application associated with the finding.
+
+  Fields:
+    attributes: Consumer provided attributes for the AppHub application.
+    name: The resource name of an ADC Application. Format: projects/{project}/
+      locations/{location}/spaces/{space}/applications/{application}
+  """
+
+  attributes = _messages.MessageField('GoogleCloudSecuritycenterV2IssueResourceApplicationAttributes', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceAdcApplicationTemplateRevision(_messages.Message):
+  r"""Represents an ADC template associated with the finding.
+
+  Fields:
+    name: The resource name of an ADC Application Template Revision. Format: p
+      rojects/{project}/locations/{location}/spaces/{space}/applicationTemplat
+      es/{application_template}/revisions/{revision}
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2IssueResourceAdcSharedTemplateRevision(_messages.Message):
+  r"""Represents an ADC shared template associated with the finding.
+
+  Fields:
+    name: The resource name of an ADC Shared Template Revision. Format: projec
+      ts/{project}/locations/{location}/spaces/{space}/applicationTemplates/{a
+      pplication_template}/revisions/{revision}
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleCloudSecuritycenterV2IssueResourceApplication(_messages.Message):
@@ -7465,6 +7588,9 @@ class GoogleCloudSecuritycenterV2Resource(_messages.Message):
       is from.
 
   Fields:
+    adcApplication: The ADC application associated with the finding.
+    adcApplicationTemplate: The ADC template associated with the finding.
+    adcSharedTemplate: The ADC shared template associated with the finding.
     application: The App Hub application this resource belongs to.
     awsMetadata: The AWS metadata associated with the finding.
     azureMetadata: The Azure metadata associated with the finding.
@@ -7503,18 +7629,21 @@ class GoogleCloudSecuritycenterV2Resource(_messages.Message):
     AMAZON_WEB_SERVICES = 2
     MICROSOFT_AZURE = 3
 
-  application = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplication', 1)
-  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AwsMetadata', 2)
-  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AzureMetadata', 3)
-  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 4)
-  displayName = _messages.StringField(5)
-  gcpMetadata = _messages.MessageField('GcpMetadata', 6)
-  location = _messages.StringField(7)
-  name = _messages.StringField(8)
-  resourcePath = _messages.MessageField('GoogleCloudSecuritycenterV2ResourcePath', 9)
-  resourcePathString = _messages.StringField(10)
-  service = _messages.StringField(11)
-  type = _messages.StringField(12)
+  adcApplication = _messages.MessageField('GoogleCloudSecuritycenterV2AdcApplication', 1)
+  adcApplicationTemplate = _messages.MessageField('GoogleCloudSecuritycenterV2AdcApplicationTemplateRevision', 2)
+  adcSharedTemplate = _messages.MessageField('GoogleCloudSecuritycenterV2AdcSharedTemplateRevision', 3)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceApplication', 4)
+  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AwsMetadata', 5)
+  azureMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AzureMetadata', 6)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 7)
+  displayName = _messages.StringField(8)
+  gcpMetadata = _messages.MessageField('GcpMetadata', 9)
+  location = _messages.StringField(10)
+  name = _messages.StringField(11)
+  resourcePath = _messages.MessageField('GoogleCloudSecuritycenterV2ResourcePath', 12)
+  resourcePathString = _messages.StringField(13)
+  service = _messages.StringField(14)
+  type = _messages.StringField(15)
 
 
 class GoogleCloudSecuritycenterV2ResourceApplication(_messages.Message):

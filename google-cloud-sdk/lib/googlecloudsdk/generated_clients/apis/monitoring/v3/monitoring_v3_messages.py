@@ -6711,7 +6711,7 @@ class NotificationChannelStrategy(_messages.Message):
       notification_channels field of this AlertPolicy. The format is:
       projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
     renotifyInterval: The frequency at which to send reminder notifications
-      for open incidents.
+      for open incidents. The value must be between 30 minutes and 24 hours.
   """
 
   notificationChannelNames = _messages.StringField(1, repeated=True)

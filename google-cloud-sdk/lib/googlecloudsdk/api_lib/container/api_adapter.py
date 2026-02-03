@@ -12260,7 +12260,7 @@ def _GetAutopilotGeneralProfileEnum(options, messages):
 
   profile_map = {
       'none': (
-          messages.ClusterAutoscaling.AutopilotGeneralProfileValueValuesEnum.AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED
+          messages.ClusterAutoscaling.AutopilotGeneralProfileValueValuesEnum.NONE
       ),
       'no-performance': (
           messages.ClusterAutoscaling.AutopilotGeneralProfileValueValuesEnum.NO_PERFORMANCE

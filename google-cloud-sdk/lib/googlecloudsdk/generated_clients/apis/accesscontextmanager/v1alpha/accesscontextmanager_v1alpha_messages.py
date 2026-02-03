@@ -1097,15 +1097,19 @@ class Binding(_messages.Message):
 
 
 class ClientScope(_messages.Message):
-  r"""Client scope represents the application, etc. subject to this binding's
-  restrictions.
+  r"""Client scope represents the application, project, etc.
+
+  subject to this binding's restrictions.
 
   Fields:
     restrictedClientApplication: Optional. The application that is subject to
       this binding's scope.
+    restrictedProject: Optional. The GCP project that is subject to this
+      binding's scope.
   """
 
   restrictedClientApplication = _messages.MessageField('Application', 1)
+  restrictedProject = _messages.MessageField('Project', 2)
 
 
 class CommitServicePerimetersRequest(_messages.Message):
@@ -2055,6 +2059,18 @@ class Principal(_messages.Message):
   federatedPrincipal = _messages.StringField(1)
   serviceAccount = _messages.StringField(2)
   serviceAccountProjectNumber = _messages.StringField(3)
+
+
+class Project(_messages.Message):
+  r"""A GCP project which contains applications and resources that users can
+
+  access.
+
+  Fields:
+    projectNumber: The GCP project number. Example: "projects/1234567890"
+  """
+
+  projectNumber = _messages.StringField(1)
 
 
 class ReplaceAccessLevelsRequest(_messages.Message):

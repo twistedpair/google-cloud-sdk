@@ -219,29 +219,52 @@ def BackendServiceArgumentForTargetTcpProxy(required=True,
         """)
 
 
-def AddLoadBalancingScheme(parser):
-  parser.add_argument(
-      '--load-balancing-scheme',
-      choices=[
-          'INTERNAL', 'EXTERNAL', 'INTERNAL_SELF_MANAGED', 'EXTERNAL_MANAGED',
-          'INTERNAL_MANAGED'
-      ],
-      type=lambda x: x.replace('-', '_').upper(),
-      default='EXTERNAL',
-      help="""\
+def AddLoadBalancingScheme(parser, include_external_passthrough=False):
+  """Add flags related to load balancing scheme.
+
+  Args:
+    parser: The parser that parses args from user input.
+    include_external_passthrough: Whether to include the external passthrough
+      load balancing scheme.
+  """
+  choices = [
+      'INTERNAL',
+      'EXTERNAL',
+      'INTERNAL_SELF_MANAGED',
+      'EXTERNAL_MANAGED',
+      'INTERNAL_MANAGED',
+  ]
+  help_text = """\
       Specifies the load balancer type. Choose EXTERNAL for the classic
       Application Load Balancers, the external passthrough Network Load
       Balancers, and the global external proxy Network Load Balancers.
       Choose EXTERNAL_MANAGED for the Envoy-based global and regional external
       Application Load Balancers, and the regional external proxy Network Load
-      Balancers. Choose INTERNAL for the internal
-      passthrough Network Load Balancers. Choose INTERNAL_MANAGED for
-      Envoy-based internal load balancers such as the internal Application
-      Load Balancers and the internal proxy Network Load Balancers. Choose
-      INTERNAL_SELF_MANAGED for
-      Traffic Director. For more information, refer to this guide:
-      https://cloud.google.com/load-balancing/docs/choosing-load-balancer
-      """)
+      Balancers. Choose INTERNAL for the internal passthrough Network Load
+      Balancers. Choose INTERNAL_MANAGED for Envoy-based internal load balancers
+      such as the internal Application Load Balancers and the internal proxy
+      Network Load Balancers. Choose INTERNAL_SELF_MANAGED for Traffic Director.
+      """
+
+  if include_external_passthrough:
+    choices.append('EXTERNAL_PASSTHROUGH')
+    help_text += (
+        ' Choose EXTERNAL_PASSTHROUGH for the global external passthrough'
+        ' Network Load Balancers.'
+    )
+
+  help_text += (
+      ' For more information, refer to this guide:'
+      ' https://cloud.google.com/load-balancing/docs/choosing-load-balancer.'
+  )
+
+  parser.add_argument(
+      '--load-balancing-scheme',
+      choices=choices,
+      type=lambda x: x.replace('-', '_').upper(),
+      default='EXTERNAL',
+      help=help_text,
+  )
 
 
 def AddSubsettingPolicy(parser):
@@ -1091,28 +1114,26 @@ def AddPortName(parser):
       """)
 
 
-def AddProtocol(parser, default='HTTP'):
+def AddProtocol(parser, default='HTTP', include_external_passthrough=False):
   """Adds --protocol flag to the argparse.
 
   Args:
     parser: An argparse.ArgumentParser instance.
     default: The default protocol if this flag is unspecified.
+    include_external_passthrough: Whether to include EXTERNAL_PASSTHROUGH
+      network load balancers in the help text.
   """
   ilb_protocols = 'TCP, UDP, UNSPECIFIED'
   td_protocols = 'HTTP, HTTPS, HTTP2, GRPC, H2C'
   netlb_protocols = 'TCP, UDP, UNSPECIFIED'
-  parser.add_argument(
-      '--protocol',
-      default=default,
-      type=lambda x: x.upper(),
-      help="""\
+  help_text = f"""
       Protocol for incoming requests.
 
       If the `load-balancing-scheme` is `INTERNAL` (Internal passthrough
-      Network Load Balancer), the protocol must be one of: {0}.
+      Network Load Balancer), the protocol must be one of: {ilb_protocols}.
 
       If the `load-balancing-scheme` is `INTERNAL_SELF_MANAGED` (Traffic
-      Director), the protocol must be one of: {1}.
+      Director), the protocol must be one of: {td_protocols}.
 
       If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal Application
       Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2, H2C.
@@ -1126,7 +1147,7 @@ def AddProtocol(parser, default='HTTP'):
 
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is set
       (External passthrough Network Load Balancer), the protocol must be one
-      of: {2}.
+      of: {netlb_protocols}.
 
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
       (Global external Application Load Balancer and regional external
@@ -1140,7 +1161,18 @@ def AddProtocol(parser, default='HTTP'):
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
       (Regional external proxy Network Load Balancer), the protocol
       must be only TCP.
-      """.format(ilb_protocols, td_protocols, netlb_protocols),
+      """
+
+  if include_external_passthrough:
+    help_text += f"""
+
+    If the `load-balancing-scheme` is `EXTERNAL_PASSTHROUGH`
+    (Global external passthrough Network Load Balancer), the protocol must be
+    one of: {netlb_protocols}.
+    """
+
+  parser.add_argument(
+      '--protocol', default=default, type=lambda x: x.upper(), help=help_text
   )
 
 

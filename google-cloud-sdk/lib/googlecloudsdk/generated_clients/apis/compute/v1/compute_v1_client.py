@@ -4105,6 +4105,20 @@ deleted if there are backend services referencing it.
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
 
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
+
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsInsertRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -11078,6 +11092,20 @@ group.
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
 
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
+
       Args:
         request: (ComputeNetworkEndpointGroupsInsertRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -15847,6 +15875,32 @@ patch format and processing rules.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionHealthCheckServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionHealthCheckServices.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/healthCheckServices/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionHealthCheckServicesTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionHealthChecksService(base_api.BaseApiService):
     """Service class for the regionHealthChecks resource."""
 
@@ -17472,6 +17526,20 @@ deleted if it is configured as a backend of a backend service.
     def Insert(self, request, global_params=None):
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
+
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
 
       Args:
         request: (ComputeRegionNetworkEndpointGroupsInsertRequest) input message

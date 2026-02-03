@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+from typing import Any
 
 from googlecloudsdk.core import exceptions
 
@@ -96,6 +97,7 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
       "instance",
       "ipAddress",
       "gkeMasterCluster",
+      "gkePod",
       "cloudSqlInstance",
       "cloudFunction",
       "appEngineVersion",
@@ -122,6 +124,7 @@ def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
         "instance",
         "ip-address",
         "gke-master-cluster",
+        "gke-pod",
         "cloud-sql-instance",
     ]
     if endpoint_type == "source":
@@ -147,6 +150,7 @@ def ClearEndpointAttrs(unused_ref, args, patch_request):
       ("clear_source_instance", "source", "instance"),
       ("clear_source_ip_address", "source", "ipAddress"),
       ("clear_source_gke_master_cluster", "source", "gkeMasterCluster"),
+      ("clear_source_gke_pod", "source", "gkePod"),
       ("clear_source_cloud_sql_instance", "source", "cloudSqlInstance"),
       ("clear_source_cloud_function", "source", "cloudFunction"),
       ("clear_source_app_engine_version", "source", "appEngineVersion"),
@@ -158,6 +162,7 @@ def ClearEndpointAttrs(unused_ref, args, patch_request):
           "destination",
           "gkeMasterCluster",
       ),
+      ("clear_destination_gke_pod", "destination", "gkePod"),
       (
           "clear_destination_cloud_sql_instance",
           "destination",
@@ -187,6 +192,7 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
       "instance",
       "ipAddress",
       "gkeMasterCluster",
+      "gkePod",
       "cloudSqlInstance",
       "cloudFunction",
       "appEngineVersion",
@@ -213,6 +219,7 @@ def ClearSingleEndpointAttrBeta(patch_request, endpoint_type, endpoint_name):
         "instance",
         "ip-address",
         "gke-master-cluster",
+        "gke-pod",
         "cloud-sql-instance",
     ]
     if endpoint_type == "source":
@@ -238,6 +245,7 @@ def ClearEndpointAttrsBeta(unused_ref, args, patch_request):
       ("clear_source_instance", "source", "instance"),
       ("clear_source_ip_address", "source", "ipAddress"),
       ("clear_source_gke_master_cluster", "source", "gkeMasterCluster"),
+      ("clear_source_gke_pod", "source", "gkePod"),
       ("clear_source_cloud_sql_instance", "source", "cloudSqlInstance"),
       ("clear_source_cloud_function", "source", "cloudFunction"),
       ("clear_source_app_engine_version", "source", "appEngineVersion"),
@@ -249,6 +257,7 @@ def ClearEndpointAttrsBeta(unused_ref, args, patch_request):
           "destination",
           "gkeMasterCluster",
       ),
+      ("clear_destination_gke_pod", "destination", "gkePod"),
       (
           "clear_destination_cloud_sql_instance",
           "destination",
@@ -504,4 +513,45 @@ def ValidateFqdn(unused_ref, args, request):
         "destination-fqdn can only be specified when"
         " destination-gke-master-cluster is specified\n"
     )
+  return request
+
+
+def ValidateGkePodsURIs(unused_ref: Any, args: Any, request: Any) -> Any:
+  """Checks if all provided GKE Pod URIs are in correct format.
+
+  Args:
+    unused_ref: The resource reference.
+    args: The parsed command line arguments.
+    request: The request proto message.
+
+  Returns:
+    The request proto message.
+
+  Raises:
+    InvalidInputError: If any provided GKE Pod URI is not in the correct format.
+  """
+  flags = ["source_gke_pod", "destination_gke_pod"]
+  gke_pod_pattern = re.compile(
+      r"""
+      projects/
+      (?:[a-z][a-z0-9-\.:]*[a-z0-9])  # Project ID
+      /(zones|locations)/[-\w]+      # Zone or Region
+      /clusters/[-\w]+              # Cluster Name
+      /k8s/namespaces/[-\w]+        # Namespace
+      /pods/[-\w]+                  # Pod Name
+      """,
+      re.VERBOSE,
+  )
+  for flag in flags:
+    if not args.IsSpecified(flag):
+      continue
+
+    gke_pod = getattr(args, flag)
+    if not gke_pod_pattern.match(gke_pod):
+      raise InvalidInputError(
+          "Invalid value for flag {flag}: {gke_pod}\n"
+          + "Expected GKE Pod in one of the following formats:\n"
+          + "  projects/my-project/zones/zone/clusters/my-cluster/k8s/namespaces/my-namespace/pods/my-pod\n"
+          + "  projects/my-project/locations/location/clusters/my-cluster/k8s/namespaces/my-namespace/pods/my-pod"
+      )
   return request

@@ -67,6 +67,9 @@ BIGQUERY_EXPORT_NOT_SUPPORTED_IN_TPC = (
 CLOUD_STORAGE_EXPORT_NOT_SUPPORTED_IN_TPC = (
     'Cloud Storage Export Subscriptions are not available.'
 )
+BIGTABLE_EXPORT_NOT_SUPPORTED_IN_TPC = (
+    'Bigtable Export Subscriptions are not available.'
+)
 
 
 def MustSpecifyAllHelpText(config_name: str, is_update: bool):
@@ -707,6 +710,63 @@ def AddPubsubExportConfigFlags(parser, is_update):
   )
 
 
+def AddBigtableConfigFlags(parser, is_update):
+  """Adds Bigtable config flags to parser."""
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group(
+        hidden=True
+    )
+    AddBooleanFlag(
+        parser=mutual_exclusive_group,
+        flag_name='clear-bigtable-config',
+        action='store_true',
+        default=None,
+        help_text='If set, clear the Bigtable config from the subscription.',
+        hidden=True,
+        universe_help=BIGTABLE_EXPORT_NOT_SUPPORTED_IN_TPC,
+    )
+    current_group = mutual_exclusive_group
+
+  bigtable_config_group = current_group.add_argument_group(
+      help=arg_parsers.UniverseHelpText(
+          default=(
+              'Bigtable Config Options. The Cloud Pub/Sub service '
+              "account associated with the enclosing subscription's parent "
+              'project (i.e., '
+              'service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com) '
+              'must have permission to write to this Bigtable table.'
+          )
+          + MustSpecifyAllHelpText('BigtableConfig', is_update),
+          universe_help=BIGTABLE_EXPORT_NOT_SUPPORTED_IN_TPC,
+      ),
+      hidden=True,
+  )
+  bigtable_config_group.add_argument(
+      '--bigtable-table',
+      required=True,
+      help=(
+          'A Bigtable table of the form '
+          'projects/{project}/instances/{instance_name}/tables/{table_name}'
+          ' to which to write messages for this subscription.'
+      ),
+  )
+  bigtable_config_group.add_argument(
+      '--bigtable-app-profile-id',
+      default=None,
+      help='The app profile to use for the Bigtable writes.',
+  )
+  bigtable_config_group.add_argument(
+      '--bigtable-service-account-email',
+      default=None,
+      help=(
+          'The service account email to use when writing to Bigtable. If'
+          ' unspecified, uses the Pub/Sub service agent'
+          ' (https://cloud.google.com/iam/docs/service-account-types#service-agents).'
+      ),
+  )
+
+
 def ParseSubscriptionRetentionDurationWithDefault(value):
   if value == subscriptions.DEFAULT_MESSAGE_RETENTION_VALUE:
     return value
@@ -725,6 +785,7 @@ def AddSubscriptionSettingsFlags(
     parser,
     is_update=False,
     enable_push_to_cps=False,
+    enable_bigtable_config=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
@@ -733,6 +794,8 @@ def AddSubscriptionSettingsFlags(
     is_update: Whether or not this is for the update operation (vs. create).
     enable_push_to_cps: Whether or not to enable Pubsub Export config flags
       support.
+    enable_bigtable_config: Whether or not to enable Bigtable export config
+      flags.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -745,6 +808,8 @@ def AddSubscriptionSettingsFlags(
   AddCloudStorageConfigFlags(mutex_group, is_update)
   if enable_push_to_cps:
     AddPubsubExportConfigFlags(mutex_group, is_update)
+  if enable_bigtable_config:
+    AddBigtableConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
   if not is_update:
     AddBooleanFlag(

@@ -395,6 +395,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_METADATAFEEDS = (
+      'projects.locations.metadataFeeds',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataFeeds/'
+              '{metadataFeedsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_METADATAJOBS = (
       'projects.locations.metadataJobs',
       '{+name}',

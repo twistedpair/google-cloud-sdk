@@ -33,12 +33,9 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}',
-      },
-      ['name'],
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_FLAGRELEASES = (
@@ -73,13 +70,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_OPERATIONS = (
-      'projects.locations.operations',
+  PROJECTS_LOCATIONS_MAINTENANCES = (
+      'projects.locations.maintenances',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/operations/'
-              '{operationsId}',
+              'projects/{projectsId}/locations/{locationsId}/maintenances/'
+              '{maintenancesId}',
       },
       ['name'],
       True
@@ -91,6 +88,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/releases/'
               '{releasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_RESOURCEMAINTENANCES = (
+      'projects.locations.resourceMaintenances',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'resourceMaintenances/{resourceMaintenancesId}',
       },
       ['name'],
       True
@@ -145,6 +153,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/saasTypes/'
               '{saasTypesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TENANTINSTANCES = (
+      'projects.locations.tenantInstances',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tenantInstances/'
+              '{tenantInstancesId}',
       },
       ['name'],
       True

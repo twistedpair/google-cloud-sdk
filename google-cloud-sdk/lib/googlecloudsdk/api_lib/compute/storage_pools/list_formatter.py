@@ -71,8 +71,9 @@ def format_for_listing(pool_list, args):
 
 def _is_exapool(pool):
   """Returns true if the pool is an Exapool."""
-  return any(exapool_type in pool["storagePoolType"]
-             for exapool_type in EXAPOOL_TYPES)
+  return any(
+      exapool_type in pool["storagePoolType"] for exapool_type in EXAPOOL_TYPES
+  )
 
 
 def _format_storage_pool(pool):
@@ -151,9 +152,7 @@ def _add_iops(pool):
     return
 
   if not pool.get("status", {}).get("poolUsedIops"):
-    pool["formattedIops"] = "{:,}".format(
-        int(pool["poolProvisionedIops"])
-    )
+    pool["formattedIops"] = "{:,}".format(int(pool["poolProvisionedIops"]))
     return
 
   provisioned_iops = int(pool["poolProvisionedIops"])
@@ -206,18 +205,23 @@ def _add_exapool_max_performance(pool):
   Returns:
     nothing, it changes the input value.
   """
-  exapool_max_read_iops = int(pool["status"]["exapoolMaxReadIops"])
-  exapool_max_write_iops = int(pool["status"]["exapoolMaxWriteIops"])
-  exapool_max_read_throughput = int(pool["status"]["exapoolMaxReadThroughput"])
-  exapool_max_write_throughput = int(
-      pool["status"]["exapoolMaxWriteThroughput"]
-  )
+  status = pool.get("status", {})
 
-  pool["formattedExapoolMaxRwIops"] = "{:,}(R)/{:,}(W)".format(
-      exapool_max_read_iops, exapool_max_write_iops
-  )
-  pool["formattedExapoolMaxRwThroughput"] = "{:,}(R)/{:,}(W)".format(
-      exapool_max_read_throughput, exapool_max_write_throughput
+  exapool_max_read_iops = status.get("exapoolMaxReadIops")
+  exapool_max_write_iops = status.get("exapoolMaxWriteIops")
+
+  if exapool_max_read_iops is not None:
+    pool["formattedExapoolMaxRwIops"] = (
+        f"{int(exapool_max_read_iops):,}(R)/{int(exapool_max_write_iops):,}(W)"
+    )
+  else:
+    pool["formattedExapoolMaxRwIops"] = "<n/a>"
+
+  exapool_max_read_throughput = status.get("exapoolMaxReadThroughput")
+  exapool_max_write_throughput = status.get("exapoolMaxWriteThroughput")
+
+  pool["formattedExapoolMaxRwThroughput"] = (
+      f"{int(exapool_max_read_throughput):,}(R)/{int(exapool_max_write_throughput):,}(W)"
   )
 
 

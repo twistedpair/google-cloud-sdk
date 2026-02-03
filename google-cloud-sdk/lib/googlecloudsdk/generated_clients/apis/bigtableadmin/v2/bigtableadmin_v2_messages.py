@@ -3100,6 +3100,13 @@ class GoogleBigtableAdminV2TypeFloat64(_messages.Message):
   r"""Float64 Values of type `Float64` are stored in `Value.float_value`."""
 
 
+class GoogleBigtableAdminV2TypeGeography(_messages.Message):
+  r"""A geography type, representing a point or region on Earth. The value is
+  stored in `Value.bytes_value` as Well-Known Binary (WKB) bytes.
+  """
+
+
+
 class GoogleBigtableAdminV2TypeInt64(_messages.Message):
   r"""Int64 Values of type `Int64` are stored in `Value.int_value`.
 
@@ -4982,6 +4989,7 @@ class Type(_messages.Message):
     enumType: Enum
     float32Type: Float32
     float64Type: Float64
+    geographyType: Geography
     int64Type: Int64
     mapType: Map
     protoType: Proto
@@ -4998,12 +5006,13 @@ class Type(_messages.Message):
   enumType = _messages.MessageField('GoogleBigtableAdminV2TypeEnum', 6)
   float32Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat32', 7)
   float64Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat64', 8)
-  int64Type = _messages.MessageField('GoogleBigtableAdminV2TypeInt64', 9)
-  mapType = _messages.MessageField('GoogleBigtableAdminV2TypeMap', 10)
-  protoType = _messages.MessageField('GoogleBigtableAdminV2TypeProto', 11)
-  stringType = _messages.MessageField('GoogleBigtableAdminV2TypeString', 12)
-  structType = _messages.MessageField('GoogleBigtableAdminV2TypeStruct', 13)
-  timestampType = _messages.MessageField('GoogleBigtableAdminV2TypeTimestamp', 14)
+  geographyType = _messages.MessageField('GoogleBigtableAdminV2TypeGeography', 9)
+  int64Type = _messages.MessageField('GoogleBigtableAdminV2TypeInt64', 10)
+  mapType = _messages.MessageField('GoogleBigtableAdminV2TypeMap', 11)
+  protoType = _messages.MessageField('GoogleBigtableAdminV2TypeProto', 12)
+  stringType = _messages.MessageField('GoogleBigtableAdminV2TypeString', 13)
+  structType = _messages.MessageField('GoogleBigtableAdminV2TypeStruct', 14)
+  timestampType = _messages.MessageField('GoogleBigtableAdminV2TypeTimestamp', 15)
 
 
 class UndeleteTableMetadata(_messages.Message):

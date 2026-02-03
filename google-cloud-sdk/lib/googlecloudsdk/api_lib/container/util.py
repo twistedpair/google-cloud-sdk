@@ -150,6 +150,10 @@ NC_KERNEL_INIT_ON_ALLOC = 'initOnAlloc'
 NC_LRU_GEN = 'lruGen'
 NC_LRU_GEN_ENABLED = 'enabled'
 NC_LRU_GEN_MIN_TTL_MS = 'minTtlMs'
+NC_SHUTDOWN_GRACE_PERIOD_SECONDS = 'shutdownGracePeriodSeconds'
+NC_SHUTDOWN_GRACE_PERIOD_CRITICAL_PODS_SECONDS = (
+    'shutdownGracePeriodCriticalPodsSeconds'
+)
 
 NC_ADDITIONAL_ETC_HOSTS = 'additionalEtcHosts'
 NC_ADDITIONAL_ETC_SYSTEMD_RESOLVED_CONF = 'additionalEtcSystemdResolvedConf'
@@ -923,6 +927,8 @@ def LoadSystemConfigFromYAML(
         NC_SINGLE_PROCESS_OOMKILL: bool,
         NC_NODE_SWAP_SIZE_GIB: int,
         NC_MAX_PARALLEL_IMAGE_PULLS: int,
+        NC_SHUTDOWN_GRACE_PERIOD_SECONDS: int,
+        NC_SHUTDOWN_GRACE_PERIOD_CRITICAL_PODS_SECONDS: int,
         NC_EVICTION_SOFT: dict,
         NC_EVICTION_SOFT_GRACE_PERIOD: dict,
         NC_EVICTION_MINIMUM_RECLAIM: dict,
@@ -973,6 +979,14 @@ def LoadSystemConfigFromYAML(
     )
     node_config.kubeletConfig.maxParallelImagePulls = kubelet_config_opts.get(
         NC_MAX_PARALLEL_IMAGE_PULLS
+    )
+    node_config.kubeletConfig.shutdownGracePeriodSeconds = (
+        kubelet_config_opts.get(NC_SHUTDOWN_GRACE_PERIOD_SECONDS)
+    )
+    node_config.kubeletConfig.shutdownGracePeriodCriticalPodsSeconds = (
+        kubelet_config_opts.get(
+            NC_SHUTDOWN_GRACE_PERIOD_CRITICAL_PODS_SECONDS
+        )
     )
 
     # Populate eviction fields

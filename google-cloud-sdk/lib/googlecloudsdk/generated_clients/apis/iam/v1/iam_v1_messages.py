@@ -2156,7 +2156,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchR
   tchRequest object.
 
   Fields:
-    name: Output only. The resource name of the managed identity.
+    name: Identifier. The resource name of the managed identity.
     updateMask: Required. The list of fields to update.
     workloadIdentityPoolManagedIdentity: A WorkloadIdentityPoolManagedIdentity
       resource to be passed as the request body.
@@ -2325,7 +2325,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesWorklo
   rkloadSourcesPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the workload source. If ID of the
+    name: Identifier. The resource name of the workload source. If ID of the
       WorkloadSource resource determines which workloads may be matched. The
       following formats are supported: - `project-{project_number}` matches
       workloads within the referenced Google Cloud project.
@@ -2356,7 +2356,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.
   object.
 
   Fields:
-    name: Output only. The resource name of the namespace.
+    name: Identifier. The resource name of the namespace.
     updateMask: Required. The list of fields to update.
     workloadIdentityPoolNamespace: A WorkloadIdentityPoolNamespace resource to
       be passed as the request body.
@@ -2527,7 +2527,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesWorkloadSourcesPatchReq
   hRequest object.
 
   Fields:
-    name: Output only. The resource name of the workload source. If ID of the
+    name: Identifier. The resource name of the workload source. If ID of the
       WorkloadSource resource determines which workloads may be matched. The
       following formats are supported: - `project-{project_number}` matches
       workloads within the referenced Google Cloud project.
@@ -2555,7 +2555,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsPatchRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the pool.
+    name: Identifier. The resource name of the pool.
     updateMask: Required. The list of fields to update.
     workloadIdentityPool: A WorkloadIdentityPool resource to be passed as the
       request body.
@@ -2730,7 +2730,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest(_messages.M
   r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the provider.
+    name: Identifier. The resource name of the provider.
     updateMask: Required. The list of fields to update.
     workloadIdentityPoolProvider: A WorkloadIdentityPoolProvider resource to
       be passed as the request body.
@@ -6192,7 +6192,7 @@ class WorkloadIdentityPool(_messages.Message):
     inlineTrustConfig: Optional. Represents config to add additional trusted
       trust domains.
     mode: Immutable. The mode the pool is operating in.
-    name: Output only. The resource name of the pool.
+    name: Identifier. The resource name of the pool.
     sessionDuration: Overrides the lifespan of access tokens issued when
       federating using this pool. If not set, the lifespan of issued access
       tokens is computed based on the type of identity provider: - For AWS
@@ -6275,7 +6275,7 @@ class WorkloadIdentityPoolManagedIdentity(_messages.Message):
       credentials will still be accepted until they expire.
     expireTime: Output only. Time after which the managed identity will be
       permanently purged and cannot be recovered.
-    name: Output only. The resource name of the managed identity.
+    name: Identifier. The resource name of the managed identity.
     state: Output only. The state of the managed identity.
   """
 
@@ -6318,7 +6318,7 @@ class WorkloadIdentityPoolNamespace(_messages.Message):
       they expire.
     expireTime: Output only. Time after which the namespace will be
       permanently purged and cannot be recovered.
-    name: Output only. The resource name of the namespace.
+    name: Identifier. The resource name of the namespace.
     ownerService: Output only. The Google Cloud service that owns this
       namespace.
     state: Output only. The state of the namespace.
@@ -6467,7 +6467,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       characters.
     expireTime: Output only. Time after which the workload identity pool
       provider will be permanently purged and cannot be recovered.
-    name: Output only. The resource name of the provider.
+    name: Identifier. The resource name of the provider.
     oidc: An OpenId Connect 1.0 identity provider.
     saml: An SAML 2.0 identity provider.
     state: Output only. The state of the provider.
@@ -6586,7 +6586,7 @@ class WorkloadIdentityPoolProviderKey(_messages.Message):
       purged and cannot be recovered. Note that the key may get purged before
       this timestamp if the total limit of keys per provider is crossed.
     keyData: Immutable. Public half of the asymmetric key.
-    name: Output only. The resource name of the key.
+    name: Identifier. The resource name of the key.
     state: Output only. The state of the key.
     use: Required. The purpose of the key.
   """
@@ -6636,7 +6636,7 @@ class WorkloadSource(_messages.Message):
     identityAssignments: Optional. Defines how a matched workload has its
       identity assigned. This option may only be set when the Workload Source
       is defined on a Namespace.
-    name: Output only. The resource name of the workload source. If ID of the
+    name: Identifier. The resource name of the workload source. If ID of the
       WorkloadSource resource determines which workloads may be matched. The
       following formats are supported: - `project-{project_number}` matches
       workloads within the referenced Google Cloud project.

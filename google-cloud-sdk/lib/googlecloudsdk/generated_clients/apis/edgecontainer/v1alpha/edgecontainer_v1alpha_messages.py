@@ -564,22 +564,6 @@ class ControlPlaneEncryption(_messages.Message):
   resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 5)
 
 
-class CreateIdentityProviderRequest(_messages.Message):
-  r"""Request proto to configure the identity provider for an organization.
-
-  Fields:
-    identityProvider: Required. The identity provider to configure.
-    identityProviderId: Required. The identity provider id.
-    requestId: Optional. A unique identifier for this request. Restricted to
-      36 ASCII characters. A random UUID is recommended. This request is only
-      idempotent if `request_id` is provided.
-  """
-
-  identityProvider = _messages.MessageField('IdentityProvider', 1)
-  identityProviderId = _messages.StringField(2)
-  requestId = _messages.StringField(3)
-
-
 class DNSServer(_messages.Message):
   r"""Represents a DNS server for the zone.
 
@@ -695,14 +679,20 @@ class EdgecontainerOrganizationsLocationsIdentityProvidersCreateRequest(_message
   object.
 
   Fields:
-    createIdentityProviderRequest: A CreateIdentityProviderRequest resource to
-      be passed as the request body.
+    identityProvider: A IdentityProvider resource to be passed as the request
+      body.
+    identityProviderId: Required. The identity provider id.
     parent: Required. The resource name of the identity provider to configure.
       e.g. organizations/{organization}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
   """
 
-  createIdentityProviderRequest = _messages.MessageField('CreateIdentityProviderRequest', 1)
-  parent = _messages.StringField(2, required=True)
+  identityProvider = _messages.MessageField('IdentityProvider', 1)
+  identityProviderId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest(_messages.Message):
@@ -710,39 +700,27 @@ class EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest(_message
   object.
 
   Fields:
-    cluster: The fully qualified name of the target BMUC for which the
-      identity provider is to be deleted.
     name: Required. The resource name of the identity provider to delete. The
       name to be formatted as: organizations/{organization}/locations/{locatio
       n}/identityProviders/{identity_provider}
     requestId: Optional. A unique identifier for this request. Restricted to
       36 ASCII characters. A random UUID is recommended. This request is only
       idempotent if `request_id` is provided.
-    zoneId: The zone id of the target zone of the infra cluster for which the
-      identity provider is to be deleted.
   """
 
-  cluster = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zoneId = _messages.StringField(4)
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class EdgecontainerOrganizationsLocationsIdentityProvidersGetRequest(_messages.Message):
   r"""A EdgecontainerOrganizationsLocationsIdentityProvidersGetRequest object.
 
   Fields:
-    cluster: The cluster name of the target BMUC for which the identity
-      provider is configured.
     name: Required. The canonical resource name of the identity provider. E.g.
       organizations/*/locations/*/identityProviders/*
-    zoneId: The zone id of the target zone for which the identity provider is
-      configured.
   """
 
-  cluster = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  zoneId = _messages.StringField(3)
+  name = _messages.StringField(1, required=True)
 
 
 class EdgecontainerOrganizationsLocationsIdentityProvidersListRequest(_messages.Message):
@@ -750,21 +728,20 @@ class EdgecontainerOrganizationsLocationsIdentityProvidersListRequest(_messages.
   object.
 
   Fields:
-    cluster: The fully qualified name of the target BMUC for which the
-      identity providers are to be listed.
+    filter: Optional. Only resources matching this filter will be listed.
+    orderBy: Optional. Specifies the order in which resources will be listed.
+      Order by fields for the result.
     pageSize: Optional. The maximum number of resources to list.
     pageToken: Optional. A page token received from previous list request.
     parent: Required. The parent organization and region for the identity
       providers.
-    zoneId: The zone id of the target zone of the infra cluster for which the
-      identity providers are to be listed.
   """
 
-  cluster = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  zoneId = _messages.StringField(5)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class EdgecontainerOrganizationsLocationsListRequest(_messages.Message):
@@ -1833,6 +1810,7 @@ class IdentityProvider(_messages.Message):
       E.g. organizations/{organization}/locations/{location}/identityProviders
       /{identity_provider}
     oidcConfig: The OIDC provider configuration.
+    samlConfig: The SAML provider configuration.
     updateTime: Output only. The time when the identity provider was last
       updated.
     zoneId: The zone id of the target zone of the infra cluster for which the
@@ -1869,8 +1847,9 @@ class IdentityProvider(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   oidcConfig = _messages.MessageField('OIDCProviderConfig', 6)
-  updateTime = _messages.StringField(7)
-  zoneId = _messages.StringField(8)
+  samlConfig = _messages.MessageField('SAMLProviderConfig', 7)
+  updateTime = _messages.StringField(8)
+  zoneId = _messages.StringField(9)
 
 
 class Ingress(_messages.Message):
@@ -1921,7 +1900,7 @@ class ListIdentityProvidersResponse(_messages.Message):
   Fields:
     identityProviders: A list of identity providers matching the request.
     nextPageToken: A token to retrieve next page of results.
-    unreachable: Locations that could not be reached.
+    unreachable: Unordered list. Locations that could not be reached.
   """
 
   identityProviders = _messages.MessageField('IdentityProvider', 1, repeated=True)
@@ -2683,30 +2662,58 @@ class NodePool(_messages.Message):
 class OIDCProviderConfig(_messages.Message):
   r"""Represents the OIDC provider configuration.
 
+  Messages:
+    AttributeMappingValue: Optional. The attribute mapping of the identity
+      provider.
+
   Fields:
+    attributeMapping: Optional. The attribute mapping of the identity
+      provider.
+    certificateAuthorityData: Optional. The certificate authority data of the
+      identity provider.
     clientId: Required. The client id of the identity provider.
     clientSecret: Optional. The client secret of the identity provider.
-    cloudConsoleRedirectUri: Optional. CloudConsoleRedirectURI is the URI to
-      redirect users going through the OAuth flow using cloud console.
-    enableAccessToken: Optional. Flag that denotes if the access-token should
-      be included in the request as part of the bearer token by `gcloud anthos
-      auth login` and `kubectl oidc login`. Defaults to false.
     extraParams: Optional. Comma-separated list of key-value pairs that will
       be query-encoded and sent with the authentication endpoint request.
+    groupClaim: Optional. The group claim of the identity provider.
     issuerUri: Required. The issuer uri of the identity provider.
-    kubectlRedirectUri: Optional. KubectlRedirectURI is the URI to redirect
-      users authenticating to an OIDC provider with the kubectl plugin.
     scopes: Required. The scopes of the identity provider.
     userClaim: Optional. The user claim of the identity provider.
   """
 
-  clientId = _messages.StringField(1)
-  clientSecret = _messages.StringField(2)
-  cloudConsoleRedirectUri = _messages.StringField(3)
-  enableAccessToken = _messages.BooleanField(4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributeMappingValue(_messages.Message):
+    r"""Optional. The attribute mapping of the identity provider.
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributeMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AttributeMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributeMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributeMapping = _messages.MessageField('AttributeMappingValue', 1)
+  certificateAuthorityData = _messages.StringField(2)
+  clientId = _messages.StringField(3)
+  clientSecret = _messages.StringField(4)
   extraParams = _messages.StringField(5)
-  issuerUri = _messages.StringField(6)
-  kubectlRedirectUri = _messages.StringField(7)
+  groupClaim = _messages.StringField(6)
+  issuerUri = _messages.StringField(7)
   scopes = _messages.StringField(8)
   userClaim = _messages.StringField(9)
 
@@ -2951,6 +2958,58 @@ class Role(_messages.Message):
   displayName = _messages.StringField(1)
   gdcRole = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class SAMLProviderConfig(_messages.Message):
+  r"""Represents the SAML provider configuration.
+
+  Messages:
+    AttributeMappingValue: Optional. The attribute mapping of the identity
+      provider.
+
+  Fields:
+    attributeMapping: Optional. The attribute mapping of the identity
+      provider.
+    certificateData: Optional. The certificate data of the identity provider.
+    entityId: Required. The entity id of the identity provider.
+    groupAttribute: Optional. The group attribute of the identity provider.
+    singleSignOnUri: Required. The single sign on uri of the identity
+      provider.
+    userAttribute: Optional. The user attribute of the identity provider.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributeMappingValue(_messages.Message):
+    r"""Optional. The attribute mapping of the identity provider.
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributeMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AttributeMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributeMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributeMapping = _messages.MessageField('AttributeMappingValue', 1)
+  certificateData = _messages.StringField(2, repeated=True)
+  entityId = _messages.StringField(3)
+  groupAttribute = _messages.StringField(4)
+  singleSignOnUri = _messages.StringField(5)
+  userAttribute = _messages.StringField(6)
 
 
 class SdsOperator(_messages.Message):

@@ -24,11 +24,28 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 DEFAULT_ACTIONS = ["DEFAULT_ACTION", "ALLOW", "ALERT", "DENY"]
 DEFAULT_PROFILE_TYPES = ["THREAT_PREVENTION"]
+ORG_SECURITY_PROFILE_RESOURCE_COLLECTION = (
+    "networksecurity.organizations.locations.securityProfiles"
+)
+PROJECT_SECURITY_PROFILE_RESOURCE_COLLECTION = (
+    "networksecurity.projects.locations.securityProfiles"
+)
+ORG_LOCATION_RESOURCE_COLLECTION = "networksecurity.organizations.locations"
+PROJECT_LOCATION_RESOURCE_COLLECTION = "networksecurity.projects.locations"
+INTERCEPT_ENDPOINT_GROUP_RESOURCE_COLLECTION = (
+    "networksecurity.projects.locations.interceptEndpointGroups"
+)
+MIRRORING_ENDPOINT_GROUP_RESOURCE_COLLECTION = (
+    "networksecurity.projects.locations.mirroringEndpointGroups"
+)
 
 
 def AddSeverityorThreatIDorAntivirusArg(parser, required=True):
@@ -84,14 +101,11 @@ def AddProfileDescription(parser, required=False):
   )
 
 
-def AddSecurityProfileResource(parser, release_track):
-  """Adds Security Profile Threat Prevention type."""
-  name = "security_profile"
-  resource_spec = concepts.ResourceSpec(
-      resource_collection=(
-          "networksecurity.organizations.locations.securityProfiles"
-      ),
-      resource_name="security_profile",
+def OrgSecurityProfileResourceSpec(release_track, name):
+  """Constructs and returns the Resource specification for Security Profile."""
+  return concepts.ResourceSpec(
+      resource_collection=ORG_SECURITY_PROFILE_RESOURCE_COLLECTION,
+      resource_name=name,
       api_version=sp_api.GetApiVersion(release_track),
       organizationsId=concepts.ResourceParameterAttributeConfig(
           "organization",
@@ -104,16 +118,208 @@ def AddSecurityProfileResource(parser, release_track):
           parameter_name="locationsId",
       ),
       securityProfilesId=concepts.ResourceParameterAttributeConfig(
-          "security_profile",
+          name,
           "Name of the {resource}.",
           parameter_name="securityProfilesId",
       ),
   )
-  presentation_spec = presentation_specs.ResourcePresentationSpec(
+
+
+def ProjectSecurityProfileResourceSpec(release_track, name):
+  """Constructs and returns the Resource specification for Security Profile."""
+  return concepts.ResourceSpec(
+      resource_collection=PROJECT_SECURITY_PROFILE_RESOURCE_COLLECTION,
+      resource_name=name,
+      api_version=sp_api.GetApiVersion(release_track),
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          "project",
+          "Project ID to which the changes should apply.",
+          fallthroughs=[
+              # Do not fallthrough to the --project flag, as this will prompt
+              # the user to choose between project and org scoped security
+              # profiles when supplying both --organization and --project.
+              deps.PropertyFallthrough(properties.VALUES.core.project),
+          ],
+      ),
+      locationsId=concepts.ResourceParameterAttributeConfig(
+          "location",
+          "location of the {resource} - Global.",
+          parameter_name="locationsId",
+      ),
+      securityProfilesId=concepts.ResourceParameterAttributeConfig(
+          name,
+          "Name of the {resource}.",
+          parameter_name="securityProfilesId",
+      ),
+  )
+
+
+def AddSecurityProfileResource(
+    parser, release_track, project_scope_supported=False
+):
+  """Adds Security Profile resource to parser."""
+  name = "security_profile"
+  concept_specs = [OrgSecurityProfileResourceSpec(release_track, name)]
+  if project_scope_supported:
+    concept_specs.append(
+        ProjectSecurityProfileResourceSpec(release_track, name)
+    )
+  resource_spec = multitype.MultitypeResourceSpec(
+      name,
+      *concept_specs,
+      allow_inactive=True,
+  )
+  presentation_spec = presentation_specs.MultitypeResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
       group_help="Security Profile Name.",
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddInterceptEndpointGroupResource(
+    release_track, parser, project_scope_supported=False
+):
+  """Adds intercept endpoint group resource."""
+  api_version = sp_api.GetApiVersion(release_track)
+  project_fallthroughs = [
+      deps.ArgFallthrough("--project"),
+      deps.PropertyFallthrough(properties.VALUES.core.project),
+  ]
+  location_fallthroughs = [
+      deps.ArgFallthrough("--location"),
+      deps.FullySpecifiedAnchorFallthrough(
+          [deps.ArgFallthrough("security_profile")],
+          resources.REGISTRY.GetCollectionInfo(
+              ORG_SECURITY_PROFILE_RESOURCE_COLLECTION, api_version=api_version
+          ),
+          "locationsId",
+      ),
+  ]
+  if project_scope_supported:
+    project_fallthroughs.append(
+        deps.FullySpecifiedAnchorFallthrough(
+            [deps.ArgFallthrough("security_profile")],
+            resources.REGISTRY.GetCollectionInfo(
+                PROJECT_SECURITY_PROFILE_RESOURCE_COLLECTION,
+                api_version=api_version,
+            ),
+            "projectsId",
+        )
+    )
+    location_fallthroughs.append(
+        deps.FullySpecifiedAnchorFallthrough(
+            [deps.ArgFallthrough("security_profile")],
+            resources.REGISTRY.GetCollectionInfo(
+                PROJECT_SECURITY_PROFILE_RESOURCE_COLLECTION,
+                api_version=api_version,
+            ),
+            "locationsId",
+        )
+    )
+  resource_spec = concepts.ResourceSpec(
+      INTERCEPT_ENDPOINT_GROUP_RESOURCE_COLLECTION,
+      "intercept endpoint group",
+      api_version=api_version,
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          "project",
+          "Project ID of the {resource}.",
+          parameter_name="projectsId",
+          fallthroughs=project_fallthroughs,
+      ),
+      locationsId=concepts.ResourceParameterAttributeConfig(
+          "location",
+          "Location of the {resource}.",
+          parameter_name="locationsId",
+          fallthroughs=location_fallthroughs,
+      ),
+      interceptEndpointGroupsId=concepts.ResourceParameterAttributeConfig(
+          "id",
+          "Id of the {resource}",
+          parameter_name="interceptEndpointGroupsId",
+      ),
+  )
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name="--intercept-endpoint-group",
+      concept_spec=resource_spec,
+      required=True,
+      group_help="Intercept Endpoint Group.",
+      prefixes=True,
+      flag_name_overrides={"project": "--intercept-endpoint-group-project"},
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddMirroringEndpointGroupResource(
+    release_track, parser, project_scope_supported=False
+):
+  """Adds mirroring endpoint group resource."""
+  api_version = sp_api.GetApiVersion(release_track)
+  project_fallthroughs = [
+      deps.ArgFallthrough("--project"),
+      deps.PropertyFallthrough(properties.VALUES.core.project),
+  ]
+  location_fallthroughs = [
+      deps.ArgFallthrough("--location"),
+      deps.FullySpecifiedAnchorFallthrough(
+          [deps.ArgFallthrough("security_profile")],
+          resources.REGISTRY.GetCollectionInfo(
+              ORG_SECURITY_PROFILE_RESOURCE_COLLECTION, api_version=api_version
+          ),
+          "locationsId",
+      ),
+  ]
+  if project_scope_supported:
+    project_fallthroughs.append(
+        deps.FullySpecifiedAnchorFallthrough(
+            [deps.ArgFallthrough("security_profile")],
+            resources.REGISTRY.GetCollectionInfo(
+                PROJECT_SECURITY_PROFILE_RESOURCE_COLLECTION,
+                api_version=api_version,
+            ),
+            "projectsId",
+        )
+    )
+    location_fallthroughs.append(
+        deps.FullySpecifiedAnchorFallthrough(
+            [deps.ArgFallthrough("security_profile")],
+            resources.REGISTRY.GetCollectionInfo(
+                PROJECT_SECURITY_PROFILE_RESOURCE_COLLECTION,
+                api_version=api_version,
+            ),
+            "locationsId",
+        )
+    )
+  resource_spec = concepts.ResourceSpec(
+      MIRRORING_ENDPOINT_GROUP_RESOURCE_COLLECTION,
+      "mirroring endpoint group",
+      api_version=api_version,
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          "project",
+          "Project ID of the {resource}.",
+          parameter_name="projectsId",
+          fallthroughs=project_fallthroughs,
+      ),
+      locationsId=concepts.ResourceParameterAttributeConfig(
+          "location",
+          "Location of the {resource}.",
+          parameter_name="locationsId",
+          fallthroughs=location_fallthroughs,
+      ),
+      mirroringEndpointGroupsId=concepts.ResourceParameterAttributeConfig(
+          "id",
+          "Id of the {resource}",
+          parameter_name="mirroringEndpointGroupsId",
+      ),
+  )
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name="--mirroring-endpoint-group",
+      concept_spec=resource_spec,
+      required=True,
+      group_help="Mirroring Endpoint Group.",
+      prefixes=True,
+      flag_name_overrides={"project": "--mirroring-endpoint-group-project"},
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
@@ -152,8 +358,8 @@ def OrgAttributeConfig():
   )
 
 
-def GetLocationResourceSpec(default=None):
-  """Constructs and returns the Resource specification for Location."""
+def GetOrgLocationResourceSpec(default=None):
+  """Constructs and returns the Resource specification for org Location."""
   return concepts.ResourceSpec(
       "networksecurity.organizations.locations",
       resource_name="location",
@@ -162,11 +368,31 @@ def GetLocationResourceSpec(default=None):
   )
 
 
+def GetProjectLocationResourceSpec(default=None):
+  """Constructs and returns the Resource specification for project Location."""
+  return concepts.ResourceSpec(
+      "networksecurity.projects.locations",
+      resource_name="location",
+      locationsId=LocationAttributeConfig(default=default),
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          "project",
+          "Project ID of the {resource}.",
+          fallthroughs=[
+              # Do not fallthrough to the --project flag, as this will prompt
+              # the user to choose between project and org scoped security
+              # profiles when supplying both --organization and --project.
+              deps.PropertyFallthrough(properties.VALUES.core.project),
+          ],
+      ),
+  )
+
+
 def AddLocationResourceArg(
     parser: parser_arguments.ArgumentInterceptor,
     help_text: str,
     required: bool = False,
     default=None,
+    project_scope_supported: bool = False,
 ):
   """Adds a resource argument for Google Cloud location.
 
@@ -175,13 +401,25 @@ def AddLocationResourceArg(
     help_text: str, the text of the help message.
     required: bool, whether the argument is required.
     default: Optional default value for the arg.
+    project_scope_supported: bool, whether the argument supports project scope.
   """
-  concept_parsers.ConceptParser.ForResource(
+  concept_specs = [GetOrgLocationResourceSpec(default=default)]
+  if project_scope_supported:
+    concept_specs.append(
+        GetProjectLocationResourceSpec(default=default)
+    )
+  resource_spec = multitype.MultitypeResourceSpec(
+      "location",
+      *concept_specs,
+      allow_inactive=True,
+  )
+  presentation_spec = presentation_specs.MultitypeResourcePresentationSpec(
       name="--location",
-      resource_spec=GetLocationResourceSpec(default=default),
-      group_help=help_text,
+      concept_spec=resource_spec,
       required=required,
-  ).AddToParser(parser)
+      group_help=help_text,
+  )
+  concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
 def AddCustomMirroringDeploymentGroupsArg(

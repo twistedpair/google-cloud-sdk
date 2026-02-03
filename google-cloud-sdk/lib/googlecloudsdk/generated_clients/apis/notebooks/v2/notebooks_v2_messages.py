@@ -954,9 +954,11 @@ class ListInstancesResponse(_messages.Message):
     instances: A list of returned instances.
     nextPageToken: Page token that can be used to continue listing from the
       last result in the next list call.
-    unreachable: Locations that could not be reached. For example, ['us-
-      west1-a', 'us-central1-b']. A ListInstancesResponse will only contain
-      either instances or unreachables,
+    unreachable: Unordered list. Locations that could not be reached. For
+      example, ['projects/{project_id}/locations/us-west1-a',
+      'projects/{project_id}/locations/us-central1-b']. A
+      ListInstancesResponse will only contain either instances or
+      unreachables,
   """
 
   instances = _messages.MessageField('Instance', 1, repeated=True)
@@ -1265,8 +1267,10 @@ class NotebooksProjectsLocationsInstancesListRequest(_messages.Message):
     pageSize: Optional. Maximum return size of the list call.
     pageToken: Optional. A previous returned page token that can be used to
       continue listing from the last result.
-    parent: Required. Format:
-      `parent=projects/{project_id}/locations/{location}`
+    parent: Required. The parent of the instance. Formats: -
+      `projects/{project_id}/locations/{location}` to list instances in a
+      specific zone. - `projects/{project_id}/locations/-` to list instances
+      in all locations.
   """
 
   filter = _messages.StringField(1)

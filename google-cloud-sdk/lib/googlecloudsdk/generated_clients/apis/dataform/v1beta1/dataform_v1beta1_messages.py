@@ -2734,8 +2734,8 @@ class MoveFolderRequest(_messages.Message):
 
   Fields:
     destinationContainingFolder: Required. The name of the Folder, TeamFolder,
-      or root location to move the Folder to. Can be in the format of: - "" to
-      move into the root User folder - `projects/*/locations/*/folders/*` -
+      or root location to move the Folder to. Can be in the format of: "" to
+      move into the root User folder, `projects/*/locations/*/folders/*`,
       `projects/*/locations/*/teamFolders/*`
   """
 
@@ -2747,9 +2747,8 @@ class MoveRepositoryRequest(_messages.Message):
 
   Fields:
     destinationContainingFolder: Required. The name of the Folder, TeamFolder,
-      or root location to move the repository to. Can be in the format of: -
-      "" to move into the root User folder -
-      `projects/*/locations/*/folders/*` -
+      or root location to move the repository to. Can be in the format of: ""
+      to move into the root User folder, `projects/*/locations/*/folders/*`,
       `projects/*/locations/*/teamFolders/*`
   """
 

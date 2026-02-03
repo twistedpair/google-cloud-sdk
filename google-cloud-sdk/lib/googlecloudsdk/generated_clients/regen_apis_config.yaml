@@ -859,6 +859,10 @@ apis:
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
+  externalexposure:
+    v1alpha:
+      discovery_doc: externalexposure_v1alpha.json
+      default: true
   faulttesting:
     v1alpha:
       discovery_doc: faulttesting_v1alpha.json

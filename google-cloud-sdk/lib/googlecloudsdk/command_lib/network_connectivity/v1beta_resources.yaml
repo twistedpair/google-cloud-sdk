@@ -94,12 +94,12 @@ transport:
 
 remote_transport_profile:
   name: remoteTransportProfile
-  collection: networkconnectivity.projects.locations.transports.remoteProfiles
+  collection: networkconnectivity.projects.locations.remoteTransportProfiles
   request_id_field: remoteTransportProfileId
   attributes:
   - *project
   - *region
   - &remoteTransportProfile
-    parameter_name: remoteProfilesId
+    parameter_name: remoteTransportProfilesId
     attribute_name: remote_profiles_id
     help: Id of the remoteTransportProfile.

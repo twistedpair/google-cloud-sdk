@@ -2604,10 +2604,10 @@ class VmwareengineV1(base_api.BaseApiClient):
         flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:refreshVmAuthToken',
         http_method='POST',
         method_id='vmwareengine.projects.locations.privateClouds.refreshVmAuthToken',
-        ordered_params=['privateCloud'],
-        path_params=['privateCloud'],
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path='v1/{+privateCloud}:refreshVmAuthToken',
+        relative_path='v1/{+name}:refreshVmAuthToken',
         request_field='refreshVmAuthTokenRequest',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsRefreshVmAuthTokenRequest',
         response_type_name='RefreshVmAuthTokenResponse',
@@ -3222,7 +3222,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (VmwareengineProjectsLocationsListRequest) input message

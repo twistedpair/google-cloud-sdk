@@ -12,14 +12,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for Dataplex Entry Link."""
+"""Client and utilities for the Dataplex Entry Links API."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Any, List
+
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.core import log
 
 module = dataplex_api.GetMessageModule()
 
@@ -67,3 +72,63 @@ def CreateEntryReferences(entry_references_content):
         'The entry references file must contain exactly two entries.'
     )
   return entry_references_message
+
+
+def _GenerateAspectKeys(
+    args: parser_extensions.Namespace,
+    *,
+    remove_aspects_arg_name: str,
+    update_aspects_arg_name: str,
+) -> List[str]:
+  """Generate a list of unique aspect keys to be updated or removed."""
+  keys = set()
+  if args.IsKnownAndSpecified(update_aspects_arg_name):
+    keys.update(
+        map(
+            lambda aspect: aspect.key,
+            args.GetValue(update_aspects_arg_name).additionalProperties,
+        )
+    )
+  if args.IsKnownAndSpecified(remove_aspects_arg_name):
+    keys.update(args.GetValue(remove_aspects_arg_name))
+  return sorted(keys)
+
+
+def _GetArgValueOrNone(
+    args: parser_extensions.Namespace, arg_name: str
+) -> Any | None:
+  return args.GetValue(arg_name) if args.IsKnownAndSpecified(arg_name) else None
+
+
+def Update(
+    args: parser_extensions.Namespace,
+    remove_aspects_arg_name: str = 'remove_aspects',
+    update_aspects_arg_name: str = 'update_aspects',
+):
+  """Create an UpdateEntryLink request based on arguments provided."""
+  if not (
+      args.IsKnownAndSpecified(remove_aspects_arg_name)
+      or args.IsKnownAndSpecified(update_aspects_arg_name)
+  ):
+    raise exceptions.HttpException(
+        'Update commands must specify at least one additional parameter to'
+        ' change.'
+    )
+  entry_link_ref = args.CONCEPTS.entry_link.Parse()
+  dataplex_client = dataplex_api.GetClientInstance()
+  resource = dataplex_client.projects_locations_entryGroups_entryLinks.Patch(
+      module.DataplexProjectsLocationsEntryGroupsEntryLinksPatchRequest(
+          name=entry_link_ref.RelativeName(),
+          googleCloudDataplexV1EntryLink=module.GoogleCloudDataplexV1EntryLink(
+              name=entry_link_ref.RelativeName(),
+              aspects=_GetArgValueOrNone(args, update_aspects_arg_name),
+          ),
+          aspectKeys=_GenerateAspectKeys(
+              args,
+              remove_aspects_arg_name=remove_aspects_arg_name,
+              update_aspects_arg_name=update_aspects_arg_name,
+          ),
+      )
+  )
+  log.UpdatedResource(entry_link_ref.RelativeName(), kind='EntryLink')
+  return resource

@@ -2947,7 +2947,9 @@ class RefreshVmAuthTokenRequest(_messages.Message):
   r"""Request message for VmwareEngine.RefreshVmAuthToken
 
   Fields:
-    ipAddress: Required. The IP address of the virtual machine.
+    ipAddress: Optional. The IP address of the virtual machine. If not
+      provided, the system will attempt to refresh the token using only the
+      `vm_id`.
     vmId: Required. The BIOS unique identifier (UUID) of the VM requesting the
       token.
   """
@@ -2957,7 +2959,7 @@ class RefreshVmAuthTokenRequest(_messages.Message):
 
 
 class RefreshVmAuthTokenResponse(_messages.Message):
-  r"""/ Response message for VmwareEngine.RefreshVmAuthToken This message is
+  r"""Response message for VmwareEngine.RefreshVmAuthToken This message is
   intentionally empty. The success or failure of the operation is indicated by
   the RPC status code.
   """
@@ -6167,16 +6169,15 @@ class VmwareengineProjectsLocationsPrivateCloudsRefreshVmAuthTokenRequest(_messa
   object.
 
   Fields:
-    privateCloud: Required. The resource name of the private cloud where the
-      VM is located. Resource names are schemeless URIs that follow the
-      conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: projects/my-project/locations/us-central1-a/privateClouds/my-
-      cloud
+    name: Required. The resource name of the private cloud where the VM is
+      located. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      projects/my-project/locations/us-central1-a/privateClouds/my-cloud
     refreshVmAuthTokenRequest: A RefreshVmAuthTokenRequest resource to be
       passed as the request body.
   """
 
-  privateCloud = _messages.StringField(1, required=True)
+  name = _messages.StringField(1, required=True)
   refreshVmAuthTokenRequest = _messages.MessageField('RefreshVmAuthTokenRequest', 2)
 
 

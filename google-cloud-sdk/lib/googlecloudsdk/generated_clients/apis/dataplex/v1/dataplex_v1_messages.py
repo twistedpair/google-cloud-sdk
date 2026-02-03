@@ -4094,6 +4094,21 @@ class DataplexProjectsLocationsLakesZonesTestIamPermissionsRequest(_messages.Mes
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsLinkCatalogDatasetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLinkCatalogDatasetRequest object.
+
+  Fields:
+    googleCloudDataplexV1LinkCatalogDatasetRequest: A
+      GoogleCloudDataplexV1LinkCatalogDatasetRequest resource to be passed as
+      the request body.
+    parent: Required. Format:
+      projects/{project_id_or_number}/locations/{location}.
+  """
+
+  googleCloudDataplexV1LinkCatalogDatasetRequest = _messages.MessageField('GoogleCloudDataplexV1LinkCatalogDatasetRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsListRequest object.
 
@@ -4163,6 +4178,98 @@ class DataplexProjectsLocationsLookupEntryRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   paths = _messages.StringField(4, repeated=True)
   view = _messages.EnumField('ViewValueValuesEnum', 5)
+
+
+class DataplexProjectsLocationsMetadataFeedsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataFeedsCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1MetadataFeed: A GoogleCloudDataplexV1MetadataFeed
+      resource to be passed as the request body.
+    metadataFeedId: Optional. The metadata job ID. If not provided, a unique
+      ID is generated with the prefix metadata-job-.
+    parent: Required. The resource name of the parent location, in the format
+      projects/{project_id_or_number}/locations/{location_id}
+    validateOnly: Optional. The service validates the request without
+      performing any mutations. The default is false.
+  """
+
+  googleCloudDataplexV1MetadataFeed = _messages.MessageField('GoogleCloudDataplexV1MetadataFeed', 1)
+  metadataFeedId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsMetadataFeedsDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataFeedsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the metadata feed, in the format proj
+      ects/{project_id_or_number}/locations/{location_id}/MetadataFeeds/{metad
+      ata_feed_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsMetadataFeedsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataFeedsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the metadata feed, in the format proj
+      ects/{project_id_or_number}/locations/{location_id}/MetadataFeeds/{metad
+      ata_feed_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsMetadataFeedsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataFeedsListRequest object.
+
+  Fields:
+    filter: Optional. Filter request. Filters are case-sensitive. The service
+      supports the following formats: labels.key1 = "value1" labels:key1 name
+      = "value"You can combine filters with AND, OR, and NOT operators.
+    orderBy: Optional. The field to sort the results by, either name or
+      create_time. If not specified, the ordering is undefined.
+    pageSize: Optional. The maximum number of metadata feeds to return. The
+      service might return fewer feeds than this value. If unspecified, at
+      most 10 feeds are returned. The maximum value is 1,000.
+    pageToken: Optional. The page token received from a previous
+      ListMetadataFeeds call. Provide this token to retrieve the subsequent
+      page of results. When paginating, all other parameters that are provided
+      to the ListMetadataFeeds request must match the call that provided the
+      page token.
+    parent: Required. The resource name of the parent location, in the format
+      projects/{project_id_or_number}/locations/{location_id}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsMetadataFeedsPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsMetadataFeedsPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1MetadataFeed: A GoogleCloudDataplexV1MetadataFeed
+      resource to be passed as the request body.
+    name: Identifier. The resource name of the metadata feed, in the format pr
+      ojects/{project_id_or_number}/locations/{location_id}/metadataFeeds/{met
+      adata_feed_id}.
+    updateMask: Optional. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1MetadataFeed = _messages.MessageField('GoogleCloudDataplexV1MetadataFeed', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsMetadataJobsCancelRequest(_messages.Message):
@@ -4296,6 +4403,21 @@ class DataplexProjectsLocationsOperationsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   returnPartialSuccess = _messages.BooleanField(5)
+
+
+class DataplexProjectsLocationsQueryCatalogRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsQueryCatalogRequest object.
+
+  Fields:
+    googleCloudDataplexV1QueryCatalogRequest: A
+      GoogleCloudDataplexV1QueryCatalogRequest resource to be passed as the
+      request body.
+    name: Required. Format:
+      projects/{project_id_or_number}/locations/{location}.
+  """
+
+  googleCloudDataplexV1QueryCatalogRequest = _messages.MessageField('GoogleCloudDataplexV1QueryCatalogRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
@@ -9648,6 +9770,21 @@ class GoogleCloudDataplexV1LakeMetastoreStatus(_messages.Message):
   updateTime = _messages.StringField(4)
 
 
+class GoogleCloudDataplexV1LinkCatalogDatasetRequest(_messages.Message):
+  r"""Request message for LinkCatalogDataset.
+
+  Fields:
+    datasetId: Required. The unique identifier of the BigQuery dataset to be
+      created.
+    scopes: Optional. One "organizations/" or multiple "projects/". Providing
+      a mixture, or more than one org is an error.Defaults to the org of the
+      project in the "name" if empty.
+  """
+
+  datasetId = _messages.StringField(1)
+  scopes = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudDataplexV1ListActionsResponse(_messages.Message):
   r"""List actions response.
 
@@ -9975,6 +10112,21 @@ class GoogleCloudDataplexV1ListLakesResponse(_messages.Message):
   unreachableLocations = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudDataplexV1ListMetadataFeedsResponse(_messages.Message):
+  r"""Response message for ListMetadataFeeds.
+
+  Fields:
+    metadataFeeds: List of metadata feeds under the specified parent location.
+    nextPageToken: A token to retrieve the next page of results. If there are
+      no more results in the list, the value is empty.
+    unreachable: Unordered list. Locations that the service couldn't reach.
+  """
+
+  metadataFeeds = _messages.MessageField('GoogleCloudDataplexV1MetadataFeed', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudDataplexV1ListMetadataJobsResponse(_messages.Message):
   r"""List metadata jobs response.
 
@@ -10042,6 +10194,132 @@ class GoogleCloudDataplexV1ListZonesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   zones = _messages.MessageField('GoogleCloudDataplexV1Zone', 2, repeated=True)
+
+
+class GoogleCloudDataplexV1MetadataFeed(_messages.Message):
+  r"""MetadataFeed contains information related to the metadata feed.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels.
+
+  Fields:
+    createTime: Output only. The time when the feed was created.
+    filters: Optional. The filters of the metadata feed. Only the changes that
+      match the filters are published.
+    labels: Optional. User-defined labels.
+    name: Identifier. The resource name of the metadata feed, in the format pr
+      ojects/{project_id_or_number}/locations/{location_id}/metadataFeeds/{met
+      adata_feed_id}.
+    pubsubTopic: Optional. The pubsub topic that you want the metadata feed
+      messages to publish to. Please grant Dataplex service account the
+      permission to publish messages to the topic. The service account is:
+      service-{PROJECT_NUMBER}@gcp-sa-dataplex.iam.gserviceaccount.com.
+    scope: Required. The scope of the metadata feed. Only the in scope changes
+      are published.
+    uid: Output only. A system-generated, globally unique ID for the metadata
+      job. If the metadata job is deleted and then re-created with the same
+      name, this ID is different.
+    updateTime: Output only. The time when the feed was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  filters = _messages.MessageField('GoogleCloudDataplexV1MetadataFeedFilters', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  pubsubTopic = _messages.StringField(5)
+  scope = _messages.MessageField('GoogleCloudDataplexV1MetadataFeedScope', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleCloudDataplexV1MetadataFeedFilters(_messages.Message):
+  r"""Filters defines the type of changes that you want to listen to. You can
+  have multiple entry type filters and multiple aspect type filters. All of
+  the entry type filters are OR'ed together. All of the aspect type filters
+  are OR'ed together. All of the entry type filters and aspect type filters
+  are AND'ed together.
+
+  Enums:
+    ChangeTypesValueListEntryValuesEnum:
+
+  Fields:
+    aspectTypes: Optional. The aspect types that you want to listen to.
+      Depending on how the aspect is attached to the entry, in the format: pro
+      jects/{project_id_or_number}/locations/{location}/aspectTypes/{aspect_ty
+      pe_id}.
+    changeTypes: Optional. The type of change that you want to listen to. If
+      not specified, all changes are published.
+    entryTypes: Optional. The entry types that you want to listen to,
+      specified as relative resource names in the format projects/{project_id_
+      or_number}/locations/{location}/entryTypes/{entry_type_id}. Only entries
+      that belong to the specified entry types are published.
+  """
+
+  class ChangeTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""ChangeTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      CHANGE_TYPE_UNSPECIFIED: Unspecified change type. Defaults to
+        UNSPECIFIED.
+      CREATE: The change is a create event.
+      UPDATE: The change is an update event.
+      DELETE: The change is a delete event.
+    """
+    CHANGE_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    UPDATE = 2
+    DELETE = 3
+
+  aspectTypes = _messages.StringField(1, repeated=True)
+  changeTypes = _messages.EnumField('ChangeTypesValueListEntryValuesEnum', 2, repeated=True)
+  entryTypes = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1MetadataFeedScope(_messages.Message):
+  r"""Scope defines the scope of the metadata feed. Scopes are exclusive. Only
+  one of the scopes can be specified.
+
+  Fields:
+    entryGroups: Optional. The entry groups whose entries you want to listen
+      to. Must be in the format: projects/{project_id_or_number}/locations/{lo
+      cation_id}/entryGroups/{entry_group_id}.
+    organizationLevel: Optional. Whether the metadata feed is at the
+      organization-level. If true, all changes happened to the entries in the
+      same organization as the feed are published. If false, you must specify
+      a list of projects or a list of entry groups whose entries you want to
+      listen to.The default is false.
+    projects: Optional. The projects whose entries you want to listen to. Must
+      be in the same organization as the feed. Must be in the format:
+      projects/{project_id_or_number}.
+  """
+
+  entryGroups = _messages.StringField(1, repeated=True)
+  organizationLevel = _messages.BooleanField(2)
+  projects = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudDataplexV1MetadataJob(_messages.Message):
@@ -10505,6 +10783,90 @@ class GoogleCloudDataplexV1Partition(_messages.Message):
   location = _messages.StringField(2)
   name = _messages.StringField(3)
   values = _messages.StringField(4, repeated=True)
+
+
+class GoogleCloudDataplexV1QueryCatalogRequest(_messages.Message):
+  r"""Request message for QueryCatalog.
+
+  Fields:
+    pageSize: Optional. Max number of results in a single row. Defaults to 10,
+      max 1000.
+    pageToken: Optional. If provided, subsequent page is returned.
+    query: GoogleSQL query to execute.
+    referenceId: Reference to a query executed beforehand. Results can only be
+      fetched up to 24h after the query was triggered.
+    scopes: Optional. One "organizations/" or multiple "projects/". Providing
+      a mixture, or more than one org is an error.Defaults to the org of the
+      project in the "name" if empty.
+    timeout: Optional. The amount of time, to wait for the query before
+      returning. If the query takes longer, results can be fetched by another
+      call with the referenceId provided.Default 10s, max 30s.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
+  referenceId = _messages.StringField(4)
+  scopes = _messages.StringField(5, repeated=True)
+  timeout = _messages.StringField(6)
+
+
+class GoogleCloudDataplexV1QueryCatalogResponse(_messages.Message):
+  r"""Response message for QueryCatalog.
+
+  Fields:
+    done: If true, the query has completed and query_result is populated.
+    queryResult: Results of the query, set only if done is true.
+    referenceId: A unique ID for this query, can be used to fetch results once
+      the query completes.
+  """
+
+  done = _messages.BooleanField(1)
+  queryResult = _messages.MessageField('GoogleCloudDataplexV1QueryCatalogResponseQueryResult', 2)
+  referenceId = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1QueryCatalogResponseQueryResult(_messages.Message):
+  r"""Results of the query along with metadata.
+
+  Messages:
+    RowsValueListEntry: A RowsValueListEntry object.
+
+  Fields:
+    nextPageToken: Used to fetch next page of results in subsequent calls.
+      Empty if there are no more results.
+    rows: Results of the query.
+    totalRows: The total number of rows in the result (not just current page).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RowsValueListEntry(_messages.Message):
+    r"""A RowsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a RowsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RowsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  nextPageToken = _messages.StringField(1)
+  rows = _messages.MessageField('RowsValueListEntry', 2, repeated=True)
+  totalRows = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDataplexV1ResourceAccessSpec(_messages.Message):

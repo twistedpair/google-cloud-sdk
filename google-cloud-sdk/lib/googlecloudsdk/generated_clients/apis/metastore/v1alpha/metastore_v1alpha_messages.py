@@ -610,8 +610,9 @@ class Consumer(_messages.Message):
 
 
 class CustomRegionConfig(_messages.Message):
-  r"""Custom configuration used to specify regions that the metastore service
-  runs in. Currently only supported in the us multi-region.
+  r"""Deprecated: Use a single region service instead. Custom configuration
+  used to specify regions that the metastore service runs in. Currently only
+  supported in the us multi-region.
 
   Fields:
     readOnlyRegions: Optional. The list of read-only regions where the
@@ -627,8 +628,9 @@ class CustomRegionConfig(_messages.Message):
 
 
 class CustomRegionMetadata(_messages.Message):
-  r"""Metadata about a custom region. This is only populated if the region is
-  a custom region. For single/multi regions, it will be empty.
+  r"""Deprecated: Use a single region service instead. Metadata about a custom
+  region. This is only populated if the region is a custom region. For
+  single/multi regions, it will be empty.
 
   Fields:
     optionalReadOnlyRegions: The read-only regions for this custom region.
@@ -1471,10 +1473,11 @@ class LocationMetadata(_messages.Message):
   r"""Metadata about the service in a location.
 
   Fields:
-    customRegionMetadata: Possible configurations supported if the current
-      region is a custom region.
-    multiRegionMetadata: The multi-region metadata if the current region is a
-      multi-region.
+    customRegionMetadata: Deprecated: Use a single region service instead.
+      Possible configurations supported if the current region is a custom
+      region.
+    multiRegionMetadata: Deprecated: Use a single region service instead. The
+      multi-region metadata if the current region is a multi-region.
     supportedHiveMetastoreVersions: The versions of Hive Metastore that can be
       used when creating a new metastore service in this location. The server
       guarantees that exactly one HiveMetastoreVersion in the list will set
@@ -2805,12 +2808,15 @@ class MoveTableToDatabaseResponse(_messages.Message):
 
 
 class MultiRegionConfig(_messages.Message):
-  r"""The multi-region config for the Dataproc Metastore service.
+  r"""Deprecated: Use a single region service instead. The multi-region config
+  for the Dataproc Metastore service.
 
   Fields:
-    certificates: Output only. The list of root CA certificates that a gRPC
-      client uses to connect to a multi-regional Dataproc Metastore service.
-    customRegionConfig: A CustomRegionConfig attribute.
+    certificates: Output only. Deprecated: Use a single region service
+      instead. The list of root CA certificates that a gRPC client uses to
+      connect to a multi-regional Dataproc Metastore service.
+    customRegionConfig: Immutable. Deprecated: Use a single region service
+      instead.
   """
 
   certificates = _messages.MessageField('RootCACertificate', 1, repeated=True)
@@ -2818,9 +2824,10 @@ class MultiRegionConfig(_messages.Message):
 
 
 class MultiRegionMetadata(_messages.Message):
-  r"""The metadata for the multi-region that includes the constituent regions.
-  The metadata is only populated if the region is multi-region. For single
-  region or custom dual region, it will be empty.
+  r"""Deprecated: Use a single region service instead. The metadata for the
+  multi-region that includes the constituent regions. The metadata is only
+  populated if the region is multi-region. For single region or custom dual
+  region, it will be empty.
 
   Fields:
     constituentRegions: The regions constituting the multi-region.
@@ -3210,13 +3217,15 @@ class RestoreServiceRequest(_messages.Message):
 
 
 class RootCACertificate(_messages.Message):
-  r"""A gRPC client must install all root CA certificates to connect to a
-  multi-regional Dataproc Metastore service and achieve failover.
+  r"""Deprecated: Use a single region service instead. A gRPC client must
+  install all root CA certificates to connect to a multi-regional Dataproc
+  Metastore service and achieve failover.
 
   Fields:
-    certificate: The root CA certificate in PEM format. The maximum length is
-      65536 bytes.
-    expirationTime: The certificate expiration time in timestamp format.
+    certificate: Deprecated: Use a single region service instead. The root CA
+      certificate in PEM format. The maximum length is 65536 bytes.
+    expirationTime: Deprecated: Use a single region service instead. The
+      certificate expiration time in timestamp format.
   """
 
   certificate = _messages.StringField(1)
@@ -3349,8 +3358,9 @@ class Service(_messages.Message):
       metadata should be integrated with external services and systems.
     metadataManagementActivity: Output only. The metadata management
       activities of the metastore service.
-    multiRegionConfig: Optional. Specifies the multi-region configuration
-      information for the Hive metastore service.
+    multiRegionConfig: Optional. Deprecated: Use a single region service
+      instead. Specifies the multi-region configuration information for the
+      Hive metastore service.
     name: Immutable. Identifier. The relative resource name of the metastore
       service, in the following format:projects/{project_number}/locations/{lo
       cation_id}/services/{service_id}.

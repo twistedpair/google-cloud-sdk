@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import http_retry
+from googlecloudsdk.command_lib.services import util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
@@ -38,7 +39,6 @@ _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
 _FOLDER_SERVICE_RESOURCE = 'folders/%s/services/%s'
 _ORG_SERVICE_RESOURCE = 'organizations/%s/services/%s'
 _SERVICE_RESOURCE = 'services/%s'
-_DEPENDENCY_GROUP = '/groups/dependencies'
 _REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _CONSUMER_POLICY_DEFAULT = '/consumerPolicies/%s'
@@ -1073,6 +1073,8 @@ def AddEnableRule(
     organization: str = None,
     validate_only: bool = False,
     skip_dependency: bool = False,
+    group: str = 'dependencies',
+    inputted_group: bool = False,
 ):
   """Make API call to enable a specific service.
 
@@ -1088,6 +1090,9 @@ def AddEnableRule(
       preview but not exceuted.
     skip_dependency: If True, the dependencies of the service to be enabled will
       not be enabled.
+    group: The group to check for dependencies.
+    inputted_group: If True, the group is inputted by the user. If False, the
+      group is automatically set to 'dependencies'.
 
   Raises:
     exceptions.EnableServiceException: when enabling API fails.
@@ -1123,13 +1128,29 @@ def AddEnableRule(
       if service not in existing_services:
         services_to_enabled.add(service)
 
+    if not group.startswith('groups/'):
+      prefixed_group = f'groups/{group}'
+    else:
+      prefixed_group = group
+
     dependent_services = set()
 
     if not skip_dependency:
       for service in prefixed_services:
         list_expanded_members = ListExpandedMembers(
-            resource_name, service + _DEPENDENCY_GROUP
+            resource_name, f'{service}/{prefixed_group}'
         )
+        if not list_expanded_members and inputted_group:
+          if prefixed_group != 'groups/dependencies':
+            raise exceptions.EmptyMembersError(
+                util.GetGroupName(service, prefixed_group)
+            )
+          else:
+            log.warning(
+                f'The service {service} does not have dependencies for the '
+                f'group {prefixed_group}.'
+            )
+
         for dependent_service in list_expanded_members:
           # dependent_service is in format services/{service_name}
           dependent_service_name = dependent_service.split('/')[-1]

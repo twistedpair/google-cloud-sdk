@@ -22,6 +22,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -971,9 +972,9 @@ class GoogleCloudNetworkconnectivityV1betaLinkedProducerVpcNetwork(_messages.Mes
       is added to the NCC hub. This peering must be in ACTIVE state.
     producerNetwork: Output only. The URI of the Producer VPC.
     proposedExcludeExportRanges: Output only. The proposed exclude export IP
-      ranges waiting for hub administration's approval.
+      ranges waiting for hub administrator's approval.
     proposedIncludeExportRanges: Output only. The proposed include export IP
-      ranges waiting for hub administration's approval.
+      ranges waiting for hub administrator's approval.
     serviceConsumerVpcSpoke: Output only. The Service Consumer Network spoke.
   """
 
@@ -1036,9 +1037,9 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
       its producer VPC spokes. This VPC spoke cannot be deleted as long as any
       of these producer VPC spokes are connected to the NCC Hub.
     proposedExcludeExportRanges: Output only. The proposed exclude export IP
-      ranges waiting for hub administration's approval.
+      ranges waiting for hub administrator's approval.
     proposedIncludeExportRanges: Output only. The proposed include export IP
-      ranges waiting for hub administration's approval.
+      ranges waiting for hub administrator's approval.
     uri: Required. The URI of the VPC network resource.
   """
 
@@ -1222,6 +1223,21 @@ class GoogleCloudNetworkconnectivityV1betaListRegionalEndpointsResponse(_message
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudNetworkconnectivityV1betaListRemoteTransportProfilesResponse(_messages.Message):
+  r"""Message for response to listing RemoteTransportProfiles
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    remoteTransportProfiles: The list of RemoteTransportProfiles.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  remoteTransportProfiles = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRemoteTransportProfile', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudNetworkconnectivityV1betaListRouteTablesResponse(_messages.Message):
   r"""Response for HubService.ListRouteTables method.
 
@@ -1267,6 +1283,21 @@ class GoogleCloudNetworkconnectivityV1betaListSpokesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   spokes = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaListTransportsResponse(_messages.Message):
+  r"""Message for response to listing Transports.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    transports: The list of Transport.
+    unreachable: Unordered list. Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  transports = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaTransport', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1875,6 +1906,157 @@ class GoogleCloudNetworkconnectivityV1betaRejectSpokeUpdateRequest(_messages.Mes
   spokeUri = _messages.StringField(4)
 
 
+class GoogleCloudNetworkconnectivityV1betaRemoteTransportProfile(_messages.Message):
+  r"""Message describing RemoteTransportProfile object.
+
+  Enums:
+    FlowValueValuesEnum: Output only. Type of provisioning flows supported by
+      this profile.
+    OrderStateValueValuesEnum: Output only. Order state for this profile.
+    SlaValueValuesEnum: Output only. Availability class that will be
+      configured for this particular RemoteTransportProfile.
+    SupportedBandwidthsValueListEntryValuesEnum:
+
+  Messages:
+    LabelsValue: Output only. Labels as key value pairs.
+
+  Fields:
+    description: Output only. Description of the profile.
+    displayName: Output only. Human readable name of this profile, used to
+      identify this profile in the UI.
+    flow: Output only. Type of provisioning flows supported by this profile.
+    labels: Output only. Labels as key value pairs.
+    name: Identifier. Name of the resource in the format of $provider-$site.
+    orderState: Output only. Order state for this profile.
+    provider: Output only. Name of the provider on the other end of this
+      profile. E.g. "Amazon Web Services" or "Microsoft Azure".
+    providerSite: Output only. If the profile is a Cloud Service Provider with
+      compute resources, this is populated with the region where connectivity
+      is being established. If the profile provides facility-level selection,
+      this is an identity of the facility any connections on this profile are
+      going through.
+    sla: Output only. Availability class that will be configured for this
+      particular RemoteTransportProfile.
+    supportedBandwidths: Output only. List of bandwidth enum values that are
+      supported by this profile.
+  """
+
+  class FlowValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of provisioning flows supported by this profile.
+
+    Values:
+      KEY_PROVISIONING_FLOW_UNSPECIFIED: Unspecified key provisioning flow.
+      INPUT_ONLY: The activationKey field on the Transport must be included in
+        a create or patch request to establish connectivity.
+      OUTPUT_ONLY: The generatedActivationKey field is populated and must be
+        read from the resource and passed into the other provider.
+      INPUT_OR_OUTPUT: Both activation key fields are allowed for establishing
+        connectivity. If a key is input, the generated key is still present
+        after provisioning is finished.
+    """
+    KEY_PROVISIONING_FLOW_UNSPECIFIED = 0
+    INPUT_ONLY = 1
+    OUTPUT_ONLY = 2
+    INPUT_OR_OUTPUT = 3
+
+  class OrderStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Order state for this profile.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      CLOSED: Not enough capacity for customers to order.
+      OPEN: Enough capacity to fulfill an order.
+    """
+    STATE_UNSPECIFIED = 0
+    CLOSED = 1
+    OPEN = 2
+
+  class SlaValueValuesEnum(_messages.Enum):
+    r"""Output only. Availability class that will be configured for this
+    particular RemoteTransportProfile.
+
+    Values:
+      SERVICE_LEVEL_AVAILABILITY_UNSPECIFIED: Unspecified service level
+        availability.
+      HIGH: This represents a 99.9% service level on the availability of the
+        configured connectivity.
+      MAXIMUM: This represents a 99.99% service level on the availability of
+        the configured connectivity.
+    """
+    SERVICE_LEVEL_AVAILABILITY_UNSPECIFIED = 0
+    HIGH = 1
+    MAXIMUM = 2
+
+  class SupportedBandwidthsValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedBandwidthsValueListEntryValuesEnum enum type.
+
+    Values:
+      BANDWIDTH_UNSPECIFIED: Unspecified bandwidth.
+      BPS_50M: 50 Megabits per second.
+      BPS_100M: 100 Megabits per second.
+      BPS_200M: 200 Megabits per second.
+      BPS_300M: 300 Megabits per second.
+      BPS_400M: 400 Megabits per second.
+      BPS_500M: 500 Megabits per second.
+      BPS_1G: 1 Gigabit per second.
+      BPS_2G: 2 Gigabits per second.
+      BPS_5G: 5 Gigabits per second.
+      BPS_10G: 10 Gigabits per second.
+      BPS_20G: 20 Gigabits per second.
+      BPS_50G: 50 Gigabits per second.
+      BPS_100G: 100 Gigabits per second.
+    """
+    BANDWIDTH_UNSPECIFIED = 0
+    BPS_50M = 1
+    BPS_100M = 2
+    BPS_200M = 3
+    BPS_300M = 4
+    BPS_400M = 5
+    BPS_500M = 6
+    BPS_1G = 7
+    BPS_2G = 8
+    BPS_5G = 9
+    BPS_10G = 10
+    BPS_20G = 11
+    BPS_50G = 12
+    BPS_100G = 13
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Output only. Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  flow = _messages.EnumField('FlowValueValuesEnum', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  orderState = _messages.EnumField('OrderStateValueValuesEnum', 6)
+  provider = _messages.StringField(7)
+  providerSite = _messages.StringField(8)
+  sla = _messages.EnumField('SlaValueValuesEnum', 9)
+  supportedBandwidths = _messages.EnumField('SupportedBandwidthsValueListEntryValuesEnum', 10, repeated=True)
+
+
 class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
   r"""A route defines a path from VM instances within a spoke to a specific
   destination resource. Only VPC spokes have routes.
@@ -2223,7 +2405,7 @@ class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     fieldPathsPendingUpdate: Optional. The list of fields waiting for hub
-      administration's approval.
+      administrator's approval.
     gateway: Optional. This is a gateway that can apply specialized processing
       to traffic going through it.
     group: Optional. The name of the group that this spoke is associated with.
@@ -2541,7 +2723,7 @@ class GoogleCloudNetworkconnectivityV1betaStateMetadata(_messages.Message):
 
 
 class GoogleCloudNetworkconnectivityV1betaStateReason(_messages.Message):
-  r"""The reason a spoke is inactive.
+  r"""The reason for the current state of the spoke.
 
   Enums:
     CodeValueValuesEnum: The code associated with this reason.
@@ -2592,6 +2774,178 @@ class GoogleCloudNetworkconnectivityV1betaStateTimeline(_messages.Message):
   """
 
   states = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateMetadata', 1, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaTransport(_messages.Message):
+  r"""Message describing Transport object.
+
+  Enums:
+    BandwidthValueValuesEnum: Optional. Bandwidth of the Transport. This must
+      be one of the supported bandwidths for the remote profile, and must be
+      set when no activation key is being provided.
+    StackTypeValueValuesEnum: Optional. IP version stack for the established
+      connectivity.
+    StateValueValuesEnum: Output only. State of the underlying connectivity.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs.
+
+  Fields:
+    adminEnabled: Optional. Administrative state of the underlying
+      connectivity. If set to true (default), connectivity should be available
+      between your environments. If set to false, the connectivity over these
+      links is disabled. Disabling your Transport does not affect billing, and
+      retains the underlying network bandwidth associated with the
+      connectivity.
+    advertisedRoutes: Optional. List of IP Prefixes that will be advertised to
+      the remote provider. Both IPv4 and IPv6 addresses are supported.
+    bandwidth: Optional. Bandwidth of the Transport. This must be one of the
+      supported bandwidths for the remote profile, and must be set when no
+      activation key is being provided.
+    createTime: Output only. Create time stamp.
+    description: Optional. Description of the Transport.
+    generatedActivationKey: Output only. Google-generated activation key. This
+      is only output if the selected profile supports an OUTPUT key flow.
+      Inputting this to the provider is only valid while the resource is in a
+      PENDING_KEY state. Once the provider has accepted the key, the resource
+      will move to the CONFIGURING state.
+    labels: Optional. Labels as key value pairs.
+    mtuLimit: Output only. The maximum transmission unit (MTU) of a packet
+      that can be sent over this transport.
+    name: Identifier. Name of the resource.
+    network: Optional. Resource URI of the Network that will be peered with
+      this Transport. This field must be provided during resource creation and
+      cannot be changed.
+    peeringNetwork: Output only. VPC Network URI that was created for the VPC
+      Peering connection to the provided `network`. If VPC Peering is
+      disconnected, this can be used to re-establish.
+    providedActivationKey: Optional. Key used for establishing a connection
+      with the remote transport. This key can only be provided if the profile
+      supports an INPUT key flow and the resource is in the PENDING_KEY state.
+    remoteAccountId: Optional. The user supplied account id for the CSP
+      associated with the remote profile.
+    remoteProfile: Optional. Name of the remoteTransportProfile that this
+      Transport is connecting to.
+    stackType: Optional. IP version stack for the established connectivity.
+    state: Output only. State of the underlying connectivity.
+    updateTime: Output only. Update time stamp.
+  """
+
+  class BandwidthValueValuesEnum(_messages.Enum):
+    r"""Optional. Bandwidth of the Transport. This must be one of the
+    supported bandwidths for the remote profile, and must be set when no
+    activation key is being provided.
+
+    Values:
+      BANDWIDTH_UNSPECIFIED: Unspecified bandwidth.
+      BPS_50M: 50 Megabits per second.
+      BPS_100M: 100 Megabits per second.
+      BPS_200M: 200 Megabits per second.
+      BPS_300M: 300 Megabits per second.
+      BPS_400M: 400 Megabits per second.
+      BPS_500M: 500 Megabits per second.
+      BPS_1G: 1 Gigabit per second.
+      BPS_2G: 2 Gigabits per second.
+      BPS_5G: 5 Gigabits per second.
+      BPS_10G: 10 Gigabits per second.
+      BPS_20G: 20 Gigabits per second.
+      BPS_50G: 50 Gigabits per second.
+      BPS_100G: 100 Gigabits per second.
+    """
+    BANDWIDTH_UNSPECIFIED = 0
+    BPS_50M = 1
+    BPS_100M = 2
+    BPS_200M = 3
+    BPS_300M = 4
+    BPS_400M = 5
+    BPS_500M = 6
+    BPS_1G = 7
+    BPS_2G = 8
+    BPS_5G = 9
+    BPS_10G = 10
+    BPS_20G = 11
+    BPS_50G = 12
+    BPS_100G = 13
+
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. IP version stack for the established connectivity.
+
+    Values:
+      STACK_TYPE_UNSPECIFIED: Unspecified stack type.
+      IPV4_ONLY: Only IPv4 is supported. (default)
+      IPV4_IPV6: Both IPv4 and IPv6 are supported.
+    """
+    STACK_TYPE_UNSPECIFIED = 0
+    IPV4_ONLY = 1
+    IPV4_IPV6 = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the underlying connectivity.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      CREATING: The resource exists locally and is being created / associated
+        with the resource on the remote provider's end of the underlying
+        connectivity.
+      PENDING_CONFIG: The Transport exists on both sides of the connection,
+        and is waiting for configuration to finalize and be verified as
+        operational.
+      PENDING_KEY: The Transport was created in GCP. Depending on the
+        profile's key provisioning flow, this is either waiting for an
+        activation key to be input (the key will be validated that it uses
+        remote resources that match the Transport), or for the generated key
+        to be input to the provider for finalizing. The configured bandwidth
+        is not yet guaranteed.
+      ACTIVE: The Transport is configured and the underlying connectivity is
+        considered operational.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    PENDING_CONFIG = 2
+    PENDING_KEY = 3
+    ACTIVE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  adminEnabled = _messages.BooleanField(1)
+  advertisedRoutes = _messages.StringField(2, repeated=True)
+  bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  generatedActivationKey = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mtuLimit = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  peeringNetwork = _messages.StringField(11)
+  providedActivationKey = _messages.StringField(12)
+  remoteAccountId = _messages.StringField(13)
+  remoteProfile = _messages.StringField(14)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
 
 
 class GoogleCloudNetworkconnectivityV1betaVirtualMachine(_messages.Message):
@@ -2963,8 +3317,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
     unreachable: Unordered list. Unreachable resources. Populated when the
       request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections e.g. when attempting to list all resources across all
-      supported locations.
+      across collections. For example, when attempting to list all resources
+      across all supported locations.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4202,9 +4556,9 @@ class NetworkconnectivityProjectsLocationsOperationsListRequest(_messages.Messag
     pageToken: The standard list page token.
     returnPartialSuccess: When set to `true`, operations that are reachable
       are returned as normal, and those that are unreachable are returned in
-      the [ListOperationsResponse.unreachable] field. This can only be `true`
-      when reading across collections e.g. when `parent` is set to
-      `"projects/example/locations/-"`. This field is not by default supported
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
       and will result in an `UNIMPLEMENTED` error if set unless explicitly
       documented otherwise in service or product specific documentation.
   """
@@ -4294,6 +4648,38 @@ class NetworkconnectivityProjectsLocationsRegionalEndpointsListRequest(_messages
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A page token.
     parent: Required. The parent resource's name of the RegionalEndpoint.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsRemoteTransportProfilesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsRemoteTransportProfilesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsRemoteTransportProfilesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsRemoteTransportProfilesListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListRemoteTransportProfilesRequest.
   """
 
   filter = _messages.StringField(1)
@@ -4638,46 +5024,46 @@ class NetworkconnectivityProjectsLocationsTransportsCreateRequest(_messages.Mess
   r"""A NetworkconnectivityProjectsLocationsTransportsCreateRequest object.
 
   Fields:
-    parent: Required. The parent resource's name of the Transport.
+    googleCloudNetworkconnectivityV1betaTransport: A
+      GoogleCloudNetworkconnectivityV1betaTransport resource to be passed as
+      the request body.
+    parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      knows to ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if the original operation with the same request
-      ID was received, and if so, does not start creating a second resource.
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    transportId: Required. Unique id of the Transport to be created. @pattern:
-      ^[-a-z0-9](?:[-a-z0-9]{0,44})[a-z0-9]$
-    transportsV1BetaTransport: A TransportsV1BetaTransport resource to be
-      passed as the request body.
+    transportId: Required. Id of the requesting object
   """
 
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  transportId = _messages.StringField(3)
-  transportsV1BetaTransport = _messages.MessageField('TransportsV1BetaTransport', 4)
+  googleCloudNetworkconnectivityV1betaTransport = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaTransport', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  transportId = _messages.StringField(4)
 
 
 class NetworkconnectivityProjectsLocationsTransportsDeleteRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsTransportsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the Transport to delete.
+    name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      knows to ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if the original operation with the same request
-      ID was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -4688,7 +5074,7 @@ class NetworkconnectivityProjectsLocationsTransportsGetRequest(_messages.Message
   r"""A NetworkconnectivityProjectsLocationsTransportsGetRequest object.
 
   Fields:
-    name: Required. The name of the Transport to retrieve.
+    name: Required. Name of the resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4698,13 +5084,13 @@ class NetworkconnectivityProjectsLocationsTransportsListRequest(_messages.Messag
   r"""A NetworkconnectivityProjectsLocationsTransportsListRequest object.
 
   Fields:
-    filter: A filter expression that filters the results listed in the
-      response.
-    orderBy: Sort the results by a certain order.
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A page token.
-    parent: Required. The parent resource's name of the Transport.
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListTransportsRequest.
   """
 
   filter = _messages.StringField(1)
@@ -4714,68 +5100,37 @@ class NetworkconnectivityProjectsLocationsTransportsListRequest(_messages.Messag
   parent = _messages.StringField(5, required=True)
 
 
-class NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest
-  object.
+class NetworkconnectivityProjectsLocationsTransportsPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsTransportsPatchRequest object.
 
   Fields:
-    name: Required. The name of the RemoteProfile to retrieve.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest
-  object.
-
-  Fields:
-    filter: A filter expression that filters the results listed in the
-      response.
-    orderBy: Sort the results by a certain order.
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A page token.
-    parent: Required. The parent resource's name of the RemoteProfile.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworkconnectivityProjectsLocationsTransportsUpdateRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsTransportsUpdateRequest object.
-
-  Fields:
-    name: Required. The name of the Transport to update.
+    googleCloudNetworkconnectivityV1betaTransport: A
+      GoogleCloudNetworkconnectivityV1betaTransport resource to be passed as
+      the request body.
+    name: Identifier. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      knows to ignore the request if it has already been completed. The server
-      guarantees that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if the original operation with the same request
-      ID was received, and if so, ignores the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    transportsV1BetaTransport: A TransportsV1BetaTransport resource to be
-      passed as the request body.
-    updateMask: Required. Field mask is used to specify the fields to be
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Transport resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      does not provide a mask then all fields present in the request will be
+      overwritten.
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  transportsV1BetaTransport = _messages.MessageField('TransportsV1BetaTransport', 3)
-  updateMask = _messages.StringField(4, required=True)
+  googleCloudNetworkconnectivityV1betaTransport = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaTransport', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4839,332 +5194,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class TransportsListRemoteProfilesResponse(_messages.Message):
-  r"""The response for Transports.ListRemoteProfiles.
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    remoteTransportProfiles: The list of remote profiles.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  remoteTransportProfiles = _messages.MessageField('TransportsV1BetaRemoteProfile', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class TransportsListTransportsResponse(_messages.Message):
-  r"""The response for Transports.ListTransports.
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    region: The region of the transports.
-    transports: The list of transports.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  region = _messages.StringField(2)
-  transports = _messages.MessageField('TransportsV1BetaTransport', 3, repeated=True)
-  unreachable = _messages.StringField(4, repeated=True)
-
-
-class TransportsV1BetaRemoteProfile(_messages.Message):
-  r"""The RemoteProfile resource represents a remote transport profile. This
-  is a global resource with the URL: `projects/{project_number}/locations/glob
-  al/remoteTransportProfiles/{remote_profile_id}`.
-
-  Enums:
-    FlowValueValuesEnum: The flow of the remote profile.
-    OrderStateValueValuesEnum: The order state of the remote profile.
-    SlaValueValuesEnum: The SLA of the remote profile.
-    SupportedBandwidthsValueValuesEnum: The supported bandwidths of the remote
-      profile.
-
-  Messages:
-    LabelsValue: Labels as key value pairs.
-
-  Fields:
-    description: Description of the remote profile.
-    displayName: The display name of the remote profile.
-    flow: The flow of the remote profile.
-    labels: Labels as key value pairs.
-    name: Name of the resource in the format of $provider-$site.
-    orderState: The order state of the remote profile.
-    provider: The provider of the remote profile.
-    providerSite: The site of the remote profile.
-    sla: The SLA of the remote profile.
-    supportedBandwidths: The supported bandwidths of the remote profile.
-    """
-
-  class FlowValueValuesEnum(_messages.Enum):
-    r"""The flow of the remote profile.
-
-    Values:
-      KEY_PROVISIONING_FLOW_UNSPECIFIED: Unspecified key provisioning flow.
-      INPUT_ONLY: The activationKey field on the Transport must be included in
-        a create or patch request to establish connectivity.
-      OUTPUT_ONLY: The generatedActivationKey field is populated and must be
-        read from the resource and passed into the other provider.
-      INPUT_OR_OUTPUT: Both activation key fields are allowed for establishing
-        connectivity. If a key is input, the generated key is still present
-        after provisioning is finished.
-    """
-    KEY_PROVISIONING_FLOW_UNSPECIFIED = 0
-    INPUT_ONLY = 1
-    OUTPUT_ONLY = 2
-    INPUT_OR_OUTPUT = 3
-
-  class OrderStateValueValuesEnum(_messages.Enum):
-    r"""The order state of the remote profile.
-
-    Values:
-      STATE_UNSPECIFIED: Unspecified order state.
-      CLOSED: Not enough capacity for customers to order.
-      OPEN: Enough capacity to fulfill an order.
-    """
-    STATE_UNSPECIFIED = 0
-    CLOSED = 1
-    OPEN = 2
-
-  class SlaValueValuesEnum(_messages.Enum):
-    r"""The SLA of the remote profile.
-
-    Values:
-      SERVICE_LEVEL_AVAILABILITY_UNSPECIFIED: Unspecified service level
-        availability.
-      HIGH: This represents a 99.9% service level on the availability of the
-        configured connectivity.
-      MAXIMUM: This represents a 99.99% service level on the availability of
-        the configured connectivity.
-    """
-    SERVICE_LEVEL_AVAILABILITY_UNSPECIFIED = 0
-    HIGH = 1
-    MAXIMUM = 2
-
-  class SupportedBandwidthsValueValuesEnum(_messages.Enum):
-    r"""The supported bandwidths of the remote profile.
-
-    Values:
-      BANDWIDTH_UNSPECIFIED: Unspecified bandwidth.
-      BPS_50M: 50 Mbit/s.
-      BPS_100M: 100 Mbit/s.
-      BPS_200M: 200 Mbit/s.
-      BPS_300M: 300 Mbit/s.
-      BPS_400M: 400 Mbit/s.
-      BPS_500M: 500 Mbit/s.
-      BPS_1G: 1 Gbit/s.
-      BPS_2G: 2 Gbit/s.
-      BPS_5G: 5 Gbit/s.
-      BPS_10G: 10 Gbit/s.
-      BPS_20G: 20 Gbit/s.
-      BPS_50G: 50 Gbit/s.
-      BPS_100G: 100 Gbit/s.
-    """
-
-    BANDWIDTH_UNSPECIFIED = 0
-    BPS_50M = 1
-    BPS_100M = 2
-    BPS_200M = 3
-    BPS_300M = 4
-    BPS_400M = 5
-    BPS_500M = 6
-    BPS_1G = 7
-    BPS_2G = 8
-    BPS_5G = 9
-    BPS_10G = 10
-    BPS_20G = 11
-    BPS_50G = 12
-    BPS_100G = 13
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  flow = _messages.EnumField('FlowValueValuesEnum', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  orderState = _messages.EnumField('OrderStateValueValuesEnum', 6)
-  provider = _messages.StringField(7)
-  providerSite = _messages.StringField(8)
-  sla = _messages.EnumField('SlaValueValuesEnum', 9)
-  supportedBandwidths = _messages.EnumField('SupportedBandwidthsValueValuesEnum', 10)
-
-
-class TransportsV1BetaTransport(_messages.Message):
-  r"""The Transport resource represents connectivity desired between a GCP
-  region and an external entity. This is a regional resource with the URL:
-  `projects/{project_number}/locations/{locationsId}/transports/{transport_id}`.
-
-  Enums:
-    BandwidthValueValuesEnum: The bandwidth of the transport.
-    StackTypeValueValuesEnum: The stack type of the transport.
-    StateValueValuesEnum: The current lifecycle state of this transport.
-
-  Messages:
-    LabelsValue: Labels for this transport.
-
-  Fields:
-    adminEnabled: Whether the transport is admin enabled.
-    advertisedRoutes: The advertised routes of the transport.
-    bandwidth: The bandwidth of the transport.
-    createTime: The time the transport was created.
-    description: An optional description of the transport.
-    labels: Labels for this transport.
-    mtuLimit: The MTU limit of the transport.
-    name: The name of the transport. Transport names must be unique.
-    network: The network of the transport.
-    peeringNetwork: The peering network of the transport.
-    providedActivationKey: The activation key provided by the customer for the
-      transport.
-    remoteAccountId: The remote account ID of the transport.
-    remoteProfile: The name of the remote transport profile that this
-      transport is associated with.
-    stackType: The stack type of the transport.
-    state: The current lifecycle state of this transport.
-    updateTime: The time the transport was last updated.
-  """
-
-  class BandwidthValueValuesEnum(_messages.Enum):
-    r"""The bandwidth of the transport.
-
-
-    Values:
-      BANDWIDTH_UNSPECIFIED: Unspecified bandwidth.
-      BPS_50M: 50 Mbit/s.
-      BPS_100M: 100 Mbit/s.
-      BPS_200M: 200 Mbit/s.
-      BPS_300M: 300 Mbit/s.
-      BPS_400M: 400 Mbit/s.
-      BPS_500M: 500 Mbit/s.
-      BPS_1G: 1 Gbit/s.
-      BPS_2G: 2 Gbit/s.
-      BPS_5G: 5 Gbit/s.
-      BPS_10G: 10 Gbit/s.
-      BPS_20G: 20 Gbit/s.
-      BPS_50G: 50 Gbit/s.
-      BPS_100G: 100 Gbit/s.
-    """
-
-    BANDWIDTH_UNSPECIFIED = 0
-    BPS_50M = 1
-    BPS_100M = 2
-    BPS_200M = 3
-    BPS_300M = 4
-    BPS_400M = 5
-    BPS_500M = 6
-    BPS_1G = 7
-    BPS_2G = 8
-    BPS_5G = 9
-    BPS_10G = 10
-    BPS_20G = 11
-    BPS_50G = 12
-    BPS_100G = 13
-
-  class StackTypeValueValuesEnum(_messages.Enum):
-    r"""The stack type of the transport.
-
-    Values:
-      STACK_TYPE_UNSPECIFIED: Unspecified stack type.
-      IPV4_ONLY: Only IPv4 is supported. (default)
-      IPV4_IPV6: Both IPv4 and IPv6 are supported.
-    """
-    STACK_TYPE_UNSPECIFIED = 0
-    IPV4_ONLY = 1
-    IPV4_IPV6 = 2
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The current lifecycle state of this transport.
-
-    Values:
-      STATE_UNSPECIFIED: Unspecified state.
-      CREATING: The resource exists locally and is being created / associated
-        with the resource on the remote provider's end of the underlying
-        connectivity.
-      PENDING_CONFIG: The Transport exists on both sides of the connection,
-        and is waiting for configuration to finalize and be verified as
-        operational.
-      PENDING_KEY: The Transport was created in GCP. Depending on the
-        profile's key provisioning flow, this is either waiting for an
-        activation key to be input (the key will be validated that it uses
-        remote resources that match the Transport), or for the generated key
-        to be input to the provider for finalizing. The configured bandwidth
-        is not yet guaranteed.
-      ACTIVE: The Transport is configured and the underlying connectivity is
-        considered operational.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    PENDING_CONFIG = 2
-    PENDING_KEY = 3
-    ACTIVE = 4
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels for this transport.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  adminEnabled = _messages.BooleanField(1)
-  advertisedRoutes = _messages.StringField(2, repeated=True)
-  bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mtuLimit = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  peeringNetwork = _messages.StringField(10)
-  providedActivationKey = _messages.StringField(11)
-  remoteAccountId = _messages.StringField(12)
-  remoteProfile = _messages.StringField(13)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  updateTime = _messages.StringField(16)
 
 
 encoding.AddCustomJsonFieldMapping(

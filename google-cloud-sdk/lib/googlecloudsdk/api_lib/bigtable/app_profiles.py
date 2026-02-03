@@ -153,6 +153,7 @@ def Create(
     transactional_writes=None,
     row_affinity=False,
     priority=None,
+    use_memory_layer=None,
     data_boost=False,
     data_boost_compute_billing_owner=None,
     force=False,
@@ -172,7 +173,8 @@ def Create(
       writes enabled. This is only possible when using single cluster routing.
     row_affinity: bool, Whether to use row affinity sticky routing.
     priority: string, The request priority of the new app profile.
-    data_boost: bool, If the app profile should use Standard Isolation.
+    use_memory_layer: bool, Whether to use the memory layer.
+    data_boost: bool, If the app profile should use Data Boost.
     data_boost_compute_billing_owner: string, The compute billing owner for Data
       Boost.
     force: bool, Whether to ignore API warnings and create forcibly.
@@ -214,9 +216,17 @@ def Create(
 
   standard_isolation = None
   data_boost_isolation = None
-  if priority:
-    priority_enum = msgs.StandardIsolation.PriorityValueValuesEnum(priority)
-    standard_isolation = msgs.StandardIsolation(priority=priority_enum)
+  if priority or use_memory_layer:
+    priority_enum = (
+        msgs.StandardIsolation.PriorityValueValuesEnum(priority)
+        if priority
+        else None
+    )
+    memory_config = msgs.MemoryConfig() if use_memory_layer else None
+    standard_isolation = msgs.StandardIsolation(
+        priority=priority_enum,
+        memoryConfig=memory_config,
+    )
   elif data_boost:
     data_boost_enum = (
         msgs.DataBoostIsolationReadOnly.ComputeBillingOwnerValueValuesEnum(
@@ -251,6 +261,7 @@ def Update(
     transactional_writes=None,
     row_affinity=None,
     priority=None,
+    use_memory_layer=None,
     data_boost=False,
     data_boost_compute_billing_owner=None,
     force=False,
@@ -271,7 +282,9 @@ def Update(
     row_affinity: bool, Whether to use row affinity sticky routing. If None,
       then no change should be made.
     priority: string, The request priority of the new app profile.
-    data_boost: bool, If the app profile should use Standard Isolation.
+    use_memory_layer: bool, Whether to use the memory layer. If None, then no
+      change should be made.
+    data_boost: bool, If the app profile should use Data Boost.
     data_boost_compute_billing_owner: string, The compute billing owner for Data
       Boost.
     force: bool, Whether to ignore API warnings and create forcibly.
@@ -328,12 +341,18 @@ def Update(
     changed_fields.append('description')
     app_profile.description = description
 
-  if priority:
-    priority_enum = msgs.StandardIsolation.PriorityValueValuesEnum(priority)
-    changed_fields.append('standardIsolation.priority')
-    app_profile.standardIsolation = msgs.StandardIsolation(
-        priority=priority_enum
-    )
+  if priority is not None or use_memory_layer is not None:
+    app_profile.standardIsolation = msgs.StandardIsolation()
+    if priority:
+      app_profile.standardIsolation.priority = (
+          msgs.StandardIsolation.PriorityValueValuesEnum(priority)
+      )
+      changed_fields.append('standardIsolation.priority')
+    if use_memory_layer is not None:
+      app_profile.standardIsolation.memoryConfig = (
+          msgs.MemoryConfig() if use_memory_layer else None
+      )
+      changed_fields.append('standardIsolation.memoryConfig')
 
   elif data_boost:
     data_boost_enum = (

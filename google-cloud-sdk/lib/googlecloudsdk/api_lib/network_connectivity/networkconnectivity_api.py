@@ -434,9 +434,22 @@ class TransportsClient(object):
     create_req = self.messages.NetworkconnectivityProjectsLocationsTransportsCreateRequest(
         parent=parent,
         transportId=transport_id,
-        transportsV1BetaTransport=transport_request,
+        googleCloudNetworkconnectivityV1betaTransport=transport_request,
     )
     return self.transport_service.Create(create_req)
+
+  def UpdateBeta(
+      self, transport_ref, transport_request, update_mask, request_id=None
+  ):
+    """Call API to update an existing transport in the BETA release track."""
+    update_mask_string = ','.join(update_mask)
+    update_req = self.messages.NetworkconnectivityProjectsLocationsTransportsPatchRequest(
+        name=transport_ref.RelativeName(),
+        requestId=request_id,
+        googleCloudNetworkconnectivityV1betaTransport=transport_request,
+        updateMask=update_mask_string,
+    )
+    return self.transport_service.Patch(update_req)
 
   def DeleteBeta(self, transport_ref):
     """Call API to delete an existing transport in the BETA release track."""
@@ -454,13 +467,13 @@ class RemoteProfilesClient(object):
     self.client = networkconnectivity_util.GetClientInstance(release_track)
     self.messages = networkconnectivity_util.GetMessagesModule(release_track)
     self.remote_profile_service = (
-        self.client.projects_locations_transports_remoteTransportProfiles
+        self.client.projects_locations_remoteTransportProfiles
     )
     self.operation_service = self.client.projects_locations_operations
 
   def Get(self, remote_profile_ref):
     """Call API to get an existing remote transport profile."""
-    get_req = self.messages.NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest(
+    get_req = self.messages.NetworkconnectivityProjectsLocationsRemoteTransportProfilesGetRequest(
         name=remote_profile_ref.RelativeName()
     )
     return self.remote_profile_service.Get(get_req)
@@ -475,7 +488,7 @@ class RemoteProfilesClient(object):
       page_token=None,
   ):
     """Call API to list remote transport profiles."""
-    list_req = self.messages.NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest(
+    list_req = self.messages.NetworkconnectivityProjectsLocationsRemoteTransportProfilesListRequest(
         parent=location_ref,
         filter=filter_expression,
         orderBy=order_by,

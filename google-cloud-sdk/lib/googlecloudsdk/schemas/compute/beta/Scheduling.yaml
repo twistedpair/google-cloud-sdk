@@ -39,16 +39,6 @@ properties:
       be a number between 1 and the number of availability domains specified in
       the spread placement policy attached to the instance.
     type: integer
-  currentCpus:
-    description: |-
-      Current number of vCPUs available for VM. 0 or unset means default vCPUs
-      of the current machine type.
-    type: integer
-  currentMemoryMb:
-    description: |-
-      Current amount of memory (in MB) available for VM. 0 or unset means
-      default amount of memory of the current machine type.
-    type: integer
   gracefulShutdown:
     description: A SchedulingGracefulShutdown attribute.
     $ref: SchedulingGracefulShutdown.yaml
@@ -65,13 +55,6 @@ properties:
     - DELETE
     - INSTANCE_TERMINATION_ACTION_UNSPECIFIED
     - STOP
-  latencyTolerant:
-    description: |-
-      Defines whether the instance is tolerant of higher cpu latency.  This can
-      only be set during instance creation, or when the instance is not
-      currently running.  It must not be set if thepreemptible option is also
-      set.
-    type: boolean
   localSsdRecoveryTimeout:
     description: |-
       Specifies the maximum amount of time a Local Ssd Vm should wait while
@@ -138,13 +121,6 @@ properties:
       therefore, in a `TERMINATED` state. SeeInstance Life Cycle for more
       information on the possible instance states.
     type: boolean
-  preemptionNoticeDuration:
-    description: |-
-      Specifies the Metadata Service preemption notice duration before the
-      GCE ACPI G2 Soft  Off signal is triggered for Spot VMs only. If not
-      specified, there will be no wait before the G2 Soft Off signal is
-      triggered.
-    $ref: Duration.yaml
   provisioningModel:
     description: Specifies the provisioning model of the instance.
     type: string
@@ -153,15 +129,6 @@ properties:
     - RESERVATION_BOUND
     - SPOT
     - STANDARD
-  shutdownTimeout:
-    description: |-
-      DEPRECATED: please use skipGuestOsShutdown. Timeout between GCE ACPI
-      G2 Soft Off and ACPI G3 Mechanical Off during shutdown operation of
-      VM.  For Standard VMs values between 0s and 120s are allowed. For Spot
-      and Preemptible VMs supported values are between 0s and 30s.  If no
-      value is specified for shutdownDuration, default values are 90s for
-      Standard VMs and 30s for Spot/Preemptible VMs.
-    $ref: Duration.yaml
   skipGuestOsShutdown:
     description: |-
       Default is false and there will be 120 seconds between GCE ACPI G2
@@ -174,16 +141,3 @@ properties:
       inRFC3339 text format. If specified, the instance termination action
       will be performed at the termination time.
     type: string
-  windowsLicenseOptimizationMode:
-    description: |-
-      Represents the Windows Server License Optimization Mode of the VM. If
-      unspecified, the default mode is `OFF`.
-    type: string
-    enum:
-    - AUTO
-    - BALANCED
-    - COST_OPTIMIZED
-    - MANAGED
-    - OFF
-    - PERFORMANCE
-    - UNSPECIFIED

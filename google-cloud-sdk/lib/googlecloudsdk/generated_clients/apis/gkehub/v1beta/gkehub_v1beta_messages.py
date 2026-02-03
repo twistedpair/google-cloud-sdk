@@ -362,7 +362,7 @@ class ClusterSelector(_messages.Message):
   r"""Selector for clusters.
 
   Fields:
-    labelSelector: Optional. A valid CEL (Common Expression Language)
+    labelSelector: Required. A valid CEL (Common Expression Language)
       expression which evaluates `resource.labels`.
   """
 
@@ -737,6 +737,7 @@ class CommonFeatureSpec(_messages.Message):
     mesh: Servicemesh feature spec.
     multiclusteringress: Multicluster Ingress-specific spec.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
+    workloadidentity: Workload Identity feature spec.
     workloadmigration: The specification for WorkloadMigration feature.
   """
 
@@ -748,7 +749,8 @@ class CommonFeatureSpec(_messages.Message):
   mesh = _messages.MessageField('ServiceMeshFeatureSpec', 6)
   multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 7)
   rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 8)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 9)
+  workloadidentity = _messages.MessageField('WorkloadIdentityFeatureSpec', 9)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 10)
 
 
 class CommonFeatureState(_messages.Message):
@@ -761,6 +763,7 @@ class CommonFeatureState(_messages.Message):
     helloworld: Hello World-specific state.
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
     state: Output only. The "running state" of the Feature in this Fleet.
+    workloadidentity: WorkloadIdentity fleet-level state.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
@@ -769,6 +772,7 @@ class CommonFeatureState(_messages.Message):
   helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
   rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 5)
   state = _messages.MessageField('FeatureState', 6)
+  workloadidentity = _messages.MessageField('WorkloadIdentityFeatureState', 7)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -1015,12 +1019,18 @@ class ConfigManagementConfigSync(_messages.Message):
 
   Fields:
     deploymentOverrides: Optional. Configuration for deployment overrides.
-    enabled: Optional. Enables the installation of ConfigSync. If set to true,
-      ConfigSync resources will be created and the other ConfigSync fields
-      will be applied if exist. If set to false, all other ConfigSync fields
-      will be ignored, ConfigSync resources will be deleted. If omitted,
-      ConfigSync resources will be managed depends on the presence of the git
-      or oci field.
+      Applies only to Config Sync deployments with containers that are not a
+      root or namespace reconciler: `reconciler-manager`, `otel-collector`,
+      `resource-group-controller-manager`, `admission-webhook`. To override a
+      root or namespace reconciler, use the rootsync or reposync fields at
+      https://docs.cloud.google.com/kubernetes-engine/config-
+      sync/docs/reference/rootsync-reposync-fields#override-resources instead.
+    enabled: Optional. Enables the installation of Config Sync. If set to
+      true, the Feature will manage Config Sync resources, and apply the other
+      ConfigSync fields if they exist. If set to false, the Feature will
+      ignore all other ConfigSync fields and delete the Config Sync resources.
+      If omitted, ConfigSync is considered enabled if the git or oci field is
+      present.
     git: Optional. Git repo configuration for the cluster.
     metricsGcpServiceAccountEmail: Optional. The Email of the Google Cloud
       Service Account (GSA) used for exporting Config Sync metrics to Cloud
@@ -1034,10 +1044,14 @@ class ConfigManagementConfigSync(_messages.Message):
       sync/docs/how-to/monitor-config-sync-cloud-monitoring#custom-monitoring.
     oci: Optional. OCI repo configuration for the cluster
     preventDrift: Optional. Set to true to enable the Config Sync admission
-      webhook to prevent drifts. If set to `false`, disables the Config Sync
-      admission webhook and does not prevent drifts.
-    sourceFormat: Optional. Specifies whether the Config Sync Repo is in
-      "hierarchical" or "unstructured" mode.
+      webhook to prevent drifts. If set to false, disables the Config Sync
+      admission webhook and does not prevent drifts. Defaults to false. See
+      https://docs.cloud.google.com/kubernetes-engine/config-sync/docs/how-
+      to/prevent-config-drift for details.
+    sourceFormat: Optional. Specifies whether the Config Sync repo is in
+      `hierarchical` or `unstructured` mode. Defaults to `hierarchical`. See
+      https://docs.cloud.google.com/kubernetes-engine/config-
+      sync/docs/concepts/configs#organize-configs for an explanation.
     stopSyncing: Optional. Set to true to stop syncing configs for a single
       cluster. Default to false.
   """
@@ -1388,10 +1402,22 @@ class ConfigManagementContainerOverride(_messages.Message):
 
   Fields:
     containerName: Required. The name of the container.
-    cpuLimit: Optional. The cpu limit of the container.
-    cpuRequest: Optional. The cpu request of the container.
-    memoryLimit: Optional. The memory limit of the container.
-    memoryRequest: Optional. The memory request of the container.
+    cpuLimit: Optional. The cpu limit of the container. Use the following CPU
+      resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-cpu.
+    cpuRequest: Optional. The cpu request of the container. Use the following
+      CPU resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-cpu.
+    memoryLimit: Optional. The memory limit of the container. Use the
+      following memory resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-memory.
+    memoryRequest: Optional. The memory request of the container. Use the
+      following memory resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-memory.
   """
 
   containerName = _messages.StringField(1)
@@ -1509,15 +1535,17 @@ class ConfigManagementGitConfig(_messages.Message):
 
   Fields:
     gcpServiceAccountEmail: Optional. The Google Cloud Service Account Email
-      used for auth when secret_type is gcpServiceAccount.
+      used for auth when secret_type is `gcpserviceaccount`.
     httpsProxy: Optional. URL for the HTTPS proxy to be used when
-      communicating with the Git repo.
+      communicating with the Git repo. Only specify when secret_type is
+      `cookiefile`, `token`, or `none`.
     policyDir: Optional. The path within the Git repository that represents
       the top level of the repo to sync. Default: the root directory of the
       repository.
     secretType: Required. Type of secret configured for access to the Git
-      repo. Must be one of ssh, cookiefile, gcenode, token, gcpserviceaccount,
-      githubapp or none. The validation of this is case-sensitive.
+      repo. Must be one of `ssh`, `cookiefile`, `gcenode`, `token`,
+      `gcpserviceaccount`, `githubapp` or `none`. The validation of this is
+      case-sensitive.
     syncBranch: Optional. The branch of the repository to sync from. Default:
       master.
     syncRepo: Required. The URL of the Git repository to use as the source of
@@ -1662,15 +1690,16 @@ class ConfigManagementMembershipSpec(_messages.Message):
       supports manual upgrades.
 
   Fields:
-    binauthz: Optional. Binauthz conifguration for the cluster. Deprecated:
-      This field will be ignored and should not be set.
-    cluster: Optional. The user-specified cluster name used by Config Sync
-      cluster-name-selector annotation or ClusterSelector, for applying
-      configs to only a subset of clusters. Omit this field if the cluster's
-      fleet membership name is used by Config Sync cluster-name-selector
-      annotation or ClusterSelector. Set this field if a name different from
-      the cluster's fleet membership name is used by Config Sync cluster-name-
-      selector annotation or ClusterSelector.
+    binauthz: Optional. Deprecated: Binauthz configuration will be ignored and
+      should not be set.
+    cluster: Optional. User-specified cluster name used by the Config Sync
+      cluster-name-selector annotation or ClusterSelector object, for applying
+      configs to only a subset of clusters. Read more about the cluster-name-
+      selector annotation and ClusterSelector object at
+      https://docs.cloud.google.com/kubernetes-engine/config-sync/docs/how-
+      to/cluster-scoped-objects#limiting-configs. Only set this field if a
+      name different from the cluster's fleet membership name is used by the
+      Config Sync cluster-name-selector annotation or ClusterSelector.
     configSync: Optional. Config Sync configuration for the cluster.
     hierarchyController: Optional. Hierarchy Controller configuration for the
       cluster. Deprecated: Configuring Hierarchy Controller through the
@@ -1683,7 +1712,10 @@ class ConfigManagementMembershipSpec(_messages.Message):
       cluster. Deprecated: Configuring Policy Controller through the
       configmanagement feature is no longer recommended. Use the
       policycontroller feature instead.
-    version: Optional. Version of ACM installed.
+    version: Optional. Version of Config Sync to install. Defaults to the
+      latest supported Config Sync version if the config_sync field is
+      enabled. See supported versions at https://cloud.google.com/kubernetes-
+      engine/config-sync/docs/get-support-config-sync#version_support_policy.
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
@@ -1743,12 +1775,12 @@ class ConfigManagementOciConfig(_messages.Message):
 
   Fields:
     gcpServiceAccountEmail: Optional. The Google Cloud Service Account Email
-      used for auth when secret_type is gcpServiceAccount.
+      used for auth when secret_type is `gcpserviceaccount`.
     policyDir: Optional. The absolute path of the directory that contains the
       local resources. Default: the root directory of the image.
     secretType: Required. Type of secret configured for access to the OCI
-      repo. Must be one of gcenode, gcpserviceaccount, k8sserviceaccount or
-      none. The validation of this is case-sensitive.
+      repo. Must be one of `gcenode`, `gcpserviceaccount`, `k8sserviceaccount`
+      or `none`. The validation of this is case-sensitive.
     syncRepo: Required. The OCI image repository URL for the package to sync
       from. e.g. `LOCATION-
       docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/PACKAGE_NAME`.
@@ -5746,6 +5778,7 @@ class MembershipFeatureState(_messages.Message):
     policycontroller: Policycontroller-specific state.
     servicemesh: Service Mesh-specific state.
     state: The high-level state of this Feature for a single membership.
+    workloadidentity: Workload Identity membership specific state.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
@@ -5758,6 +5791,7 @@ class MembershipFeatureState(_messages.Message):
   policycontroller = _messages.MessageField('PolicyControllerMembershipState', 8)
   servicemesh = _messages.MessageField('ServiceMeshMembershipState', 9)
   state = _messages.MessageField('FeatureState', 10)
+  workloadidentity = _messages.MessageField('WorkloadIdentityMembershipState', 11)
 
 
 class MembershipSpec(_messages.Message):
@@ -8467,6 +8501,281 @@ class WaveTemplate(_messages.Message):
   minimumCompletionPercentage = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
   stragglerMigrationStrategy = _messages.EnumField('StragglerMigrationStrategyValueValuesEnum', 5)
   upperBoundPercentage = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+
+
+class WorkloadIdentityFeatureSpec(_messages.Message):
+  r"""**WorkloadIdentity**: Global feature specification.
+
+  Fields:
+    scopeTenancyPool: Pool to be used for Workload Identity. This pool in
+      trust-domain mode is used with Fleet Tenancy, so that sameness can be
+      enforced. ex:
+      projects/example/locations/global/workloadidentitypools/custompool
+  """
+
+  scopeTenancyPool = _messages.StringField(1)
+
+
+class WorkloadIdentityFeatureState(_messages.Message):
+  r"""**WorkloadIdentity**: Global feature state.
+
+  Messages:
+    NamespaceStateDetailsValue: The state of the IAM namespaces for the fleet.
+    NamespaceStatesValue: Deprecated, this field will be erased after code is
+      changed to use the new field.
+    WorkloadIdentityPoolStateDetailsValue: The state of the Workload Identity
+      Pools for the fleet.
+
+  Fields:
+    namespaceStateDetails: The state of the IAM namespaces for the fleet.
+    namespaceStates: Deprecated, this field will be erased after code is
+      changed to use the new field.
+    scopeTenancyWorkloadIdentityPool: The full name of the scope-tenancy pool
+      for the fleet.
+    workloadIdentityPool: The full name of the svc.id.goog pool for the fleet.
+    workloadIdentityPoolStateDetails: The state of the Workload Identity Pools
+      for the fleet.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceStateDetailsValue(_messages.Message):
+    r"""The state of the IAM namespaces for the fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        NamespaceStateDetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        NamespaceStateDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceStateDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WorkloadIdentityNamespaceStateDetail attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WorkloadIdentityNamespaceStateDetail', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NamespaceStatesValue(_messages.Message):
+    r"""Deprecated, this field will be erased after code is changed to use the
+    new field.
+
+    Messages:
+      AdditionalProperty: An additional property for a NamespaceStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NamespaceStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NamespaceStatesValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          NAMESPACE_STATE_UNSPECIFIED: Unknown state.
+          NAMESPACE_STATE_OK: The Namespace was created/updated successfully.
+          NAMESPACE_STATE_ERROR: The Namespace was not created/updated
+            successfully. The error message is in the description field.
+        """
+        NAMESPACE_STATE_UNSPECIFIED = 0
+        NAMESPACE_STATE_OK = 1
+        NAMESPACE_STATE_ERROR = 2
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WorkloadIdentityPoolStateDetailsValue(_messages.Message):
+    r"""The state of the Workload Identity Pools for the fleet.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        WorkloadIdentityPoolStateDetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        WorkloadIdentityPoolStateDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WorkloadIdentityPoolStateDetailsValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WorkloadIdentityWorkloadIdentityPoolStateDetail attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WorkloadIdentityWorkloadIdentityPoolStateDetail', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  namespaceStateDetails = _messages.MessageField('NamespaceStateDetailsValue', 1)
+  namespaceStates = _messages.MessageField('NamespaceStatesValue', 2)
+  scopeTenancyWorkloadIdentityPool = _messages.StringField(3)
+  workloadIdentityPool = _messages.StringField(4)
+  workloadIdentityPoolStateDetails = _messages.MessageField('WorkloadIdentityPoolStateDetailsValue', 5)
+
+
+class WorkloadIdentityIdentityProviderStateDetail(_messages.Message):
+  r"""IdentityProviderStateDetail represents the state of an Identity
+  Provider.
+
+  Enums:
+    CodeValueValuesEnum: The state of the Identity Provider.
+
+  Fields:
+    code: The state of the Identity Provider.
+    description: A human-readable description of the current state or returned
+      error.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The state of the Identity Provider.
+
+    Values:
+      IDENTITY_PROVIDER_STATE_UNSPECIFIED: Unknown state.
+      IDENTITY_PROVIDER_STATE_OK: The Identity Provider was created/updated
+        successfully.
+      IDENTITY_PROVIDER_STATE_ERROR: The Identity Provider was not
+        created/updated successfully. The error message is in the description
+        field.
+    """
+    IDENTITY_PROVIDER_STATE_UNSPECIFIED = 0
+    IDENTITY_PROVIDER_STATE_OK = 1
+    IDENTITY_PROVIDER_STATE_ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
+
+
+class WorkloadIdentityMembershipState(_messages.Message):
+  r"""**WorkloadIdentity**: The membership-specific state for WorkloadIdentity
+  feature.
+
+  Messages:
+    IdentityProviderStateDetailsValue: The state of the Identity Providers
+      corresponding to the membership.
+
+  Fields:
+    description: Deprecated, this field will be erased after code is changed
+      to use the new field.
+    identityProviderStateDetails: The state of the Identity Providers
+      corresponding to the membership.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IdentityProviderStateDetailsValue(_messages.Message):
+    r"""The state of the Identity Providers corresponding to the membership.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        IdentityProviderStateDetailsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        IdentityProviderStateDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IdentityProviderStateDetailsValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WorkloadIdentityIdentityProviderStateDetail attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WorkloadIdentityIdentityProviderStateDetail', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  identityProviderStateDetails = _messages.MessageField('IdentityProviderStateDetailsValue', 2)
+
+
+class WorkloadIdentityNamespaceStateDetail(_messages.Message):
+  r"""NamespaceStateDetail represents the state of a IAM namespace.
+
+  Enums:
+    CodeValueValuesEnum: The state of the IAM namespace.
+
+  Fields:
+    code: The state of the IAM namespace.
+    description: A human-readable description of the current state or returned
+      error.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The state of the IAM namespace.
+
+    Values:
+      NAMESPACE_STATE_UNSPECIFIED: Unknown state.
+      NAMESPACE_STATE_OK: The Namespace was created/updated successfully.
+      NAMESPACE_STATE_ERROR: The Namespace was not created/updated
+        successfully. The error message is in the description field.
+    """
+    NAMESPACE_STATE_UNSPECIFIED = 0
+    NAMESPACE_STATE_OK = 1
+    NAMESPACE_STATE_ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
+
+
+class WorkloadIdentityWorkloadIdentityPoolStateDetail(_messages.Message):
+  r"""WorkloadIdentityPoolStateDetail represents the state of the Workload
+  Identity Pools for the fleet.
+
+  Enums:
+    CodeValueValuesEnum: The state of the Workload Identity Pool.
+
+  Fields:
+    code: The state of the Workload Identity Pool.
+    description: A human-readable description of the current state or returned
+      error.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The state of the Workload Identity Pool.
+
+    Values:
+      WORKLOAD_IDENTITY_POOL_STATE_UNSPECIFIED: Unknown state.
+      WORKLOAD_IDENTITY_POOL_STATE_OK: The Workload Identity Pool was
+        created/updated successfully.
+      WORKLOAD_IDENTITY_POOL_STATE_ERROR: The Workload Identity Pool was not
+        created/updated successfully. The error message is in the description
+        field.
+    """
+    WORKLOAD_IDENTITY_POOL_STATE_UNSPECIFIED = 0
+    WORKLOAD_IDENTITY_POOL_STATE_OK = 1
+    WORKLOAD_IDENTITY_POOL_STATE_ERROR = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
 
 
 class WorkloadMigrationFeatureSpec(_messages.Message):

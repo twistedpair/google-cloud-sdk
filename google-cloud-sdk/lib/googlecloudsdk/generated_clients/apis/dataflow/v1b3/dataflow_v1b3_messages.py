@@ -3572,11 +3572,14 @@ class GetWorkerStacktracesRequest(_messages.Message):
   r"""Request to get worker stacktraces from debug capture.
 
   Fields:
+    endTime: The end time for the stacktrace query. The returned stacktraces
+      will be a recent stack trace at or shortly before this time.
     workerId: The worker for which to get stacktraces. The returned
       stacktraces will be for the SDK harness running on this worker.
   """
 
-  workerId = _messages.StringField(1)
+  endTime = _messages.StringField(1)
+  workerId = _messages.StringField(2)
 
 
 class GetWorkerStacktracesResponse(_messages.Message):

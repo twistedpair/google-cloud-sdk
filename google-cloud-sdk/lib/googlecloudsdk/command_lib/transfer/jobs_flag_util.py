@@ -341,18 +341,10 @@ def setup_parser(parser, is_update=False, release_track=None):
         help='Remove the list of object prefixes to exclude from the'
         ' object conditions.')
     object_conditions.add_argument(
-        '--clear-match-glob',
-        action='store_true',
-        help='Remove the glob pattern from the object conditions.',
-    )
-    object_conditions.add_argument(
         '--clear-include-modified-before-absolute',
         action='store_true',
-        help=(
-            'Remove the maximum modification datetime from the'
-            ' object conditions.'
-        ),
-    )
+        help='Remove the maximum modification datetime from the'
+        ' object conditions.')
     object_conditions.add_argument(
         '--clear-include-modified-after-absolute',
         action='store_true',
@@ -382,14 +374,6 @@ def setup_parser(parser, is_update=False, release_track=None):
       help='Exclude any objects that start with the prefix(es) entered.'
       ' Separate multiple prefixes with commas, omitting spaces after'
       ' the commas (e.g., --exclude-prefixes=foo,bar).')
-  object_conditions.add_argument(
-      '--match-glob',
-      help=(
-          'Include only objects that match the specified glob pattern. For'
-          ' more information about glob patterns, see'
-          ' https://docs.cloud.google.com/storage-transfer/docs/filter-by-glob-pattern'
-      ),
-  )
   object_conditions.add_argument(
       '--include-modified-before-absolute',
       type=arg_parsers.Datetime.Parse,

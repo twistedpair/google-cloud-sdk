@@ -24,7 +24,7 @@ WILDFIRE_ANALYSIS_PROFILE_TYPE = 'WILDFIRE_ANALYSIS'
 
 
 class Client(sp_api.Client):
-  """API client for Wildfire Analysis commands."""
+  """API client for WildFire Analysis commands."""
 
   def CreateWildfireAnalysisProfile(
       self,
@@ -33,14 +33,14 @@ class Client(sp_api.Client):
       description,
       labels,
   ):
-    """Calls the Create Security Profile API to create a Wildfire Analysis Profile."""
+    """Calls the Create Security Profile API to create a WildFire Analysis Profile."""
     profile = self.messages.SecurityProfile(
         type=self._ParseSecurityProfileType(WILDFIRE_ANALYSIS_PROFILE_TYPE),
         description=description,
         labels=labels,
     )
     return self._security_profile_client.Create(
-        self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
+        self._create_request(
             parent=parent,
             securityProfile=profile,
             securityProfileId=sp_id,
@@ -55,3 +55,125 @@ class Client(sp_api.Client):
         if profile.type
         == self._ParseSecurityProfileType(WILDFIRE_ANALYSIS_PROFILE_TYPE)
     ]
+
+  def UpdateWildfireAnalysisProfile(
+      self,
+      name,
+      description=None,
+      wildfire_realtime_lookup=None,
+      analyze_windows_executables=None,
+      analyze_powershell_script_1=None,
+      analyze_powershell_script_2=None,
+      analyze_elf=None,
+      analyze_ms_office=None,
+      analyze_shell=None,
+      analyze_ooxml=None,
+      analyze_macho=None,
+  ):
+    """Calls the Update Security Profile API to update a WildFire Analysis Profile."""
+    profile = self.messages.SecurityProfile()
+    update_mask = []
+    if description is not None:
+      profile.description = description
+      update_mask.append('description')
+
+    wf_profile_to_update = False
+    wf_profile_kwargs = {}
+    if wildfire_realtime_lookup is not None:
+      wf_profile_kwargs['wildfireRealtimeLookup'] = wildfire_realtime_lookup
+      update_mask.append('wildfire_analysis_profile.wildfire_realtime_lookup')
+      wf_profile_to_update = True
+
+    inline_ml_configs = []
+    actions = (
+        self.messages.WildfireInlineMlSettingsInlineMlConfig.ActionValueValuesEnum
+    )
+    file_types = (
+        self.messages.WildfireInlineMlSettingsInlineMlConfig.FileTypeValueValuesEnum
+    )
+
+    if analyze_windows_executables is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.WINDOWS_EXECUTABLE,
+              action=actions.ENABLE
+              if analyze_windows_executables
+              else actions.DISABLE,
+          )
+      )
+    if analyze_powershell_script_1 is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.POWERSHELL_SCRIPT1,
+              action=actions.ENABLE
+              if analyze_powershell_script_1
+              else actions.DISABLE,
+          )
+      )
+    if analyze_powershell_script_2 is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.POWERSHELL_SCRIPT2,
+              action=actions.ENABLE
+              if analyze_powershell_script_2
+              else actions.DISABLE,
+          )
+      )
+    if analyze_elf is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.ELF,
+              action=actions.ENABLE if analyze_elf else actions.DISABLE,
+          )
+      )
+    if analyze_ms_office is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.MS_OFFICE,
+              action=actions.ENABLE if analyze_ms_office else actions.DISABLE,
+          )
+      )
+    if analyze_shell is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.SHELL,
+              action=actions.ENABLE if analyze_shell else actions.DISABLE,
+          )
+      )
+    if analyze_ooxml is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.OOXML,
+              action=actions.ENABLE if analyze_ooxml else actions.DISABLE,
+          )
+      )
+    if analyze_macho is not None:
+      inline_ml_configs.append(
+          self.messages.WildfireInlineMlSettingsInlineMlConfig(
+              fileType=file_types.MACHO,
+              action=actions.ENABLE if analyze_macho else actions.DISABLE,
+          )
+      )
+
+    if inline_ml_configs:
+      wf_profile_kwargs['wildfireInlineMlSetting'] = (
+          self.messages.WildfireInlineMlSettings(
+              inlineMlConfigs=inline_ml_configs
+          )
+      )
+      update_mask.append(
+          'wildfire_analysis_profile.wildfire_inline_ml_setting'
+      )
+      wf_profile_to_update = True
+
+    if wf_profile_to_update:
+      profile.wildfireAnalysisProfile = self.messages.WildfireAnalysisProfile(
+          **wf_profile_kwargs
+      )
+
+    request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+        name=name,
+        securityProfile=profile,
+        updateMask=','.join(update_mask),
+    )
+    return self._security_profile_client.Patch(request)

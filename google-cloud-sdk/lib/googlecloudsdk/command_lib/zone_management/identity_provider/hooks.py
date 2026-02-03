@@ -20,40 +20,39 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import yaml
 
 
-def AddOidcConfigToRequest(ref, args, req):
-  """Reads the oidc config from the file and populates the request body.
+def LoadConfigFromFile(config: str) -> str:
+  """Reads the config from the file and populates the request body.
 
   Args:
-    ref: The resource reference.
-    args: The parsed arguments from the command line.
-    req: The request to modify.
+    config: The path to the oidc config file.
 
   Returns:
-    The modified request.
+    content of the config file.
 
   Raises:`
     exceptions.InvalidArgumentException: If file cannot be read or is not a
     valid json/yaml.
   """
-  file_path = args.config
+
   try:
-    with open(file_path, "r") as f:
+    with open(config, "r") as f:
       content = f.read()
-      try:
-        idp = json.loads(content)
-      except json.JSONDecodeError:
-        try:
-          idp = yaml.load(content)
-        except yaml.YAMLParseError as e:
-          raise exceptions.InvalidArgumentException(
-              "config",
-              f"Error parsing file {file_path}. Please provide a valid json or"
-              f" yaml file. Error: {e}",
-          ) from e
-      req.createIdentityProviderRequest.identityProvider = idp
   except FileNotFoundError as e:
     raise exceptions.InvalidArgumentException(
-        "config", f"File not found: {file_path}"
+        "config", f"File not found: {config}"
     ) from e
-  req.createIdentityProviderRequest.identityProvider.name = ref.RelativeName()
-  return req
+
+  try:
+    return json.loads(content)
+  except json.JSONDecodeError as e:
+    json_decode_error = e
+    pass
+
+  try:
+    return yaml.load(content)
+  except yaml.YAMLParseError as yaml_parse_error:
+    raise exceptions.InvalidArgumentException(
+        "config",
+        f"Error parsing file {config}. Please provide a"
+        f" valid json or yaml file. Json decode error: {json_decode_error}",
+    ) from yaml_parse_error

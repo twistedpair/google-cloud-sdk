@@ -74,7 +74,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         request: (EdgecontainerOrganizationsLocationsIdentityProvidersCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (IdentityProvider) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -86,11 +86,11 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         method_id='edgecontainer.organizations.locations.identityProviders.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['identityProviderId', 'requestId'],
         relative_path='v1alpha/{+parent}/identityProviders',
-        request_field='createIdentityProviderRequest',
+        request_field='identityProvider',
         request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersCreateRequest',
-        response_type_name='IdentityProvider',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -101,7 +101,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         request: (EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (IdentityProvider) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -113,11 +113,11 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         method_id='edgecontainer.organizations.locations.identityProviders.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['cluster', 'requestId', 'zoneId'],
+        query_params=['requestId'],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersDeleteRequest',
-        response_type_name='IdentityProvider',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -140,7 +140,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         method_id='edgecontainer.organizations.locations.identityProviders.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['cluster', 'zoneId'],
+        query_params=[],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersGetRequest',
@@ -167,7 +167,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         method_id='edgecontainer.organizations.locations.identityProviders.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['cluster', 'pageSize', 'pageToken', 'zoneId'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1alpha/{+parent}/identityProviders',
         request_field='',
         request_type_name='EdgecontainerOrganizationsLocationsIdentityProvidersListRequest',
@@ -486,7 +486,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (EdgecontainerOrganizationsLocationsListRequest) input message
@@ -1892,7 +1892,7 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (EdgecontainerProjectsLocationsListRequest) input message

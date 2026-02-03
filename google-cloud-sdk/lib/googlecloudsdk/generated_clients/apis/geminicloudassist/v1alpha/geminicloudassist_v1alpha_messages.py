@@ -449,6 +449,20 @@ class GeminicloudassistProjectsLocationsInvestigationsRevisionsListRequest(_mess
   parent = _messages.StringField(3, required=True)
 
 
+class GeminicloudassistProjectsLocationsInvestigationsRevisionsModifyRequest(_messages.Message):
+  r"""A GeminicloudassistProjectsLocationsInvestigationsRevisionsModifyRequest
+  object.
+
+  Fields:
+    modifyInvestigationRevisionRequest: A ModifyInvestigationRevisionRequest
+      resource to be passed as the request body.
+    name: Required. The name of the investigation revision to modify.
+  """
+
+  modifyInvestigationRevisionRequest = _messages.MessageField('ModifyInvestigationRevisionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class GeminicloudassistProjectsLocationsInvestigationsRevisionsRunRequest(_messages.Message):
   r"""A GeminicloudassistProjectsLocationsInvestigationsRevisionsRunRequest
   object.
@@ -1030,6 +1044,22 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class ModifyInvestigationRevisionRequest(_messages.Message):
+  r"""Request for modifying an investigation revision.
+
+  Fields:
+    investigation: Required. The contents to modify the revision's snapshot
+      with.
+    updateMask: Optional. The fields of the revision's snapshot to update.
+      Note that only user-writeable fields can be updated. Fields should be
+      specified relative to the Investigation message, i.e. they should not
+      include the prefix "snapshot".
+  """
+
+  investigation = _messages.MessageField('Investigation', 1)
+  updateMask = _messages.StringField(2)
 
 
 class Observation(_messages.Message):

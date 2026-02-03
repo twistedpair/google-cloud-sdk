@@ -228,15 +228,55 @@ def CreateServiceUpdateFlags(
   """Returns a module-config flag or an enablement-state flag, or both."""
 
   root = base.ArgumentGroup(mutex=False, required=required)
+
+  yaml_example = """\
+DISK_CMEK_DISABLED:
+  intended_enablement_state: DISABLED
+SQL_WEAK_ROOT_PASSWORD:
+  intended_enablement_state: ENABLED"""
+
+  json_example = """\
+{
+  "DISK_CMEK_DISABLED": {
+    "intended_enablement_state": "DISABLED"
+  },
+  "SQL_WEAK_ROOT_PASSWORD": {
+    "intended_enablement_state": "ENABLED"
+  }
+}"""
+
+  help_text = f"""\
+Path to a {file_type} file that contains the module config to
+set for the given module and service.
+
+The file should contain a map where keys are module names (e.g., "DISK_CMEK_DISABLED")
+and values are objects with an "intended_enablement_state" field.
+Valid states are "ENABLED", "DISABLED", or "INHERITED".
+
+To find the available module names for a specific service and resource,
+use the `gcloud scc manage services describe <SERVICE_NAME> --parent=<RESOURCE>`
+command and look for the keys in the "modules" section of the output.
+
+Example YAML format:
+
+```yaml
+{yaml_example}
+```
+
+Example JSON format:
+
+```json
+{json_example}
+```
+.
+"""
+
   root.AddArgument(
       base.Argument(
           '--module-config-file',
           required=False,
           default=None,
-          help=(
-              f'Path to a {file_type} file that contains the module config to'
-              ' set for the given module and service.'
-          ),
+          help=help_text,
           type=arg_parsers.FileContents(),
       )
   )
@@ -252,9 +292,11 @@ def CreateServiceEnablementStateFlag(
       '--enablement-state',
       required=required,
       default=None,
-      help="""Sets the enablement state of the Security Center service.
-      Valid options are ENABLED, DISABLED, OR INHERITED. The INHERITED
-      state is only valid when setting the enablement state at the project or folder level.""",
+      help=textwrap.dedent("""\
+          Sets the enablement state of the Security Center service.
+          Valid options are ENABLED, DISABLED, OR INHERITED. The INHERITED
+          state is only valid when setting the enablement state at the project or
+          folder level."""),
   )
 
 

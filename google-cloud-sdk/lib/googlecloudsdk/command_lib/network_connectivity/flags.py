@@ -427,9 +427,9 @@ def GetTransportResourceSpec(location_arguments):
 
 def GetRemoteProfileResourceSpec(location_arguments):
   return concepts.ResourceSpec(
-      'networkconnectivity.projects.locations.transports.remoteProfiles',
+      'networkconnectivity.projects.locations.remoteTransportProfiles',
       resource_name='remoteProfile',
-      remoteProfilesId=RemoteProfileAttributeConfig(),
+      remoteTransportProfilesId=RemoteProfileAttributeConfig(),
       locationsId=LocationAttributeConfig(location_arguments),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       api_version='v1beta',
@@ -559,7 +559,7 @@ def AddRemoteAccountIdFlag(parser, help_text):
 
 def AddProfileFlag(parser, help_text):
   """Adds the --remote_profile flag to the given parser."""
-  parser.add_argument('--remote-profile', required=True, help=help_text)
+  parser.add_argument('--remote-profile', required=False, help=help_text)
 
 
 def AddBandwidthFlag(parser, help_text):
@@ -567,9 +567,9 @@ def AddBandwidthFlag(parser, help_text):
   parser.add_argument('--bandwidth', required=True, help=help_text)
 
 
-def AddAdvertisedRoutesFlag(parser, help_text):
+def AddAdvertisedRoutesFlag(parser, help_text, required=True):
   """Adds the --advertised-routes flag to the given parser."""
-  parser.add_argument('--advertised-routes', required=True, help=help_text)
+  parser.add_argument('--advertised-routes', required=required, help=help_text)
 
 
 def AddEnableAdminFlag(parser, help_text):

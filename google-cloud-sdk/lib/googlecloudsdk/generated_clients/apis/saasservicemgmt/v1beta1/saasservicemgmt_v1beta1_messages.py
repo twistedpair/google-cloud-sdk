@@ -3536,7 +3536,7 @@ class Unit(_messages.Message):
     etag: Output only. An opaque value that uniquely identifies a version or
       generation of a resource. It can be used to confirm that the client and
       server agree on the ordering of a resource being written.
-    flagRevisions: Optional. Flag revisions used by this Unit.
+    flagRevisions: Optional. Output only. Flag revisions used by this Unit.
     inputVariables: Optional. Output only. Indicates the current input
       variables deployed by the unit
     labels: Optional. The labels on the resource, which can be used for

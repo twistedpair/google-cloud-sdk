@@ -49,6 +49,8 @@ class AccessApprovalSettings(_messages.Message):
       that indicates that an ancestor of this Project or Folder has set
       active_key_version (this field will always be unset for the organization
       since organizations do not have ancestors).
+    ancestorsEnrolledServices: Output only. Field to differentiate ancestor
+      enrolled services from locally enrolled services.
     approvalPolicy: Optional. Policy configuration for Access Approval that
       sets the operating mode. The available policies are Transparency,
       Streamlined Support, and Approval Required.
@@ -129,18 +131,19 @@ class AccessApprovalSettings(_messages.Message):
 
   activeKeyVersion = _messages.StringField(1)
   ancestorHasActiveKeyVersion = _messages.BooleanField(2)
-  approvalPolicy = _messages.MessageField('CustomerApprovalApprovalPolicy', 3)
-  effectiveApprovalPolicy = _messages.MessageField('CustomerApprovalApprovalPolicy', 4)
-  enrolledAncestor = _messages.BooleanField(5)
-  enrolledServices = _messages.MessageField('EnrolledService', 6, repeated=True)
-  invalidKeyVersion = _messages.BooleanField(7)
-  name = _messages.StringField(8)
-  notificationEmails = _messages.StringField(9, repeated=True)
-  notificationPubsubTopic = _messages.StringField(10)
-  preferNoBroadApprovalRequests = _messages.BooleanField(11)
-  preferredRequestExpirationDays = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  requestScopeMaxWidthPreference = _messages.EnumField('RequestScopeMaxWidthPreferenceValueValuesEnum', 13)
-  requireCustomerVisibleJustification = _messages.BooleanField(14)
+  ancestorsEnrolledServices = _messages.MessageField('EnrolledService', 3, repeated=True)
+  approvalPolicy = _messages.MessageField('CustomerApprovalApprovalPolicy', 4)
+  effectiveApprovalPolicy = _messages.MessageField('CustomerApprovalApprovalPolicy', 5)
+  enrolledAncestor = _messages.BooleanField(6)
+  enrolledServices = _messages.MessageField('EnrolledService', 7, repeated=True)
+  invalidKeyVersion = _messages.BooleanField(8)
+  name = _messages.StringField(9)
+  notificationEmails = _messages.StringField(10, repeated=True)
+  notificationPubsubTopic = _messages.StringField(11)
+  preferNoBroadApprovalRequests = _messages.BooleanField(12)
+  preferredRequestExpirationDays = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  requestScopeMaxWidthPreference = _messages.EnumField('RequestScopeMaxWidthPreferenceValueValuesEnum', 14)
+  requireCustomerVisibleJustification = _messages.BooleanField(15)
 
 
 class AccessLocations(_messages.Message):

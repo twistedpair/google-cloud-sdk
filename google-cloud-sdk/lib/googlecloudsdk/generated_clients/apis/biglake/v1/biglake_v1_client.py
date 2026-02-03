@@ -83,7 +83,7 @@ class BiglakeV1(base_api.BaseApiClient):
         method_id='biglake.iceberg.v1.restcatalog.extensions.projects.catalogs.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['iceberg_catalog_id'],
+        query_params=['iceberg_catalog_id', 'primary_location'],
         relative_path='iceberg/v1/restcatalog/extensions/{+parent}/catalogs',
         request_field='icebergCatalog',
         request_type_name='BiglakeIcebergV1RestcatalogExtensionsProjectsCatalogsCreateRequest',

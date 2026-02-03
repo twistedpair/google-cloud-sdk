@@ -75,6 +75,7 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_lakes_zones_entities = self.ProjectsLocationsLakesZonesEntitiesService(self)
     self.projects_locations_lakes_zones = self.ProjectsLocationsLakesZonesService(self)
     self.projects_locations_lakes = self.ProjectsLocationsLakesService(self)
+    self.projects_locations_metadataFeeds = self.ProjectsLocationsMetadataFeedsService(self)
     self.projects_locations_metadataJobs = self.ProjectsLocationsMetadataJobsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -6002,6 +6003,151 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsMetadataFeedsService(base_api.BaseApiService):
+    """Service class for the projects_locations_metadataFeeds resource."""
+
+    _NAME = 'projects_locations_metadataFeeds'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsMetadataFeedsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a MetadataFeed.
+
+      Args:
+        request: (DataplexProjectsLocationsMetadataFeedsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/metadataFeeds',
+        http_method='POST',
+        method_id='dataplex.projects.locations.metadataFeeds.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['metadataFeedId', 'validateOnly'],
+        relative_path='v1/{+parent}/metadataFeeds',
+        request_field='googleCloudDataplexV1MetadataFeed',
+        request_type_name='DataplexProjectsLocationsMetadataFeedsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a MetadataFeed.
+
+      Args:
+        request: (DataplexProjectsLocationsMetadataFeedsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/metadataFeeds/{metadataFeedsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.metadataFeeds.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsMetadataFeedsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a MetadataFeed.
+
+      Args:
+        request: (DataplexProjectsLocationsMetadataFeedsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1MetadataFeed) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/metadataFeeds/{metadataFeedsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.metadataFeeds.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsMetadataFeedsGetRequest',
+        response_type_name='GoogleCloudDataplexV1MetadataFeed',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieve a list of MetadataFeeds.
+
+      Args:
+        request: (DataplexProjectsLocationsMetadataFeedsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListMetadataFeedsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/metadataFeeds',
+        http_method='GET',
+        method_id='dataplex.projects.locations.metadataFeeds.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/metadataFeeds',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsMetadataFeedsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListMetadataFeedsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a MetadataFeed.
+
+      Args:
+        request: (DataplexProjectsLocationsMetadataFeedsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/metadataFeeds/{metadataFeedsId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.metadataFeeds.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1MetadataFeed',
+        request_type_name='DataplexProjectsLocationsMetadataFeedsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMetadataJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_metadataJobs resource."""
 
@@ -6275,8 +6421,35 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def LinkCatalogDataset(self, request, global_params=None):
+      r"""Link a Catalog to a BigQuery dataset.
+
+      Args:
+        request: (DataplexProjectsLocationsLinkCatalogDatasetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('LinkCatalogDataset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LinkCatalogDataset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:linkCatalogDataset',
+        http_method='POST',
+        method_id='dataplex.projects.locations.linkCatalogDataset',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:linkCatalogDataset',
+        request_field='googleCloudDataplexV1LinkCatalogDatasetRequest',
+        request_type_name='DataplexProjectsLocationsLinkCatalogDatasetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: List all public locations: Use the path GET /v1/locations. List project-visible locations: Use the path GET /v1/projects/{project_id}/locations. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (DataplexProjectsLocationsListRequest) input message
@@ -6326,6 +6499,33 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsLookupEntryRequest',
         response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+    def QueryCatalog(self, request, global_params=None):
+      r"""Query Catalog using GoogleSQL syntax.
+
+      Args:
+        request: (DataplexProjectsLocationsQueryCatalogRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1QueryCatalogResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryCatalog')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryCatalog.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:queryCatalog',
+        http_method='POST',
+        method_id='dataplex.projects.locations.queryCatalog',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:queryCatalog',
+        request_field='googleCloudDataplexV1QueryCatalogRequest',
+        request_type_name='DataplexProjectsLocationsQueryCatalogRequest',
+        response_type_name='GoogleCloudDataplexV1QueryCatalogResponse',
         supports_download=False,
     )
 

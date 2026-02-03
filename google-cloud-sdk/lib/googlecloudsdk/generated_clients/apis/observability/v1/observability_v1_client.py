@@ -45,6 +45,10 @@ class ObservabilityV1(base_api.BaseApiClient):
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_locations_buckets_datasets_links = self.ProjectsLocationsBucketsDatasetsLinksService(self)
+    self.projects_locations_buckets_datasets_views = self.ProjectsLocationsBucketsDatasetsViewsService(self)
+    self.projects_locations_buckets_datasets = self.ProjectsLocationsBucketsDatasetsService(self)
+    self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_scopes = self.ProjectsLocationsScopesService(self)
     self.projects_locations_traceScopes = self.ProjectsLocationsTraceScopesService(self)
@@ -207,7 +211,7 @@ class ObservabilityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (ObservabilityFoldersLocationsListRequest) input message
@@ -399,7 +403,7 @@ class ObservabilityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (ObservabilityOrganizationsLocationsListRequest) input message
@@ -434,6 +438,343 @@ class ObservabilityV1(base_api.BaseApiClient):
       super(ObservabilityV1.OrganizationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsLocationsBucketsDatasetsLinksService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets_datasets_links resource."""
+
+    _NAME = 'projects_locations_buckets_datasets_links'
+
+    def __init__(self, client):
+      super(ObservabilityV1.ProjectsLocationsBucketsDatasetsLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new link.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsLinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}/links',
+        http_method='POST',
+        method_id='observability.projects.locations.buckets.datasets.links.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['linkId'],
+        relative_path='v1/{+parent}/links',
+        request_field='link',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsLinksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a link.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsLinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}/links/{linksId}',
+        http_method='DELETE',
+        method_id='observability.projects.locations.buckets.datasets.links.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsLinksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a link.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Link) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}/links/{linksId}',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.datasets.links.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsLinksGetRequest',
+        response_type_name='Link',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List links of a dataset.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsLinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}/links',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.datasets.links.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/links',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsLinksListRequest',
+        response_type_name='ListLinksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a link.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsLinksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}/links/{linksId}',
+        http_method='PATCH',
+        method_id='observability.projects.locations.buckets.datasets.links.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='link',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsLinksPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBucketsDatasetsViewsService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets_datasets_views resource."""
+
+    _NAME = 'projects_locations_buckets_datasets_views'
+
+    def __init__(self, client):
+      super(ObservabilityV1.ProjectsLocationsBucketsDatasetsViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a view.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (View) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}/views/{viewsId}',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.datasets.views.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsViewsGetRequest',
+        response_type_name='View',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List views of a dataset.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}/views',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.datasets.views.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/views',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsViewsListRequest',
+        response_type_name='ListViewsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBucketsDatasetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets_datasets resource."""
+
+    _NAME = 'projects_locations_buckets_datasets'
+
+    def __init__(self, client):
+      super(ObservabilityV1.ProjectsLocationsBucketsDatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a dataset.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Dataset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets/{datasetsId}',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.datasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsGetRequest',
+        response_type_name='Dataset',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List datasets of a bucket.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsDatasetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatasetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/datasets',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.datasets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/datasets',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsDatasetsListRequest',
+        response_type_name='ListDatasetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBucketsService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets resource."""
+
+    _NAME = 'projects_locations_buckets'
+
+    def __init__(self, client):
+      super(ObservabilityV1.ProjectsLocationsBucketsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get bucket resource.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Bucket) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsGetRequest',
+        response_type_name='Bucket',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List buckets of a project in a particular location.
+
+      Args:
+        request: (ObservabilityProjectsLocationsBucketsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBucketsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/buckets',
+        http_method='GET',
+        method_id='observability.projects.locations.buckets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/buckets',
+        request_field='',
+        request_type_name='ObservabilityProjectsLocationsBucketsListRequest',
+        response_type_name='ListBucketsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -800,7 +1141,7 @@ class ObservabilityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (ObservabilityProjectsLocationsListRequest) input message

@@ -1205,8 +1205,6 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsDeleteRequest(_mess
   object.
 
   Fields:
-    etag: Optional. Etag for the run. Etag gets updated with every
-      update/create operation. If provided, it must match the server's etag.
     force: Optional. If force=false and if a user tries to delete an ml run
       resource that still has child resources (e.g., ProfilerTarget), the
       request should fail with a FAILED_PRECONDITION error. If force=true, the
@@ -1215,9 +1213,8 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsDeleteRequest(_mess
       s/{machineLearningRun}
   """
 
-  etag = _messages.StringField(1)
-  force = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class HypercomputeclusterProjectsLocationsMachineLearningRunsGetRequest(_messages.Message):
@@ -1226,7 +1223,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsGetRequest(_message
 
   Fields:
     name: Required. projects/{project}/locations/{location}/machineLearningRun
-      s/{machineLearningRun}
+      s/{machine_learning_run}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1387,7 +1384,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsGetR
 
   Fields:
     name: Required. projects/{project}/locations/{location}/machineLearningRun
-      s/{machineLearningRun}/profileSessions/{profileSession}
+      s/{machine_learning_run}/profileSessions/{profileSession}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1406,7 +1403,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfileSessionsList
       `ListProfileSessions` call. Provide this to retrieve the subsequent
       page.
     parent: Required. Parent format: projects/{project}/locations/{location}/m
-      achineLearningRuns/{machineLearningRun}
+      achineLearningRuns/{machine_learning_run}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1420,7 +1417,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsCre
 
   Fields:
     parent: Required. projects/{project}/locations/{location}/machineLearningR
-      uns/{machineLearningRun}
+      uns/{machine_learning_run}
     profilerSession: A ProfilerSession resource to be passed as the request
       body.
     profilerSessionId: Optional. ID for the profiler session.
@@ -1437,8 +1434,8 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsDel
 
   Fields:
     name: Required. The name of the profiler session to delete. Format: projec
-      ts/{project}/locations/{location}/machineLearningRuns/{ml_run}/profilerT
-      argets/{profiler_target}/profilerSessions/{profiler_session}
+      ts/{project}/locations/{location}/machineLearningRuns/{machine_learning_
+      run}/profilerSessions/{profiler_session}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1450,8 +1447,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsGet
 
   Fields:
     name: Required. projects/{project}/locations/{location}/machineLearningRun
-      s/{machine_learning_run}/profilerTargets/{profiler_target}/profilerSessi
-      ons/{profiler_session}
+      s/{machine_learning_run}/profilerSessions/{profiler_session}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1471,7 +1467,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerSessionsLis
       `ListProfilerSessions` call. Provide this to retrieve the subsequent
       page. Please refer to https://google.aip.dev/158 for more details.
     parent: Required. projects/{project}/locations/{location}/machineLearningR
-      uns/{machineLearningRun}/profilerTargets/{profiler_target}/
+      uns/{machine_learning_run}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1485,7 +1481,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsCrea
 
   Fields:
     parent: Required. projects/{project}/locations/{location}/machineLearningR
-      uns/{machineLearningRun}
+      uns/{machine_learning_run}
     profilerTarget: A ProfilerTarget resource to be passed as the request
       body.
     profilerTargetId: Optional. If not provided, the server will generate an
@@ -1502,15 +1498,12 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsDele
   DeleteRequest object.
 
   Fields:
-    etag: Optional. Etag for the profiler target. Etag gets updated with every
-      update/create operation. If provided, it must match the server's etag.
     name: Required. The name of the profiler target to delete. Format: project
-      s/{project}/locations/{location}/machineLearningRuns/{ml_run}/profilerTa
-      rgets/{profiler_target}
+      s/{project}/locations/{location}/machineLearningRuns/{machine_learning_r
+      un}/profilerTargets/{profiler_target}
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsGetRequest(_messages.Message):
@@ -1519,7 +1512,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsGetR
 
   Fields:
     name: Required. projects/{project}/locations/{location}/machineLearningRun
-      s/{machineLearningRun}/profilerTargets/{profiler_target}
+      s/{machine_learning_run}/profilerTargets/{profiler_target}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1539,7 +1532,7 @@ class HypercomputeclusterProjectsLocationsMachineLearningRunsProfilerTargetsList
       `ListProfilerTargets` call. Provide this to retrieve the subsequent
       page. Please refer to https://google.aip.dev/158 for more details.
     parent: Required. projects/{project}/locations/{location}/machineLearningR
-      uns/{machineLearningRun}
+      uns/{machine_learning_run}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1851,11 +1844,13 @@ class MachineLearningRun(_messages.Message):
     metrics: Optional. Metrics for the run.
     name: Identifier. The name of the Machine Learning run.
     orchestrator: Required. The orchestrator used for the run.
+    runGroup: Optional. Allows grouping of similar runs. * Helps improving UI
+      rendering performance. * Allows comparing similar runs via fast filters.
     runPhase: Optional. RunPhase defines the phase of the run.
-    runSet: Required. Allows grouping of similar runs. * Helps improving UI
+    runSet: Optional. Allows grouping of similar runs. * Helps improving UI
       rendering performance. * Allows comparing similar runs via fast filters.
     state: Output only. State of the run.
-    tools: Required. List of tools enabled for this run example: XProf, NSys
+    tools: Required. List of tools enabled for this run example: XProf, SMon
     updateTime: Output only. Time when the run was last updated.
     workloadDetails: Optional. The metadata for the workload associated with
       the run.
@@ -1939,12 +1934,13 @@ class MachineLearningRun(_messages.Message):
   metrics = _messages.MessageField('Metrics', 9)
   name = _messages.StringField(10)
   orchestrator = _messages.EnumField('OrchestratorValueValuesEnum', 11)
-  runPhase = _messages.EnumField('RunPhaseValueValuesEnum', 12)
-  runSet = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  tools = _messages.MessageField('Tool', 15, repeated=True)
-  updateTime = _messages.StringField(16)
-  workloadDetails = _messages.MessageField('WorkloadDetails', 17)
+  runGroup = _messages.StringField(12)
+  runPhase = _messages.EnumField('RunPhaseValueValuesEnum', 13)
+  runSet = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  tools = _messages.MessageField('Tool', 16, repeated=True)
+  updateTime = _messages.StringField(17)
+  workloadDetails = _messages.MessageField('WorkloadDetails', 18)
 
 
 class Metrics(_messages.Message):
@@ -3478,12 +3474,10 @@ class SlurmOrchestrator(_messages.Message):
       must not be empty.
     loginNodes: Required. Configuration for login nodes, which allow users to
       access the cluster over SSH.
-    nodeSets: Required. Configuration of Slurm nodesets, which define groups
-      of compute resources that can be used by Slurm. At least one compute
-      node is required.
-    partitions: Required. Configuration of Slurm partitions, which group one
+    nodeSets: Optional. Configuration of Slurm nodesets, which define groups
+      of compute resources that can be used by Slurm.
+    partitions: Optional. Configuration of Slurm partitions, which group one
       or more nodesets. Acts as a queue against which jobs can be submitted.
-      At least one partition is required.
     prologBashScripts: Optional. Slurm [prolog
       scripts](https://slurm.schedmd.com/prolog_epilog.html), which will be
       executed by compute nodes before a node begins running a new job. Values

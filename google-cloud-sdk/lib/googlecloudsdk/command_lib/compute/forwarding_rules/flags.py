@@ -69,9 +69,9 @@ Forwarding rules can be either global or regional, specified with the
 the scope of a forwarding rule, refer to
 https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
 
-Forwarding rules can be external, external managed, internal, internal managed, or
-internal self-managed, specified with the
-``--load-balancing-scheme=[EXTERNAL|EXTERNAL_MANAGED|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
+Forwarding rules can be external, external managed, external passthrough,
+internal, internal managed, or internal self-managed, specified with the
+``--load-balancing-scheme=[EXTERNAL|EXTERNAL_MANAGED|EXTERNAL_PASSTHROUGH|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
 flag. External forwarding rules are accessible from the internet, while
 internal forwarding rules are only accessible from within their VPC
 networks. You can specify a reserved static external or internal IP
@@ -176,10 +176,13 @@ BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='backend service',
     regional_collection='compute.regionBackendServices',
-    global_collection='compute.targetBackendServices',
+    global_collection='compute.backendServices',
     short_help='Target backend service that receives the traffic.',
-    region_explanation=('If not specified, the region is set to the'
-                        ' region of the forwarding rule.'))
+    region_explanation=(
+        'If not specified, the region is set to the'
+        ' region of the forwarding rule.'
+    ),
+)
 
 
 def NetworkArg():
@@ -372,18 +375,32 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     detailed_help=(
         'Target VPN gateway (Cloud VPN Classic gateway) that receives '
         'forwarded traffic. '
-        'Acceptable values for --ports flag are: 500, 4500.'),
-    region_explanation=('If not specified, the region is set to the'
-                        ' region of the forwarding rule.'))
+        'Acceptable values for --ports flag are: 500, 4500.'
+    ),
+    region_explanation=(
+        'If not specified, the region is set to the'
+        ' region of the forwarding rule.'
+    ),
+)
 
 
-def AddressArgHelp():
-  """Build the help text for the address argument."""
+def AddressArgHelp(include_external_passthrough=False):
+  """Build the help text for the address argument.
 
-  lb_schemes = ('(EXTERNAL, EXTERNAL_MANAGED, INTERNAL, INTERNAL_SELF_MANAGED, '
-                'INTERNAL_MANAGED)')
+  Args:
+    include_external_passthrough: If true, include note to use ip_addresses
+      argument for EXTERNAL_PASSTHROUGH load balancing scheme.
 
-  detailed_help = """\
+  Returns:
+    The help text for the address argument.
+  """
+
+  lb_schemes = (
+      '(EXTERNAL, EXTERNAL_MANAGED, INTERNAL, INTERNAL_SELF_MANAGED, '
+      'INTERNAL_MANAGED)'
+  )
+
+  detailed_help = f"""\
     The IP address that the forwarding rule serves. When a client sends traffic
     to this IP address, the forwarding rule directs the traffic to the
     target that you specify in the forwarding rule.
@@ -400,19 +417,25 @@ def AddressArgHelp():
     * global/addresses/address-1
     * address-1
 
-    The load-balancing-scheme %s and the target of the forwarding rule
+    The load-balancing-scheme {lb_schemes} and the target of the forwarding rule
     determine the type of IP address that you can use. The address
     type must be external for load-balancing-scheme EXTERNAL or
     EXTERNAL_MANAGED. For other load-balancing-schemes, the address type
     must be internal. For detailed information, refer to
     https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications.
-  """ % (
-      lb_schemes)
+  """
+
+  if include_external_passthrough:
+    detailed_help += """\
+    For load-balancing-scheme EXTERNAL_PASSTHROUGH (used with global
+    Passthrough Network Load Balancers), use the ip_addresses argument to
+    specify the IP addresses instead.
+    """
 
   return textwrap.dedent(detailed_help)
 
 
-def AddressArg():
+def AddressArg(include_external_passthrough=False):
   return compute_flags.ResourceArgument(
       name='--address',
       required=False,
@@ -422,7 +445,10 @@ def AddressArg():
       global_collection='compute.globalAddresses',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
       short_help='IP address that the forwarding rule will serve.',
-      detailed_help=AddressArgHelp())
+      detailed_help=AddressArgHelp(
+          include_external_passthrough=include_external_passthrough
+      ),
+  )
 
 
 def AddUpdateTargetArgs(
@@ -462,6 +488,7 @@ def AddCreateArgs(
     parser,
     include_psc_google_apis=False,
     include_target_service_attachment=False,
+    include_external_passthrough=False,
 ):
   """Adds common flags for creating forwarding rules."""
   AddUpdateTargetArgs(
@@ -476,6 +503,7 @@ def AddCreateArgs(
       parser,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment,
+      include_external_passthrough=include_external_passthrough,
   )
 
 
@@ -483,6 +511,7 @@ def AddSetTargetArgs(
     parser,
     include_psc_google_apis=False,
     include_target_service_attachment=False,
+    include_external_passthrough=False,
 ):
   """Adds flags for the set-target command."""
   AddUpdateTargetArgs(
@@ -539,6 +568,7 @@ def AddSetTargetArgs(
       parser,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment,
+      include_external_passthrough=include_external_passthrough,
       deprecation_action=CreateDeprecationAction('--load-balancing-scheme'),
   )
 
@@ -547,6 +577,7 @@ def AddLoadBalancingScheme(
     parser,
     include_psc_google_apis=False,
     include_target_service_attachment=False,
+    include_external_passthrough=False,
     deprecation_action=None,
 ):
   """Adds the load-balancing-scheme flag."""
@@ -578,6 +609,12 @@ def AddLoadBalancingScheme(
           ' --target-tcp-proxy.'
       ),
   }
+
+  if include_external_passthrough:
+    load_balancing_choices['EXTERNAL_PASSTHROUGH'] = (
+        'Global External Passthrough Network Load Balancers, used with '
+        '--backend-service.'
+    )
 
   # There isn't a default load-balancing-scheme for PSC forwarding rules.
   # But the default is EXTERNAL for non-PSC forwarding rules.
@@ -705,10 +742,10 @@ def AddIPProtocols(parser, support_all_protocol):
       help=help_str)
 
 
-def AddAddressesAndIPVersions(parser):
+def AddAddressesAndIPVersions(parser, include_external_passthrough=False):
   """Adds Addresses and IP versions flag."""
 
-  address_arg = AddressArg()
+  address_arg = AddressArg(include_external_passthrough)
   address_arg.AddArgument(parser)
   parser.add_argument(
       '--ip-version',

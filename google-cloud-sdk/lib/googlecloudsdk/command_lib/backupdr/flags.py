@@ -337,8 +337,7 @@ def AddTriggerBackupFlags(parser):
       required=False,
       type=int,
       help=(
-          'Duration for which backup data will be retained. '
-          'If not specified, the default retention period will be used.'
+          'Duration for which backup data will be retained.'
       ),
   )
 

@@ -3069,7 +3069,9 @@ class FailoverAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `OracleDatabase.FailoverAutonomousDatabase`.
 
   Fields:
-    peerAutonomousDatabase: Required. The peer database name to fail over to.
+    peerAutonomousDatabase: Optional. The peer database name to fail over to.
+      Required for cross-region standby, and must be omitted for in-region
+      Data Guard.
   """
 
   peerAutonomousDatabase = _messages.StringField(1)
@@ -5848,8 +5850,9 @@ class SwitchoverAutonomousDatabaseRequest(_messages.Message):
   r"""The request for `OracleDatabase.SwitchoverAutonomousDatabase`.
 
   Fields:
-    peerAutonomousDatabase: Required. The peer database name to switch over
-      to.
+    peerAutonomousDatabase: Optional. The peer database name to switch over
+      to. Required for cross-region standby, and must be omitted for in-region
+      Data Guard.
   """
 
   peerAutonomousDatabase = _messages.StringField(1)

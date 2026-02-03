@@ -198,7 +198,7 @@ class Client(sp_api.Client):
         type=self._ParseSecurityProfileType(profile_type),
         labels=labels,
     )
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+    api_request = self._patch_request(
         name=name,
         securityProfile=security_profile,
         updateMask=update_mask,
@@ -207,7 +207,7 @@ class Client(sp_api.Client):
 
   def ListOverrides(self, name):
     """Calls the Security Profile Get API to list all Security Profile Overrides."""
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesGetRequest(
+    api_request = self._get_request(
         name=name
     )
     return self._security_profile_client.Get(api_request)
@@ -259,7 +259,7 @@ class Client(sp_api.Client):
         type=self._ParseSecurityProfileType(profile_type),
         labels=labels,
     )
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+    api_request = self._patch_request(
         name=name,
         securityProfile=security_profile,
         updateMask='threatPreventionProfile',
@@ -282,7 +282,7 @@ class Client(sp_api.Client):
         labels=labels,
     )
     return self._security_profile_client.Create(
-        self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
+        self._create_request(
             parent=parent,
             securityProfile=profile,
             securityProfileId=sp_id,

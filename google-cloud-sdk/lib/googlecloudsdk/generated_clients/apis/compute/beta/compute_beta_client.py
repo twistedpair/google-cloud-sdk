@@ -4397,6 +4397,20 @@ deleted if there are backend services referencing it.
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
 
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
+
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsInsertRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -12085,6 +12099,20 @@ group.
     def Insert(self, request, global_params=None):
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
+
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
 
       Args:
         request: (ComputeNetworkEndpointGroupsInsertRequest) input message
@@ -20240,6 +20268,20 @@ deleted if it is configured as a backend of a backend service.
     def Insert(self, request, global_params=None):
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
+
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
 
       Args:
         request: (ComputeRegionNetworkEndpointGroupsInsertRequest) input message

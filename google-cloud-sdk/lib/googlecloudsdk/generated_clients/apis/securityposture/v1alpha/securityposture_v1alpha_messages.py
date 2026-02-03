@@ -1033,8 +1033,8 @@ class IacValidationFailureCriteria(_messages.Message):
     createTime: Output only. The time at which the resource was created.
     etag: Optional. The etag for optimistic concurrency.
     name: Identifier. The resource name of the IacValidationFailureCriteria.
-      Format: organizations/{organization}/locations/global/iacValidationFailu
-      reCriteria
+      Format: organizations/{organization}/locations/{location}/iacValidationF
+      ailureCriteria
     severityCountThresholds: Optional. A list of severity thresholds. An IaC
       validation fails if any threshold is exceeded.
     updateTime: Output only. The time at which the resource was last updated.
@@ -2293,6 +2293,19 @@ class SecuritypostureOrganizationsLocationsFindingRemediationExecutionsCreateReq
   parent = _messages.StringField(2, required=True)
 
 
+class SecuritypostureOrganizationsLocationsGetIacValidationFailureCriteriaRequest(_messages.Message):
+  r"""A
+  SecuritypostureOrganizationsLocationsGetIacValidationFailureCriteriaRequest
+  object.
+
+  Fields:
+    name: Required. The name of the singleton resource. Format: organizations/
+      {organization}/locations/{location}/iacValidationFailureCriteria
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest(_messages.Message):
   r"""A
   SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest
@@ -2307,38 +2320,6 @@ class SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest(
 
   duration_days = _messages.IntegerField(1)
   name = _messages.StringField(2, required=True)
-
-
-class SecuritypostureOrganizationsLocationsGlobalGetIacValidationFailureCriteriaRequest(_messages.Message):
-  r"""A SecuritypostureOrganizationsLocationsGlobalGetIacValidationFailureCrit
-  eriaRequest object.
-
-  Fields:
-    name: Required. The name of the singleton resource. Format:
-      organizations/{organization}/locations/global/iacValidationFailureCriter
-      ia
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritypostureOrganizationsLocationsGlobalUpdateIacValidationFailureCriteriaRequest(_messages.Message):
-  r"""A SecuritypostureOrganizationsLocationsGlobalUpdateIacValidationFailureC
-  riteriaRequest object.
-
-  Fields:
-    allowMissing: Optional. If set to true, and the resource is not found, a
-      new resource will be created.
-    iacValidationFailureCriteria: A IacValidationFailureCriteria resource to
-      be passed as the request body.
-    name: Identifier. The resource name of the IacValidationFailureCriteria.
-      Format: organizations/{organization}/locations/global/iacValidationFailu
-      reCriteria
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  iacValidationFailureCriteria = _messages.MessageField('IacValidationFailureCriteria', 2)
-  name = _messages.StringField(3, required=True)
 
 
 class SecuritypostureOrganizationsLocationsHcptIacvReportsCreateHCPTIaCValidationReportRequest(_messages.Message):
@@ -2864,6 +2845,25 @@ class SecuritypostureOrganizationsLocationsReportsListRequest(_messages.Message)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class SecuritypostureOrganizationsLocationsUpdateIacValidationFailureCriteriaRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsUpdateIacValidationFailureCriteri
+  aRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the resource is not found, a
+      new resource will be created.
+    iacValidationFailureCriteria: A IacValidationFailureCriteria resource to
+      be passed as the request body.
+    name: Identifier. The resource name of the IacValidationFailureCriteria.
+      Format: organizations/{organization}/locations/{location}/iacValidationF
+      ailureCriteria
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  iacValidationFailureCriteria = _messages.MessageField('IacValidationFailureCriteria', 2)
+  name = _messages.StringField(3, required=True)
 
 
 class SeverityCountThreshold(_messages.Message):

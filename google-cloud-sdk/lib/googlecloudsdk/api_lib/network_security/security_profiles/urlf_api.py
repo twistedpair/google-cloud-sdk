@@ -40,7 +40,7 @@ class Client(sp_api.Client):
         labels=labels,
     )
     return self._security_profile_client.Create(
-        self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
+        self._create_request(
             parent=parent,
             securityProfile=profile,
             securityProfileId=sp_id,

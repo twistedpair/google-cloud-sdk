@@ -1383,23 +1383,26 @@ class Endpoint(_messages.Message):
     located. Not relevant for destination endpoints.
 
     Values:
-      NETWORK_TYPE_UNSPECIFIED: Unspecified. The `project_id` field should be
-        set to the project where the GCP endpoint is located, or where the
-        non-GCP endpoint should be reachable from (via routes to non-GCP
-        networks). The test will analyze all possible IP address locations.
-        This might take longer and produce inaccurate or ambiguous results, so
-        prefer specifying an explicit network type.
-      GCP_NETWORK: A VPC network. The `network` field should be set to the URI
-        of this network. Only endpoints within this network will be
-        considered.
+      NETWORK_TYPE_UNSPECIFIED: Unspecified. The test will analyze all
+        possible IP address locations. This might take longer and produce
+        inaccurate or ambiguous results, so prefer specifying an explicit
+        network type. The `project_id` field should be set to the project
+        where the GCP endpoint is located, or where the non-GCP endpoint
+        should be reachable from (via routes to non-GCP networks). The project
+        might also be inferred from the Connectivity Test project or other
+        projects referenced in the request.
+      GCP_NETWORK: A VPC network. Should be used for internal IP addresses in
+        VPC networks. The `network` field should be set to the URI of this
+        network. Only endpoints within this network will be considered.
       NON_GCP_NETWORK: A non-GCP network (for example, an on-premises network
-        or network in another Cloud). The `network` field should be set to the
-        URI of the VPC network containing a corresponding VPN tunnel,
-        Interconnect attachment, or router appliance instance. Only endpoints
-        reachable from the provided VPC network via the routes to non-GCP
-        networks will be considered.
-      INTERNET: Internet. Only endpoints reachable over public Internet and
-        endpoints within Google API and service ranges will be considered.
+        or another cloud provider network). Should be used for internal IP
+        addresses outside of Google Cloud. The `network` field should be set
+        to the URI of the VPC network containing a corresponding Cloud VPN
+        tunnel, Cloud Interconnect VLAN attachment, or a router appliance
+        instance. Only endpoints reachable from the provided VPC network via
+        the routes to non-GCP networks will be considered.
+      INTERNET: Internet. Should be used for internet-routable external IP
+        addresses or IP addresses for global Google APIs and services.
     """
     NETWORK_TYPE_UNSPECIFIED = 0
     GCP_NETWORK = 1
@@ -1734,45 +1737,6 @@ class GkePodInfo(_messages.Message):
   ipAddress = _messages.StringField(1)
   networkUri = _messages.StringField(2)
   podUri = _messages.StringField(3)
-
-
-class GoogleManagedServiceInfo(_messages.Message):
-  r"""For display only. Metadata associated with
-  ARRIVE_AT_GOOGLE_MANAGED_SERVICE state.
-
-  Enums:
-    ServiceTypeValueValuesEnum: Type of a Google-managed service.
-
-  Fields:
-    ipAddress: IP address of the Google-managed service endpoint.
-    networkUri: URI of the Google-managed service endpoint network, it is
-      empty if the IP address is a public IP address.
-    serviceType: Type of a Google-managed service.
-    serviceUri: URI of the Google-managed service.
-  """
-
-  class ServiceTypeValueValuesEnum(_messages.Enum):
-    r"""Type of a Google-managed service.
-
-    Values:
-      SERVICE_TYPE_UNSPECIFIED: Service type is unspecified.
-      UNSUPPORTED: Unsupported Google-managed service.
-      CLOUD_SQL: Cloud SQL Instance.
-      GKE_CLUSTER_CONTROL_PLANE: GKE Cluster control plane.
-      REDIS_CLUSTER: Redis Cluster.
-      REDIS_INSTANCE: Redis Instance.
-    """
-    SERVICE_TYPE_UNSPECIFIED = 0
-    UNSUPPORTED = 1
-    CLOUD_SQL = 2
-    GKE_CLUSTER_CONTROL_PLANE = 3
-    REDIS_CLUSTER = 4
-    REDIS_INSTANCE = 5
-
-  ipAddress = _messages.StringField(1)
-  networkUri = _messages.StringField(2)
-  serviceType = _messages.EnumField('ServiceTypeValueValuesEnum', 3)
-  serviceUri = _messages.StringField(4)
 
 
 class GoogleServiceInfo(_messages.Message):
@@ -3907,7 +3871,6 @@ class Step(_messages.Message):
     gkeMaster: Display information of a Google Kubernetes Engine cluster
       master.
     gkePod: Display information of a Google Kubernetes Engine Pod.
-    googleManagedService: Display information of a Google-managed service.
     googleService: Display information of a Google service
     hybridSubnet: Display information of a hybrid subnet.
     instance: Display information of a Compute Engine instance.
@@ -4016,8 +3979,6 @@ class Step(_messages.Message):
       SERVERLESS_EXTERNAL_CONNECTION: Forwarding state: for packets
         originating from a serverless endpoint forwarded through public
         (external) connectivity.
-      ARRIVE_AT_GOOGLE_MANAGED_SERVICE: Forwarding state: arriving at a
-        Google-managed service endpoint.
       NAT: Transition state: packet header translated. The `nat` field is
         populated with the translation information.
       SKIP_GKE_POD_IP_MASQUERADING: Transition state: GKE Pod IP masquerading
@@ -4065,15 +4026,14 @@ class Step(_messages.Message):
     ARRIVE_AT_VPC_CONNECTOR = 29
     DIRECT_VPC_EGRESS_CONNECTION = 30
     SERVERLESS_EXTERNAL_CONNECTION = 31
-    ARRIVE_AT_GOOGLE_MANAGED_SERVICE = 32
-    NAT = 33
-    SKIP_GKE_POD_IP_MASQUERADING = 34
-    PROXY_CONNECTION = 35
-    DELIVER = 36
-    DROP = 37
-    FORWARD = 38
-    ABORT = 39
-    VIEWER_PERMISSION_MISSING = 40
+    NAT = 32
+    SKIP_GKE_POD_IP_MASQUERADING = 33
+    PROXY_CONNECTION = 34
+    DELIVER = 35
+    DROP = 36
+    FORWARD = 37
+    ABORT = 38
+    VIEWER_PERMISSION_MISSING = 39
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -4091,28 +4051,27 @@ class Step(_messages.Message):
   forwardingRule = _messages.MessageField('ForwardingRuleInfo', 14)
   gkeMaster = _messages.MessageField('GKEMasterInfo', 15)
   gkePod = _messages.MessageField('GkePodInfo', 16)
-  googleManagedService = _messages.MessageField('GoogleManagedServiceInfo', 17)
-  googleService = _messages.MessageField('GoogleServiceInfo', 18)
-  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 19)
-  instance = _messages.MessageField('InstanceInfo', 20)
-  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 21)
-  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 22)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 23)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 24)
-  nat = _messages.MessageField('NatInfo', 25)
-  network = _messages.MessageField('NetworkInfo', 26)
-  projectId = _messages.StringField(27)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 28)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 29)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 30)
-  route = _messages.MessageField('RouteInfo', 31)
-  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 32)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 33)
-  state = _messages.EnumField('StateValueValuesEnum', 34)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 35)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 36)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 37)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 38)
+  googleService = _messages.MessageField('GoogleServiceInfo', 17)
+  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 18)
+  instance = _messages.MessageField('InstanceInfo', 19)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 20)
+  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 21)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 22)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 23)
+  nat = _messages.MessageField('NatInfo', 24)
+  network = _messages.MessageField('NetworkInfo', 25)
+  projectId = _messages.StringField(26)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 27)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 28)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 29)
+  route = _messages.MessageField('RouteInfo', 30)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 31)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 34)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 35)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 36)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 37)
 
 
 class StorageBucketInfo(_messages.Message):

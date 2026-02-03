@@ -34,6 +34,8 @@ _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.GA: 'v1',
 }
 _API_NAME = 'networksecurity'
+ORG_OPERATIONS_COLLECTION = 'networksecurity.organizations.locations.operations'
+PROJECT_OPERATIONS_COLLECTION = 'networksecurity.projects.locations.operations'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
@@ -63,19 +65,59 @@ def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.ALPHA):
 class Client(abc.ABC):
   """API client for all security profile commands."""
 
-  def __init__(self, release_track):
+  def __init__(self, release_track, project_scope=False):
     self._client = GetClientInstance(release_track)
-    self._security_profile_client = (
-        self._client.organizations_locations_securityProfiles
-    )
-    self._operations_client = self._client.organizations_locations_operations
-    self._locations_client = self._client.organizations_locations
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self.api_version = _API_VERSION_FOR_TRACK.get(release_track)
     self._resource_parser.RegisterApiByName(
-        _API_NAME, _API_VERSION_FOR_TRACK.get(release_track)
+        _API_NAME, self.api_version
     )
+
+    if project_scope:
+      self._security_profile_client = (
+          self._client.projects_locations_securityProfiles
+      )
+      self._operations_client = self._client.projects_locations_operations
+      self._locations_client = self._client.projects_locations
+      self._operations_collection = PROJECT_OPERATIONS_COLLECTION
+      self._create_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfilesCreateRequest
+      )
+      self._get_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfilesGetRequest
+      )
+      self._list_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfilesListRequest
+      )
+      self._patch_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfilesPatchRequest
+      )
+      self._delete_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfilesDeleteRequest
+      )
+    else:
+      self._security_profile_client = (
+          self._client.organizations_locations_securityProfiles
+      )
+      self._operations_client = self._client.organizations_locations_operations
+      self._locations_client = self._client.organizations_locations
+      self._operations_collection = ORG_OPERATIONS_COLLECTION
+      self._create_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest
+      )
+      self._get_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesGetRequest
+      )
+      self._list_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesListRequest
+      )
+      self._patch_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest
+      )
+      self._delete_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesDeleteRequest
+      )
 
   def _ParseSecurityProfileType(self, profile_type):
     return self.messages.SecurityProfile.TypeValueValuesEnum.lookup_by_name(
@@ -91,16 +133,14 @@ class Client(abc.ABC):
     Returns:
       Security Profile object.
     """
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesGetRequest(
-        name=name
-    )
+    api_request = self._get_request(name=name)
     return self._security_profile_client.Get(api_request)
 
   def GetOperationsRef(self, operation):
     """Operations to Resource used for `waiter.WaitFor`."""
     return self._resource_parser.ParseRelativeName(
         operation.name,
-        'networksecurity.organizations.locations.operations',
+        self._operations_collection,
         False,
         self.api_version,
     )
@@ -149,9 +189,7 @@ class Client(abc.ABC):
       page_size=None,
   ):
     """Calls the ListSecurityProfiles API."""
-    list_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesListRequest(
-        parent=parent
-    )
+    list_request = self._list_request(parent=parent)
     return list_pager.YieldFromList(
         self._security_profile_client,
         list_request,
@@ -182,9 +220,22 @@ class Client(abc.ABC):
       updated_sp.labels = labels
       update_mask.append('labels')
 
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+    api_request = self._patch_request(
         name=name,
         securityProfile=updated_sp,
         updateMask=','.join(update_mask),
     )
     return self._security_profile_client.Patch(api_request)
+
+  def DeleteSecurityProfile(self, name):
+    """Calls the Delete Security Profile API to delete a Security Profile.
+
+    Args:
+      name: The name of the Security Profile, e.g.
+        "organizations/123/locations/global/securityProfiles/my-profile".
+
+    Returns:
+      The operation object.
+    """
+    api_request = self._delete_request(name=name)
+    return self._security_profile_client.Delete(api_request)

@@ -648,10 +648,12 @@ class Hash(_messages.Message):
       HASH_TYPE_UNSPECIFIED: Unspecified.
       SHA256: SHA256 hash.
       MD5: MD5 hash.
+      DIRSUM_SHA256: Dirsum SHA256 hash.
     """
     HASH_TYPE_UNSPECIFIED = 0
     SHA256 = 1
     MD5 = 2
+    DIRSUM_SHA256 = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)

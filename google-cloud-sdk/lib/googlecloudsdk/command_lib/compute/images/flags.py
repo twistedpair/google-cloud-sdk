@@ -172,9 +172,19 @@ def AddCommonArgs(parser, support_user_licenses=False):
         '--user-licenses',
         type=arg_parsers.ArgList(),
         metavar='LICENSE',
+        action=calliope_actions.DeprecationAction(
+            '--user-licenses',
+            error=(
+                'The {flag_name} flag has been removed. Use --licenses instead.'
+            ),
+            removed=True,
+            action='store',
+        ),
         help=(
-            'URI for the license resource. For multiple licenses, you can provide a comma-separated list of URIs.'
-        ))
+            'URI for the license resource. For multiple licenses, you can'
+            ' provide a comma-separated list of URIs.'
+        ),
+    )
 
   parser.add_argument(
       '--licenses',

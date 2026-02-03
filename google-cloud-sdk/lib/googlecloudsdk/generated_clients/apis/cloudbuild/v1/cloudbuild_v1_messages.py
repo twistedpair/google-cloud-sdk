@@ -5478,17 +5478,28 @@ class TrustedPoolMetadata(_messages.Message):
     instanceCreationDone: Indicates if the instance creation operation is done
       in TBI.
     instanceOp: The operation name returned by TBI's create instance API.
+    instanceUpdateDone: Boolean indicating if the instance update operation is
+      done in TBI.
+    instanceUpdateRequired: Boolean indicating if the instance needs to be
+      updated.
     poolCreationDone: Indicates if the pool creation operation is done in TBI.
     poolOp: The operation name returned by TBI's create pool API.
+    poolUpdateDone: Boolean indicating if the pool update operation is done in
+      TBI.
+    poolUpdateRequired: Boolean indicating if the pool needs to be updated.
     uid: The unique identifier of the trusted pool. This is used as the
       instance ID and pool ID in TBI.
   """
 
   instanceCreationDone = _messages.BooleanField(1)
   instanceOp = _messages.StringField(2)
-  poolCreationDone = _messages.BooleanField(3)
-  poolOp = _messages.StringField(4)
-  uid = _messages.StringField(5)
+  instanceUpdateDone = _messages.BooleanField(3)
+  instanceUpdateRequired = _messages.BooleanField(4)
+  poolCreationDone = _messages.BooleanField(5)
+  poolOp = _messages.StringField(6)
+  poolUpdateDone = _messages.BooleanField(7)
+  poolUpdateRequired = _messages.BooleanField(8)
+  uid = _messages.StringField(9)
 
 
 class UpdateBitbucketServerConfigOperationMetadata(_messages.Message):
@@ -5544,13 +5555,16 @@ class UpdateWorkerPoolOperationMetadata(_messages.Message):
   Fields:
     completeTime: Time the operation was completed.
     createTime: Time the operation was created.
+    trustedPoolMetadata: Output only. Metadata for the trusted pool creation
+      in TBI.
     workerPool: The resource name of the `WorkerPool` being updated. Format:
       `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
   """
 
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  workerPool = _messages.StringField(3)
+  trustedPoolMetadata = _messages.MessageField('TrustedPoolMetadata', 3)
+  workerPool = _messages.StringField(4)
 
 
 class UploadedGenericArtifact(_messages.Message):

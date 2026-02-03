@@ -27,7 +27,7 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
 
-def _ValidateGlobalTargetArgs(args):
+def _ValidateGlobalTargetArgs(args, support_external_passthrough):
   """Validate the global forwarding rules args."""
   if args.target_instance:
     raise exceptions.ArgumentError(
@@ -39,9 +39,17 @@ def _ValidateGlobalTargetArgs(args):
         'forwarding rule.')
 
   if getattr(args, 'backend_service', None):
-    raise exceptions.ArgumentError(
-        'You cannot specify [--backend-service] for a global '
-        'forwarding rule.')
+    load_balancing_scheme = getattr(args, 'load_balancing_scheme', None)
+    if not support_external_passthrough:
+      raise exceptions.ArgumentError(
+          'You cannot specify [--backend-service] for a global '
+          'forwarding rule with EXTERNAL_PASSTHROUGH load balancing scheme.'
+      )
+    elif load_balancing_scheme != 'EXTERNAL_PASSTHROUGH':
+      raise exceptions.ArgumentError(
+          'You can only specify [--backend-service] for a global '
+          'forwarding rule with EXTERNAL_PASSTHROUGH load balancing scheme.'
+      )
 
   if getattr(args, 'target_vpn_gateway', None):
     raise exceptions.ArgumentError(
@@ -49,9 +57,9 @@ def _ValidateGlobalTargetArgs(args):
         'forwarding rule.')
 
 
-def GetGlobalTarget(resources, args):
+def GetGlobalTarget(resources, args, support_external_passthrough):
   """Return the forwarding target for a globally scoped request."""
-  _ValidateGlobalTargetArgs(args)
+  _ValidateGlobalTargetArgs(args, support_external_passthrough)
 
   if args.target_http_proxy:
     return flags.TargetHttpProxyArg().ResolveAsResource(
@@ -66,6 +74,10 @@ def GetGlobalTarget(resources, args):
     return flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)
   if args.target_tcp_proxy:
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL
+    )
+  if args.backend_service:
+    return flags.BACKEND_SERVICE_ARG.ResolveAsResource(
         args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL
     )
 

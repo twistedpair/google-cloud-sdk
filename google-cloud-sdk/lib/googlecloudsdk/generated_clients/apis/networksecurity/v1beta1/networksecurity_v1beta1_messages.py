@@ -7237,11 +7237,15 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
         `secret_path`.
       REQUEST_TO_SYMANTEC_FAILED: Failed to get a successful response from
         Symantec API due to an invalid API key or Symantec API unavailability.
+      UNAVAILABLE_FOR_HISTORICAL_REQUESTS: The connection state is unavailable
+        because live calls to Symantec API are not made for historical
+        requests.
     """
     SYMANTEC_CONNECTION_STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
     READ_SECRET_FAILED = 2
     REQUEST_TO_SYMANTEC_FAILED = 3
+    UNAVAILABLE_FOR_HISTORICAL_REQUESTS = 4
 
   availableSymantecSites = _messages.StringField(1, repeated=True)
   secretPath = _messages.StringField(2)

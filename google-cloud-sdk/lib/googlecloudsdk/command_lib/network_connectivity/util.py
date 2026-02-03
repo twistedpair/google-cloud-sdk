@@ -22,6 +22,7 @@ import argparse
 from typing import Any
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 import googlecloudsdk.generated_clients.apis.networkconnectivity.v1.networkconnectivity_v1_messages as v1
 import googlecloudsdk.generated_clients.apis.networkconnectivity.v1beta.networkconnectivity_v1beta_messages as v1beta
 
@@ -30,6 +31,7 @@ import googlecloudsdk.generated_clients.apis.networkconnectivity.v1beta.networkc
 PROJECTS_RESOURCE_PATH = "projects/"
 LOCATION_FILTER_FMT = "location:projects/{0}/locations/{1}"
 ROUTE_TYPE_FILTER = "-type:DYNAMIC_ROUTE"
+LOCATION_TEMPLATE = "projects/{}/locations/{}"
 
 
 class NetworkConnectivityError(exceptions.Error):
@@ -332,8 +334,10 @@ def ProhibitHybridInspection(unused_ref, unused_args, request):
   """
   if not hasattr(request.hub, "presetTopology"):
     return request
-  if (request.hub.presetTopology !=
-      v1.Hub.PresetTopologyValueValuesEnum.HYBRID_INSPECTION):
+  if (
+      request.hub.presetTopology
+      != v1.Hub.PresetTopologyValueValuesEnum.HYBRID_INSPECTION
+  ):
     return request
 
   raise InvalidInputError(
@@ -341,3 +345,12 @@ def ProhibitHybridInspection(unused_ref, unused_args, request):
       "use the beta component instead. "
       "See https://cloud.google.com/sdk/gcloud#release_levels"
   )
+
+
+def AddDefaultLocationToList(ref, args, req):
+  """Python hook for yaml commands to wildcard the region in list requests."""
+  del ref
+  project = properties.VALUES.core.project.Get(required=True)
+
+  req.parent = LOCATION_TEMPLATE.format(project, args.region)
+  return req

@@ -82,7 +82,7 @@ class Client(sp_api.Client):
       )
 
     return self._security_profile_client.Create(
-        self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesCreateRequest(
+        self._create_request(
             parent=parent,
             securityProfile=profile,
             securityProfileId=sp_id,
@@ -132,7 +132,7 @@ class Client(sp_api.Client):
 
       update_mask.append('customMirroringProfile.mirroringDeploymentGroups')
 
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(
+    api_request = self._patch_request(
         name=name,
         securityProfile=updated_sp,
         updateMask=','.join(update_mask),

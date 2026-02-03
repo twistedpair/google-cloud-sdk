@@ -112,6 +112,10 @@ class AbortInfo(_messages.Message):
         endpoints satisfy test input).
       SOURCE_PSC_CLOUD_SQL_UNSUPPORTED: Aborted because tests with a PSC-based
         Cloud SQL instance as a source are not supported.
+      SOURCE_EXTERNAL_CLOUD_SQL_UNSUPPORTED: Aborted because tests with the
+        external database as a source are not supported. In such replication
+        scenarios, the connection is initiated by the Cloud SQL replica
+        instance.
       SOURCE_REDIS_CLUSTER_UNSUPPORTED: Aborted because tests with a Redis
         Cluster as a source are not supported.
       SOURCE_REDIS_INSTANCE_UNSUPPORTED: Aborted because tests with a Redis
@@ -167,15 +171,16 @@ class AbortInfo(_messages.Message):
     GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 31
     GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT = 32
     SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 33
-    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 34
-    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 35
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 36
-    NON_ROUTABLE_IP_ADDRESS = 37
-    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 38
-    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 39
-    NO_SERVERLESS_IP_RANGES = 40
-    IP_VERSION_PROTOCOL_MISMATCH = 41
-    GKE_POD_UNKNOWN_ENDPOINT_LOCATION = 42
+    SOURCE_EXTERNAL_CLOUD_SQL_UNSUPPORTED = 34
+    SOURCE_REDIS_CLUSTER_UNSUPPORTED = 35
+    SOURCE_REDIS_INSTANCE_UNSUPPORTED = 36
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 37
+    NON_ROUTABLE_IP_ADDRESS = 38
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 39
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 40
+    NO_SERVERLESS_IP_RANGES = 41
+    IP_VERSION_PROTOCOL_MISMATCH = 42
+    GKE_POD_UNKNOWN_ENDPOINT_LOCATION = 43
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -716,7 +721,9 @@ class DropInfo(_messages.Message):
         rule type is invalid (it's not a forwarding rule of the internal
         passthrough load balancer).
       NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS: Packet is sent from the
-        Internet or Google service to the private IPv6 address.
+        Internet to the private IPv6 address.
+      NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV4_ADDRESS: Packet is sent from the
+        Internet to the private IPv4 address.
       NO_ROUTE_FROM_EXTERNAL_IPV6_SOURCE_TO_PRIVATE_IPV6_ADDRESS: Packet is
         sent from the external IPv6 source address of an instance to the
         private IPv6 address of an instance.
@@ -966,93 +973,94 @@ class DropInfo(_messages.Message):
     ROUTE_NEXT_HOP_VPN_TUNNEL_NOT_ESTABLISHED = 12
     ROUTE_NEXT_HOP_FORWARDING_RULE_TYPE_INVALID = 13
     NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS = 14
-    NO_ROUTE_FROM_EXTERNAL_IPV6_SOURCE_TO_PRIVATE_IPV6_ADDRESS = 15
-    VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH = 16
-    VPN_TUNNEL_REMOTE_SELECTOR_MISMATCH = 17
-    PRIVATE_TRAFFIC_TO_INTERNET = 18
-    PRIVATE_GOOGLE_ACCESS_DISALLOWED = 19
-    PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED = 20
-    NO_EXTERNAL_ADDRESS = 21
-    UNKNOWN_INTERNAL_ADDRESS = 22
-    FORWARDING_RULE_MISMATCH = 23
-    FORWARDING_RULE_NO_INSTANCES = 24
-    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 25
-    INGRESS_FIREWALL_TAGS_UNSUPPORTED_BY_DIRECT_VPC_EGRESS = 26
-    INSTANCE_NOT_RUNNING = 27
-    GKE_CLUSTER_NOT_RUNNING = 28
-    GKE_POD_NOT_RUNNING = 29
-    CLOUD_SQL_INSTANCE_NOT_RUNNING = 30
-    REDIS_INSTANCE_NOT_RUNNING = 31
-    REDIS_CLUSTER_NOT_RUNNING = 32
-    TRAFFIC_TYPE_BLOCKED = 33
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 34
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 35
-    DROPPED_INSIDE_GKE_SERVICE = 36
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 37
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 38
-    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 39
-    GKE_PSC_ENDPOINT_MISSING = 40
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 41
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 42
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 43
-    GKE_CONTROL_PLANE_NO_ROUTE = 44
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 45
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 46
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 47
-    CLOUD_SQL_CONNECTOR_REQUIRED = 48
-    CLOUD_FUNCTION_NOT_ACTIVE = 49
-    VPC_CONNECTOR_NOT_SET = 50
-    VPC_CONNECTOR_NOT_RUNNING = 51
-    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 52
-    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 53
-    FORWARDING_RULE_REGION_MISMATCH = 54
-    PSC_CONNECTION_NOT_ACCEPTED = 55
-    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 56
-    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 57
-    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 58
-    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 59
-    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 60
-    PSC_TRANSITIVITY_NOT_PROPAGATED = 61
-    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 62
-    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 63
-    CLOUD_RUN_REVISION_NOT_READY = 64
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 65
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 66
-    CLOUD_NAT_NO_ADDRESSES = 67
-    ROUTING_LOOP = 68
-    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 69
-    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 70
-    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 71
-    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 72
-    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 73
-    REDIS_INSTANCE_UNSUPPORTED_PORT = 74
-    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 75
-    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 76
-    REDIS_INSTANCE_NO_EXTERNAL_IP = 77
-    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 78
-    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 79
-    REDIS_CLUSTER_UNSUPPORTED_PORT = 80
-    REDIS_CLUSTER_NO_EXTERNAL_IP = 81
-    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 82
-    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 83
-    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 84
-    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 85
-    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 86
-    PSC_PORT_MAPPING_PORT_MISMATCH = 87
-    PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED = 88
-    UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 89
-    TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 90
-    NO_MATCHING_NAT64_GATEWAY = 91
-    NO_CONFIGURED_PRIVATE_NAT64_RULE = 92
-    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 93
-    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 94
-    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 95
-    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 96
-    L2_INTERCONNECT_UNSUPPORTED_PORT = 97
-    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 98
-    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 99
-    HYBRID_SUBNET_REGION_MISMATCH = 100
-    HYBRID_SUBNET_NO_ROUTE = 101
+    NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV4_ADDRESS = 15
+    NO_ROUTE_FROM_EXTERNAL_IPV6_SOURCE_TO_PRIVATE_IPV6_ADDRESS = 16
+    VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH = 17
+    VPN_TUNNEL_REMOTE_SELECTOR_MISMATCH = 18
+    PRIVATE_TRAFFIC_TO_INTERNET = 19
+    PRIVATE_GOOGLE_ACCESS_DISALLOWED = 20
+    PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED = 21
+    NO_EXTERNAL_ADDRESS = 22
+    UNKNOWN_INTERNAL_ADDRESS = 23
+    FORWARDING_RULE_MISMATCH = 24
+    FORWARDING_RULE_NO_INSTANCES = 25
+    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 26
+    INGRESS_FIREWALL_TAGS_UNSUPPORTED_BY_DIRECT_VPC_EGRESS = 27
+    INSTANCE_NOT_RUNNING = 28
+    GKE_CLUSTER_NOT_RUNNING = 29
+    GKE_POD_NOT_RUNNING = 30
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 31
+    REDIS_INSTANCE_NOT_RUNNING = 32
+    REDIS_CLUSTER_NOT_RUNNING = 33
+    TRAFFIC_TYPE_BLOCKED = 34
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 35
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 36
+    DROPPED_INSIDE_GKE_SERVICE = 37
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 38
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 39
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 40
+    GKE_PSC_ENDPOINT_MISSING = 41
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 42
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 43
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 44
+    GKE_CONTROL_PLANE_NO_ROUTE = 45
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 46
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 47
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 48
+    CLOUD_SQL_CONNECTOR_REQUIRED = 49
+    CLOUD_FUNCTION_NOT_ACTIVE = 50
+    VPC_CONNECTOR_NOT_SET = 51
+    VPC_CONNECTOR_NOT_RUNNING = 52
+    VPC_CONNECTOR_SERVERLESS_TRAFFIC_BLOCKED = 53
+    VPC_CONNECTOR_HEALTH_CHECK_TRAFFIC_BLOCKED = 54
+    FORWARDING_RULE_REGION_MISMATCH = 55
+    PSC_CONNECTION_NOT_ACCEPTED = 56
+    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 57
+    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 58
+    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 59
+    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 60
+    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 61
+    PSC_TRANSITIVITY_NOT_PROPAGATED = 62
+    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 63
+    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 64
+    CLOUD_RUN_REVISION_NOT_READY = 65
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 66
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 67
+    CLOUD_NAT_NO_ADDRESSES = 68
+    ROUTING_LOOP = 69
+    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 70
+    LOAD_BALANCER_BACKEND_INVALID_NETWORK = 71
+    BACKEND_SERVICE_NAMED_PORT_NOT_DEFINED = 72
+    DESTINATION_IS_PRIVATE_NAT_IP_RANGE = 73
+    DROPPED_INSIDE_REDIS_INSTANCE_SERVICE = 74
+    REDIS_INSTANCE_UNSUPPORTED_PORT = 75
+    REDIS_INSTANCE_CONNECTING_FROM_PUPI_ADDRESS = 76
+    REDIS_INSTANCE_NO_ROUTE_TO_DESTINATION_NETWORK = 77
+    REDIS_INSTANCE_NO_EXTERNAL_IP = 78
+    REDIS_INSTANCE_UNSUPPORTED_PROTOCOL = 79
+    DROPPED_INSIDE_REDIS_CLUSTER_SERVICE = 80
+    REDIS_CLUSTER_UNSUPPORTED_PORT = 81
+    REDIS_CLUSTER_NO_EXTERNAL_IP = 82
+    REDIS_CLUSTER_UNSUPPORTED_PROTOCOL = 83
+    NO_ADVERTISED_ROUTE_TO_GCP_DESTINATION = 84
+    NO_TRAFFIC_SELECTOR_TO_GCP_DESTINATION = 85
+    NO_KNOWN_ROUTE_FROM_PEERED_NETWORK_TO_DESTINATION = 86
+    PRIVATE_NAT_TO_PSC_ENDPOINT_UNSUPPORTED = 87
+    PSC_PORT_MAPPING_PORT_MISMATCH = 88
+    PSC_PORT_MAPPING_WITHOUT_PSC_CONNECTION_UNSUPPORTED = 89
+    UNSUPPORTED_ROUTE_MATCHED_FOR_NAT64_DESTINATION = 90
+    TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED = 91
+    NO_MATCHING_NAT64_GATEWAY = 92
+    NO_CONFIGURED_PRIVATE_NAT64_RULE = 93
+    LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH = 94
+    NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION = 95
+    CLOUD_NAT_PROTOCOL_UNSUPPORTED = 96
+    L2_INTERCONNECT_UNSUPPORTED_PROTOCOL = 97
+    L2_INTERCONNECT_UNSUPPORTED_PORT = 98
+    L2_INTERCONNECT_DESTINATION_IP_MISMATCH = 99
+    NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 100
+    HYBRID_SUBNET_REGION_MISMATCH = 101
+    HYBRID_SUBNET_NO_ROUTE = 102
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -1261,13 +1269,10 @@ class Endpoint(_messages.Message):
       the target of the forwarding rule.
     LoadBalancerTypeValueValuesEnum: Output only. Type of the load balancer
       the forwarding rule points to.
-    NetworkTypeValueValuesEnum: Type of the network where the endpoint is
-      located. Applicable only to source endpoint, as destination network type
-      can be inferred from the source.
+    NetworkTypeValueValuesEnum: For source endpoints, type of the network
+      where the endpoint is located. Not relevant for destination endpoints.
 
   Fields:
-    alloyDbInstance: An [AlloyDB Instance](https://cloud.google.com/alloydb)
-      URI.
     appEngineVersion: An [App Engine](https://cloud.google.com/appengine)
       [service version](https://cloud.google.com/appengine/docs/admin-
       api/reference/rest/v1/apps.services.versions). Applicable only to source
@@ -1305,19 +1310,16 @@ class Endpoint(_messages.Message):
       points to. Empty for forwarding rules not related to load balancers.
     loadBalancerType: Output only. Type of the load balancer the forwarding
       rule points to.
-    network: A VPC network URI.
-    networkType: Type of the network where the endpoint is located. Applicable
-      only to source endpoint, as destination network type can be inferred
-      from the source.
+    network: A VPC network URI. For source endpoints, used according to the
+      `network_type`. For destination endpoints, used only when the source is
+      an external IP address endpoint, and the destination is an internal IP
+      address endpoint.
+    networkType: For source endpoints, type of the network where the endpoint
+      is located. Not relevant for destination endpoints.
     port: The IP protocol port of the endpoint. Only applicable when protocol
       is TCP or UDP.
-    projectId: Project ID where the endpoint is located. The project ID can be
-      derived from the URI if you provide a endpoint or network URI. The
-      following are two cases where you may need to provide the project ID: 1.
-      Only the IP address is specified, and the IP address is within a Google
-      Cloud project. 2. When you are using Shared VPC and the IP address that
-      you provide is from the service project. In this case, the network that
-      the IP address resides in is defined in the host project.
+    projectId: For source endpoints, endpoint project ID. Used according to
+      the `network_type`. Not relevant for destination endpoints.
     redisCluster: A [Redis
       Cluster](https://cloud.google.com/memorystore/docs/cluster) URI.
       Applicable only to destination endpoint.
@@ -1375,43 +1377,55 @@ class Endpoint(_messages.Message):
     TCP_UDP_INTERNAL_LOAD_BALANCER = 10
 
   class NetworkTypeValueValuesEnum(_messages.Enum):
-    r"""Type of the network where the endpoint is located. Applicable only to
-    source endpoint, as destination network type can be inferred from the
-    source.
+    r"""For source endpoints, type of the network where the endpoint is
+    located. Not relevant for destination endpoints.
 
     Values:
-      NETWORK_TYPE_UNSPECIFIED: Default type if unspecified.
-      GCP_NETWORK: A network hosted within Google Cloud. To receive more
-        detailed output, specify the URI for the source or destination
-        network.
-      NON_GCP_NETWORK: A network hosted outside of Google Cloud. This can be
-        an on-premises network, an internet resource or a network hosted by
-        another cloud provider.
+      NETWORK_TYPE_UNSPECIFIED: Unspecified. The test will analyze all
+        possible IP address locations. This might take longer and produce
+        inaccurate or ambiguous results, so prefer specifying an explicit
+        network type. The `project_id` field should be set to the project
+        where the GCP endpoint is located, or where the non-GCP endpoint
+        should be reachable from (via routes to non-GCP networks). The project
+        might also be inferred from the Connectivity Test project or other
+        projects referenced in the request.
+      GCP_NETWORK: A VPC network. Should be used for internal IP addresses in
+        VPC networks. The `network` field should be set to the URI of this
+        network. Only endpoints within this network will be considered.
+      NON_GCP_NETWORK: A non-GCP network (for example, an on-premises network
+        or another cloud provider network). Should be used for internal IP
+        addresses outside of Google Cloud. The `network` field should be set
+        to the URI of the VPC network containing a corresponding Cloud VPN
+        tunnel, Cloud Interconnect VLAN attachment, or a router appliance
+        instance. Only endpoints reachable from the provided VPC network via
+        the routes to non-GCP networks will be considered.
+      INTERNET: Internet. Should be used for internet-routable external IP
+        addresses or IP addresses for global Google APIs and services.
     """
     NETWORK_TYPE_UNSPECIFIED = 0
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
+    INTERNET = 3
 
-  alloyDbInstance = _messages.StringField(1)
-  appEngineVersion = _messages.MessageField('AppEngineVersionEndpoint', 2)
-  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 3)
-  cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 4)
-  cloudSqlInstance = _messages.StringField(5)
-  forwardingRule = _messages.StringField(6)
-  forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 7)
-  fqdn = _messages.StringField(8)
-  gkeMasterCluster = _messages.StringField(9)
-  gkePod = _messages.StringField(10)
-  instance = _messages.StringField(11)
-  ipAddress = _messages.StringField(12)
-  loadBalancerId = _messages.StringField(13)
-  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 14)
-  network = _messages.StringField(15)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 16)
-  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(18)
-  redisCluster = _messages.StringField(19)
-  redisInstance = _messages.StringField(20)
+  appEngineVersion = _messages.MessageField('AppEngineVersionEndpoint', 1)
+  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 2)
+  cloudRunRevision = _messages.MessageField('CloudRunRevisionEndpoint', 3)
+  cloudSqlInstance = _messages.StringField(4)
+  forwardingRule = _messages.StringField(5)
+  forwardingRuleTarget = _messages.EnumField('ForwardingRuleTargetValueValuesEnum', 6)
+  fqdn = _messages.StringField(7)
+  gkeMasterCluster = _messages.StringField(8)
+  gkePod = _messages.StringField(9)
+  instance = _messages.StringField(10)
+  ipAddress = _messages.StringField(11)
+  loadBalancerId = _messages.StringField(12)
+  loadBalancerType = _messages.EnumField('LoadBalancerTypeValueValuesEnum', 13)
+  network = _messages.StringField(14)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(17)
+  redisCluster = _messages.StringField(18)
+  redisInstance = _messages.StringField(19)
 
 
 class EndpointInfo(_messages.Message):
@@ -1721,45 +1735,6 @@ class GkePodInfo(_messages.Message):
   ipAddress = _messages.StringField(1)
   networkUri = _messages.StringField(2)
   podUri = _messages.StringField(3)
-
-
-class GoogleManagedServiceInfo(_messages.Message):
-  r"""For display only. Metadata associated with
-  ARRIVE_AT_GOOGLE_MANAGED_SERVICE state.
-
-  Enums:
-    ServiceTypeValueValuesEnum: Type of a Google-managed service.
-
-  Fields:
-    ipAddress: IP address of the Google-managed service endpoint.
-    networkUri: URI of the Google-managed service endpoint network, it is
-      empty if the IP address is a public IP address.
-    serviceType: Type of a Google-managed service.
-    serviceUri: URI of the Google-managed service.
-  """
-
-  class ServiceTypeValueValuesEnum(_messages.Enum):
-    r"""Type of a Google-managed service.
-
-    Values:
-      SERVICE_TYPE_UNSPECIFIED: Service type is unspecified.
-      UNSUPPORTED: Unsupported Google-managed service.
-      CLOUD_SQL: Cloud SQL Instance.
-      GKE_CLUSTER_CONTROL_PLANE: GKE Cluster control plane.
-      REDIS_CLUSTER: Redis Cluster.
-      REDIS_INSTANCE: Redis Instance.
-    """
-    SERVICE_TYPE_UNSPECIFIED = 0
-    UNSUPPORTED = 1
-    CLOUD_SQL = 2
-    GKE_CLUSTER_CONTROL_PLANE = 3
-    REDIS_CLUSTER = 4
-    REDIS_INSTANCE = 5
-
-  ipAddress = _messages.StringField(1)
-  networkUri = _messages.StringField(2)
-  serviceType = _messages.EnumField('ServiceTypeValueValuesEnum', 3)
-  serviceUri = _messages.StringField(4)
 
 
 class GoogleServiceInfo(_messages.Message):
@@ -3894,7 +3869,6 @@ class Step(_messages.Message):
     gkeMaster: Display information of a Google Kubernetes Engine cluster
       master.
     gkePod: Display information of a Google Kubernetes Engine Pod.
-    googleManagedService: Display information of a Google-managed service.
     googleService: Display information of a Google service
     hybridSubnet: Display information of a hybrid subnet.
     instance: Display information of a Compute Engine instance.
@@ -4005,8 +3979,6 @@ class Step(_messages.Message):
       SERVERLESS_EXTERNAL_CONNECTION: Forwarding state: for packets
         originating from a serverless endpoint forwarded through public
         (external) connectivity.
-      ARRIVE_AT_GOOGLE_MANAGED_SERVICE: Forwarding state: arriving at a
-        Google-managed service endpoint.
       NAT: Transition state: packet header translated. The `nat` field is
         populated with the translation information.
       SKIP_GKE_POD_IP_MASQUERADING: Transition state: GKE Pod IP masquerading
@@ -4054,15 +4026,14 @@ class Step(_messages.Message):
     ARRIVE_AT_VPC_CONNECTOR = 29
     DIRECT_VPC_EGRESS_CONNECTION = 30
     SERVERLESS_EXTERNAL_CONNECTION = 31
-    ARRIVE_AT_GOOGLE_MANAGED_SERVICE = 32
-    NAT = 33
-    SKIP_GKE_POD_IP_MASQUERADING = 34
-    PROXY_CONNECTION = 35
-    DELIVER = 36
-    DROP = 37
-    FORWARD = 38
-    ABORT = 39
-    VIEWER_PERMISSION_MISSING = 40
+    NAT = 32
+    SKIP_GKE_POD_IP_MASQUERADING = 33
+    PROXY_CONNECTION = 34
+    DELIVER = 35
+    DROP = 36
+    FORWARD = 37
+    ABORT = 38
+    VIEWER_PERMISSION_MISSING = 39
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -4080,28 +4051,27 @@ class Step(_messages.Message):
   forwardingRule = _messages.MessageField('ForwardingRuleInfo', 14)
   gkeMaster = _messages.MessageField('GKEMasterInfo', 15)
   gkePod = _messages.MessageField('GkePodInfo', 16)
-  googleManagedService = _messages.MessageField('GoogleManagedServiceInfo', 17)
-  googleService = _messages.MessageField('GoogleServiceInfo', 18)
-  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 19)
-  instance = _messages.MessageField('InstanceInfo', 20)
-  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 21)
-  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 22)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 23)
-  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 24)
-  nat = _messages.MessageField('NatInfo', 25)
-  network = _messages.MessageField('NetworkInfo', 26)
-  projectId = _messages.StringField(27)
-  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 28)
-  redisCluster = _messages.MessageField('RedisClusterInfo', 29)
-  redisInstance = _messages.MessageField('RedisInstanceInfo', 30)
-  route = _messages.MessageField('RouteInfo', 31)
-  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 32)
-  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 33)
-  state = _messages.EnumField('StateValueValuesEnum', 34)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 35)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 36)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 37)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 38)
+  googleService = _messages.MessageField('GoogleServiceInfo', 17)
+  hybridSubnet = _messages.MessageField('HybridSubnetInfo', 18)
+  instance = _messages.MessageField('InstanceInfo', 19)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachmentInfo', 20)
+  ipMasqueradingSkipped = _messages.MessageField('IpMasqueradingSkippedInfo', 21)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 22)
+  loadBalancerBackendInfo = _messages.MessageField('LoadBalancerBackendInfo', 23)
+  nat = _messages.MessageField('NatInfo', 24)
+  network = _messages.MessageField('NetworkInfo', 25)
+  projectId = _messages.StringField(26)
+  proxyConnection = _messages.MessageField('ProxyConnectionInfo', 27)
+  redisCluster = _messages.MessageField('RedisClusterInfo', 28)
+  redisInstance = _messages.MessageField('RedisInstanceInfo', 29)
+  route = _messages.MessageField('RouteInfo', 30)
+  serverlessExternalConnection = _messages.MessageField('ServerlessExternalConnectionInfo', 31)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 34)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 35)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 36)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 37)
 
 
 class StorageBucketInfo(_messages.Message):

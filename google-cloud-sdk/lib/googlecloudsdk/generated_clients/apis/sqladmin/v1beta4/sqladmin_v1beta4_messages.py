@@ -863,8 +863,8 @@ class CloneContext(_messages.Message):
       clone.
     destinationNetwork: Optional. The fully qualified URI of the VPC network
       to which the cloned instance will be connected via Private Services
-      Access for private IP. for example:`projects/my-network-
-      project/global/networks/my-network`. This field is required only for
+      Access for private IP. For example:`projects/my-network-
+      project/global/networks/my-network`. This field is only required for
       cross-project cloning.
     destinationProject: Optional. The project ID of the destination project
       where the cloned instance will be created. To perform a cross-project
@@ -4588,6 +4588,13 @@ class PscAutoConnectionConfig(_messages.Message):
       project of this consumer endpoint. Optional. This is only applicable if
       consumer_network is a shared vpc network.
     ipAddress: The IP address of the consumer endpoint.
+    serviceConnectionPolicy: Output only. The service connection policy
+      created automatically for the consumer network when
+      `psc_auto_connection_policy_enabled` is true. It is in the format of: `p
+      rojects/{project}/regions/{region}/serviceConnectionPolicies/{policy_id}
+      ` The `policy_id` is in format of `$NETWORK-$RANDOM`.
+    serviceConnectionPolicyCreationResult: Output only. The status of service
+      connection policy creation.
     status: The connection status of the consumer endpoint.
   """
 
@@ -4595,7 +4602,9 @@ class PscAutoConnectionConfig(_messages.Message):
   consumerNetworkStatus = _messages.StringField(2)
   consumerProject = _messages.StringField(3)
   ipAddress = _messages.StringField(4)
-  status = _messages.StringField(5)
+  serviceConnectionPolicy = _messages.StringField(5)
+  serviceConnectionPolicyCreationResult = _messages.StringField(6)
+  status = _messages.StringField(7)
 
 
 class PscConfig(_messages.Message):
@@ -4611,6 +4620,8 @@ class PscConfig(_messages.Message):
       network that the Private Service Connect enabled Cloud SQL instance is
       authorized to connect via PSC interface. format:
       projects/PROJECT/regions/REGION/networkAttachments/ID
+    pscAutoConnectionPolicyEnabled: Optional. Whether to set up the PSC
+      service connection policy automatically.
     pscAutoConnections: Optional. The list of settings for requested Private
       Service Connect consumer endpoints that can be used to connect to this
       Cloud SQL instance.
@@ -4623,10 +4634,11 @@ class PscConfig(_messages.Message):
 
   allowedConsumerProjects = _messages.StringField(1, repeated=True)
   networkAttachmentUri = _messages.StringField(2)
-  pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 3, repeated=True)
-  pscAutoDnsEnabled = _messages.BooleanField(4)
-  pscEnabled = _messages.BooleanField(5)
-  pscWriteEndpointDnsEnabled = _messages.BooleanField(6)
+  pscAutoConnectionPolicyEnabled = _messages.BooleanField(3)
+  pscAutoConnections = _messages.MessageField('PscAutoConnectionConfig', 4, repeated=True)
+  pscAutoDnsEnabled = _messages.BooleanField(5)
+  pscEnabled = _messages.BooleanField(6)
+  pscWriteEndpointDnsEnabled = _messages.BooleanField(7)
 
 
 class QueryResult(_messages.Message):
@@ -7089,8 +7101,10 @@ class SqlUsersUpdateRequest(_messages.Message):
     instance: Database instance ID. This does not include the project ID.
     name: Name of the user in the instance.
     project: Project ID of the project that contains the instance.
-    revokeExistingRoles: Optional. revoke the existing roles granted to the
-      user.
+    revokeExistingRoles: Optional. Specifies whether to revoke existing roles
+      that are not present in the `database_roles` field. If `false` or unset,
+      the database roles specified in `database_roles` are added to the user's
+      existing roles.
     serverRoles: Optional. The server roles to grant to the SQL Server login.
       Existing server roles will not be revoked if revoke_existing_roles is
       false. body.server_roles will be ignored for update request.

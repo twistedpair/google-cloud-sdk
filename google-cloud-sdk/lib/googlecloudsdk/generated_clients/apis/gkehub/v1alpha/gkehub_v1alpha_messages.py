@@ -407,7 +407,7 @@ class ClusterSelector(_messages.Message):
   r"""Selector for clusters.
 
   Fields:
-    labelSelector: Optional. A valid CEL (Common Expression Language)
+    labelSelector: Required. A valid CEL (Common Expression Language)
       expression which evaluates `resource.labels`.
   """
 
@@ -1284,12 +1284,18 @@ class ConfigManagementConfigSync(_messages.Message):
 
   Fields:
     deploymentOverrides: Optional. Configuration for deployment overrides.
-    enabled: Optional. Enables the installation of ConfigSync. If set to true,
-      ConfigSync resources will be created and the other ConfigSync fields
-      will be applied if exist. If set to false, all other ConfigSync fields
-      will be ignored, ConfigSync resources will be deleted. If omitted,
-      ConfigSync resources will be managed depends on the presence of the git
-      or oci field.
+      Applies only to Config Sync deployments with containers that are not a
+      root or namespace reconciler: `reconciler-manager`, `otel-collector`,
+      `resource-group-controller-manager`, `admission-webhook`. To override a
+      root or namespace reconciler, use the rootsync or reposync fields at
+      https://docs.cloud.google.com/kubernetes-engine/config-
+      sync/docs/reference/rootsync-reposync-fields#override-resources instead.
+    enabled: Optional. Enables the installation of Config Sync. If set to
+      true, the Feature will manage Config Sync resources, and apply the other
+      ConfigSync fields if they exist. If set to false, the Feature will
+      ignore all other ConfigSync fields and delete the Config Sync resources.
+      If omitted, ConfigSync is considered enabled if the git or oci field is
+      present.
     git: Optional. Git repo configuration for the cluster.
     metricsGcpServiceAccountEmail: Optional. The Email of the Google Cloud
       Service Account (GSA) used for exporting Config Sync metrics to Cloud
@@ -1303,10 +1309,14 @@ class ConfigManagementConfigSync(_messages.Message):
       sync/docs/how-to/monitor-config-sync-cloud-monitoring#custom-monitoring.
     oci: Optional. OCI repo configuration for the cluster
     preventDrift: Optional. Set to true to enable the Config Sync admission
-      webhook to prevent drifts. If set to `false`, disables the Config Sync
-      admission webhook and does not prevent drifts.
-    sourceFormat: Optional. Specifies whether the Config Sync Repo is in
-      "hierarchical" or "unstructured" mode.
+      webhook to prevent drifts. If set to false, disables the Config Sync
+      admission webhook and does not prevent drifts. Defaults to false. See
+      https://docs.cloud.google.com/kubernetes-engine/config-sync/docs/how-
+      to/prevent-config-drift for details.
+    sourceFormat: Optional. Specifies whether the Config Sync repo is in
+      `hierarchical` or `unstructured` mode. Defaults to `hierarchical`. See
+      https://docs.cloud.google.com/kubernetes-engine/config-
+      sync/docs/concepts/configs#organize-configs for an explanation.
     stopSyncing: Optional. Set to true to stop syncing configs for a single
       cluster. Default to false.
   """
@@ -1657,10 +1667,22 @@ class ConfigManagementContainerOverride(_messages.Message):
 
   Fields:
     containerName: Required. The name of the container.
-    cpuLimit: Optional. The cpu limit of the container.
-    cpuRequest: Optional. The cpu request of the container.
-    memoryLimit: Optional. The memory limit of the container.
-    memoryRequest: Optional. The memory request of the container.
+    cpuLimit: Optional. The cpu limit of the container. Use the following CPU
+      resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-cpu.
+    cpuRequest: Optional. The cpu request of the container. Use the following
+      CPU resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-cpu.
+    memoryLimit: Optional. The memory limit of the container. Use the
+      following memory resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-memory.
+    memoryRequest: Optional. The memory request of the container. Use the
+      following memory resource units:
+      https://kubernetes.io/docs/concepts/configuration/manage-resources-
+      containers/#meaning-of-memory.
   """
 
   containerName = _messages.StringField(1)
@@ -1778,15 +1800,17 @@ class ConfigManagementGitConfig(_messages.Message):
 
   Fields:
     gcpServiceAccountEmail: Optional. The Google Cloud Service Account Email
-      used for auth when secret_type is gcpServiceAccount.
+      used for auth when secret_type is `gcpserviceaccount`.
     httpsProxy: Optional. URL for the HTTPS proxy to be used when
-      communicating with the Git repo.
+      communicating with the Git repo. Only specify when secret_type is
+      `cookiefile`, `token`, or `none`.
     policyDir: Optional. The path within the Git repository that represents
       the top level of the repo to sync. Default: the root directory of the
       repository.
     secretType: Required. Type of secret configured for access to the Git
-      repo. Must be one of ssh, cookiefile, gcenode, token, gcpserviceaccount,
-      githubapp or none. The validation of this is case-sensitive.
+      repo. Must be one of `ssh`, `cookiefile`, `gcenode`, `token`,
+      `gcpserviceaccount`, `githubapp` or `none`. The validation of this is
+      case-sensitive.
     syncBranch: Optional. The branch of the repository to sync from. Default:
       master.
     syncRepo: Required. The URL of the Git repository to use as the source of
@@ -1931,15 +1955,16 @@ class ConfigManagementMembershipSpec(_messages.Message):
       supports manual upgrades.
 
   Fields:
-    binauthz: Optional. Binauthz conifguration for the cluster. Deprecated:
-      This field will be ignored and should not be set.
-    cluster: Optional. The user-specified cluster name used by Config Sync
-      cluster-name-selector annotation or ClusterSelector, for applying
-      configs to only a subset of clusters. Omit this field if the cluster's
-      fleet membership name is used by Config Sync cluster-name-selector
-      annotation or ClusterSelector. Set this field if a name different from
-      the cluster's fleet membership name is used by Config Sync cluster-name-
-      selector annotation or ClusterSelector.
+    binauthz: Optional. Deprecated: Binauthz configuration will be ignored and
+      should not be set.
+    cluster: Optional. User-specified cluster name used by the Config Sync
+      cluster-name-selector annotation or ClusterSelector object, for applying
+      configs to only a subset of clusters. Read more about the cluster-name-
+      selector annotation and ClusterSelector object at
+      https://docs.cloud.google.com/kubernetes-engine/config-sync/docs/how-
+      to/cluster-scoped-objects#limiting-configs. Only set this field if a
+      name different from the cluster's fleet membership name is used by the
+      Config Sync cluster-name-selector annotation or ClusterSelector.
     configSync: Optional. Config Sync configuration for the cluster.
     hierarchyController: Optional. Hierarchy Controller configuration for the
       cluster. Deprecated: Configuring Hierarchy Controller through the
@@ -1952,7 +1977,10 @@ class ConfigManagementMembershipSpec(_messages.Message):
       cluster. Deprecated: Configuring Policy Controller through the
       configmanagement feature is no longer recommended. Use the
       policycontroller feature instead.
-    version: Optional. Version of ACM installed.
+    version: Optional. Version of Config Sync to install. Defaults to the
+      latest supported Config Sync version if the config_sync field is
+      enabled. See supported versions at https://cloud.google.com/kubernetes-
+      engine/config-sync/docs/get-support-config-sync#version_support_policy.
   """
 
   class ManagementValueValuesEnum(_messages.Enum):
@@ -2012,12 +2040,12 @@ class ConfigManagementOciConfig(_messages.Message):
 
   Fields:
     gcpServiceAccountEmail: Optional. The Google Cloud Service Account Email
-      used for auth when secret_type is gcpServiceAccount.
+      used for auth when secret_type is `gcpserviceaccount`.
     policyDir: Optional. The absolute path of the directory that contains the
       local resources. Default: the root directory of the image.
     secretType: Required. Type of secret configured for access to the OCI
-      repo. Must be one of gcenode, gcpserviceaccount, k8sserviceaccount or
-      none. The validation of this is case-sensitive.
+      repo. Must be one of `gcenode`, `gcpserviceaccount`, `k8sserviceaccount`
+      or `none`. The validation of this is case-sensitive.
     syncRepo: Required. The OCI image repository URL for the package to sync
       from. e.g. `LOCATION-
       docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/PACKAGE_NAME`.

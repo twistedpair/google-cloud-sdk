@@ -18,11 +18,29 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import pickle
 import sys
+from typing import Any
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import optimize_parameters_util
 from googlecloudsdk.core import properties
+
+
+def is_pickleable(obj: Any) -> bool:
+  """Returns True if an object can be pickled.
+
+  Args:
+    obj: The object to check.
+  Returns:
+    True if the object can be pickled, False otherwise.
+  """
+
+  try:
+    pickle.dumps(obj)
+    return True
+  except (pickle.PicklingError, TypeError, AttributeError):
+    return False
 
 
 def get_first_matching_message_payload(messages, topic):

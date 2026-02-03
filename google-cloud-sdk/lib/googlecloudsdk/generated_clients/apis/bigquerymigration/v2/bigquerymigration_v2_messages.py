@@ -973,6 +973,18 @@ class GoogleCloudBigqueryMigrationV2FinishSubtaskRequest(_messages.Message):
   workerId = _messages.StringField(8)
 
 
+class GoogleCloudBigqueryMigrationV2FlagValue(_messages.Message):
+  r"""Flag value used in the extra info.
+
+  Fields:
+    boolValue: The boolean value of the flag.
+    stringValue: The string value of the flag.
+  """
+
+  boolValue = _messages.BooleanField(1)
+  stringValue = _messages.StringField(2)
+
+
 class GoogleCloudBigqueryMigrationV2GcsReportLogMessage(_messages.Message):
   r"""A record in the aggregate CSV report for a migration workflow
 
@@ -1405,6 +1417,78 @@ class GoogleCloudBigqueryMigrationV2MigrationWorkflow(_messages.Message):
   tasks = _messages.MessageField('TasksValue', 6)
 
 
+class GoogleCloudBigqueryMigrationV2MigrationWorkflowExtraInfo(_messages.Message):
+  r"""Extra workflow information collected during processing the create RPC.
+
+  Messages:
+    FeatureFlagsValue: The Mendel feature flags for the workflow at time of
+      creation. Note that only a subset of flags are included.
+    RequestPropertiesValue: The request properties for the workflow at time of
+      creation.
+
+  Fields:
+    featureFlags: The Mendel feature flags for the workflow at time of
+      creation. Note that only a subset of flags are included.
+    requestProperties: The request properties for the workflow at time of
+      creation.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FeatureFlagsValue(_messages.Message):
+    r"""The Mendel feature flags for the workflow at time of creation. Note
+    that only a subset of flags are included.
+
+    Messages:
+      AdditionalProperty: An additional property for a FeatureFlagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FeatureFlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FeatureFlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudBigqueryMigrationV2FlagValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudBigqueryMigrationV2FlagValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestPropertiesValue(_messages.Message):
+    r"""The request properties for the workflow at time of creation.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestPropertiesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RequestPropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestPropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudBigqueryMigrationV2FlagValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudBigqueryMigrationV2FlagValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 1)
+  requestProperties = _messages.MessageField('RequestPropertiesValue', 2)
+
+
 class GoogleCloudBigqueryMigrationV2MySQLDialect(_messages.Message):
   r"""The dialect definition for MySQL."""
 
@@ -1565,14 +1649,16 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationSubtaskResponse(_messages.Me
       which might not be all the subtasks.
 
   Messages:
-    FeatureFlagsValue: The feature flags to pass to the workers.
+    FeatureFlagsValue: @deprecated Use extra_info instead.
 
   Fields:
     assignmentState: The status of the subtask assignment. If the `filter`
       field was provided in the request, then the `assignment_state`
       represents the assignment of the filtered subtasks, which might not be
       all the subtasks.
-    featureFlags: The feature flags to pass to the workers.
+    extraInfo: Optional. The extra internal utility information about the
+      migration workflow, including feature flags and other internal settings.
+    featureFlags: @deprecated Use extra_info instead.
     migrationSubtask: The assigned subtask, if available. If there was already
       a subtask assigned for the given worker ID, the same subtask will be
       returned.
@@ -1596,7 +1682,7 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationSubtaskResponse(_messages.Me
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FeatureFlagsValue(_messages.Message):
-    r"""The feature flags to pass to the workers.
+    r"""@deprecated Use extra_info instead.
 
     Messages:
       AdditionalProperty: An additional property for a FeatureFlagsValue
@@ -1620,8 +1706,9 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationSubtaskResponse(_messages.Me
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   assignmentState = _messages.EnumField('AssignmentStateValueValuesEnum', 1)
-  featureFlags = _messages.MessageField('FeatureFlagsValue', 2)
-  migrationSubtask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationSubtask', 3)
+  extraInfo = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationWorkflowExtraInfo', 2)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 3)
+  migrationSubtask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationSubtask', 4)
 
 
 class GoogleCloudBigqueryMigrationV2ReceiveMigrationTaskRequest(_messages.Message):
@@ -1649,11 +1736,13 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationTaskResponse(_messages.Messa
     AssignmentStateValueValuesEnum: The status of the task assignment.
 
   Messages:
-    FeatureFlagsValue: The feature flags to pass to the translation worker.
+    FeatureFlagsValue: @deprecated Use extra_info instead.
 
   Fields:
     assignmentState: The status of the task assignment.
-    featureFlags: The feature flags to pass to the translation worker.
+    extraInfo: Optional. The extra internal utility information about the
+      migration workflow, including feature flags and other internal settings.
+    featureFlags: @deprecated Use extra_info instead.
     migrationTask: The assigned task, if available. If there was already a
       task assigned for the given orchestrator ID, the same task will be
       returned.
@@ -1677,7 +1766,7 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationTaskResponse(_messages.Messa
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FeatureFlagsValue(_messages.Message):
-    r"""The feature flags to pass to the translation worker.
+    r"""@deprecated Use extra_info instead.
 
     Messages:
       AdditionalProperty: An additional property for a FeatureFlagsValue
@@ -1701,9 +1790,10 @@ class GoogleCloudBigqueryMigrationV2ReceiveMigrationTaskResponse(_messages.Messa
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   assignmentState = _messages.EnumField('AssignmentStateValueValuesEnum', 1)
-  featureFlags = _messages.MessageField('FeatureFlagsValue', 2)
-  migrationTask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTask', 3)
-  migrationWorkflow = _messages.StringField(4)
+  extraInfo = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationWorkflowExtraInfo', 2)
+  featureFlags = _messages.MessageField('FeatureFlagsValue', 3)
+  migrationTask = _messages.MessageField('GoogleCloudBigqueryMigrationV2MigrationTask', 4)
+  migrationWorkflow = _messages.StringField(5)
 
 
 class GoogleCloudBigqueryMigrationV2RedshiftDialect(_messages.Message):

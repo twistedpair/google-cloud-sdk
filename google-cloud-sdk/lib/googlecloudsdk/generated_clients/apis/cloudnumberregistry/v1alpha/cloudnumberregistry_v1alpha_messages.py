@@ -1625,8 +1625,9 @@ class SearchIpResourcesRequest(_messages.Message):
       attribute_text or multiple attribute filters can be specified. Examples:
       - realm=test-realm - realm=test-realm AND ip_address=10.0.0.0 -
       realm=test-realm AND ip_version=IPV6 - realm=test-realm AND
-      attribute_text=test - realm=test-realm AND attribute_text=test AND
-      ip_version=IPV4 - ip_address=10.0.0.0 AND NOT attribute:(key1=value1)
+      attribute_text=test - ip_address=10.0.0.0 AND attribute:(key1=value1)
+      AND attribute:(key2=value2) - attribute_text=test AND parent_range=test-
+      parent-range
     showUtilization: Optional. Whether to show the utilization of the ranges
       in the response.
   """

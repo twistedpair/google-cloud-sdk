@@ -27,8 +27,8 @@ class AdmissionControl(_messages.Message):
       is allowed.
     gkeClusterNames: Optional. Google Kubernetes Engine clusters where
       admission control is enabled. This will be used to populate the cluster
-      admission rules in the BinAuthz policy. Format: //container.googleapis.c
-      om/projects/{project_id}/locations/{location}/clusters/{cluster_name}.
+      admission rules in the BinAuthz policy. Format:
+      projects/{project_id}/locations/{location}/clusters/{cluster_name}.
     overrideBinauthzPolicy: Optional. If set to true, the existing BinAuthz
       policy will be updated with the enforcement mode according to dry_run
       field in Artifact Guard policy. dry_run - true -> DRYRUN_AUDIT_LOG_ONLY
@@ -2240,9 +2240,9 @@ class RuntimeEvaluationScope(_messages.Message):
   r"""The runtime scope that this artifact evaluation is associated with.
 
   Fields:
-    gkeCluster: Optional. Google Kubernetes Engine cluster. Format: //containe
-      r.googleapis.com/projects/{project_id}/locations/{location}/clusters/{cl
-      uster_name_pattern} where cluster_name_pattern is a regex.
+    gkeCluster: Optional. Google Kubernetes Engine cluster. Format:
+      projects/{project_id}/locations/{location}/clusters/{cluster_name_patter
+      n} where cluster_name_pattern is a regex.
     projectId: Required. The project ID that this artifact evaluation is
       associated with. Format: projects/{project_id} The policy will be
       applied to all the clusters in the project.
@@ -2257,17 +2257,17 @@ class RuntimeScope(_messages.Message):
 
   Fields:
     gkeClusterNamePatterns: Optional. Google Kubernetes Engine clusters that
-      are associated with the policy. Format: //container.googleapis.com/proje
-      cts/{project_id}/locations/{location}/clusters/{cluster_name_pattern}
-      where cluster_name_pattern is a regex.
+      are associated with the policy. Format: projects/{project_id}/locations/
+      {location}/clusters/{cluster_name_pattern} where cluster_name_pattern is
+      a regex.
     gkeClusterNames: Optional. Google Kubernates Engine clusters that are
-      associated with the policy. Format: //container.googleapis.com/projects/
-      {project_id}/locations/{location}/clusters/{cluster_id} where cluster id
-      must belong to one of the projects in the project_ids field.
+      associated with the policy. Format:
+      projects/{project_id}/locations/{location}/clusters/{cluster_id} where
+      cluster id must belong to one of the projects in the project_ids field.
     gkeClusterNamespacePatterns: Optional. Google Kubernates Engine namespaces
-      that are associated with the policy. Format: //container.googleapis.com/
-      projects/{project_id}/locations/{location}/clusters/{cluster_id}/k8s/nam
-      espaces/{namepace_pattern} where namespace_pattern is a regex.
+      that are associated with the policy. Format: projects/{project_id}/locat
+      ions/{location}/clusters/{cluster_id}/k8s/namespaces/{namepace_pattern}
+      where namespace_pattern is a regex.
     projectIds: Required. The project ID that this policy is associated with.
       At least one project_id is required. Format: projects/{project_id} The
       policy will be applied to all the clusters in the project.

@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
 import re
 
 from googlecloudsdk.api_lib.compute import constants
@@ -296,7 +295,7 @@ def AddBulkCreateNetworkingArgs(
       instances_flags.ValidateNetworkInterfaceNicType
   )
 
-  network_interface_help = """\
+  network_interface_help = """
       Adds a network interface to the instance. Mutually exclusive with any
       of these flags: *--network*, *--network-tier*, *--no-address*, *--subnet*,
       *--stack-type*. This flag can be repeated to specify multiple network
@@ -365,6 +364,28 @@ def AddBulkCreateNetworkingArgs(
   )
 
 
+class QuotedArgObject(arg_parsers.ArgObject):
+  """ArgObject that strips surrounding quotes from input."""
+
+  def __call__(self, value):
+    if not value:
+      return super(QuotedArgObject, self).__call__(value)
+    # Strip single quotes if present (common in shell-like syntax)
+    if len(value) >= 2 and value.startswith("'") and value.endswith("'"):
+      value = value[1:-1]
+    # Strip double quotes if present
+    elif len(value) >= 2 and value.startswith('"') and value.endswith('"'):
+      value = value[1:-1]
+    return super(QuotedArgObject, self).__call__(value)
+
+
+class DeclarativeArgDict(arg_parsers.ArgDict):
+  """ArgDict with a clean representation for error messages."""
+
+  def __repr__(self):
+    return 'InstanceSelection'
+
+
 def AddInstanceFlexibilityPolicyArgs(parser):
   """Adds instance flexibility policy arguments to the parser."""
   mutex_group = parser.add_mutually_exclusive_group()
@@ -372,19 +393,32 @@ def AddInstanceFlexibilityPolicyArgs(parser):
       '--instance-selection-machine-types',
       type=arg_parsers.ArgList(),
       metavar='MACHINE_TYPE',
-      help="""\\
+      help="""
       Specifies a list of machine types to consider for instance creation.
       The bulk create operation will attempt to create instances from this list
       based on capacity availability.
       This flag is only valid when a region is specified.
       """,
   )
+
+  instance_selection_spec = {
+      'name': str,
+      'rank': int,
+      'machine-type': arg_parsers.ArgList(),
+      'disk': arg_parsers.ArgList(
+          element_type=QuotedArgObject(),
+          includes_json=True,
+      ),
+  }
+
   mutex_group.add_argument(
       '--instance-selection',
-      metavar='name=NAME[,rank=RANK][,machine-type=MACHINE_TYPE]...[,disk=DISK_JSON]...',
-      type=ArgMultiValueDict(),
+      metavar=(
+          'name=NAME,rank=RANK,machine-type=[MACHINE_TYPE,],disk=DISK_JSON,...'
+      ),
+      type=DeclarativeArgDict(spec=instance_selection_spec, includes_json=True),
       action=arg_parsers.FlattenAction(),
-      help="""\\
+      help="""
       Specifies a list of machine types to consider for instance creation.
       The bulk create operation will attempt to create instances from this list
       based on capacity availability.
@@ -393,9 +427,16 @@ def AddInstanceFlexibilityPolicyArgs(parser):
       Keys for each instance selection:
 
       name: (Required) A unique name for this instance selection group.
-      machine-type: (Required) Repeatable. Specifies a machine type to include in this group (e.g., machine-type=n1-standard-1).
+      machine-type: (Required) A comma-separated list of machine types to include in this group (e.g., machine-type=n1-standard-1,n1-standard-2).
       rank: (Optional) An integer representing the priority. Lower ranks are preferred. Defaults to 0.
-      disk: (Optional) Repeatable. A JSON string defining a disk to attach or override, conforming to the Compute Engine AttachedDisk API structure. Example: disk='{"deviceName": "boot-disk", "boot": true, "initializeParams": {"sourceImage": "IMAGE_URL"}}'
+      disk: (Optional) A comma-separated list of JSON strings defining a disk to attach or override, conforming to the Compute Engine AttachedDisk API structure. Example: disk='{"deviceName": "boot-disk", "boot": true}','{"deviceName": "data-disk", "boot": false}'
+
+      If you provide multiple machine types or disks, their values will be comma-separated, which conflicts with parsing of instance selection properties.
+      In such case, you need to choose a different delimiter for instance selection properties, like ';',
+      by prefixing the value with '^DL^' where DL is your delimiter.
+      Example:
+      --instance-selection="^;^name=n1;machine-type=t1,t2;disk='{"d":1}','{"d":2}'"
+      See https://cloud.google.com/sdk/gcloud/reference/topic/escaping for details.
       """,
   )
 
@@ -433,13 +474,6 @@ def ValidateInstanceFlexibilityArgs(args):
         raise exceptions.InvalidArgumentException(
             'instance_selection', 'Missing machine type in instance selection.'
         )
-      if 'rank' in instance_selection:
-        rank = instance_selection['rank']
-        if not rank.isdigit():
-          raise exceptions.InvalidArgumentException(
-              'instance_selection',
-              'Invalid value for rank in instance selection.',
-          )
 
 
 def AddCommonBulkInsertArgs(
@@ -717,56 +751,3 @@ def ValidateBulkInsertArgs(
   )
   if support_instance_flexibility_policy:
     ValidateInstanceFlexibilityArgs(args)
-
-
-class ArgMultiValueDict(object):
-  """Custom parser for --instance-selection flag.
-
-  Parses a comma-separated string of key=value pairs. Special handling
-  for the 'disk' key, where the value is expected to be a single-quoted
-  JSON string.
-  """
-
-  def __call__(self, argument_value):
-    if not argument_value:
-      return {}
-
-    entries = self._SplitArgString(argument_value)
-    result = {}
-
-    for key, value in entries:
-      if key == 'disk':
-        try:
-          disk_dict = json.loads(value)
-          if key in result:
-            result[key].append(disk_dict)
-          else:
-            result[key] = [disk_dict]
-        except json.JSONDecodeError as e:
-          raise exceptions.InvalidArgumentException(
-              '--instance-selection',
-              f'Invalid JSON for disk key: {e} - Received: {value}',
-          )
-      elif key == 'machine-type':
-        if key in result:
-          result[key].append(value)
-        else:
-          result[key] = [value]
-      else:
-        result[key] = value
-    return result
-
-  def _SplitArgString(self, argument_value):
-    """Splits the argument string by commas, respecting single-quoted JSON for disk values."""
-    # Regex to find key=value pairs. For 'disk', it captures the content within
-    # single quotes.
-    # This regex assumes disk values are single-quoted and don't contain escaped
-    # single quotes.
-    pattern = r"([\w-]+)=(?:'([^']*)'|([^,]*))"
-    matches = re.findall(pattern, argument_value)
-
-    entries = []
-    for key, single_quoted_val, unquoted_val in matches:
-      value = single_quoted_val if single_quoted_val else unquoted_val
-      entries.append((key, value))
-    return entries

@@ -3577,6 +3577,8 @@ class Discovered(_messages.Message):
     lastAnalysisTime: The last time continuous analysis was done for this
       resource. Deprecated, do not use.
     lastScanTime: The last time this resource was scanned.
+    lastVulnerabilityUpdateTime: The last time vulnerability scan results
+      changed.
     sbomStatus: The status of an SBOM generation.
   """
 
@@ -3621,7 +3623,8 @@ class Discovered(_messages.Message):
   files = _messages.MessageField('File', 6, repeated=True)
   lastAnalysisTime = _messages.StringField(7)
   lastScanTime = _messages.StringField(8)
-  sbomStatus = _messages.MessageField('SBOMStatus', 9)
+  lastVulnerabilityUpdateTime = _messages.StringField(9)
+  sbomStatus = _messages.MessageField('SBOMStatus', 10)
 
 
 class Discovery(_messages.Message):

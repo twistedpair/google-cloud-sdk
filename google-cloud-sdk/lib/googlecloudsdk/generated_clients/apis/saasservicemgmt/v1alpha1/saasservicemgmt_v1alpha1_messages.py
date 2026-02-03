@@ -28,6 +28,39 @@ class Aggregate(_messages.Message):
   group = _messages.StringField(2)
 
 
+class Allocation(_messages.Message):
+  r"""Allocation defines a set of weighted flag variants, specifying how
+  traffic is split based on the randomization unit.
+
+  Fields:
+    description: Optional. Description of the allocation. Max length: 500
+      bytes.
+    id: Required. Allocation ID. Max length: 128 bytes.
+    randomizedOn: Required. Name of the context attribute that is used for
+      traffic splitting.
+    slots: Required. Slots defines the weighted distribution of variants.
+  """
+
+  description = _messages.StringField(1)
+  id = _messages.StringField(2)
+  randomizedOn = _messages.StringField(3)
+  slots = _messages.MessageField('AllocationSlot', 4, repeated=True)
+
+
+class AllocationSlot(_messages.Message):
+  r"""AllocationSlot specifies a variant and the proportion of traffic
+  allocated to it.
+
+  Fields:
+    variant: Required. Variant of the allocation slot.
+    weight: Required. Weight defines the proportion of traffic to allocate to
+      the variant, relative to other slots in the same allocation.
+  """
+
+  variant = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Blueprint(_messages.Message):
   r"""Blueprints are OCI Images that contain all of the artifacts needed to
   provision a unit. Metadata such as, type of the engine used to actuate the
@@ -46,10 +79,6 @@ class Blueprint(_messages.Message):
   engine = _messages.StringField(1)
   package = _messages.StringField(2)
   version = _messages.StringField(3)
-
-
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
 
 
 class Dependency(_messages.Message):
@@ -74,15 +103,6 @@ class Deprovision(_messages.Message):
 
 
 
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
-  """
-
-
-
 class ErrorBudget(_messages.Message):
   r"""The configuration for error budget. If the number of failed units
   exceeds max(allowed_count, allowed_ratio * total_units), the rollout will be
@@ -99,16 +119,45 @@ class ErrorBudget(_messages.Message):
   allowedPercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class EvaluationRule(_messages.Message):
+  r"""EvaluationRule defines a single rule for evaluating a feature flag. A
+  rule consists of a condition that, if met, assigns a specific variant or
+  allocation to the user.
+
+  Fields:
+    condition: Required. A Common Expression Language (CEL) expression that
+      evaluates to a boolean. The expression is evaluated against the provided
+      context. If it returns true, the rule's target is applied.
+    id: Required. Evaluation rule ID. Max length: 128 bytes.
+    target: Required. The target variant or allocation to apply if the
+      condition is met. This should match the name of a defined variant or
+      allocation's ID.
+  """
+
+  condition = _messages.StringField(1)
+  id = _messages.StringField(2)
+  target = _messages.StringField(3)
+
+
 class EvaluationSpec(_messages.Message):
   r"""EvaluationSpec holds rules for evaluating the value of a flag.
 
   Fields:
+    allocations: Optional. A list of allocations.
+    attributes: Optional. Names of the context attributes that are used in the
+      evaluation rules and allocations.
     defaultTarget: Required. Default variant or allocation of the flag.
+    rules: Optional. Evaluation rules define the logic for evaluating the flag
+      against a given context. The rules are evaluated sequentially in their
+      specified order.
     variants: Optional. A list of variants.
   """
 
-  defaultTarget = _messages.StringField(1)
-  variants = _messages.MessageField('Variant', 2, repeated=True)
+  allocations = _messages.MessageField('Allocation', 1, repeated=True)
+  attributes = _messages.StringField(2, repeated=True)
+  defaultTarget = _messages.StringField(3)
+  rules = _messages.MessageField('EvaluationRule', 4, repeated=True)
+  variants = _messages.MessageField('Variant', 5, repeated=True)
 
 
 class Flag(_messages.Message):
@@ -508,86 +557,6 @@ class FromMapping(_messages.Message):
   outputVariable = _messages.StringField(2)
 
 
-class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents a Google Cloud location.
-
-  Messages:
-    LabelsValue: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    MetadataValue: Service-specific metadata. For example the available
-      capacity at the given location.
-
-  Fields:
-    displayName: The friendly name for this location, typically a nearby city
-      name. For example, "Tokyo".
-    labels: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    locationId: The canonical id for this location. For example: `"us-east1"`.
-    metadata: Service-specific metadata. For example the available capacity at
-      the given location.
-    name: Resource name for the location, which may vary between
-      implementations. For example: `"projects/example-project/locations/us-
-      east1"`
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Cross-service attributes for the location. For example
-    {"cloud.googleapis.com/region": "us-east1"}
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Service-specific metadata. For example the available capacity at the
-    given location.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  displayName = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  locationId = _messages.StringField(3)
-  metadata = _messages.MessageField('MetadataValue', 4)
-  name = _messages.StringField(5)
-
-
 class ListFlagReleasesResponse(_messages.Message):
   r"""The response structure for the ListFlagReleases method.
 
@@ -636,34 +605,19 @@ class ListFlagsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class ListLocationsResponse(_messages.Message):
-  r"""The response message for Locations.ListLocations.
+class ListMaintenancesResponse(_messages.Message):
+  r"""The response structure for the ListMaintenances method.
 
   Fields:
-    locations: A list of locations that matches the specified filter in the
-      request.
-    nextPageToken: The standard List next-page token.
+    maintenances: The resulting maintenances.
+    nextPageToken: If present, the next page token can be provided to a
+      subsequent ListMaintenances call to list the next page. If empty, there
+      are no more pages.
+    unreachable: Locations that could not be reached.
   """
 
-  locations = _messages.MessageField('GoogleCloudLocationLocation', 1, repeated=True)
+  maintenances = _messages.MessageField('Maintenance', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class ListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-    unreachable: Unordered list. Unreachable resources. Populated when the
-      request sets `ListOperationsRequest.return_partial_success` and reads
-      across collections. For example, when attempting to list all resources
-      across all supported locations.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -680,6 +634,22 @@ class ListReleasesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   releases = _messages.MessageField('Release', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListResourceMaintenancesResponse(_messages.Message):
+  r"""The response structure for the ListResourceMaintenances method.
+
+  Fields:
+    nextPageToken: If present, the next page token can be provided to a
+      subsequent ListResourceMaintenances call to list the next page. If
+      empty, there are no more pages.
+    resourceMaintenances: The resulting resource maintenances.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resourceMaintenances = _messages.MessageField('ResourceMaintenance', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -763,6 +733,22 @@ class ListSaasTypesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListTenantInstancesResponse(_messages.Message):
+  r"""The response structure for the ListTenantInstances method.
+
+  Fields:
+    nextPageToken: If present, the next page token can be provided to a
+      subsequent ListTenantInstances call to list the next page. If empty,
+      there are no more pages.
+    tenantInstances: The resulting tenant instances.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tenantInstances = _messages.MessageField('TenantInstance', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListTenantsResponse(_messages.Message):
   r"""The response structure for the ListTenants method.
 
@@ -837,6 +823,129 @@ class Location(_messages.Message):
   name = _messages.StringField(1)
 
 
+class Maintenance(_messages.Message):
+  r"""Represents a single Maintenance.
+
+  Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
+    LabelsValue: Optional. The labels on the resource, which can be used for
+      categorization. similar to Kubernetes resource labels.
+
+  Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
+    createTime: Output only. The timestamp when the resource was created.
+    description: Required. Immutable. Localized maintenance description.
+    etag: Output only. An opaque value that uniquely identifies a version or
+      generation of a resource. It can be used to confirm that the client and
+      server agree on the ordering of a resource being written.
+    labels: Optional. The labels on the resource, which can be used for
+      categorization. similar to Kubernetes resource labels.
+    name: Identifier. The maintenance name (full URI of the resource)
+      following the standard naming scheme:
+      "projects/{project}/locations/{location}/maintenances/{maintenance_id}"
+    resourceTypes: Required. Immutable. Type of resource that the maintenance
+      is applicable to. See supported values: https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#supported_resource_types.
+    title: Required. Immutable. Localized maintenance title.
+    uid: Output only. The unique identifier of the resource. UID is unique in
+      the time and space for this resource within the scope of the service. It
+      is typically generated by the server on successful creation of a
+      resource and must not be changed. UID is used to uniquely identify
+      resources with resource name reuses. This should be a UUID4.
+    updateTime: Output only. The timestamp when the resource was last updated.
+      Any change to the resource made by users must refresh this value.
+      Changes to a resource made by the service should refresh this value.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels on the resource, which can be used for
+    categorization. similar to Kubernetes resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  resourceTypes = _messages.StringField(7, repeated=True)
+  title = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class MaintenanceSchedule(_messages.Message):
+  r"""MaintenanceSchedule contains information about the scheduled
+  maintenance.
+
+  Fields:
+    endTime: Optional. An estimated (best effort, not guaranteed) end time of
+      the scheduled maintenance.
+    startTime: Optional. Scheduled start time of the maintenance. The actual
+      start of the maintenance can happen later, with best effort to finish
+      before scheduled.end.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class MaintenanceSettings(_messages.Message):
   r"""Captures requested directives for performing future maintenance on the
   unit. This includes a request for the unit to skip maintenance for a period
@@ -857,6 +966,31 @@ class MaintenanceSettings(_messages.Message):
 
   pinnedUntilTime = _messages.StringField(1)
   rescheduleAfterTime = _messages.StringField(2)
+
+
+class MaintenanceTimeline(_messages.Message):
+  r"""MaintenanceTimeline contains information about the timeline of the
+  maintenance.
+
+  Fields:
+    schedule: Optional. Schedule contains information about the scheduled
+      timeline of the maintenance.
+  """
+
+  schedule = _messages.MessageField('MaintenanceSchedule', 1)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""The next available maintenance window after spec.schedule.after date to
+  execute this operation.
+
+  Fields:
+    duration: Optional. Actual duration of the maintenance window.
+    startTime: Optional. Actual start time of the maintenance window.
+  """
+
+  duration = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -1139,6 +1273,169 @@ class ReleaseRequirements(_messages.Message):
   """
 
   upgradeableFromReleases = _messages.StringField(1, repeated=True)
+
+
+class Resource(_messages.Message):
+  r"""Resource contains information about the consumer resource affected by
+  maintenance. Next ID: 5
+
+  Fields:
+    location: Required. Immutable. Location of the resource.
+    name: Required. Immutable. Name is the reference to the consumer resource
+      affected by the maintenance (full resource name
+      https://cloud.google.com/iam/docs/full-resource-names). Deprecated: Use
+      the "resource_name" field instead.
+    resourceName: Immutable. The reference to the consumer resource affected
+      by the maintenance (full resource name
+      https://cloud.google.com/iam/docs/full-resource-names).
+    type: Required. Immutable. Type of resource that the maintenance is
+      applicable to. See supported values: https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#supported_resource_types.
+  """
+
+  location = _messages.StringField(1)
+  name = _messages.StringField(2)
+  resourceName = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
+class ResourceMaintenance(_messages.Message):
+  r"""Represents a single ResourceMaintenance. Next ID: 10
+
+  Enums:
+    StateValueValuesEnum: Required. State of the Maintenance.
+
+  Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
+    LabelsValue: Optional. The labels on the resource, which can be used for
+      categorization. similar to Kubernetes resource labels.
+
+  Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
+    createTime: Output only. The timestamp when the resource was created.
+    etag: Output only. An opaque value that uniquely identifies a version or
+      generation of a resource. It can be used to confirm that the client and
+      server agree on the ordering of a resource being written.
+    labels: Optional. The labels on the resource, which can be used for
+      categorization. similar to Kubernetes resource labels.
+    maintenance: Required. Maintenance is the name of the corresponding
+      maintenance resource following the standard naming scheme:
+      "projects/{project}/locations/{location}/maintenances/{maintenance_id}"
+    maintenanceScheduledEndTime: Optional. An estimated (best effort, not
+      guaranteed) end time of the scheduled maintenance.
+    maintenanceScheduledStartTime: Optional. The time when the maintenance was
+      scheduled to start. The actual start of the maintenance can happen
+      later, with best effort to finish before maintenance_scheduled_end_time.
+    name: Identifier. The resource maintenance name (full URI of the resource)
+      following the standard naming scheme: "projects/{project}/locations/{loc
+      ation}/resourceMaintenances/{resource_maintenance_id}"
+    resource: Required. Resource is the consumer resource affected by
+      maintenance.
+    state: Required. State of the Maintenance.
+    timeline: Optional. Timeline of the Maintenance. Deprecated: Use the
+      "maintenance_*_time" fields instead.
+    uid: Output only. The unique identifier of the resource. UID is unique in
+      the time and space for this resource within the scope of the service. It
+      is typically generated by the server on successful creation of a
+      resource and must not be changed. UID is used to uniquely identify
+      resources with resource name reuses. This should be a UUID4.
+    updateTime: Output only. The timestamp when the resource was last updated.
+      Any change to the resource made by users must refresh this value.
+      Changes to a resource made by the service should refresh this value.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. State of the Maintenance.
+
+    Values:
+      MAINTENANCE_STATE_UNSPECIFIED: <no description>
+      MAINTENANCE_STATE_SCHEDULED: <no description>
+      MAINTENANCE_STATE_RUNNING: <no description>
+      MAINTENANCE_STATE_CANCELLED: <no description>
+      MAINTENANCE_STATE_SUCCEEDED: <no description>
+      MAINTENANCE_STATE_FAILED: <no description>
+    """
+    MAINTENANCE_STATE_UNSPECIFIED = 0
+    MAINTENANCE_STATE_SCHEDULED = 1
+    MAINTENANCE_STATE_RUNNING = 2
+    MAINTENANCE_STATE_CANCELLED = 3
+    MAINTENANCE_STATE_SUCCEEDED = 4
+    MAINTENANCE_STATE_FAILED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels on the resource, which can be used for
+    categorization. similar to Kubernetes resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  maintenance = _messages.StringField(5)
+  maintenanceScheduledEndTime = _messages.StringField(6)
+  maintenanceScheduledStartTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  resource = _messages.MessageField('Resource', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  timeline = _messages.MessageField('MaintenanceTimeline', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class Rollout(_messages.Message):
@@ -1584,6 +1881,8 @@ class RolloutStats(_messages.Message):
   r"""RolloutStats contains information about the progress of a rollout.
 
   Fields:
+    estimatedTotalUnitCount: Optional. Output only. Estimated number of units
+      based. The estimation is computed upon creation of the rollout.
     operationsByState: Optional. Output only. Unordered list. A breakdown of
       the progress of operations triggered by the rollout. Provides a count of
       Operations by their state. This can be used to determine the number of
@@ -1593,7 +1892,8 @@ class RolloutStats(_messages.Message):
       "FAILED" - "CANCELLED"
   """
 
-  operationsByState = _messages.MessageField('Aggregate', 1, repeated=True)
+  estimatedTotalUnitCount = _messages.IntegerField(1)
+  operationsByState = _messages.MessageField('Aggregate', 2, repeated=True)
 
 
 class RolloutStrategy(_messages.Message):
@@ -2432,95 +2732,141 @@ class SaasservicemgmtProjectsLocationsFlagsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
-class SaasservicemgmtProjectsLocationsGetRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsGetRequest object.
+class SaasservicemgmtProjectsLocationsMaintenancesCreateRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsMaintenancesCreateRequest object.
 
   Fields:
-    name: Resource name for the location.
+    maintenance: A Maintenance resource to be passed as the request body.
+    maintenanceId: Required. The ID value for the new maintenance.
+    parent: Required. The parent of the maintenance.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
   """
 
-  name = _messages.StringField(1, required=True)
+  maintenance = _messages.MessageField('Maintenance', 1)
+  maintenanceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
-class SaasservicemgmtProjectsLocationsListRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsListRequest object.
+class SaasservicemgmtProjectsLocationsMaintenancesDeleteRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsMaintenancesDeleteRequest object.
 
   Fields:
-    extraLocationTypes: Optional. Do not use this field. It is unsupported and
-      is ignored unless explicitly documented otherwise. This is primarily for
-      internal usage.
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
+    etag: The etag known to the client for the expected state of the
+      maintenance. This is used with state-changing methods to prevent
+      accidental overwrites when multiple user agents might be acting in
+      parallel on the same resource. An etag wildcard provide optimistic
+      concurrency based on the expected existence of the maintenance. The Any
+      wildcard (`*`) requires that the resource must already exists, and the
+      Not Any wildcard (`!*`) requires that it must not.
+    name: Required. The resource name of the resource within a service.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
   """
 
-  extraLocationTypes = _messages.StringField(1, repeated=True)
-  filter = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-
-
-class SaasservicemgmtProjectsLocationsOperationsCancelRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
-class SaasservicemgmtProjectsLocationsOperationsDeleteRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsOperationsDeleteRequest object.
+class SaasservicemgmtProjectsLocationsMaintenancesGetRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsMaintenancesGetRequest object.
 
   Fields:
-    name: The name of the operation resource to be deleted.
+    name: Required. The resource name of the resource within a service.
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class SaasservicemgmtProjectsLocationsOperationsGetRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsOperationsGetRequest object.
+class SaasservicemgmtProjectsLocationsMaintenancesListRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsMaintenancesListRequest object.
 
   Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SaasservicemgmtProjectsLocationsOperationsListRequest(_messages.Message):
-  r"""A SaasservicemgmtProjectsLocationsOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-    returnPartialSuccess: When set to `true`, operations that are reachable
-      are returned as normal, and those that are unreachable are returned in
-      the ListOperationsResponse.unreachable field. This can only be `true`
-      when reading across collections. For example, when `parent` is set to
-      `"projects/example/locations/-"`. This field is not supported by default
-      and will result in an `UNIMPLEMENTED` error if set unless explicitly
-      documented otherwise in service or product specific documentation.
+    filter: Filter the list as specified in https://google.aip.dev/160.
+    orderBy: Order results as specified in https://google.aip.dev/132.
+    pageSize: The maximum number of maintenances to send per page.
+    pageToken: The page token: If the next_page_token from a previous response
+      is provided, this request will send the subsequent page.
+    parent: Required. The parent of the maintenance.
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-  returnPartialSuccess = _messages.BooleanField(5)
+  parent = _messages.StringField(5, required=True)
+
+
+class SaasservicemgmtProjectsLocationsMaintenancesPatchRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsMaintenancesPatchRequest object.
+
+  Fields:
+    etag: The etag known to the client for the expected state of the
+      maintenance. This is used with state-changing methods to prevent
+      accidental overwrites when multiple user agents might be acting in
+      parallel on the same resource. An etag wildcard provide optimistic
+      concurrency based on the expected existence of the maintenance. The Any
+      wildcard (`*`) requires that the resource must already exists, and the
+      Not Any wildcard (`!*`) requires that it must not.
+    maintenance: A Maintenance resource to be passed as the request body.
+    name: Identifier. The maintenance name (full URI of the resource)
+      following the standard naming scheme:
+      "projects/{project}/locations/{location}/maintenances/{maintenance_id}"
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Field mask is used to specify the fields to be overwritten in
+      the Maintenance resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      will be overwritten if it is in the mask. If the user does not provide a
+      mask then all fields in the Maintenance will be overwritten.
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  etag = _messages.StringField(1)
+  maintenance = _messages.MessageField('Maintenance', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class SaasservicemgmtProjectsLocationsReleasesCreateRequest(_messages.Message):
@@ -2656,6 +3002,151 @@ class SaasservicemgmtProjectsLocationsReleasesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   release = _messages.MessageField('Release', 3)
   requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
+class SaasservicemgmtProjectsLocationsResourceMaintenancesCreateRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsResourceMaintenancesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent of the resource maintenance.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    resourceMaintenance: A ResourceMaintenance resource to be passed as the
+      request body.
+    resourceMaintenanceId: Required. The ID value for the new resource
+      maintenance.
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  resourceMaintenance = _messages.MessageField('ResourceMaintenance', 3)
+  resourceMaintenanceId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class SaasservicemgmtProjectsLocationsResourceMaintenancesDeleteRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsResourceMaintenancesDeleteRequest
+  object.
+
+  Fields:
+    etag: The etag known to the client for the expected state of the resource
+      maintenance. This is used with state-changing methods to prevent
+      accidental overwrites when multiple user agents might be acting in
+      parallel on the same resource. An etag wildcard provide optimistic
+      concurrency based on the expected existence of the resource maintenance.
+      The Any wildcard (`*`) requires that the resource must already exists,
+      and the Not Any wildcard (`!*`) requires that it must not.
+    name: Required. The resource name of the resource within a service.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SaasservicemgmtProjectsLocationsResourceMaintenancesGetRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsResourceMaintenancesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the resource within a service.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SaasservicemgmtProjectsLocationsResourceMaintenancesListRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsResourceMaintenancesListRequest
+  object.
+
+  Fields:
+    filter: Filter the list as specified in https://google.aip.dev/160.
+    orderBy: Order results as specified in https://google.aip.dev/132.
+    pageSize: The maximum number of resource maintenances to send per page.
+    pageToken: The page token: If the next_page_token from a previous response
+      is provided, this request will send the subsequent page.
+    parent: Required. The parent of the resource maintenance.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class SaasservicemgmtProjectsLocationsResourceMaintenancesPatchRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsResourceMaintenancesPatchRequest
+  object.
+
+  Fields:
+    etag: The etag known to the client for the expected state of the resource
+      maintenance. This is used with state-changing methods to prevent
+      accidental overwrites when multiple user agents might be acting in
+      parallel on the same resource. An etag wildcard provide optimistic
+      concurrency based on the expected existence of the resource maintenance.
+      The Any wildcard (`*`) requires that the resource must already exists,
+      and the Not Any wildcard (`!*`) requires that it must not.
+    name: Identifier. The resource maintenance name (full URI of the resource)
+      following the standard naming scheme: "projects/{project}/locations/{loc
+      ation}/resourceMaintenances/{resource_maintenance_id}"
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    resourceMaintenance: A ResourceMaintenance resource to be passed as the
+      request body.
+    updateMask: Field mask is used to specify the fields to be overwritten in
+      the ResourceMaintenance resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields in the ResourceMaintenance will be
+      overwritten.
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resourceMaintenance = _messages.MessageField('ResourceMaintenance', 4)
   updateMask = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
 
@@ -3345,6 +3836,145 @@ class SaasservicemgmtProjectsLocationsSaasTypesPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
+class SaasservicemgmtProjectsLocationsTenantInstancesCreateRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsTenantInstancesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent of the tenant instance.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    tenantInstance: A TenantInstance resource to be passed as the request
+      body.
+    tenantInstanceId: Required. The ID value for the new tenant instance.
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  tenantInstance = _messages.MessageField('TenantInstance', 3)
+  tenantInstanceId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class SaasservicemgmtProjectsLocationsTenantInstancesDeleteRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsTenantInstancesDeleteRequest object.
+
+  Fields:
+    etag: The etag known to the client for the expected state of the tenant
+      instance. This is used with state-changing methods to prevent accidental
+      overwrites when multiple user agents might be acting in parallel on the
+      same resource. An etag wildcard provide optimistic concurrency based on
+      the expected existence of the tenant instance. The Any wildcard (`*`)
+      requires that the resource must already exists, and the Not Any wildcard
+      (`!*`) requires that it must not.
+    name: Required. The resource name of the resource within a service.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SaasservicemgmtProjectsLocationsTenantInstancesGetRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsTenantInstancesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the resource within a service.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SaasservicemgmtProjectsLocationsTenantInstancesListRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsTenantInstancesListRequest object.
+
+  Fields:
+    filter: Filter the list as specified in https://google.aip.dev/160.
+    orderBy: Order results as specified in https://google.aip.dev/132.
+    pageSize: The maximum number of tenant instances to send per page.
+    pageToken: The page token: If the next_page_token from a previous response
+      is provided, this request will send the subsequent page.
+    parent: Required. The parent of the tenant instance.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class SaasservicemgmtProjectsLocationsTenantInstancesPatchRequest(_messages.Message):
+  r"""A SaasservicemgmtProjectsLocationsTenantInstancesPatchRequest object.
+
+  Fields:
+    etag: The etag known to the client for the expected state of the tenant
+      instance. This is used with state-changing methods to prevent accidental
+      overwrites when multiple user agents might be acting in parallel on the
+      same resource. An etag wildcard provide optimistic concurrency based on
+      the expected existence of the tenant instance. The Any wildcard (`*`)
+      requires that the resource must already exists, and the Not Any wildcard
+      (`!*`) requires that it must not.
+    name: Identifier. The resource name (full URI of the resource) following
+      the standard naming scheme:
+      "projects/{project}/locations/{location}/tenants/{tenant}"
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    tenantInstance: A TenantInstance resource to be passed as the request
+      body.
+    updateMask: Field mask is used to specify the fields to be overwritten in
+      the TenantInstance resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      will be overwritten if it is in the mask. If the user does not provide a
+      mask then all fields in the TenantInstance will be overwritten.
+    validateOnly: If "validate_only" is set to true, the service will try to
+      validate that this request would succeed, but will not actually make
+      changes.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  tenantInstance = _messages.MessageField('TenantInstance', 4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
 class SaasservicemgmtProjectsLocationsTenantsCreateRequest(_messages.Message):
   r"""A SaasservicemgmtProjectsLocationsTenantsCreateRequest object.
 
@@ -3897,11 +4527,17 @@ class Schedule(_messages.Message):
   r"""A time specification to schedule the maintenance.
 
   Fields:
+    duration: Optional. How long this operation is expected to take. If not
+      set, will match the duration of the next window. (optional)
+    nextWindowTime: Optional. Request a new maintenance window after this
+      time. (optional)
     startTime: Optional. Start of operation. If not set, will be set to the
       start of the next window. (optional)
   """
 
-  startTime = _messages.StringField(1)
+  duration = _messages.StringField(1)
+  nextWindowTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4130,6 +4766,108 @@ class Tenant(_messages.Message):
   saas = _messages.StringField(7)
   uid = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+
+
+class TenantInstance(_messages.Message):
+  r"""TenantInstance represents the service producer side of an instance of
+  the service created based on a request from a consumer. In a typical
+  scenario a TenantInstance has a one-to-one mapping with a resource given out
+  to a service consumer.
+
+  Messages:
+    AnnotationsValue: Optional. Annotations is an unstructured key-value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info:
+      https://kubernetes.io/docs/user-guide/annotations
+    LabelsValue: Optional. The labels on the resource, which can be used for
+      categorization. similar to Kubernetes resource labels.
+
+  Fields:
+    annotations: Optional. Annotations is an unstructured key-value map stored
+      with a resource that may be set by external tools to store and retrieve
+      arbitrary metadata. They are not queryable and should be preserved when
+      modifying objects. More info: https://kubernetes.io/docs/user-
+      guide/annotations
+    createTime: Output only. The timestamp when the resource was created.
+    etag: Output only. An opaque value that uniquely identifies a version or
+      generation of a resource. It can be used to confirm that the client and
+      server agree on the ordering of a resource being written.
+    labels: Optional. The labels on the resource, which can be used for
+      categorization. similar to Kubernetes resource labels.
+    name: Identifier. The resource name (full URI of the resource) following
+      the standard naming scheme:
+      "projects/{project}/locations/{location}/tenants/{tenant}"
+    uid: Output only. The unique identifier of the resource. UID is unique in
+      the time and space for this resource within the scope of the service. It
+      is typically generated by the server on successful creation of a
+      resource and must not be changed. UID is used to uniquely identify
+      resources with resource name reuses. This should be a UUID4.
+    updateTime: Output only. The timestamp when the resource was last updated.
+      Any change to the resource made by users must refresh this value.
+      Changes to a resource made by the service should refresh this value.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations is an unstructured key-value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: https://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels on the resource, which can be used for
+    categorization. similar to Kubernetes resource labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class ToMapping(_messages.Message):
@@ -4671,11 +5409,16 @@ class UnitOperation(_messages.Message):
     name: Identifier. The resource name (full URI of the resource) following
       the standard naming scheme:
       "projects/{project}/locations/{location}/unitOperations/{unitOperation}"
+    nextWindow: Optional. Output only. The next available maintenance window
+      after spec.schedule.after date to execute this operation. Only
+      applicable if the respectMaintenancePolicy field is true
     parentUnitOperation: Optional. Reference to parent resource:
       UnitOperation. If an operation needs to create other operations as part
       of its workflow, each of the child operations should have this field set
       to the parent. This can be used for tracing. (Optional)
     provision: A Provision attribute.
+    respectMaintenancePolicy: Optional. Whether or not to respect maintenance
+      policies for this operation. (optional)
     rollout: Optional. Specifies which rollout created this Unit Operation.
       This cannot be modified and is used for filtering purposes only. If a
       dependent unit and unit operation are created as part of another unit
@@ -4805,15 +5548,17 @@ class UnitOperation(_messages.Message):
   flagUpdate = _messages.MessageField('FlagUpdate', 9)
   labels = _messages.MessageField('LabelsValue', 10)
   name = _messages.StringField(11)
-  parentUnitOperation = _messages.StringField(12)
-  provision = _messages.MessageField('Provision', 13)
-  rollout = _messages.StringField(14)
-  schedule = _messages.MessageField('Schedule', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  unit = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  upgrade = _messages.MessageField('Upgrade', 20)
+  nextWindow = _messages.MessageField('MaintenanceWindow', 12)
+  parentUnitOperation = _messages.StringField(13)
+  provision = _messages.MessageField('Provision', 14)
+  respectMaintenancePolicy = _messages.BooleanField(15)
+  rollout = _messages.StringField(16)
+  schedule = _messages.MessageField('Schedule', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  unit = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  upgrade = _messages.MessageField('Upgrade', 22)
 
 
 class UnitOperationCondition(_messages.Message):

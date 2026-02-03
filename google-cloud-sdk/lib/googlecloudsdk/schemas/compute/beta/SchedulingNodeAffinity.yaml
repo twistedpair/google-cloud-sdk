@@ -30,7 +30,7 @@ properties:
     type: string
   operator:
     description: |-
-      Defines the operation of node selection. Valid operators are IN for
+      Defines the operation of node selection. Valid operators areIN for
       affinity and NOT_IN for anti-affinity.
     type: string
     enum:

@@ -36,7 +36,7 @@ class CloudAiDocumentaiLabHifiaToolsValidationValidatorInputValidationRule(_mess
     childAlignmentRule: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInp
       utValidationRuleChildAlignmentRule attribute.
     description: Description of the validation rule. This has no use but for
-      documentation
+      documentation.
     entityAlignmentRule: A CloudAiDocumentaiLabHifiaToolsValidationValidatorIn
       putValidationRuleEntityAlignmentRule attribute.
     fieldOccurrences: A CloudAiDocumentaiLabHifiaToolsValidationValidatorInput
@@ -771,8 +771,8 @@ class DocumentaiProjectsLocationsSchemasListRequest(_messages.Message):
     pageSize: Optional. The maximum number of schema groups to return. If
       unspecified, at most `10` Schema will be returned. The maximum value is
       `20`. Values above `20` will be coerced to `20`.
-    pageToken: Optional. We will return the schema groups sorted by creation
-      time. The page token will point to the next Schema.
+    pageToken: Optional. Returns the schema groups sorted by creation time.
+      The page token will point to the next Schema.
     parent: Required. Format: `projects/{project}/locations/{location}`
   """
 
@@ -790,7 +790,7 @@ class DocumentaiProjectsLocationsSchemasPatchRequest(_messages.Message):
     name: Identifier. The resource name of the Schema. Format:
       `projects/{project}/locations/{location}/schemas/{schema}`
     updateMask: Optional. The update mask to apply to the resource. **Note:**
-      Only the following fields can be updated: - display_name. - labels.
+      Only the following fields can be updated: - `display_name` - `labels`
   """
 
   googleCloudDocumentaiV1NextSchema = _messages.MessageField('GoogleCloudDocumentaiV1NextSchema', 1)
@@ -862,8 +862,8 @@ class DocumentaiProjectsLocationsSchemasSchemaVersionsListRequest(_messages.Mess
     pageSize: Optional. The maximum number of SchemaVersion to return. If
       unspecified, at most `10` SchemaVersion will be returned. The maximum
       value is `20`. Values above `20` will be coerced to `20`.
-    pageToken: Optional. We will return the SchemaVersion sorted by creation
-      time. The page token will point to the next SchemaVersion.
+    pageToken: Optional. Returns the SchemaVersion sorted by creation time.
+      The page token will point to the next SchemaVersion.
     parent: Required. Format:
       `projects/{project}/locations/{location}/schemas/{schema}`
   """
@@ -884,7 +884,7 @@ class DocumentaiProjectsLocationsSchemasSchemaVersionsPatchRequest(_messages.Mes
       s/{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema
       _version}`
     updateMask: Optional. The update mask to apply to the resource. **Note:**
-      Only the following fields can be updated: - display_name. - labels.
+      Only the following fields can be updated: - `display_name` - `labels`
   """
 
   googleCloudDocumentaiV1SchemaVersion = _messages.MessageField('GoogleCloudDocumentaiV1SchemaVersion', 1)
@@ -1219,7 +1219,7 @@ class GoogleCloudDocumentaiUiv1beta3DocumentSchema(_messages.Message):
 
   Fields:
     description: Description of the schema.
-    displayName: Display name to show to users.
+    displayName: Display name to show users.
     documentPrompt: Optional. Document level prompt provided by the user. This
       custom text is injected into the AI model's prompt to provide extra,
       document-wide guidance for processing.
@@ -1248,15 +1248,15 @@ class GoogleCloudDocumentaiUiv1beta3DocumentSchemaEntityType(_messages.Message):
     entityTypeMetadata: Metadata for the entity type.
     enumValues: If specified, lists all the possible values for this entity.
       This should not be more than a handful of values. If the number of
-      values is >10 or could change frequently use the
+      values is >10 or could change frequently, use the
       `EntityType.value_ontology` field and specify a list of all possible
       values in a value ontology file.
     name: Name of the type. It must be unique within the schema file and
       cannot be a "Common Type". The following naming conventions are used: -
       Use `snake_casing`. - Name matching is case-sensitive. - Maximum 64
       characters. - Must start with a letter. - Allowed characters: ASCII
-      letters `[a-z0-9_-]`. (For backward compatibility internal
-      infrastructure and tooling can handle any ascii character.) - The `/` is
+      letters `[a-z0-9_-]`. (For backward compatibility, internal
+      infrastructure and tooling can handle any ASCII character.) - The `/` is
       sometimes used to denote a property of a type. For example
       `line_item/amount`. This convention is deprecated, but will still be
       honored for backward compatibility.
@@ -1358,9 +1358,9 @@ class GoogleCloudDocumentaiUiv1beta3DocumentSchemaMetadata(_messages.Message):
       document (classification).
     prefixedNamingOnProperties: If set, all the nested entities must be
       prefixed with the parents.
-    skipNamingValidation: If set, we will skip the naming format validation in
-      the schema. So the string values in `DocumentSchema.EntityType.name` and
-      `DocumentSchema.EntityType.Property.name` will not be checked.
+    skipNamingValidation: If set, this will skip the naming format validation
+      in the schema. So the string values in `DocumentSchema.EntityType.name`
+      and `DocumentSchema.EntityType.Property.name` will not be checked.
   """
 
   documentAllowMultipleLabels = _messages.BooleanField(1)
@@ -1430,7 +1430,7 @@ class GoogleCloudDocumentaiUiv1beta3EvaluationMetrics(_messages.Message):
   r"""Evaluation metrics, either in aggregate or about a specific entity.
 
   Fields:
-    f1Score: The calculated f1 score.
+    f1Score: The calculated F1 score.
     falseNegativesCount: The amount of false negatives.
     falsePositivesCount: The amount of false positives.
     groundTruthDocumentCount: The amount of documents with a ground truth
@@ -1945,10 +1945,10 @@ class GoogleCloudDocumentaiUiv1beta3ProcessorVersionGenAiModelInfoFoundationGenA
   r"""Information for a pretrained Google-managed foundation model.
 
   Fields:
-    finetuningAllowed: Whether finetuning is allowed for this base processor
+    finetuningAllowed: Whether fine tuning is allowed for this base processor
       version.
     minTrainLabeledDocuments: The minimum number of labeled documents in the
-      training dataset required for finetuning.
+      training dataset required for fine tuning.
   """
 
   finetuningAllowed = _messages.BooleanField(1)
@@ -2138,7 +2138,7 @@ class GoogleCloudDocumentaiUiv1beta3Schema(_messages.Message):
 
   Fields:
     description: Description of the schema.
-    displayName: Display name to show to users.
+    displayName: Display name to show users.
     entityTypes: Entity types of the schema.
   """
 
@@ -2727,7 +2727,7 @@ class GoogleCloudDocumentaiV1Document(_messages.Message):
     documentLayout: Parsed layout of the document.
     entities: A list of entities detected on Document.text. For document
       shards, entities in this list may cross shard boundaries.
-    entitiesRevisionId: The entity revision id that `document.entities` field
+    entitiesRevisionId: The entity revision ID that `document.entities` field
       is based on. If this field is set and `entities_revisions` is not empty,
       the entities in `document.entities` field are the entities in the entity
       revision with this id and `document.entity_validation_output` field is
@@ -3000,13 +3000,13 @@ class GoogleCloudDocumentaiV1DocumentEntity(_messages.Message):
     id: Optional. Canonical id. This will be a unique value in the entity list
       for this document.
     mentionId: Optional. Deprecated. Use `id` field instead.
-    mentionText: Optional. Text value of the entity e.g. `1600 Amphitheatre
-      Pkwy`.
+    mentionText: Optional. Text value of the entity, for example, `1600
+      Amphitheatre Pkwy`.
     method: Optional. Specifies how the entity's value is obtained.
     normalizedValue: Optional. Normalized entity value. Absent if the
-      extracted value could not be converted or the type (e.g. address) is not
-      supported for certain parsers. This field is also only populated for
-      certain supported document types.
+      extracted value could not be converted or the type (for example,
+      address) is not supported for certain parsers. This field is also only
+      populated for certain supported document types.
     pageAnchor: Optional. Represents the provenance of this entity wrt. the
       location on the page where it was found.
     properties: Optional. Entities can be nested to form a hierarchical data
@@ -3016,7 +3016,7 @@ class GoogleCloudDocumentaiV1DocumentEntity(_messages.Message):
       identification purposes.
     textAnchor: Optional. Provenance of the entity. Text anchor indexing into
       the Document.text.
-    type: Required. Entity type from a schema e.g. `Address`.
+    type: Required. Entity type from a schema, for example, `Address`.
   """
 
   class MethodValueValuesEnum(_messages.Enum):
@@ -3224,8 +3224,8 @@ class GoogleCloudDocumentaiV1DocumentPage(_messages.Message):
     tokens: A list of visually detected tokens on the page.
     transforms: Transformation matrices that were applied to the original
       document image to produce Page.image.
-    visualElements: A list of detected non-text visual elements e.g. checkbox,
-      signature etc. on the page.
+    visualElements: A list of detected non-text visual elements, for example,
+      checkbox, signature etc. on the page.
   """
 
   blocks = _messages.MessageField('GoogleCloudDocumentaiV1DocumentPageBlock', 1, repeated=True)
@@ -3376,8 +3376,8 @@ class GoogleCloudDocumentaiV1DocumentPageFormField(_messages.Message):
     correctedValueText: Created for Labeling UI to export value text. If
       corrections were made to the text identified by the
       `field_value.text_anchor`, this field will contain the correction.
-    fieldName: Layout for the FormField name. e.g. `Address`, `Email`, `Grand
-      total`, `Phone number`, etc.
+    fieldName: Layout for the FormField name. For example, `Address`, `Email`,
+      `Grand total`, `Phone number`, etc.
     fieldValue: Layout for the FormField value.
     nameDetectedLanguages: A list of detected languages for name together with
       confidence.
@@ -3456,8 +3456,8 @@ class GoogleCloudDocumentaiV1DocumentPageLayout(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon for the Layout.
     confidence: Confidence of the current Layout within context of the object
-      this layout is for. e.g. confidence can be for a single token, a table,
-      a visual element, etc. depending on context. Range `[0, 1]`.
+      this layout is for. For example, confidence can be for a single token, a
+      table, a visual element, etc. depending on context. Range `[0, 1]`.
     orientation: Detected orientation for the Layout.
     textAnchor: Text anchor indexing into the Document.text.
   """
@@ -3685,8 +3685,8 @@ class GoogleCloudDocumentaiV1DocumentPageTokenStyleInfo(_messages.Message):
 
 
 class GoogleCloudDocumentaiV1DocumentPageVisualElement(_messages.Message):
-  r"""Detected non-text visual elements e.g. checkbox, signature etc. on the
-  page.
+  r"""Detected non-text visual elements, for example, checkbox, signature etc.
+  on the page.
 
   Fields:
     detectedLanguages: A list of detected languages together with confidence.
@@ -3800,7 +3800,8 @@ class GoogleCloudDocumentaiV1DocumentRevisionHumanReview(_messages.Message):
   r"""Human Review information of the document.
 
   Fields:
-    state: Human review state. e.g. `requested`, `succeeded`, `rejected`.
+    state: Human review state. For example, `requested`, `succeeded`,
+      `rejected`.
     stateMessage: A message providing more details about the current state of
       processing. For example, the rejection reason when the state is
       `rejected`.
@@ -3815,7 +3816,7 @@ class GoogleCloudDocumentaiV1DocumentSchema(_messages.Message):
 
   Fields:
     description: Description of the schema.
-    displayName: Display name to show to users.
+    displayName: Display name to show users.
     documentPrompt: Optional. Document level prompt provided by the user. This
       custom text is injected into the AI model's prompt to provide extra,
       document-wide guidance for processing.
@@ -3841,15 +3842,15 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityType(_messages.Message):
     displayName: User defined name for the type.
     enumValues: If specified, lists all the possible values for this entity.
       This should not be more than a handful of values. If the number of
-      values is >10 or could change frequently use the
+      values is >10 or could change frequently, use the
       `EntityType.value_ontology` field and specify a list of all possible
       values in a value ontology file.
     name: Name of the type. It must be unique within the schema file and
       cannot be a "Common Type". The following naming conventions are used: -
       Use `snake_casing`. - Name matching is case-sensitive. - Maximum 64
       characters. - Must start with a letter. - Allowed characters: ASCII
-      letters `[a-z0-9_-]`. (For backward compatibility internal
-      infrastructure and tooling can handle any ascii character.) - The `/` is
+      letters `[a-z0-9_-]`. (For backward compatibility, internal
+      infrastructure and tooling can handle any ASCII character.) - The `/` is
       sometimes used to denote a property of a type. For example
       `line_item/amount`. This convention is deprecated, but will still be
       honored for backward compatibility.
@@ -3943,9 +3944,9 @@ class GoogleCloudDocumentaiV1DocumentSchemaMetadata(_messages.Message):
       document (classification).
     prefixedNamingOnProperties: If set, all the nested entities must be
       prefixed with the parents.
-    skipNamingValidation: If set, we will skip the naming format validation in
-      the schema. So the string values in `DocumentSchema.EntityType.name` and
-      `DocumentSchema.EntityType.Property.name` will not be checked.
+    skipNamingValidation: If set, this will skip the naming format validation
+      in the schema. So the string values in `DocumentSchema.EntityType.name`
+      and `DocumentSchema.EntityType.Property.name` will not be checked.
   """
 
   documentAllowMultipleLabels = _messages.BooleanField(1)
@@ -4140,6 +4141,8 @@ class GoogleCloudDocumentaiV1Evaluation(_messages.Message):
     name: The resource name of the evaluation. Format: `projects/{project}/loc
       ations/{location}/processors/{processor}/processorVersions/{processor_ve
       rsion}/evaluations/{evaluation}`
+    revisions: Contains all revisions of the evaluation, excluding the latest
+      one.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4175,6 +4178,7 @@ class GoogleCloudDocumentaiV1Evaluation(_messages.Message):
   kmsKeyName = _messages.StringField(5)
   kmsKeyVersionName = _messages.StringField(6)
   name = _messages.StringField(7)
+  revisions = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationEvaluationRevision', 8, repeated=True)
 
 
 class GoogleCloudDocumentaiV1EvaluationConfidenceLevelMetrics(_messages.Message):
@@ -4207,11 +4211,60 @@ class GoogleCloudDocumentaiV1EvaluationCounters(_messages.Message):
   invalidDocumentsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudDocumentaiV1EvaluationEvaluationRevision(_messages.Message):
+  r"""A revision of the evaluation.
+
+  Messages:
+    EntityMetricsValue: Output only. Metrics across confidence levels, for
+      different entities.
+
+  Fields:
+    allEntitiesMetrics: Output only. Metrics for all the entities in
+      aggregate.
+    documentCounters: Output only. Counters for the documents used in the
+      evaluation.
+    entityMetrics: Output only. Metrics across confidence levels, for
+      different entities.
+    revisionId: Output only. The revision ID of the evaluation.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EntityMetricsValue(_messages.Message):
+    r"""Output only. Metrics across confidence levels, for different entities.
+
+    Messages:
+      AdditionalProperty: An additional property for a EntityMetricsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type EntityMetricsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EntityMetricsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  allEntitiesMetrics = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationMultiConfidenceMetrics', 1)
+  documentCounters = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationCounters', 2)
+  entityMetrics = _messages.MessageField('EntityMetricsValue', 3)
+  revisionId = _messages.StringField(4)
+
+
 class GoogleCloudDocumentaiV1EvaluationMetrics(_messages.Message):
   r"""Evaluation metrics, either in aggregate or about a specific entity.
 
   Fields:
-    f1Score: The calculated f1 score.
+    f1Score: The calculated F1 score.
     falseNegativesCount: The amount of false negatives.
     falsePositivesCount: The amount of false positives.
     groundTruthDocumentCount: The amount of documents with a ground truth
@@ -4518,12 +4571,12 @@ class GoogleCloudDocumentaiV1NextSchema(_messages.Message):
   r"""NextSchema is a collection of SchemaVersions.
 
   Messages:
-    LabelsValue: Optional. The GCP labels for the Schema.
+    LabelsValue: Optional. The {{gcp_name_short}} labels for the Schema.
 
   Fields:
     createTime: Output only. The time when the Schema was created.
     displayName: Required. The user-defined name of the Schema.
-    labels: Optional. The GCP labels for the Schema.
+    labels: Optional. The {{gcp_name_short}} labels for the Schema.
     name: Identifier. The resource name of the Schema. Format:
       `projects/{project}/locations/{location}/schemas/{schema}`
     updateTime: Output only. The time when the Schema was last updated.
@@ -4531,7 +4584,7 @@ class GoogleCloudDocumentaiV1NextSchema(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The GCP labels for the Schema.
+    r"""Optional. The {{gcp_name_short}} labels for the Schema.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -5117,10 +5170,10 @@ class GoogleCloudDocumentaiV1ProcessorVersionGenAiModelInfoFoundationGenAiModelI
   r"""Information for a pretrained Google-managed foundation model.
 
   Fields:
-    finetuningAllowed: Whether finetuning is allowed for this base processor
+    finetuningAllowed: Whether fine tuning is allowed for this base processor
       version.
     minTrainLabeledDocuments: The minimum number of labeled documents in the
-      training dataset required for finetuning.
+      training dataset required for fine tuning.
   """
 
   finetuningAllowed = _messages.BooleanField(1)
@@ -5260,12 +5313,13 @@ class GoogleCloudDocumentaiV1SchemaVersion(_messages.Message):
   SchemaGroup.
 
   Messages:
-    LabelsValue: Optional. The GCP labels for the SchemaVersion.
+    LabelsValue: Optional. The {{gcp_name_short}} labels for the
+      SchemaVersion.
 
   Fields:
     createTime: Output only. The time when the SchemaVersion was created.
     displayName: Required. The user-defined name of the SchemaVersion.
-    labels: Optional. The GCP labels for the SchemaVersion.
+    labels: Optional. The {{gcp_name_short}} labels for the SchemaVersion.
     name: Identifier. The resource name of the SchemaVersion. Format: `project
       s/{project}/locations/{location}/schemas/{schema}/schemaVersions/{schema
       _version}`
@@ -5274,7 +5328,7 @@ class GoogleCloudDocumentaiV1SchemaVersion(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The GCP labels for the SchemaVersion.
+    r"""Optional. The {{gcp_name_short}} labels for the SchemaVersion.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -5816,7 +5870,7 @@ class GoogleCloudDocumentaiV1beta3DocumentSchema(_messages.Message):
 
   Fields:
     description: Description of the schema.
-    displayName: Display name to show to users.
+    displayName: Display name to show users.
     documentPrompt: Optional. Document level prompt provided by the user. This
       custom text is injected into the AI model's prompt to provide extra,
       document-wide guidance for processing.
@@ -5845,15 +5899,15 @@ class GoogleCloudDocumentaiV1beta3DocumentSchemaEntityType(_messages.Message):
     entityTypeMetadata: Metadata for the entity type.
     enumValues: If specified, lists all the possible values for this entity.
       This should not be more than a handful of values. If the number of
-      values is >10 or could change frequently use the
+      values is >10 or could change frequently, use the
       `EntityType.value_ontology` field and specify a list of all possible
       values in a value ontology file.
     name: Name of the type. It must be unique within the schema file and
       cannot be a "Common Type". The following naming conventions are used: -
       Use `snake_casing`. - Name matching is case-sensitive. - Maximum 64
       characters. - Must start with a letter. - Allowed characters: ASCII
-      letters `[a-z0-9_-]`. (For backward compatibility internal
-      infrastructure and tooling can handle any ascii character.) - The `/` is
+      letters `[a-z0-9_-]`. (For backward compatibility, internal
+      infrastructure and tooling can handle any ASCII character.) - The `/` is
       sometimes used to denote a property of a type. For example
       `line_item/amount`. This convention is deprecated, but will still be
       honored for backward compatibility.
@@ -5955,9 +6009,9 @@ class GoogleCloudDocumentaiV1beta3DocumentSchemaMetadata(_messages.Message):
       document (classification).
     prefixedNamingOnProperties: If set, all the nested entities must be
       prefixed with the parents.
-    skipNamingValidation: If set, we will skip the naming format validation in
-      the schema. So the string values in `DocumentSchema.EntityType.name` and
-      `DocumentSchema.EntityType.Property.name` will not be checked.
+    skipNamingValidation: If set, this will skip the naming format validation
+      in the schema. So the string values in `DocumentSchema.EntityType.name`
+      and `DocumentSchema.EntityType.Property.name` will not be checked.
   """
 
   documentAllowMultipleLabels = _messages.BooleanField(1)
@@ -6017,7 +6071,7 @@ class GoogleCloudDocumentaiV1beta3EvaluationMetrics(_messages.Message):
   r"""Evaluation metrics, either in aggregate or about a specific entity.
 
   Fields:
-    f1Score: The calculated f1 score.
+    f1Score: The calculated F1 score.
     falseNegativesCount: The amount of false negatives.
     falsePositivesCount: The amount of false positives.
     groundTruthDocumentCount: The amount of documents with a ground truth
@@ -6445,10 +6499,10 @@ class GoogleCloudDocumentaiV1beta3ProcessorVersionGenAiModelInfoFoundationGenAiM
   r"""Information for a pretrained Google-managed foundation model.
 
   Fields:
-    finetuningAllowed: Whether finetuning is allowed for this base processor
+    finetuningAllowed: Whether fine tuning is allowed for this base processor
       version.
     minTrainLabeledDocuments: The minimum number of labeled documents in the
-      training dataset required for finetuning.
+      training dataset required for fine tuning.
   """
 
   finetuningAllowed = _messages.BooleanField(1)

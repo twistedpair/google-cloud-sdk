@@ -184,6 +184,6 @@ properties:
     - BALANCED
     - COST_OPTIMIZED
     - MANAGED
-    - OFF
+    - 'OFF'
     - PERFORMANCE
     - UNSPECIFIED

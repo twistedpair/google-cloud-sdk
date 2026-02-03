@@ -5241,7 +5241,9 @@ class MulticastResourceState(_messages.Message):
       UPDATING: The resource is being updated.
       UPDATE_FAILED: The resource is failed to be updated.
       INACTIVE: The multicast consumer resource that is deactivated by the
-        multicast administrator.
+        multicast administrator based on permission.
+      OBSOLETE: The multicast consumer resource that is obsoleted due to
+        multicast admin setup teardown.
     """
     STATE_ENUM_UNSPECIFIED = 0
     CREATING = 1
@@ -5251,6 +5253,7 @@ class MulticastResourceState(_messages.Message):
     UPDATING = 5
     UPDATE_FAILED = 6
     INACTIVE = 7
+    OBSOLETE = 8
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
 
@@ -10850,6 +10853,10 @@ class TlsRoute(_messages.Message):
       least one RouteRule must be supplied. If there are multiple rules then
       the action taken will be the first rule to match.
     selfLink: Output only. Server-defined URL of this resource
+    targetProxies: Optional. TargetProxies defines a list of TargetTcpProxies
+      this TlsRoute is attached to, as one of the routing rules to route the
+      requests served by the TargetTcpProxy. Each TargetTcpProxy reference
+      should match the pattern: `projects/*/locations/*/targetTcpProxies/`
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -10885,7 +10892,8 @@ class TlsRoute(_messages.Message):
   name = _messages.StringField(6)
   rules = _messages.MessageField('TlsRouteRouteRule', 7, repeated=True)
   selfLink = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  targetProxies = _messages.StringField(9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class TlsRouteRouteAction(_messages.Message):

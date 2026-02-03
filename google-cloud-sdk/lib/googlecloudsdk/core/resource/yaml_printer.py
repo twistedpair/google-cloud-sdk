@@ -95,6 +95,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     def _OrderedDictPresenter(dumper, data):
       return dumper.represent_mapping('tag:yaml.org,2002:map', data.items())
 
+    def _SingleQuotedScalarStringPresenter(dumper, data):
+      return dumper.represent_scalar('tag:yaml.org,2002:str', data, style="'")
+
     def _UndefinedPresenter(dumper, data):
       r = repr(data)
       if r == '[]':
@@ -113,6 +116,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
                                            _NullPresenter)
     self._yaml.representer.add_representer(collections.OrderedDict,
                                            _OrderedDictPresenter)
+    self._yaml.representer.add_representer(
+        yaml.scalarstring.SingleQuotedScalarString,
+        _SingleQuotedScalarStringPresenter)
 
   class _LiteralLines(six.text_type):
     """A yaml representer hook for literal strings containing newlines."""

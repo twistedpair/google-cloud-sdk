@@ -415,3 +415,12 @@ rollout_plan:
   - parameter_name: rolloutPlan
     attribute_name: rollout_plan
     help: The name of the Google Compute Engine rollout plan.
+
+rollout:
+  name: Rollout
+  collection: compute.rollouts
+  attributes:
+  - *compute_project
+  - parameter_name: rollout
+    attribute_name: rollout
+    help: The name of the Google Compute Engine rollout.

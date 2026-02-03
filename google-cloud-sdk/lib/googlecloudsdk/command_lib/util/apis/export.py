@@ -26,6 +26,7 @@ import re
 import textwrap
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
@@ -44,6 +45,8 @@ _YAML_WORKAROUND = '<YAML-WORKAROUND/>'
 _OPTIONAL = 'Optional.'
 _REQUIRED = 'Required.'
 _OUTPUT_ONLY_REGEX = r'^(?:\[Output Only\]|Output only\.)'
+# From https://yaml.org/type/bool.html.
+_YAML_BOOLEAN_REGEX = r'y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF'  # pylint:disable=line-too-long
 
 
 def _WrapDescription(depth, text):
@@ -248,7 +251,11 @@ class ExportSchemasGenerator(object):
             # Convert enums from proto to JSON schema.
             enum = value.get('choices')
             d['type'] = 'string'
-            d['enum'] = sorted([n for n, _ in six.iteritems(enum)])
+            d['enum'] = sorted([
+                yaml.SingleQuotedScalarString(n)
+                if re.fullmatch(_YAML_BOOLEAN_REGEX, n) else n
+                for n, _ in six.iteritems(enum)
+            ])
           else:
             d['type'] = type_name
 

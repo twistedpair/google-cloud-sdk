@@ -97,6 +97,50 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BUCKETS = (
+      'projects.locations.buckets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS_DATASETS = (
+      'projects.locations.buckets.datasets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/datasets/{datasetsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS_DATASETS_LINKS = (
+      'projects.locations.buckets.datasets.links',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/datasets/{datasetsId}/links/{linksId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS_DATASETS_VIEWS = (
+      'projects.locations.buckets.datasets.views',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/datasets/{datasetsId}/views/{viewsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

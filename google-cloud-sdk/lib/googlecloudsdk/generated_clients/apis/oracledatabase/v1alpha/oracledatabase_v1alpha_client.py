@@ -370,6 +370,33 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Refresh(self, request, global_params=None):
+      r"""Refreshes the refreshable clone of an Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesRefreshRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Refresh')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Refresh.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:refresh',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.refresh',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:refresh',
+        request_field='refreshAutonomousDatabaseRequest',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesRefreshRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Restart(self, request, global_params=None):
       r"""Restarts an Autonomous Database.
 
@@ -2899,7 +2926,7 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (OracledatabaseProjectsLocationsListRequest) input message

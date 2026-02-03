@@ -584,8 +584,9 @@ class Consumer(_messages.Message):
 
 
 class CustomRegionMetadata(_messages.Message):
-  r"""Metadata about a custom region. This is only populated if the region is
-  a custom region. For single/multi regions, it will be empty.
+  r"""Deprecated: Use a single region service instead. Metadata about a custom
+  region. This is only populated if the region is a custom region. For
+  single/multi regions, it will be empty.
 
   Fields:
     optionalReadOnlyRegions: The read-only regions for this custom region.
@@ -1365,10 +1366,11 @@ class LocationMetadata(_messages.Message):
   r"""Metadata about the service in a location.
 
   Fields:
-    customRegionMetadata: Possible configurations supported if the current
-      region is a custom region.
-    multiRegionMetadata: The multi-region metadata if the current region is a
-      multi-region.
+    customRegionMetadata: Deprecated: Use a single region service instead.
+      Possible configurations supported if the current region is a custom
+      region.
+    multiRegionMetadata: Deprecated: Use a single region service instead. The
+      multi-region metadata if the current region is a multi-region.
     supportedHiveMetastoreVersions: The versions of Hive Metastore that can be
       used when creating a new metastore service in this location. The server
       guarantees that exactly one HiveMetastoreVersion in the list will set
@@ -2628,9 +2630,10 @@ class MoveTableToDatabaseResponse(_messages.Message):
 
 
 class MultiRegionMetadata(_messages.Message):
-  r"""The metadata for the multi-region that includes the constituent regions.
-  The metadata is only populated if the region is multi-region. For single
-  region or custom dual region, it will be empty.
+  r"""Deprecated: Use a single region service instead. The metadata for the
+  multi-region that includes the constituent regions. The metadata is only
+  populated if the region is multi-region. For single region or custom dual
+  region, it will be empty.
 
   Fields:
     constituentRegions: The regions constituting the multi-region.

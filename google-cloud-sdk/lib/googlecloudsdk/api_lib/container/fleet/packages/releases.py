@@ -129,9 +129,8 @@ class ReleasesClient(object):
     # necessary.
     if not variants and lifecycle is None:
       raise ValueError(
-          'No variants found in source directory. Please check the source'
-          ' directory and variants pattern, or create the release with'
-          ' --lifecycle=DRAFT.'
+          'No variants found in source path. Please check the source'
+          ' path, or create the release with --lifecycle=DRAFT.'
       )
     labels = self.messages.Release.LabelsValue(additionalProperties=[])
     labels.additionalProperties.append(

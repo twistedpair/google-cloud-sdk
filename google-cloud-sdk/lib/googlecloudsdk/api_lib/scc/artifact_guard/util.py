@@ -96,15 +96,24 @@ def GetSignedUrls(parent_resource, image_name, image_digest, image_tag):
     URIs.
   """
   client = GetClientInstance()
-  messages = GetMessagesModule()
+  messages = client.MESSAGES_MODULE
 
-  req = messages.ArtifactscanguardOrganizationsLocationsArtifactEvaluationsDataGatewayRequest(
-      parent=parent_resource,
-      artifactMetadata_imageName=image_name,
-      artifactMetadata_imageDigest=image_digest,
-      artifactMetadata_imageTag=image_tag,
-  )
-  op = client.organizations_locations_artifactEvaluations.DataGateway(req)
+  if parent_resource.startswith('projects/'):
+    req = messages.ArtifactscanguardProjectsLocationsArtifactEvaluationsDataGatewayRequest(
+        parent=parent_resource,
+        artifactMetadata_imageName=image_name,
+        artifactMetadata_imageDigest=image_digest,
+        artifactMetadata_imageTag=image_tag,
+    )
+    op = client.projects_locations_artifactEvaluations.DataGateway(req)
+  else:
+    req = messages.ArtifactscanguardOrganizationsLocationsArtifactEvaluationsDataGatewayRequest(
+        parent=parent_resource,
+        artifactMetadata_imageName=image_name,
+        artifactMetadata_imageDigest=image_digest,
+        artifactMetadata_imageTag=image_tag,
+    )
+    op = client.organizations_locations_artifactEvaluations.DataGateway(req)
   return op.response
 
 
@@ -134,7 +143,7 @@ def RunArtifactEvaluation(
     The long-running operation for the scan.
   """
   client = GetClientInstance()
-  messages = GetMessagesModule()
+  messages = client.MESSAGES_MODULE
 
   artifact_metadata = messages.ArtifactMetadata(
       imageName=image_name,
@@ -150,14 +159,18 @@ def RunArtifactEvaluation(
       pipelineConnector=connector_id,
   )
 
-  req = (
-      messages.ArtifactscanguardOrganizationsLocationsArtifactEvaluationsRunRequest(
-          parent=parent_resource,
-          runArtifactEvaluationRequest=evaluation_request,
-      )
-  )
-
-  return client.organizations_locations_artifactEvaluations.Run(req)
+  if parent_resource.startswith('projects/'):
+    req = messages.ArtifactscanguardProjectsLocationsArtifactEvaluationsRunRequest(
+        parent=parent_resource,
+        runArtifactEvaluationRequest=evaluation_request,
+    )
+    return client.projects_locations_artifactEvaluations.Run(req)
+  else:
+    req = messages.ArtifactscanguardOrganizationsLocationsArtifactEvaluationsRunRequest(
+        parent=parent_resource,
+        runArtifactEvaluationRequest=evaluation_request,
+    )
+    return client.organizations_locations_artifactEvaluations.Run(req)
 
 
 def WaitForOperation(operation, message):
@@ -171,11 +184,21 @@ def WaitForOperation(operation, message):
     The result of the operation.
   """
   client = GetClientInstance()
-  op_resource = resources.REGISTRY.Parse(
-      operation.name,
-      collection='artifactscanguard.organizations.locations.operations',
-  )
-  poller = waiter.CloudOperationPollerNoResources(
-      client.organizations_locations_operations
-  )
-  return waiter.WaitFor(poller, op_resource, message)
+  if operation.name.startswith('projects/'):
+    op_resource = resources.REGISTRY.Parse(
+        operation.name,
+        collection='artifactscanguard.projects.locations.operations',
+    )
+    poller = waiter.CloudOperationPollerNoResources(
+        client.projects_locations_operations
+    )
+    return waiter.WaitFor(poller, op_resource, message)
+  else:
+    op_resource = resources.REGISTRY.Parse(
+        operation.name,
+        collection='artifactscanguard.organizations.locations.operations',
+    )
+    poller = waiter.CloudOperationPollerNoResources(
+        client.organizations_locations_operations
+    )
+    return waiter.WaitFor(poller, op_resource, message)

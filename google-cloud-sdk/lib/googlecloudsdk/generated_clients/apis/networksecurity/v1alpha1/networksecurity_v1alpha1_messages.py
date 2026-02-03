@@ -9383,11 +9383,15 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
         `secret_path`.
       REQUEST_TO_SYMANTEC_FAILED: Failed to get a successful response from
         Symantec API due to an invalid API key or Symantec API unavailability.
+      UNAVAILABLE_FOR_HISTORICAL_REQUESTS: The connection state is unavailable
+        because live calls to Symantec API are not made for historical
+        requests.
     """
     SYMANTEC_CONNECTION_STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
     READ_SECRET_FAILED = 2
     REQUEST_TO_SYMANTEC_FAILED = 3
+    UNAVAILABLE_FOR_HISTORICAL_REQUESTS = 4
 
   availableSymantecSites = _messages.StringField(1, repeated=True)
   secretPath = _messages.StringField(2)
@@ -10163,11 +10167,14 @@ class UllMirroringCollector(_messages.Message):
       ACTIVE: Ready.
       CREATING: Being created.
       DELETING: Being deleted.
+      CLOSED: Indicates the collector is disabled due to a breaking change in
+        another resource.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     DELETING = 3
+    CLOSED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -10207,6 +10214,9 @@ class UllMirroringEngine(_messages.Message):
   r"""UllMirroringEngine is a resource that represents the Market Capture
   engine in a given location.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the engine.
+
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
@@ -10218,8 +10228,25 @@ class UllMirroringEngine(_messages.Message):
     name: Identifier. The name of the resource.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
+    state: Output only. The state of the engine.
     updateTime: Output only. [Output only] Update time stamp
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the engine.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+      DELETE_FAILED: Failed to delete.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    DELETE_FAILED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -10250,7 +10277,8 @@ class UllMirroringEngine(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   reconciling = _messages.BooleanField(5)
-  updateTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class UllMirroringEngineCollector(_messages.Message):

@@ -710,6 +710,7 @@ def Session(
     session.verify = ca_certs
 
   session.mount('https://', adapter)
+  session.mount('https://dl.google.com', HTTPAdapter(None))
   return session
 
 

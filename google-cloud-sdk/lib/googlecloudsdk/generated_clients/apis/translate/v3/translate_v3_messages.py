@@ -86,7 +86,7 @@ class AdaptiveMtTranslateRequest(_messages.Message):
   Fields:
     content: Required. The content of the input in string format.
     dataset: Required. The resource name for the dataset to use for adaptive
-      MT. `projects/{project}/locations/{location-
+      MT translation. `projects/{project}/locations/{location-
       id}/adaptiveMtDatasets/{dataset}`
     glossaryConfig: Optional. Glossary to be applied. The glossary must be
       within the same region (have the same location-id) as the model,
@@ -1964,8 +1964,8 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSente
       ListAdaptiveMtSentencesRequest.next_page_token returned from the
       previous call to `ListTranslationMemories` method. The first page is
       returned if `page_token` is empty or missing.
-    parent: Required. The resource name of the project from which to list the
-      Adaptive MT files. The following format lists all sentences under a
+    parent: Required. The resource name of the Adaptive MT file from which to
+      list the sentences. The following format lists all sentences under a
       file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{datas
       et}/adaptiveMtFiles/{file}` The following format lists all sentences
       within a dataset.
@@ -2015,7 +2015,7 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesListRequest(_me
       ListAdaptiveMtFilesResponse.next_page_token returned from the previous
       call to `ListAdaptiveMtFiles` method. The first page is returned if
       `page_token`is empty or missing.
-    parent: Required. The resource name of the project from which to list the
+    parent: Required. The resource name of the dataset from which to list the
       Adaptive MT files.
       `projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}`
   """
@@ -2037,8 +2037,8 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesListRequest
       ListAdaptiveMtSentencesRequest.next_page_token returned from the
       previous call to `ListTranslationMemories` method. The first page is
       returned if `page_token` is empty or missing.
-    parent: Required. The resource name of the project from which to list the
-      Adaptive MT files. The following format lists all sentences under a
+    parent: Required. The resource name of the Adaptive MT file from which to
+      list the sentences. The following format lists all sentences under a
       file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{datas
       et}/adaptiveMtFiles/{file}` The following format lists all sentences
       within a dataset.

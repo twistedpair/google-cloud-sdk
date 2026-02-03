@@ -3707,6 +3707,8 @@ class DiscoveryOccurrence(_messages.Message):
     cpe: The CPE of the resource being scanned.
     files: Files that make up the resource described by the occurrence.
     lastScanTime: The last time this resource was scanned.
+    lastVulnerabilityUpdateTime: The last time vulnerability scan results
+      changed.
     sbomStatus: The status of an SBOM generation.
   """
 
@@ -3752,7 +3754,8 @@ class DiscoveryOccurrence(_messages.Message):
   cpe = _messages.StringField(7)
   files = _messages.MessageField('File', 8, repeated=True)
   lastScanTime = _messages.StringField(9)
-  sbomStatus = _messages.MessageField('SBOMStatus', 10)
+  lastVulnerabilityUpdateTime = _messages.StringField(10)
+  sbomStatus = _messages.MessageField('SBOMStatus', 11)
 
 
 class Distribution(_messages.Message):

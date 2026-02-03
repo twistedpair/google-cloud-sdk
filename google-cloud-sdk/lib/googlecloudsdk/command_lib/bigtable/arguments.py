@@ -119,6 +119,24 @@ def ProcessInstanceTypeAndNodes(args):
   return num_nodes
 
 
+def ValidateStandardIsolationArgs(args, allow_memory_layer=False):
+  """Check that if --standard is specified, at least one standard isolation arg must be specified."""
+  if not args.standard:
+    return
+  if allow_memory_layer:
+    if args.priority is None and args.use_memory_layer is None:
+      raise exceptions.OneOfArgumentsRequiredException(
+          ['--priority', '--use-memory-layer'],
+          'Either --priority or --use-memory-layer must be specified with'
+          ' --standard.',
+      )
+  elif args.priority is None:
+    raise exceptions.OneOfArgumentsRequiredException(
+        ['--priority'],
+        '--priority must be specified with --standard.',
+    )
+
+
 class ArgAdder(object):
   """A class for adding Bigtable command-line arguments."""
 
@@ -377,7 +395,7 @@ class ArgAdder(object):
     )
     return self
 
-  def AddIsolation(self):
+  def AddIsolation(self, allow_memory_layer=False):
     """Add argument for isolating this app profile's traffic to parser."""
     isolation_group = self.parser.add_mutually_exclusive_group()
     standard_isolation_group = isolation_group.add_group(
@@ -405,18 +423,40 @@ class ArgAdder(object):
             ' priority, which might cause unexpected behavior for running'
             ' applications.'
         ),
-        required=True,
     )
+
+    standard_help = (
+        'Use standard provisioned node compute option, rather than Data'
+        ' Boost compute option. If specified, `--priority` is required.'
+    )
+    if allow_memory_layer:
+      standard_help = (
+          'Use standard provisioned node compute option, rather than Data'
+          ' Boost compute option. If specified, `--priority` or'
+          ' `--use-memory-layer` is required.'
+      )
 
     standard_isolation_group.add_argument(
         '--standard',
         action='store_true',
         default=False,
-        help=(
-            'Use standard provisioned node compute option, rather than Data'
-            ' Boost compute option. If specified, `--priority` is required.'
-        ),
+        help=standard_help,
     )
+
+    if allow_memory_layer:
+      standard_isolation_group.add_argument(
+          '--use-memory-layer',
+          action='store_true',
+          default=None,
+          help=(
+              'Use in-memory layer with standard provisioned node compute.'
+              ' Passing this option implies standard provisioned node'
+              ' compute, e.g. the `--standard` option, with in-memory layer'
+              ' enabled. Use `--no-use-memory-layer` to not use the memory'
+              ' layer.'
+          ),
+          hidden=True,  # TODO(b/469808090): unhide for GA.
+      )
 
     data_boost_isolation_group = isolation_group.add_group(
         'Data Boost Read-only Isolation',

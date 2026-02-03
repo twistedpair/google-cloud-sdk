@@ -3677,8 +3677,6 @@ def AddDatabaseRoles(parser, required=False):
   parser.add_argument(
       '--database-roles',
       required=required,
-      # TODO: b/440167373 - Remove hidden flag once the feature is launched.
-      hidden=True,
       default=[],
       metavar='ROLE',
       type=arg_parsers.ArgList(),
@@ -3702,8 +3700,6 @@ def AddRevokeExistingRoles(parser):
   parser.add_argument(
       '--revoke-existing-roles',
       required=False,
-      # TODO: b/440167373 - Remove hidden flag once the feature is launched.
-      hidden=True,
       action='store_true',
       help="""\
         A boolean flag for revoking existing database roles from the user.

@@ -93,6 +93,7 @@ class AvroFormat(_messages.Message):
   """
 
 
+
 class AwsKinesis(_messages.Message):
   r"""Ingestion settings for Amazon Kinesis Data Streams.
 
@@ -348,12 +349,11 @@ class BigQueryConfig(_messages.Message):
 
 
 class BigtableConfig(_messages.Message):
-  r"""Configuration for a Bigtable subscription.
-
-  The Pub/Sub message will be written to a Bigtable row as follows: - row key:
-  subscription name and message ID delimited by #. - columns: message bytes
-  written to a single column family "data" with an empty-string column
-  qualifier. - cell timestamp: the message publish timestamp.
+  r"""Configuration for a Bigtable subscription. The Pub/Sub message will be
+  written to a Bigtable row as follows: - row key: subscription name and
+  message ID delimited by #. - columns: message bytes written to a single
+  column family "data" with an empty-string column qualifier. - cell
+  timestamp: the message publish timestamp.
 
   Enums:
     StateValueValuesEnum: Output only. An output-only field that indicates
@@ -376,10 +376,8 @@ class BigtableConfig(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only.
-
-    An output-only field that indicates whether or not the subscription can
-    receive messages.
+    r"""Output only. An output-only field that indicates whether or not the
+    subscription can receive messages.
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.
@@ -402,7 +400,6 @@ class BigtableConfig(_messages.Message):
         enforce_in_transit is set to true and the destination locations are
         not in the allowed regions.
     """
-
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     NOT_FOUND = 2
@@ -845,6 +842,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class ExpirationPolicy(_messages.Message):
@@ -1299,6 +1297,7 @@ class PubSubAvroFormat(_messages.Message):
   and attributes fields of the originally exported Pub/Sub message will be
   restored when publishing.
   """
+
 
 
 class PubSubExportConfig(_messages.Message):
@@ -2294,6 +2293,7 @@ class PubsubWrapper(_messages.Message):
   """
 
 
+
 class PullRequest(_messages.Message):
   r"""Request for the `Pull` method.
 
@@ -2912,11 +2912,9 @@ class Status(_messages.Message):
 
 
 class Subscription(_messages.Message):
-  r"""A subscription resource.
-
-  If none of `push_config`, `bigquery_config`, or `cloud_storage_config` is set,
-  then the subscriber will pull and ack messages using API methods. At most one
-  of these fields may be set.
+  r"""A subscription resource. If none of `push_config`, `bigquery_config`, or
+  `cloud_storage_config` is set, then the subscriber will pull and ack
+  messages using API methods. At most one of these fields may be set.
 
   Enums:
     StateValueValuesEnum: Output only. An output-only field indicating whether
@@ -3125,9 +3123,7 @@ class Subscription(_messages.Message):
   filter = _messages.StringField(11)
   labels = _messages.MessageField('LabelsValue', 12)
   messageRetentionDuration = _messages.StringField(13)
-  messageTransforms = _messages.MessageField(
-      'MessageTransform', 14, repeated=True
-  )
+  messageTransforms = _messages.MessageField('MessageTransform', 14, repeated=True)
   name = _messages.StringField(15)
   pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 16)
   pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 17)
@@ -3200,6 +3196,7 @@ class TextConfig(_messages.Message):
   r"""Configuration for writing message data in text format. Message payloads
   will be written to files as raw text, separated by a newline.
   """
+
 
 
 class TextFormat(_messages.Message):

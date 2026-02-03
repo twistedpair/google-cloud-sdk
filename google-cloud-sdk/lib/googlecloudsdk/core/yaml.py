@@ -301,6 +301,18 @@ def convert_to_block_text(data):
   yaml.scalarstring.walk_tree(data)
 
 
+def SingleQuotedScalarString(value):  # pylint:disable=invalid-name
+  """Single quotes the value using SingleQuotedScalarString.
+
+  Args:
+    value: The value to wrap.
+
+  Returns:
+    The value wrapped in SingleQuotedScalarString.
+  """
+  return yaml.scalarstring.SingleQuotedScalarString(value)
+
+
 def list_like(item):
   """Return True if the item is like a list: a MutableSequence."""
   return isinstance(item, collections_abc.MutableSequence)

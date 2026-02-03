@@ -15,6 +15,7 @@
 """Creates an image from Source."""
 
 import re
+from typing import Any
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -31,6 +32,7 @@ from googlecloudsdk.command_lib.run.sourcedeploys import sources
 from googlecloudsdk.command_lib.run.sourcedeploys import types
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import retry
 
 
 _BUILD_NAME_PATTERN = re.compile(
@@ -78,9 +80,7 @@ def CreateImage(
   tracker.StartStage(stages.UPLOAD_SOURCE)
   if kms_key:
     tracker.UpdateHeaderMessage('Using the source from the specified bucket.')
-    _ValidateCmekDeployment(
-        build_source, build_image, kms_key
-    )
+    _ValidateCmekDeployment(build_source, build_image, kms_key)
     source = sources.GetGcsObject(build_source)
   else:
     tracker.UpdateHeaderMessage('Uploading sources.')
@@ -466,12 +466,46 @@ def _SubmitBuild(
   return response_dict, build_log_url, build_response.baseImageUri
 
 
-def _PollUntilBuildCompletes(build_op_ref):
+def _PollUntilBuildCompletes(
+    build_op_ref: resources.Resource,
+) -> dict[str, Any]:
+  """Poll the build operation until it completes.
+
+  Args:
+    build_op_ref: The resource reference for the Cloud Build operation.
+
+  Returns:
+    A dictionary representation of the completed build operation's response.
+
+  Raises:
+    waiter.TimeoutError: If the build operation does not complete within the
+      maximum wait time.
+  """
   client = cloudbuild_util.GetClientInstance()
   poller = waiter.CloudOperationPoller(
       client.projects_builds, client.operations
   )
-  operation = waiter.PollUntilDone(poller, build_op_ref)
+  try:
+    # poll every second for up to a minute
+    operation = waiter.PollUntilDone(
+        poller,
+        build_op_ref,
+        sleep_ms=1000,
+        jitter_ms=0,
+        exponential_sleep_multiplier=1,
+        wait_ceiling_ms=1000,
+        max_wait_ms=60000,
+    )
+  except retry.RetryException:
+    # poll with a slowly increasing sleep time, up to 10 seconds between polls.
+    operation = waiter.PollUntilDone(
+        poller,
+        build_op_ref,
+        sleep_ms=1000,
+        jitter_ms=500,
+        exponential_sleep_multiplier=1.1,
+        wait_ceiling_ms=10000,
+    )
   return encoding.MessageToPyValue(operation.response)
 
 

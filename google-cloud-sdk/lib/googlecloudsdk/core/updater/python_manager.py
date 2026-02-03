@@ -90,10 +90,7 @@ def _IsHomebrewInstalled():
 
 
 def _PromptPythonInstall():
-  if _IsHomebrewInstalled():
-    return f'Homebrew install Python {PYTHON_VERSION}?'
-  else:
-    return f'Download and run Python {PYTHON_VERSION} installer?'
+  return f'Download and run Python {PYTHON_VERSION} installer?'
 
 
 def _BrewInstallPython():
@@ -158,14 +155,16 @@ def PromptAndInstallPythonOnMac():
     python_to_use = f'{MACOS_PYTHON_INSTALL_PATH}bin/python3'
   already_installed = os.path.isfile(python_to_use)
 
-  # Prompt for user permission to install python if not already installed
   install_errors = None
   if not already_installed:
-    prompt = _PromptPythonInstall()
-    if not console_io.PromptContinue(prompt_string=prompt, default=True):
-      return
-    install_errors = (_BrewInstallPython()
-                      if homebrew_installed else _MacInstallPython())
+    if homebrew_installed:
+      install_errors = _BrewInstallPython()
+    else:
+      # Prompt for user permission to install python if not already installed
+      prompt = _PromptPythonInstall()
+      if not console_io.PromptContinue(prompt_string=prompt, default=True):
+        return
+      install_errors = _MacInstallPython()
 
   # Update python dependencies
   if not install_errors:

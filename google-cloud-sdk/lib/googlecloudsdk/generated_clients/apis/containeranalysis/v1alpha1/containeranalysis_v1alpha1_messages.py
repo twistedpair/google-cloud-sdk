@@ -3335,6 +3335,8 @@ class Discovered(_messages.Message):
     files: Optional. Files that make up the resource described by the
       occurrence.
     lastScanTime: The last time this resource was scanned.
+    lastVulnerabilityUpdateTime: Optional. The last time vulnerability scan
+      results changed.
     operation: Output only. An operation that indicates the status of the
       current scan. This field is deprecated, do not use.
     sbomStatus: Output only. The status of an SBOM generation.
@@ -3384,9 +3386,10 @@ class Discovered(_messages.Message):
   cpe = _messages.StringField(7)
   files = _messages.MessageField('File', 8, repeated=True)
   lastScanTime = _messages.StringField(9)
-  operation = _messages.MessageField('Operation', 10)
-  sbomStatus = _messages.MessageField('SBOMStatus', 11)
-  vulnerabilityAttestation = _messages.MessageField('VulnerabilityAttestation', 12)
+  lastVulnerabilityUpdateTime = _messages.StringField(10)
+  operation = _messages.MessageField('Operation', 11)
+  sbomStatus = _messages.MessageField('SBOMStatus', 12)
+  vulnerabilityAttestation = _messages.MessageField('VulnerabilityAttestation', 13)
 
 
 class Discovery(_messages.Message):

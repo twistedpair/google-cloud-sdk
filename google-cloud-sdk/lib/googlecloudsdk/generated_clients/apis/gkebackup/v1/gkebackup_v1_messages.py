@@ -78,6 +78,115 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class BDRBackupPlanJobLog(_messages.Message):
+  r"""Log entry for BDRBackupPlanJobLog for resources using BackupPlan based
+  protection.
+
+  Fields:
+    backupPlanName: Canonical resource name for Backup Plan Plan of the job.
+    endTime: End time of the job.
+    errorCode: The error code. Only populated in error scenarios.
+    errorMessage: The user readable error message. Only populated in error
+      scenarios.
+    errorType: The name of the error type eg. PERMISSION_DENIED. Only
+      populated in error scenarios.
+    jobCategory: The category field displays the category of the job. Can be
+      one of [UPDATE_BACKUP_PLAN].
+    jobId: The job_id field displays the identifier of the job being reported.
+    jobStatus: The status field displays the status of the job. Can be one of
+      [RUNNING,SUCCESSFUL, FAILED].
+    newBackupPlanRevisionId: User friendly revision id e.g. v0, v1 etc.
+    newBackupPlanRevisionName: Full resource name for new backup plan revision
+    previousBackupPlanRevisionId: User friendly revision id e.g. v0, v1 etc.
+    previousBackupPlanRevisionName: Full resource name for previous backup
+      plan revision
+    previousBackupRules: Previous Backup Plan rules.
+    resourceType: The resource_type field displays the type of the protected
+      resource.
+    revisedBackupRules: Revised Backup Plan rules.
+    startTime: Start time of the job.
+    workloadsAffectedCount: The total number of workloads affected by the job.
+  """
+
+  backupPlanName = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  errorCode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  errorMessage = _messages.StringField(4)
+  errorType = _messages.StringField(5)
+  jobCategory = _messages.StringField(6)
+  jobId = _messages.StringField(7)
+  jobStatus = _messages.StringField(8)
+  newBackupPlanRevisionId = _messages.StringField(9)
+  newBackupPlanRevisionName = _messages.StringField(10)
+  previousBackupPlanRevisionId = _messages.StringField(11)
+  previousBackupPlanRevisionName = _messages.StringField(12)
+  previousBackupRules = _messages.MessageField('BackupRuleDetail', 13, repeated=True)
+  resourceType = _messages.StringField(14)
+  revisedBackupRules = _messages.MessageField('BackupRuleDetail', 15, repeated=True)
+  startTime = _messages.StringField(16)
+  workloadsAffectedCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+
+
+class BDRBackupRestoreJobLog(_messages.Message):
+  r"""Log entry for Backup and Restore Job for resources using BackupPlan
+  based protection. Next Id: 23
+
+  Fields:
+    backupConsistencyTime: Backup consistency time.
+    backupName: Full resource name of the backup created in backup jobs and
+      used in restore jobs.
+    backupPlanName: Full resource name for Backup Plan of the job. Only
+      populated for Scheduled Backup and Adhoc Backup.
+    backupRetentionDays: Backup retention in days.
+    backupRule: Name of the backup rule. Only populated for Scheduled Backup
+      and Adhoc Backup.
+    backupVaultName: Full resource name backup vault name
+    endTime: End time of the job.
+    errorCode: The error code. Only populated in error scenarios.
+    errorMessage: The user readable error message. Only populated in error
+      scenarios.
+    errorType: The name of the error type eg. PERMISSION_DENIED. Only
+      populated in error scenarios.
+    incrementalBackupSizeGib: The amount of incremental backup data copied.
+    jobCategory: The category field displays the category of the job.
+    jobId: The job_id field displays the identifier of the job being logged.
+    jobStatus: The status field displays the status of the job.
+    recoveryPointTime: Recovery point time.
+    resourceType: The resource_type field displays the type of the protected
+      resource.
+    restoreResourceLocation: Restore resource location.
+    restoreResourceName: Full resource name of the restore resource. Only
+      populated in restore jobs.
+    sourceResourceId: The source resource ID.
+    sourceResourceLocation: Source resource location.
+    sourceResourceName: Full resource name of the protected resource.
+    startTime: Start time of the job.
+  """
+
+  backupConsistencyTime = _messages.StringField(1)
+  backupName = _messages.StringField(2)
+  backupPlanName = _messages.StringField(3)
+  backupRetentionDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  backupRule = _messages.StringField(5)
+  backupVaultName = _messages.StringField(6)
+  endTime = _messages.StringField(7)
+  errorCode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  errorMessage = _messages.StringField(9)
+  errorType = _messages.StringField(10)
+  incrementalBackupSizeGib = _messages.FloatField(11)
+  jobCategory = _messages.StringField(12)
+  jobId = _messages.StringField(13)
+  jobStatus = _messages.StringField(14)
+  recoveryPointTime = _messages.StringField(15)
+  resourceType = _messages.StringField(16)
+  restoreResourceLocation = _messages.StringField(17)
+  restoreResourceName = _messages.StringField(18)
+  sourceResourceId = _messages.StringField(19)
+  sourceResourceLocation = _messages.StringField(20)
+  sourceResourceName = _messages.StringField(21)
+  startTime = _messages.StringField(22)
+
+
 class Backup(_messages.Message):
   r"""Represents a request to perform a single point-in-time capture of some
   portion of the state of a GKE cluster, the record of the backup operation
@@ -721,6 +830,28 @@ class BackupPlanDetails(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
+class BackupRuleDetail(_messages.Message):
+  r"""A BackupRuleDetail object.
+
+  Fields:
+    backupWindow: Backup Window For Eg. "00:00 to 06:00"
+    backupWindowTimezone: Backup Window Timezone in IANA format. For Eg.
+      "America/Los_Angeles"
+    recurrence: Recurrence Type. For Eg. "Weekly"," Monthly" or "Daily".
+    recurrenceSchedule: Recurrence Repeat Schedule. For Eg. "1st and 25th day
+      of the month."
+    retentionDays: Backup Retention in Days.
+    ruleName: Backup Rule Name.
+  """
+
+  backupWindow = _messages.StringField(1)
+  backupWindowTimezone = _messages.StringField(2)
+  recurrence = _messages.StringField(3)
+  recurrenceSchedule = _messages.StringField(4)
+  retentionDays = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  ruleName = _messages.StringField(6)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1076,6 +1207,16 @@ class GetBackupIndexDownloadUrlResponse(_messages.Message):
   """
 
   signedUrl = _messages.StringField(1)
+
+
+class GetTagsRequest(_messages.Message):
+  r"""Request message for GetTags.
+
+  Fields:
+    name: Required. The full resource name of the service resource.
+  """
+
+  name = _messages.StringField(1)
 
 
 class GetTagsResponse(_messages.Message):
@@ -1730,19 +1871,6 @@ class GkebackupProjectsLocationsBackupPlansSetIamPolicyRequest(_messages.Message
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class GkebackupProjectsLocationsBackupPlansSetTagsRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsBackupPlansSetTagsRequest object.
-
-  Fields:
-    name: Required. The full resource name of the service resource.
-    setTagsRequest: A SetTagsRequest resource to be passed as the request
-      body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  setTagsRequest = _messages.MessageField('SetTagsRequest', 2)
 
 
 class GkebackupProjectsLocationsBackupPlansTestIamPermissionsRequest(_messages.Message):
@@ -2444,19 +2572,6 @@ class GkebackupProjectsLocationsRestorePlansSetIamPolicyRequest(_messages.Messag
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class GkebackupProjectsLocationsRestorePlansSetTagsRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsRestorePlansSetTagsRequest object.
-
-  Fields:
-    name: Required. The full resource name of the service resource.
-    setTagsRequest: A SetTagsRequest resource to be passed as the request
-      body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  setTagsRequest = _messages.MessageField('SetTagsRequest', 2)
 
 
 class GkebackupProjectsLocationsRestorePlansTestIamPermissionsRequest(_messages.Message):
@@ -4034,6 +4149,7 @@ class SetTagsRequest(_messages.Message):
     etag: Optional. A checksum based on the current bindings which can be
       passed to prevent race conditions. If not passed, etag check would be
       skipped.
+    name: Required. The full resource name of the service resource.
     requestId: Optional. A unique identifier for this request. Must be a valid
       UUID. This request is only idempotent if a `request_id` is provided.
     tags: Required. These bindings will override any bindings previously set
@@ -4070,8 +4186,9 @@ class SetTagsRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   etag = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-  tags = _messages.MessageField('TagsValue', 3)
+  name = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+  tags = _messages.MessageField('TagsValue', 4)
 
 
 class SetTagsResponse(_messages.Message):

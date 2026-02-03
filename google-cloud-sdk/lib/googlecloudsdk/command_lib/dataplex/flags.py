@@ -330,3 +330,52 @@ def AddAspectFlags(
         metavar='ASPECT_TYPE@PATH',
         required=required,
     )
+
+
+def AddEntryLinkAspectFlags(
+    parser: parser_arguments.ArgumentInterceptor,
+    *,
+    update_aspects_name: str | None = 'update-aspects',
+    required: bool = False,
+):
+  """Adds flags for updating Aspects for EntryLinks.
+
+  Args:
+    parser: The arg parser to add flags to.
+    update_aspects_name: Name of the flag to add for updating Aspects or None if
+      no flag should be added.
+    required: If True, then flags will be marked as required.
+  """
+  if update_aspects_name is not None:
+    parser.add_argument(
+        f'--{update_aspects_name}',
+        help="""
+        Path to a YAML or JSON file containing Aspects to add or update for the EntryLink.
+
+        When this flag is specified, only Aspects referenced in the file are
+        going to be added or updated. This does not remove other Aspects from the EntryLink.
+
+        The file content must be a map where keys are in the format ``ASPECT_TYPE''.
+        Paths are not allowed in the keys for EntryLink aspects.
+
+        Values in the map represent the Aspect's content, which must conform to the
+        template defined for the given ``ASPECT_TYPE''. Each Aspect is fully replaced.
+
+        ``ASPECT_TYPE'' must be in the format ``PROJECT_ID.LOCATION.ASPECT_TYPE_ID''.
+
+        Example YAML format:
+
+        ```
+          project-id1.us-central1.my-aspect-type1:
+            data:
+              aspectField1: someValue
+              aspectField2: someOtherValue
+          project-id2.us-central1.my-aspect-type2:
+            data:
+              aspectField3: someValue3
+        ```
+        """,
+        type=dataplex_parsers.ParseEntryLinkAspects,  # Use the EntryLink parser
+        metavar='YAML_OR_JSON_FILE',
+        required=required,
+    )

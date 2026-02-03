@@ -2854,11 +2854,13 @@ class InstanceStatus(_messages.Message):
       Console.
     observedGeneration: Output only. The 'generation' of the Instance that was
       last processed by the controller.
+    urls: Output only. All URLs serving traffic for this Instance.
   """
 
   conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
   logUri = _messages.StringField(2)
   observedGeneration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  urls = _messages.StringField(4, repeated=True)
 
 
 class Job(_messages.Message):
@@ -3336,10 +3338,11 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/gc-traffic-tags`: Service. *
       `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/minScale`: Service. *
-      `run.googleapis.com/maxScale`: Service. *
-      `run.googleapis.com/manualInstanceCount`: Service. *
+      `run.googleapis.com/ingress`: Service, Instance. *
+      `run.googleapis.com/invoker-iam-disabled`: Service, Instance. *
+      `run.googleapis.com/launch-stage`: Service, Job. *
+      `run.googleapis.com/minScale`: Service. * `run.googleapis.com/maxScale`:
+      Service. * `run.googleapis.com/manualInstanceCount`: Service. *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
       `run.googleapis.com/post-key-revocation-action-type`: Revision.
       `run.googleapis.com/scalingMode`: Service. *
@@ -3387,10 +3390,11 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/gc-traffic-tags`: Service. *
       `run.googleapis.com/gpu-zonal-redundancy-disabled`: Revision. *
       `run.googleapis.com/health-check-disabled`: Revision. *
-      `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/minScale`: Service. *
-      `run.googleapis.com/maxScale`: Service. *
-      `run.googleapis.com/manualInstanceCount`: Service. *
+      `run.googleapis.com/ingress`: Service, Instance. *
+      `run.googleapis.com/invoker-iam-disabled`: Service, Instance. *
+      `run.googleapis.com/launch-stage`: Service, Job. *
+      `run.googleapis.com/minScale`: Service. * `run.googleapis.com/maxScale`:
+      Service. * `run.googleapis.com/manualInstanceCount`: Service. *
       `run.googleapis.com/network-interfaces`: Revision, Execution. *
       `run.googleapis.com/post-key-revocation-action-type`: Revision.
       `run.googleapis.com/scalingMode`: Service. *
@@ -3408,15 +3412,18 @@ class ObjectMeta(_messages.Message):
       resource. In Cloud Run, users are not able to set this field. Instead,
       they must call the corresponding Delete API.
     finalizers: Not supported by Cloud Run
-    generateName: Not supported by Cloud Run
+    generateName: Optional. A prefix for the resource name if not provided in
+      the create request. Must be less than 31 characters to allow for a
+      random suffix.
     generation: A system-provided sequence number representing a specific
       generation of the desired state.
     labels: Map of string keys and values that can be used to organize and
       categorize (scope and select) objects. May match selectors of
       replication controllers and routes.
-    name: Required. The name of the resource. Name is required when creating
-      top-level resources (Service, Job), must be unique within a Cloud Run
-      project/region, and cannot be changed once created.
+    name: Optional. The name of the resource. A name for creating top-level
+      resources (Service, Job, WorkerPool). Must be unique within a Cloud Run
+      project/region, and cannot be changed once created. If omitted, a
+      default name will be generated.
     namespace: Required. Defines the space within each name must be unique
       within a Cloud Run region. In Cloud Run, it must be project ID or
       number.
@@ -3464,7 +3471,8 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/execution-environment`: Revision, Execution. *
     `run.googleapis.com/gc-traffic-tags`: Service. * `run.googleapis.com/gpu-
     zonal-redundancy-disabled`: Revision. * `run.googleapis.com/health-check-
-    disabled`: Revision. * `run.googleapis.com/ingress`: Service. *
+    disabled`: Revision. * `run.googleapis.com/ingress`: Service, Instance. *
+    `run.googleapis.com/invoker-iam-disabled`: Service, Instance. *
     `run.googleapis.com/launch-stage`: Service, Job. *
     `run.googleapis.com/minScale`: Service. * `run.googleapis.com/maxScale`:
     Service. * `run.googleapis.com/manualInstanceCount`: Service. *
@@ -5717,10 +5725,11 @@ class Service(_messages.Message):
       'run.googleapis.com/' and 'autoscaling.knative.dev' are restricted, and
       the accepted annotations will be different depending on the resource
       type. The following Cloud Run-specific annotations are accepted in
-      Service.metadata.annotations. * `run.googleapis.com/binary-
-      authorization-breakglass` * `run.googleapis.com/binary-authorization` *
-      `run.googleapis.com/client-name` * `run.googleapis.com/custom-audiences`
-      * `run.googleapis.com/default-url-disabled` *
+      Service.metadata.annotations. * `run.googleapis.com/base-images` *
+      `run.googleapis.com/binary-authorization-breakglass` *
+      `run.googleapis.com/binary-authorization` * `run.googleapis.com/client-
+      name` * `run.googleapis.com/custom-audiences` *
+      `run.googleapis.com/default-url-disabled` *
       `run.googleapis.com/description` * `run.googleapis.com/gc-traffic-tags`
       * `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets the
       ingress settings for the Service. See [the ingress settings

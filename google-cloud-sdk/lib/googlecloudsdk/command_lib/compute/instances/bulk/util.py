@@ -209,7 +209,7 @@ def _GetPerInstanceProperties(
 
 def _DictToAttachedDiskMessage(disk_dict, messages):
   """Converts a Python dict to a Compute API AttachedDisk message."""
-  return encoding.DictToMessage(disk_dict, messages.AttachedDisk)
+  return encoding.JsonToMessage(messages.AttachedDisk, disk_dict)
 
 
 def _CreateInstanceFlexibilityPolicy(args, messages):

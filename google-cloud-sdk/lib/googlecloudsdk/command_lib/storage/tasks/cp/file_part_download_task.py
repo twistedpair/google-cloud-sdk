@@ -34,6 +34,7 @@ from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
@@ -411,12 +412,28 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         )
       # pylint:disable=broad-except
       except Exception as e:
+        log.debug(
+            'Exception during component download for resource: %s, component:'
+            ' %s, error: %s',
+            self._source_resource,
+            self._component_number,
+            repr(e),
+            exc_info=True,
+        )
         if task_status_queue is not None:
           progress_callback(self._offset, error_occurred=True)
         # pylint:enable=broad-except
+        if task_util.is_pickleable(e):
+          error_payload = e
+        else:
+          log.debug('Error is not pickleable, using str(e) instead.')
+          error_payload = str(e)
         return task.Output(
             additional_task_iterators=None,
-            messages=[task.Message(topic=task.Topic.ERROR, payload=e)])
+            messages=[
+                task.Message(topic=task.Topic.ERROR, payload=error_payload)
+            ],
+        )
 
     elif self._strategy is cloud_api.DownloadStrategy.RESUMABLE:
       server_encoding = self._perform_resumable_download(

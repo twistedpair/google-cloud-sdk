@@ -89,11 +89,16 @@ class BiglakeIcebergV1RestcatalogExtensionsProjectsCatalogsCreateRequest(_messag
       body.
     parent: Required. The parent resource where this catalog will be created.
       Format: projects/{project_id}
+    primary_location: Optional. The primary location for mirroring the remote
+      catalog metadata. It must be a BigLake-supported location, and it should
+      be proximate to the remote catalog's location for better performance and
+      lower cost.
   """
 
   iceberg_catalog_id = _messages.StringField(1)
   icebergCatalog = _messages.MessageField('IcebergCatalog', 2)
   parent = _messages.StringField(3, required=True)
+  primary_location = _messages.StringField(4)
 
 
 class BiglakeIcebergV1RestcatalogExtensionsProjectsCatalogsDeleteRequest(_messages.Message):
@@ -1364,6 +1369,8 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
 encoding.AddCustomJsonFieldMapping(
     BiglakeIcebergV1RestcatalogExtensionsProjectsCatalogsCreateRequest, 'iceberg_catalog_id', 'iceberg-catalog-id')
+encoding.AddCustomJsonFieldMapping(
+    BiglakeIcebergV1RestcatalogExtensionsProjectsCatalogsCreateRequest, 'primary_location', 'primary-location')
 encoding.AddCustomJsonFieldMapping(
     BiglakeIcebergV1RestcatalogExtensionsProjectsCatalogsListRequest, 'page_size', 'page-size')
 encoding.AddCustomJsonFieldMapping(

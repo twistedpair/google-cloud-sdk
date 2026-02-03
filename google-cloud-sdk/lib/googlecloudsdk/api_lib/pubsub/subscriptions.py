@@ -36,6 +36,7 @@ CLEAR_BIGQUERY_CONFIG_VALUE = 'clear'
 CLEAR_CLOUD_STORAGE_CONFIG_VALUE = 'clear'
 CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE = 'clear'
 CLEAR_PUBSUB_EXPORT_CONFIG_VALUE = 'clear'
+CLEAR_BIGTABLE_CONFIG_VALUE = 'clear'
 CLEAR_MESSAGE_TRANSFORMATIONS_VALUE = []
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -137,6 +138,9 @@ class SubscriptionsClient(object):
       cloud_storage_service_account_email=None,
       pubsub_export_topic=None,
       pubsub_export_topic_region=None,
+      bigtable_table=None,
+      bigtable_app_profile_id=None,
+      bigtable_service_account_email=None,
       message_transforms_file=None,
       tags=None,
       enable_vertex_ai_smt=False,
@@ -202,6 +206,11 @@ class SubscriptionsClient(object):
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
       pubsub_export_topic_region (str): The Cloud region to which to publish
         messages.
+      bigtable_table (str): Bigtable table to which to write.
+      bigtable_app_profile_id (str): The app profile to use when writing to
+        Bigtable.
+      bigtable_service_account_email (str): The service account to use when
+        writing to Bigtable.
       message_transforms_file (str): The file path to the JSON or YAML file
         containing the message transforms.
       tags (TagsValue): The tags Keys/Values to be bound to the subscription.
@@ -252,6 +261,11 @@ class SubscriptionsClient(object):
         ),
         pubsubExportConfig=self._PubsubExportConfig(
             pubsub_export_topic, pubsub_export_topic_region
+        ),
+        bigtableConfig=self._BigtableConfig(
+            bigtable_table,
+            bigtable_app_profile_id,
+            bigtable_service_account_email,
         ),
     )
     if message_transforms_file:
@@ -560,6 +574,25 @@ class SubscriptionsClient(object):
       return self.messages.PubSubExportConfig(topic=topic, region=region)
     return None
 
+  def _BigtableConfig(self, table, app_profile_id, service_account_email):
+    """Builds BigtableConfig message from argument values.
+
+    Args:
+      table (str): The name of the Bigtable table.
+      app_profile_id (str): The app profile to use.
+      service_account_email (str): The service account to use.
+
+    Returns:
+      BigtableConfig message or None
+    """
+    if table:
+      return self.messages.BigtableConfig(
+          table=table,
+          appProfileId=app_profile_id,
+          serviceAccountEmail=service_account_email,
+      )
+    return None
+
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
       update_setting.value = None
@@ -586,6 +619,10 @@ class SubscriptionsClient(object):
 
   def _HandlePubsubExportConfigUpdate(self, update_setting):
     if update_setting.value == CLEAR_PUBSUB_EXPORT_CONFIG_VALUE:
+      update_setting.value = None
+
+  def _HandleBigtableConfigUpdate(self, update_setting):
+    if update_setting.value == CLEAR_BIGTABLE_CONFIG_VALUE:
       update_setting.value = None
 
   def Patch(
@@ -628,6 +665,10 @@ class SubscriptionsClient(object):
       pubsub_export_topic=None,
       pubsub_export_topic_region=None,
       clear_pubsub_export_config=False,
+      bigtable_table=None,
+      bigtable_app_profile_id=None,
+      bigtable_service_account_email=None,
+      clear_bigtable_config=False,
       message_transforms_file=None,
       clear_message_transforms=False,
       enable_vertex_ai_smt=False,
@@ -700,12 +741,18 @@ class SubscriptionsClient(object):
         messages.
       clear_pubsub_export_config (bool): If set, clear the Pubsub export config
         from the subscription.
+      bigtable_table (str): Bigtable table to which to write.
+      bigtable_app_profile_id (str): The app profile to use when writing to
+        Bigtable.
+      bigtable_service_account_email (str): The service account to use when
+        writing to Bigtable.
+      clear_bigtable_config (bool): If set, clear the Bigtable config from the
+        subscription.
       message_transforms_file (str): The file path to the JSON or YAML file
         containing the message transforms.
       clear_message_transforms (bool): If set, clears all message transforms
         from the subscription.
-      enable_vertex_ai_smt (bool): If set, enables Vertex AI message
-        transforms.
+      enable_vertex_ai_smt (bool): If set, enables Vertex AI message transforms.
 
     Returns:
       Subscription: The updated subscription.
@@ -758,6 +805,15 @@ class SubscriptionsClient(object):
     else:
       pubsub_export_config = self._PubsubExportConfig(
           pubsub_export_topic, pubsub_export_topic_region
+      )
+
+    if clear_bigtable_config:
+      bigtable_config = CLEAR_BIGTABLE_CONFIG_VALUE
+    else:
+      bigtable_config = self._BigtableConfig(
+          bigtable_table,
+          bigtable_app_profile_id,
+          bigtable_service_account_email,
       )
 
     if clear_push_no_wrapper_config:
@@ -814,6 +870,7 @@ class SubscriptionsClient(object):
             'pushConfig.noWrapper', push_config_no_wrapper
         ),
         _SubscriptionUpdateSetting('pubsubExportConfig', pubsub_export_config),
+        _SubscriptionUpdateSetting('bigtableConfig', bigtable_config),
         _SubscriptionUpdateSetting('messageTransforms', message_transforms),
         _SubscriptionUpdateSetting('messageTransforms', clear_messages),
     ]
@@ -835,6 +892,8 @@ class SubscriptionsClient(object):
           self._HandleCloudStorageConfigUpdate(update_setting)
         if update_setting.field_name == 'pubsubExportConfig':
           self._HandlePubsubExportConfigUpdate(update_setting)
+        if update_setting.field_name == 'bigtableConfig':
+          self._HandleBigtableConfigUpdate(update_setting)
         if update_setting.field_name == 'pushConfig.noWrapper':
           self._HandlePushNoWrapperUpdate(update_setting)
           if push_config is None:

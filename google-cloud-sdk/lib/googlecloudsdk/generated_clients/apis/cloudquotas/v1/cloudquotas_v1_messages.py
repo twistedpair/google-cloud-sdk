@@ -1153,7 +1153,7 @@ class QuotaInfo(_messages.Message):
       "locations/" must be "global". For example, `projects/123/locations/glob
       al/services/compute.googleapis.com/quotaInfos/CpusPerProjectPerRegion`
     quotaDisplayName: The display name of the quota.
-    quotaId: The id of the quota, which is unquie within the service. For
+    quotaId: The id of the quota, which is unique within the service. For
       example, `CpusPerProjectPerRegion`
     quotaIncreaseEligibility: Whether it is eligible to request a higher quota
       value for this quota.

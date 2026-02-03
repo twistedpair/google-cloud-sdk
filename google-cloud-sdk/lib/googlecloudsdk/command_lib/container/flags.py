@@ -5533,27 +5533,29 @@ Examples:
 
 List of supported kubelet configs in 'kubeletConfig'.
 
-KEY                                  | VALUE
------------------------------------- | ------------------------------------------------------------------------------------------
-cpuManagerPolicy                     | either 'static' or 'none'
-cpuCFSQuota                          | true or false (enabled by default)
-cpuCFSQuotaPeriod                    | interval (e.g., '100ms'. The value must be between 1ms and 1 second, inclusive.)
-memoryManager                        | specify memory manager policy
-topologyManager                      | specify topology manager policy and scope
-podPidsLimit                         | integer (The value must be greater than or equal to 1024 and less than 4194304.)
-containerLogMaxSize                  | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi, inclusive.)
-containerLogMaxFiles                 | integer (The value must be between [2, 10].)
-imageGcLowThresholdPercent           | integer (The value must be between [10, 85], and lower than imageGcHighThresholdPercent.)
-imageGcHighThresholdPercent          | integer (The value must be between [10, 85], and greater than imageGcLowThresholdPercent.)
-imageMinimumGcAge                    | interval (e.g., '100s', '1m'. The value must be less than '2m'.)
-imageMaximumGcAge                    | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
-evictionSoft                         | specify eviction soft thresholds
-evictionSoftGracePeriod              | specify eviction soft grace period
-evictionMinimumReclaim               | specify eviction minimum reclaim thresholds
-evictionMaxPodGracePeriodSeconds     | integer (Max grace period for pod termination during eviction, in seconds. The value must be between [0, 300].)
-allowedUnsafeSysctls                 | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
-singleProcessOomKill                 | true or false
-maxParallelImagePulls                | integer (The value must be between [2, 5].)
+KEY                                    | VALUE
+-------------------------------------- | ------------------------------------------------------------------------------------------
+cpuManagerPolicy                       | either 'static' or 'none'
+cpuCFSQuota                            | true or false (enabled by default)
+cpuCFSQuotaPeriod                      | interval (e.g., '100ms'. The value must be between 1ms and 1 second, inclusive.)
+memoryManager                          | specify memory manager policy
+topologyManager                        | specify topology manager policy and scope
+podPidsLimit                           | integer (The value must be greater than or equal to 1024 and less than 4194304.)
+containerLogMaxSize                    | positive number plus unit suffix (e.g., '100Mi', '0.2Gi'. The value must be between 10Mi and 500Mi, inclusive.)
+containerLogMaxFiles                   | integer (The value must be between [2, 10].)
+imageGcLowThresholdPercent             | integer (The value must be between [10, 85], and lower than imageGcHighThresholdPercent.)
+imageGcHighThresholdPercent            | integer (The value must be between [10, 85], and greater than imageGcLowThresholdPercent.)
+imageMinimumGcAge                      | interval (e.g., '100s', '1m'. The value must be less than '2m'.)
+imageMaximumGcAge                      | interval (e.g., '100s', '1m'. The value must be greater than imageMinimumGcAge.)
+evictionSoft                           | specify eviction soft thresholds
+evictionSoftGracePeriod                | specify eviction soft grace period
+evictionMinimumReclaim                 | specify eviction minimum reclaim thresholds
+evictionMaxPodGracePeriodSeconds       | integer (Max grace period for pod termination during eviction, in seconds. The value must be between [0, 300].)
+shutdownGracePeriodSeconds             | integer (Grace period for pods terminating on node shutdown, in seconds. Allowed values: 0, 30, 120.)
+shutdownGracePeriodCriticalPodsSeconds | integer (Grace period for critical pods terminating on node shutdown, in seconds. The value must be between [0, 120] and less than shutdownGracePeriodSeconds.)
+allowedUnsafeSysctls                   | list of sysctls (Allowlisted groups: 'kernel.shm*', 'kernel.msg*', 'kernel.sem', 'fs.mqueue.*', and 'net.*', and sysctls under the groups.)
+singleProcessOomKill                   | true or false
+maxParallelImagePulls                  | integer (The value must be between [2, 5].)
 
 
 List of supported keys in memoryManager in 'kubeletConfig'.

@@ -154,6 +154,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REMOTETRANSPORTPROFILES = (
+      'projects.locations.remoteTransportProfiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'remoteTransportProfiles/{remoteTransportProfilesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SPOKES = (
       'projects.locations.spokes',
       '{+name}',
@@ -183,17 +194,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/transports/'
               '{transportsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_TRANSPORTS_REMOTEPROFILES = (
-      'projects.locations.transports.remoteProfiles',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'remoteTransportProfiles/{remoteProfilesId}',
       },
       ['name'],
       True

@@ -163,6 +163,33 @@ class GeminicloudassistV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Modify(self, request, global_params=None):
+      r"""Modifies an existing investigation revision in place. This is intended for use by callers that are modifying as part of an investigation session, and do not want to create a new revision. Other callers should use UpdateInvestigation, which will create a new revision if the investigation is RUNNING.
+
+      Args:
+        request: (GeminicloudassistProjectsLocationsInvestigationsRevisionsModifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InvestigationRevision) The response message.
+      """
+      config = self.GetMethodConfig('Modify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Modify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/investigations/{investigationsId}/revisions/{revisionsId}:modify',
+        http_method='POST',
+        method_id='geminicloudassist.projects.locations.investigations.revisions.modify',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:modify',
+        request_field='modifyInvestigationRevisionRequest',
+        request_type_name='GeminicloudassistProjectsLocationsInvestigationsRevisionsModifyRequest',
+        response_type_name='InvestigationRevision',
+        supports_download=False,
+    )
+
     def Run(self, request, global_params=None):
       r"""Run an existing revision of an investigation.
 
@@ -572,7 +599,7 @@ class GeminicloudassistV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service. This method can be called in two ways: * **List all public locations:** Use the path `GET /v1/locations`. * **List project-visible locations:** Use the path `GET /v1/projects/{project_id}/locations`. This may include public locations as well as private or other locations specifically visible to the project.
 
       Args:
         request: (GeminicloudassistProjectsLocationsListRequest) input message

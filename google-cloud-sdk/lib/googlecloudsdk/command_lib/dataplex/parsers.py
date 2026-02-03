@@ -73,6 +73,52 @@ def ParseAspects(
   )
 
 
+def ParseEntryLinkAspects(
+    aspects_file: str,
+) -> dataplex_message.GoogleCloudDataplexV1EntryLink.AspectsValue:
+  """Parse aspects from a YAML or JSON file for EntryLinks.
+
+  Perform a basic validation that aspects are provided in a correct format.
+  Aspect keys for EntryLinks cannot contain paths.
+
+  Args:
+    aspects_file: The path to the YAML/JSON file containing aspects.
+
+  Returns:
+    A list of aspects parsed to a proto message (AspectsValue).
+  """
+  parser = arg_parsers.YAMLFileContents()
+  raw_aspects = parser(aspects_file)
+
+  if not isinstance(raw_aspects, dict):
+    raise arg_parsers.ArgumentTypeError(
+        f"Invalid aspects file: {aspects_file}. It must contain a map with a"
+        " key in the format `PROJECT_ID.LOCATION.ASPECT_TYPE_ID`. Values in the"
+        " map represent Aspect's content, which must conform to a template"
+        " defined for a given `PROJECT_ID.LOCATION.ASPECT_TYPE_ID`."
+    )
+
+  aspects = []
+  for aspect_key, aspect in raw_aspects.items():
+    if "@" in aspect_key:
+      raise arg_parsers.ArgumentTypeError(
+          f'Aspect key "{aspect_key}" is invalid for an EntryLink. Aspect keys'
+          ' for EntryLinks must be in PROJECT_ID.LOCATION.ASPECT_TYPE_ID format'
+          ' and cannot contain a path.'
+      )
+    aspects.append(
+        dataplex_message.GoogleCloudDataplexV1EntryLink.AspectsValue.AdditionalProperty(
+            key=aspect_key,
+            value=messages_util.DictToMessageWithErrorCheck(
+                aspect, dataplex_message.GoogleCloudDataplexV1Aspect
+            ),
+        )
+    )
+  return dataplex_message.GoogleCloudDataplexV1EntryLink.AspectsValue(
+      additionalProperties=aspects
+  )
+
+
 def ParseEntrySourceAncestors(ancestors: List[str]):
   """Parse ancestors from a string.
 

@@ -229,13 +229,14 @@ def AddUpdateArgs(
       '--remove-secondary-ranges',
       type=arg_parsers.ArgList(min_length=1),
       action='append',
-      metavar='PROPERTY=VALUE',
+      metavar='RANGE_NAME',
       help="""\
       Removes secondary ranges from the subnetwork.
 
       For example, `--remove-secondary-ranges range2,range3` removes the
       secondary ranges with names range2 and range3.
-      """)
+      """,
+  )
 
   updated_field.add_argument(
       '--enable-flow-logs',

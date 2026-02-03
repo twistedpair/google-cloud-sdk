@@ -12927,7 +12927,7 @@ class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
 
 
 class GoogleCloudApigeeV1RuntimeTraceConfigOverride(_messages.Message):
-  r"""NEXT ID: 7 Trace configuration override for a specific API proxy in an
+  r"""NEXT ID: 8 Trace configuration override for a specific API proxy in an
   environment.
 
   Fields:
@@ -12935,6 +12935,13 @@ class GoogleCloudApigeeV1RuntimeTraceConfigOverride(_messages.Message):
       overridden following format: `organizations/{org}/apis/{api}`
     name: Name of the trace config override in the following format:
       `organizations/{org}/environment/{env}/traceConfig/overrides/{override}`
+    openTelemetryProtocolEnabled: If `true`, the runtime uses OpenTelemetry
+      Protocol (OTLP) to send trace data. Configuration Requirements (if
+      `open_telemetry_protocol_enabled` is `true`): - Allowed `Exporter`s:
+      `CLOUD_TRACE` or `OPEN_TELEMETRY_COLLECTOR`. - If `Exporter` is
+      `OPEN_TELEMETRY_COLLECTOR`: - `endpoint` refers to a valid OTLP
+      collector URL. - If `Exporter` is `CLOUD_TRACE`: - `endpoint` refers to
+      a valid project ID
     revisionCreateTime: The timestamp that the revision was created or
       updated.
     revisionId: Revision number which can be used by the runtime to detect if
@@ -12948,10 +12955,11 @@ class GoogleCloudApigeeV1RuntimeTraceConfigOverride(_messages.Message):
 
   apiProxy = _messages.StringField(1)
   name = _messages.StringField(2)
-  revisionCreateTime = _messages.StringField(3)
-  revisionId = _messages.StringField(4)
-  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceSamplingConfig', 5)
-  uid = _messages.StringField(6)
+  openTelemetryProtocolEnabled = _messages.BooleanField(3)
+  revisionCreateTime = _messages.StringField(4)
+  revisionId = _messages.StringField(5)
+  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceSamplingConfig', 6)
+  uid = _messages.StringField(7)
 
 
 class GoogleCloudApigeeV1RuntimeTraceSamplingConfig(_messages.Message):

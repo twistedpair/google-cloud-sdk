@@ -117,11 +117,14 @@ def _BuildStartArgsForNativeExecutable(args):
 
 
 def _BuildStartArgs(args):
-  if (platforms.OperatingSystem.Current() is not platforms.OperatingSystem.LINUX
-      or args.use_docker):
-    return _BuildStartArgsForDocker(args)
-  else:
+  current_os = platforms.OperatingSystem.Current()
+  if (
+      current_os is platforms.OperatingSystem.LINUX
+      or current_os is platforms.OperatingSystem.MACOSX
+  ) and not args.use_docker:
     return _BuildStartArgsForNativeExecutable(args)
+  else:
+    return _BuildStartArgsForDocker(args)
 
 
 def GetEnv(args):

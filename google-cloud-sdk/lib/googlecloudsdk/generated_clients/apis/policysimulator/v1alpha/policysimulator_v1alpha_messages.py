@@ -3628,9 +3628,8 @@ class GoogleCloudPolicysimulatorV1alphaSearchActivityBacktestResultsResponseInac
     error: Optional. Output only. The error that was returned when the
       resource was inaccessible.
     resource: Optional. Output only. The resource that was inaccessible. In
-      the format: - organizations/{organization-id}/locations/{location} -
-      folders/{folder-id}/locations/{location} - projects/{project-
-      id}/locations/{location}
+      the format: - organizations/{organization-id} - folders/{folder-id} -
+      projects/{project-id}
   """
 
   error = _messages.MessageField('GoogleRpcStatus', 1)

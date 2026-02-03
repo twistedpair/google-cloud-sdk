@@ -50,9 +50,9 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_multicloudDataTransferSupportedServices = self.ProjectsLocationsMulticloudDataTransferSupportedServicesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_regionalEndpoints = self.ProjectsLocationsRegionalEndpointsService(self)
+    self.projects_locations_remoteTransportProfiles = self.ProjectsLocationsRemoteTransportProfilesService(self)
     self.projects_locations_spokes_gatewayAdvertisedRoutes = self.ProjectsLocationsSpokesGatewayAdvertisedRoutesService(self)
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
-    self.projects_locations_transports_remoteTransportProfiles = self.ProjectsLocationsTransportsRemoteTransportProfilesService(self)
     self.projects_locations_transports = self.ProjectsLocationsTransportsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1544,6 +1544,70 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsRemoteTransportProfilesService(base_api.BaseApiService):
+    """Service class for the projects_locations_remoteTransportProfiles resource."""
+
+    _NAME = 'projects_locations_remoteTransportProfiles'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsRemoteTransportProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single RemoteTransportProfile.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsRemoteTransportProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaRemoteTransportProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/remoteTransportProfiles/{remoteTransportProfilesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.remoteTransportProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsRemoteTransportProfilesGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaRemoteTransportProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RemoteTransportProfiles in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsRemoteTransportProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListRemoteTransportProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/remoteTransportProfiles',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.remoteTransportProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/remoteTransportProfiles',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsRemoteTransportProfilesListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListRemoteTransportProfilesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsSpokesGatewayAdvertisedRoutesService(base_api.BaseApiService):
     """Service class for the projects_locations_spokes_gatewayAdvertisedRoutes resource."""
 
@@ -1969,71 +2033,6 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsTransportsRemoteTransportProfilesService(base_api.BaseApiService):
-    """Service class for the projects_locations_transports_remoteTransportProfiles resource."""
-
-    _NAME = 'projects_locations_transports_remoteTransportProfiles'
-
-    def __init__(self, client):
-      super(NetworkconnectivityV1beta.ProjectsLocationsTransportsRemoteTransportProfilesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single RemoteProfile.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-
-      Returns:
-        (TransportsV1BetaRemoteProfile) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/remoteTransportProfiles/{remoteProfilesId}',
-        http_method='GET',
-        method_id='networkconnectivity.projects.locations.transports.remoteProfiles.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta/{+name}',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsTransportsRemoteProfilesGetRequest',
-        response_type_name='TransportsV1BetaRemoteProfile',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists RemoteProfiles in a given project and location.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TransportsListRemoteProfilesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/remoteTransportProfiles',
-        http_method='GET',
-        method_id='networkconnectivity.projects.locations.transports.remoteProfiles.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta/{+parent}/remoteTransportProfiles',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsTransportsRemoteProfilesListRequest',
-        response_type_name='TransportsListRemoteProfilesResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsTransportsService(base_api.BaseApiService):
     """Service class for the projects_locations_transports resource."""
 
@@ -2050,7 +2049,6 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
       Args:
         request: (NetworkconnectivityProjectsLocationsTransportsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (GoogleLongrunningOperation) The response message.
       """
@@ -2066,7 +2064,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=['requestId', 'transportId'],
         relative_path='v1beta/{+parent}/transports',
-        request_field='transportsV1BetaTransport',
+        request_field='googleCloudNetworkconnectivityV1betaTransport',
         request_type_name='NetworkconnectivityProjectsLocationsTransportsCreateRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
@@ -2078,7 +2076,6 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
       Args:
         request: (NetworkconnectivityProjectsLocationsTransportsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (GoogleLongrunningOperation) The response message.
       """
@@ -2106,9 +2103,8 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
       Args:
         request: (NetworkconnectivityProjectsLocationsTransportsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
-        (TransportsV1BetaTransport) The response message.
+        (GoogleCloudNetworkconnectivityV1betaTransport) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -2124,7 +2120,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}',
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsTransportsGetRequest',
-        response_type_name='TransportsV1BetaTransport',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaTransport',
         supports_download=False,
     )
 
@@ -2135,7 +2131,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsTransportsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TransportsListTransportsResponse) The response message.
+        (GoogleCloudNetworkconnectivityV1betaListTransportsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -2151,33 +2147,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+parent}/transports',
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsTransportsListRequest',
-        response_type_name='TransportsListTransportsResponse',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListTransportsResponse',
         supports_download=False,
     )
 
-    def Update(self, request, global_params=None):
+    def Patch(self, request, global_params=None):
       r"""Updates the parameters of a single Transport.
 
       Args:
-        request: (NetworkconnectivityProjectsLocationsTransportsUpdateRequest) input message
+        request: (NetworkconnectivityProjectsLocationsTransportsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleLongrunningOperation) The response message.
       """
-      config = self.GetMethodConfig('Update')
+      config = self.GetMethodConfig('Patch')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Update.method_config = lambda: base_api.ApiMethodInfo(
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/transports/{transportsId}',
         http_method='PATCH',
-        method_id='networkconnectivity.projects.locations.transports.update',
+        method_id='networkconnectivity.projects.locations.transports.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['requestId', 'updateMask'],
-        relative_path='v1beta/{transport.name}',
-        request_field='transportsV1BetaTransport',
-        request_type_name='NetworkconnectivityProjectsLocationsTransportsUpdateRequest',
+        relative_path='v1beta/{+name}',
+        request_field='googleCloudNetworkconnectivityV1betaTransport',
+        request_type_name='NetworkconnectivityProjectsLocationsTransportsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

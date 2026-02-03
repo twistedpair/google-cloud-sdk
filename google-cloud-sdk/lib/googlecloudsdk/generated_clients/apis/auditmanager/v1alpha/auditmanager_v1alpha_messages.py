@@ -48,7 +48,7 @@ class AuditReport(_messages.Message):
         OPERATION_STATE_FAILED.
       COMPLETED: Audit report generation process is completed. Operation state
         is OPERATION_STATE_DONE.
-      FAILED: Audit report generation process is failed. Operation state is
+      FAILED: Audit report generation process has failed. Operation state is
         OPERATION_STATE_FAILED.
       SUMMARY_UNKNOWN: Audit report generation process has completed. But
         report summary is unknown. This is valid for older reports.
@@ -92,8 +92,9 @@ class AuditmanagerFoldersLocationsAuditReportsGenerateRequest(_messages.Message)
     generateAuditReportRequest: A GenerateAuditReportRequest resource to be
       passed as the request body.
     scope: Required. Scope for which the AuditScopeReport is required. Must be
-      of format resource_type/resource_identifier Eg: projects/{project-
-      id}/locations/{location}, folders/{folder-id}/locations/{location}
+      of format resource_type/resource_identifier Eg:
+      projects/{project}/locations/{location},
+      folders/{folder}/locations/{location}
   """
 
   generateAuditReportRequest = _messages.MessageField('GenerateAuditReportRequest', 1)
@@ -104,9 +105,9 @@ class AuditmanagerFoldersLocationsAuditReportsGetRequest(_messages.Message):
   r"""A AuditmanagerFoldersLocationsAuditReportsGetRequest object.
 
   Fields:
-    name: Required. Format projects/{project-
-      id}/locations/{location}/auditReports/{auditReportName},
-      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}
+    name: Required. Format
+      projects/{project}/locations/{location}/auditReports/{audit_report},
+      folders/{folder}/locations/{location}/auditReports/{audit_report}
   """
 
   name = _messages.StringField(1, required=True)
@@ -134,8 +135,9 @@ class AuditmanagerFoldersLocationsAuditScopeReportsGenerateRequest(_messages.Mes
     generateAuditScopeReportRequest: A GenerateAuditScopeReportRequest
       resource to be passed as the request body.
     scope: Required. Scope for which the AuditScopeReport is required. Must be
-      of format resource_type/resource_identifier Eg: projects/{project-
-      id}/locations/{location}, folders/{folder-id}/locations/{location}
+      of format resource_type/resource_identifier Eg:
+      projects/{project}/locations/{location},
+      folders/{folder}/locations/{location}
   """
 
   generateAuditScopeReportRequest = _messages.MessageField('GenerateAuditScopeReportRequest', 1)
@@ -150,9 +152,9 @@ class AuditmanagerFoldersLocationsEnrollResourceRequest(_messages.Message):
       the request body.
     scope: Required. The resource to be enrolled to the audit manager. Scope
       format should be resource_type/resource_identifier Eg:
-      projects/{project-id}/locations/{location}, folders/{folder-
-      id}/locations/{location} organizations/{organization-
-      id}/locations/{location}
+      projects/{project}/locations/{location},
+      folders/{folder}/locations/{location}
+      organizations/{organization}/locations/{location}
   """
 
   enrollResourceRequest = _messages.MessageField('EnrollResourceRequest', 1)
@@ -218,9 +220,9 @@ class AuditmanagerFoldersLocationsStandardsControlsListRequest(_messages.Message
     pageSize: Optional. The maximum number of resources to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. Format projects/{project-
-      id}/locations/{location}/standards/{compliance-standard},
-      folders/{folder-id}/locations/{location}/standards/{compliance-standard}
+    parent: Required. Format
+      projects/{project}/locations/{location}/standards/{standard},
+      folders/{folder}/locations/{location}/standards/{standard}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -251,9 +253,9 @@ class AuditmanagerOrganizationsLocationsEnrollResourceRequest(_messages.Message)
       the request body.
     scope: Required. The resource to be enrolled to the audit manager. Scope
       format should be resource_type/resource_identifier Eg:
-      projects/{project-id}/locations/{location}, folders/{folder-
-      id}/locations/{location} organizations/{organization-
-      id}/locations/{location}
+      projects/{project}/locations/{location},
+      folders/{folder}/locations/{location}
+      organizations/{organization}/locations/{location}
   """
 
   enrollResourceRequest = _messages.MessageField('EnrollResourceRequest', 1)
@@ -357,9 +359,9 @@ class AuditmanagerOrganizationsLocationsStandardsControlsListRequest(_messages.M
     pageSize: Optional. The maximum number of resources to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. Format projects/{project-
-      id}/locations/{location}/standards/{compliance-standard},
-      folders/{folder-id}/locations/{location}/standards/{compliance-standard}
+    parent: Required. Format
+      projects/{project}/locations/{location}/standards/{standard},
+      folders/{folder}/locations/{location}/standards/{standard}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -374,8 +376,9 @@ class AuditmanagerProjectsLocationsAuditReportsGenerateRequest(_messages.Message
     generateAuditReportRequest: A GenerateAuditReportRequest resource to be
       passed as the request body.
     scope: Required. Scope for which the AuditScopeReport is required. Must be
-      of format resource_type/resource_identifier Eg: projects/{project-
-      id}/locations/{location}, folders/{folder-id}/locations/{location}
+      of format resource_type/resource_identifier Eg:
+      projects/{project}/locations/{location},
+      folders/{folder}/locations/{location}
   """
 
   generateAuditReportRequest = _messages.MessageField('GenerateAuditReportRequest', 1)
@@ -386,9 +389,9 @@ class AuditmanagerProjectsLocationsAuditReportsGetRequest(_messages.Message):
   r"""A AuditmanagerProjectsLocationsAuditReportsGetRequest object.
 
   Fields:
-    name: Required. Format projects/{project-
-      id}/locations/{location}/auditReports/{auditReportName},
-      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}
+    name: Required. Format
+      projects/{project}/locations/{location}/auditReports/{audit_report},
+      folders/{folder}/locations/{location}/auditReports/{audit_report}
   """
 
   name = _messages.StringField(1, required=True)
@@ -416,8 +419,9 @@ class AuditmanagerProjectsLocationsAuditScopeReportsGenerateRequest(_messages.Me
     generateAuditScopeReportRequest: A GenerateAuditScopeReportRequest
       resource to be passed as the request body.
     scope: Required. Scope for which the AuditScopeReport is required. Must be
-      of format resource_type/resource_identifier Eg: projects/{project-
-      id}/locations/{location}, folders/{folder-id}/locations/{location}
+      of format resource_type/resource_identifier Eg:
+      projects/{project}/locations/{location},
+      folders/{folder}/locations/{location}
   """
 
   generateAuditScopeReportRequest = _messages.MessageField('GenerateAuditScopeReportRequest', 1)
@@ -432,9 +436,9 @@ class AuditmanagerProjectsLocationsEnrollResourceRequest(_messages.Message):
       the request body.
     scope: Required. The resource to be enrolled to the audit manager. Scope
       format should be resource_type/resource_identifier Eg:
-      projects/{project-id}/locations/{location}, folders/{folder-
-      id}/locations/{location} organizations/{organization-
-      id}/locations/{location}
+      projects/{project}/locations/{location},
+      folders/{folder}/locations/{location}
+      organizations/{organization}/locations/{location}
   """
 
   enrollResourceRequest = _messages.MessageField('EnrollResourceRequest', 1)
@@ -574,9 +578,9 @@ class AuditmanagerProjectsLocationsStandardsControlsListRequest(_messages.Messag
     pageSize: Optional. The maximum number of resources to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. Format projects/{project-
-      id}/locations/{location}/standards/{compliance-standard},
-      folders/{folder-id}/locations/{location}/standards/{compliance-standard}
+    parent: Required. Format
+      projects/{project}/locations/{location}/standards/{standard},
+      folders/{folder}/locations/{location}/standards/{standard}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1175,7 +1179,7 @@ class ReportGenerationProgress(_messages.Message):
     Values:
       OPERATION_STATE_UNSPECIFIED: Unspecified. Invalid state.
       OPERATION_STATE_NOT_STARTED: Audit report generation process has not
-        stated.
+        started.
       OPERATION_STATE_EVALUATION_IN_PROGRESS: Audit Manager is currently
         evaluating the workloads against specific standard.
       OPERATION_STATE_EVALUATION_DONE: Audit Manager has completed Evaluation

@@ -15,10 +15,10 @@
 
 """A library that is used to support our commands."""
 
-from googlecloudsdk.command_lib.util.apis import arg_utils
-
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -68,12 +68,46 @@ def GetCatalogTypeEnumMapper(release_track):
   return arg_utils.ChoiceEnumMapper(
       '--catalog-type',
       catalog_type_enum,
+      hidden_choices=['biglake'],
       required=True,
       help_str='Catalog type to create the catalog with.',
       custom_mappings={
           'CATALOG_TYPE_GCS_BUCKET': (
               'gcs-bucket',
               'A catalog backed by a Cloud Storage bucket.',
+          ),
+          'CATALOG_TYPE_BIGLAKE': (
+              'biglake',
+              (
+                  'BigLake Iceberg catalog. Catalog type which allows'
+                  ' namespaces and tables within a catalog to be mapped to'
+                  ' locations beyond the catalog\'s designated default.'
+              ),
+          ),
+      },
+  )
+
+
+def GetUpdateCatalogTypeEnumMapper(release_track):
+  messages = GetMessagesModule(release_track)
+  catalog_type_enum = messages.IcebergCatalog.CatalogTypeValueValuesEnum
+  return arg_utils.ChoiceEnumMapper(
+      '--catalog-type',
+      catalog_type_enum,
+      hidden=True,
+      required=False,
+      help_str=(
+          'Catalog type to update the catalog with. Currently only updating to '
+          'a BigLake catalog type is supported.'
+      ),
+      custom_mappings={
+          'CATALOG_TYPE_BIGLAKE': (
+              'biglake',
+              (
+                  'BigLake Iceberg catalog. Catalog type which allows'
+                  ' namespaces and tables within a catalog to be mapped to'
+                  " locations beyond the catalog's designated default."
+              ),
           ),
       },
   )
@@ -98,3 +132,70 @@ def GetCredentialModeEnumMapper(release_track):
           ),
       },
   )
+
+
+def GcsBucketLinkValidator(value):
+  if not value.startswith('gs://'):
+    raise arg_parsers.ArgumentTypeError(
+        'Location must be a Google Cloud Storage URI starting with `gs://`'
+    )
+  return value
+
+
+def AddDefaultLocationArg(parser):
+  parser.add_argument(
+      '--default-location',
+      hidden=True,
+      type=GcsBucketLinkValidator,
+      help=(
+          'Can only be used with BigLake catalogs. The default'
+          ' storage location for the catalog, e.g., `gs://my-bucket/...`.'
+      ),
+  )
+
+
+def AddAdditionalLocationsArg(parser):
+  parser.add_argument(
+      '--additional-locations',
+      hidden=True,
+      type=arg_parsers.ArgList(element_type=GcsBucketLinkValidator),
+      metavar='LOCATION',
+      help=(
+          'Can only be used with BigLake catalogs. Additional'
+          ' Google Cloud Storage buckets and locations (e.g.,'
+          ' `gs://my-other-bucket/...`) that are permitted for use by'
+          ' resources within a catalog.'
+      ),
+  )
+
+
+def CheckValidArgCombinations(args):
+  """Checks for valid combinations of arguments.
+
+  Ensures that `--default-location` and `--additional-locations`
+  are only used when `--catalog-type` is 'BigLake'.
+
+  Args:
+    args: The parsed command-line arguments.
+
+  Raises:
+    arg_parsers.ArgumentTypeError: If an invalid argument combination is found.
+  """
+  if args.catalog_type == 'biglake' and not args.IsSpecified(
+      'default_location'
+  ):
+    raise arg_parsers.ArgumentTypeError(
+        '--default-location must be specified when catalog type is BigLake.'
+    )
+  elif args.catalog_type != 'biglake' and args.IsSpecified(
+      'default_location'
+  ):
+    raise arg_parsers.ArgumentTypeError(
+        '--default-location is only supported for BigLake catalogs.'
+    )
+  elif args.catalog_type != 'biglake' and args.IsSpecified(
+      'additional_locations'
+  ):
+    raise arg_parsers.ArgumentTypeError(
+        '--additional-locations is only supported for BigLake catalogs.'
+    )

@@ -691,6 +691,8 @@ class CatalogTemplateRevision(_messages.Message):
       visions/$revision
     ociRepo: Optional. The Open Container Initiative (OCI) repo source that
       contains helm charts.
+    resourceTypes: Output only. The resource types present in the template
+      revision.
     state: Output only. The template state (validating/ready/invalid).
     templateCategory: Output only. The category of the ADC template.
     templateMetadata: Output only. Template metadata related to Terraform
@@ -801,12 +803,13 @@ class CatalogTemplateRevision(_messages.Message):
   metadataInput = _messages.MessageField('MetadataInput', 12)
   name = _messages.StringField(13)
   ociRepo = _messages.MessageField('OciRepo', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 16)
-  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  updateTime = _messages.StringField(19)
-  uuid = _messages.StringField(20)
+  resourceTypes = _messages.MessageField('ResourceType', 15, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 17)
+  templateMetadata = _messages.MessageField('TFBlueprintMetadata', 18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  updateTime = _messages.StringField(20)
+  uuid = _messages.StringField(21)
 
 
 class Channel(_messages.Message):
@@ -4235,6 +4238,19 @@ class Resource(_messages.Message):
   type = _messages.StringField(3)
 
 
+class ResourceType(_messages.Message):
+  r"""Represents the type of a resource within a component template.
+
+  Fields:
+    caisResource: Output only. The CAIS resource type.
+    tfResource: Output only. The Terraform resource type. For example:
+      "google_compute_instance".
+  """
+
+  caisResource = _messages.StringField(1)
+  tfResource = _messages.StringField(2)
+
+
 class RootInputVariable(_messages.Message):
   r"""Input variable of a root module.
 
@@ -4311,11 +4327,11 @@ class SaaSRuntimeContext(_messages.Message):
   r"""SaaS runtime context.
 
   Fields:
-    saas: Optional. The SaaS name. Format:
+    saasNames: Optional. The SaaS names. Format for each SaaS:
       projects/{project}/locations/{location}/saas/{saas}
   """
 
-  saas = _messages.StringField(1)
+  saasNames = _messages.StringField(1, repeated=True)
 
 
 class Scope(_messages.Message):
@@ -4641,6 +4657,8 @@ class SharedTemplateRevision(_messages.Message):
       contains helm charts.
     originTemplateRevision: Output only. The shared template revision refers
       to the following catalog template revision.
+    resourceTypes: Output only. The resource types present in the template
+      revision.
     sharedTemplateMetadata: Output only. The shared template metadata.
     templateCategory: Output only. The category of the ADC template.
     type: Optional. The Application Design Center assembly template type.
@@ -4733,9 +4751,10 @@ class SharedTemplateRevision(_messages.Message):
   name = _messages.StringField(12)
   ociRepo = _messages.MessageField('OciRepo', 13)
   originTemplateRevision = _messages.StringField(14)
-  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 15)
-  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  resourceTypes = _messages.MessageField('ResourceType', 15, repeated=True)
+  sharedTemplateMetadata = _messages.MessageField('TFBlueprintMetadata', 16)
+  templateCategory = _messages.EnumField('TemplateCategoryValueValuesEnum', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class Space(_messages.Message):
