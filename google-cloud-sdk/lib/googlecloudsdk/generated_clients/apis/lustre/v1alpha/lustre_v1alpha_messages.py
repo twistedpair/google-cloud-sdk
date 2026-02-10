@@ -163,7 +163,8 @@ class Backup(_messages.Message):
     kmsKey: Optional. Immutable. The Cloud KMS key name to use for data
       encryption. If not set, the backup will use Google-managed encryption
       keys. If set, the backup will use customer-managed encryption keys. The
-      key must be in the same region as the backup.
+      key must be in the same region as the backup. The key format is: project
+      s/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{key}
     labels: Optional. Resource labels to represent user provided metadata.
     name: Identifier. The resource name of the backup, in the format
       `projects/{project}/locations/{location}/backups/{backup}`.
@@ -261,25 +262,6 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class DenyPeriod(_messages.Message):
-  r"""Deny period for the instance. A deny period can be in either of the
-  following two formats: * Non-recurring : A full date, with non-zero year,
-  month and day values. * Recurring : A month and day value, with a zero year.
-  Time zone is UTC.
-
-  Fields:
-    endDate: Required. End date of the deny period in UTC time zone.
-    startDate: Required. Start date of the deny period in UTC time zone.
-    time: Required. Time in UTC when the deny period starts on start_date and
-      ends on end_date. This can be: * Full time OR * All zeros for 00:00:00
-      UTC
-  """
-
-  endDate = _messages.MessageField('Date', 1)
-  startDate = _messages.MessageField('Date', 2)
-  time = _messages.MessageField('TimeOfDay', 3)
-
-
 class ExportDataRequest(_messages.Message):
   r"""Export data from Managed Lustre to a Cloud Storage bucket.
 
@@ -320,6 +302,32 @@ class GoogleProtobufEmpty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class HybridTierOptions(_messages.Message):
+  r"""Hybrid tier options for a Managed Lustre instance.
+
+  Enums:
+    ModeValueValuesEnum: Required. The mode for the Hybrid tier instance.
+
+  Fields:
+    mode: Required. The mode for the Hybrid tier instance.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Required. The mode for the Hybrid tier instance.
+
+    Values:
+      MODE_UNSPECIFIED: Hybrid tier mode is not set.
+      DISABLED: Hybrid tier is explicitly disabled.
+      DEFAULT_CACHE: Hybrid tier is enabled with a default cache
+        configuration.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    DEFAULT_CACHE = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 class ImportDataRequest(_messages.Message):
@@ -371,6 +379,9 @@ class Instance(_messages.Message):
     gkeSupportEnabled: Optional. Indicates whether you want to enable support
       for GKE clients. By default, GKE clients are not supported. Deprecated.
       No longer required for GKE instance creation.
+    hybridTierOptions: Optional. Hybrid tier options for the instance. If the
+      instance is using the Hybrid tier, `per_unit_storage_throughput` must
+      not be set or must be set to zero.
     kmsKey: Optional. Immutable. The Cloud KMS key name to use for data
       encryption. If not set, the instance will use Google-managed encryption
       keys. If set, the instance will use customer-managed encryption keys.
@@ -379,14 +390,15 @@ class Instance(_messages.Message):
       ey}
     labels: Optional. Labels as key value pairs.
     maintenancePolicy: Optional. The maintenance policy for the instance to
-      determine when to allow or deny updates.
+      determine when to allow or exclude the instance from maintenance
+      updates.
     mountPoint: Output only. Mount point of the instance in the format
       `IP_ADDRESS@tcp:/FILESYSTEM`.
     name: Identifier. The name of the instance.
     network: Required. Immutable. The full name of the VPC network to which
       the instance is connected. Must be in the format
       `projects/{project_id}/global/networks/{network_name}`.
-    perUnitStorageThroughput: Required. The throughput of the instance in MBps
+    perUnitStorageThroughput: Optional. The throughput of the instance in MBps
       per TiB. Valid values are 125, 250, 500, 1000. See [Performance tiers
       and maximum storage capacities](https://cloud.google.com/managed-
       lustre/docs/create-instance#performance-tiers) for more information.
@@ -476,22 +488,23 @@ class Instance(_messages.Message):
   description = _messages.StringField(5)
   filesystem = _messages.StringField(6)
   gkeSupportEnabled = _messages.BooleanField(7)
-  kmsKey = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 10)
-  mountPoint = _messages.StringField(11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  perUnitStorageThroughput = _messages.IntegerField(14)
-  placementPolicy = _messages.StringField(15)
-  satisfiesPzi = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  sourceBackup = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateReason = _messages.StringField(20)
-  uid = _messages.StringField(21)
-  upcomingMaintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 22)
-  updateTime = _messages.StringField(23)
+  hybridTierOptions = _messages.MessageField('HybridTierOptions', 8)
+  kmsKey = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 11)
+  mountPoint = _messages.StringField(12)
+  name = _messages.StringField(13)
+  network = _messages.StringField(14)
+  perUnitStorageThroughput = _messages.IntegerField(15)
+  placementPolicy = _messages.StringField(16)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  sourceBackup = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateReason = _messages.StringField(21)
+  uid = _messages.StringField(22)
+  upcomingMaintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 23)
+  updateTime = _messages.StringField(24)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1002,18 +1015,40 @@ class LustreProjectsLocationsOperationsListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(5)
 
 
-class MaintenancePolicy(_messages.Message):
-  r"""The maintenance policy for the instance to determine when to allow or
-  deny updates.
+class MaintenanceExclusionWindow(_messages.Message):
+  r"""Exclusion period when maintenance updates should not occur. An exclusion
+  window can be in either of the following two formats: * Non-recurring : A
+  full date, with non-zero year, month and day values. * Recurring : A month
+  and day value, with a zero year. Time zone is UTC.
 
   Fields:
-    denyPeriods: Optional. The deny periods for the instance. Currently
-      limited to 4.
-    maintenanceWindows: Required. The maintenance window for the instance.
+    endDate: Required. End date of the exclusion period in UTC time zone. This
+      date is inclusive.
+    startDate: Required. Start date of the exclusion period in UTC time zone.
+      This date is inclusive.
+    time: Required. Time in UTC when the exclusion window starts on start_date
+      and ends on end_date. This can be: * Full time OR * All zeros for
+      00:00:00 UTC
   """
 
-  denyPeriods = _messages.MessageField('DenyPeriod', 1, repeated=True)
-  maintenanceWindows = _messages.MessageField('WeeklyWindow', 2, repeated=True)
+  endDate = _messages.MessageField('Date', 1)
+  startDate = _messages.MessageField('Date', 2)
+  time = _messages.MessageField('TimeOfDay', 3)
+
+
+class MaintenancePolicy(_messages.Message):
+  r"""The maintenance policy for the instance to determine when to allow or
+  exclude updates.
+
+  Fields:
+    maintenanceExclusionWindow: Optional. The exclusion windows for the
+      instance. Currently limited to 1 window.
+    weeklyMaintenanceWindows: Required. The weekly maintenance windows for the
+      instance. Currently limited to 1 window.
+  """
+
+  maintenanceExclusionWindow = _messages.MessageField('MaintenanceExclusionWindow', 1, repeated=True)
+  weeklyMaintenanceWindows = _messages.MessageField('WeeklyMaintenanceWindow', 2, repeated=True)
 
 
 class MaintenanceSchedule(_messages.Message):
@@ -1358,9 +1393,9 @@ class TimeOfDay(_messages.Message):
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
-class WeeklyWindow(_messages.Message):
-  r"""Time window in which maintenance updates may occur. Duration of the
-  window is currently fixed at 1 hour. Time zone is UTC.
+class WeeklyMaintenanceWindow(_messages.Message):
+  r"""Weekly time window in which maintenance updates may occur. Duration of
+  the window is currently fixed at 1 hour. Time zone is UTC.
 
   Enums:
     DayOfWeekValueValuesEnum: Required. Day of the week for the maintenance

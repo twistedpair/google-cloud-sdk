@@ -615,7 +615,7 @@ class CloudtasksV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekConfig(self, request, global_params=None):
-      r"""Creates or Updates a CMEK config. Updates the Customer Managed Encryption Key assotiated with the Cloud Tasks location (Creates if the key does not already exist). All new tasks created in the location will be encrypted at-rest with the KMS-key provided in the config.
+      r"""Creates or Updates a CMEK config. Updates the Customer Managed Encryption Key associated with the Cloud Tasks location (Creates if the key does not already exist). All new tasks created in the location will be encrypted at-rest with the KMS-key provided in the config.
 
       Args:
         request: (CloudtasksProjectsLocationsUpdateCmekConfigRequest) input message

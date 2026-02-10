@@ -44,7 +44,7 @@ from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import exceptions as c_exceptions
 from googlecloudsdk.core.credentials import introspect as c_introspect
 from googlecloudsdk.core.util import files
-from oauth2client import client
+
 import six
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
@@ -81,10 +81,6 @@ class CredentialFileSaveError(Error):
 
 class ADCError(Error):
   """An error when processing application default credentials."""
-
-
-def IsOauth2ClientCredentials(creds):
-  return isinstance(creds, client.OAuth2Credentials)
 
 
 def IsGoogleAuthCredentials(creds):

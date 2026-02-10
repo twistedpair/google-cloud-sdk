@@ -46,6 +46,7 @@ class IamV3(base_api.BaseApiClient):
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_policyBindings = self.OrganizationsLocationsPolicyBindingsService(self)
     self.organizations_locations_principalAccessBoundaryPolicies = self.OrganizationsLocationsPrincipalAccessBoundaryPoliciesService(self)
+    self.organizations_locations_regionalAccessBoundaryPolicies = self.OrganizationsLocationsRegionalAccessBoundaryPoliciesService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -660,6 +661,178 @@ class IamV3(base_api.BaseApiClient):
         request_field='',
         request_type_name='IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesSearchPolicyBindingsRequest',
         response_type_name='GoogleIamV3SearchPrincipalAccessBoundaryPolicyBindingsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsRegionalAccessBoundaryPoliciesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_regionalAccessBoundaryPolicies resource."""
+
+    _NAME = 'organizations_locations_regionalAccessBoundaryPolicies'
+
+    def __init__(self, client):
+      super(IamV3.OrganizationsLocationsRegionalAccessBoundaryPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a regional access boundary policy.
+
+      Args:
+        request: (IamOrganizationsLocationsRegionalAccessBoundaryPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/locations/{locationsId}/regionalAccessBoundaryPolicies',
+        http_method='POST',
+        method_id='iam.organizations.locations.regionalAccessBoundaryPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['regionalAccessBoundaryPolicyId', 'validateOnly'],
+        relative_path='v3/{+parent}/regionalAccessBoundaryPolicies',
+        request_field='googleIamV3RegionalAccessBoundaryPolicy',
+        request_type_name='IamOrganizationsLocationsRegionalAccessBoundaryPoliciesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a regional access boundary policy.
+
+      Args:
+        request: (IamOrganizationsLocationsRegionalAccessBoundaryPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/locations/{locationsId}/regionalAccessBoundaryPolicies/{regionalAccessBoundaryPoliciesId}',
+        http_method='DELETE',
+        method_id='iam.organizations.locations.regionalAccessBoundaryPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'force', 'validateOnly'],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='IamOrganizationsLocationsRegionalAccessBoundaryPoliciesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a regional access boundary policy.
+
+      Args:
+        request: (IamOrganizationsLocationsRegionalAccessBoundaryPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3RegionalAccessBoundaryPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/locations/{locationsId}/regionalAccessBoundaryPolicies/{regionalAccessBoundaryPoliciesId}',
+        http_method='GET',
+        method_id='iam.organizations.locations.regionalAccessBoundaryPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='IamOrganizationsLocationsRegionalAccessBoundaryPoliciesGetRequest',
+        response_type_name='GoogleIamV3RegionalAccessBoundaryPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists regional access boundary policies.
+
+      Args:
+        request: (IamOrganizationsLocationsRegionalAccessBoundaryPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3ListRegionalAccessBoundaryPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/locations/{locationsId}/regionalAccessBoundaryPolicies',
+        http_method='GET',
+        method_id='iam.organizations.locations.regionalAccessBoundaryPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/regionalAccessBoundaryPolicies',
+        request_field='',
+        request_type_name='IamOrganizationsLocationsRegionalAccessBoundaryPoliciesListRequest',
+        response_type_name='GoogleIamV3ListRegionalAccessBoundaryPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a regional access boundary policy.
+
+      Args:
+        request: (IamOrganizationsLocationsRegionalAccessBoundaryPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/locations/{locationsId}/regionalAccessBoundaryPolicies/{regionalAccessBoundaryPoliciesId}',
+        http_method='PATCH',
+        method_id='iam.organizations.locations.regionalAccessBoundaryPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v3/{+name}',
+        request_field='googleIamV3RegionalAccessBoundaryPolicy',
+        request_type_name='IamOrganizationsLocationsRegionalAccessBoundaryPoliciesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SearchPolicyBindings(self, request, global_params=None):
+      r"""Retrieves all the policy bindings that bind a specific policy.
+
+      Args:
+        request: (IamOrganizationsLocationsRegionalAccessBoundaryPoliciesSearchPolicyBindingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3SearchRegionalAccessBoundaryPolicyBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchPolicyBindings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchPolicyBindings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/organizations/{organizationsId}/locations/{locationsId}/regionalAccessBoundaryPolicies/{regionalAccessBoundaryPoliciesId}:searchPolicyBindings',
+        http_method='GET',
+        method_id='iam.organizations.locations.regionalAccessBoundaryPolicies.searchPolicyBindings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+name}:searchPolicyBindings',
+        request_field='',
+        request_type_name='IamOrganizationsLocationsRegionalAccessBoundaryPoliciesSearchPolicyBindingsRequest',
+        response_type_name='GoogleIamV3SearchRegionalAccessBoundaryPolicyBindingsResponse',
         supports_download=False,
     )
 

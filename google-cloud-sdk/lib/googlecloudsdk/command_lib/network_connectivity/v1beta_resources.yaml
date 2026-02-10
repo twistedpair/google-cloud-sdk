@@ -101,5 +101,5 @@ remote_transport_profile:
   - *region
   - &remoteTransportProfile
     parameter_name: remoteTransportProfilesId
-    attribute_name: remote_profiles_id
+    attribute_name: remote_transport_profile
     help: Id of the remoteTransportProfile.

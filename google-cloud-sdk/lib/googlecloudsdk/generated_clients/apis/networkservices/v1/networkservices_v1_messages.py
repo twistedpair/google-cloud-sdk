@@ -1215,7 +1215,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class EndpointMatcher(_messages.Message):
   r"""A definition of a matcher that selects endpoints to which the policies
   should be applied.
@@ -4597,7 +4596,8 @@ class MulticastDomain(_messages.Message):
       following format: `projects/*/locations/global/multicastDomains/*`
     state: Output only. [Output only] The state of the resource.
     ullMulticastDomain: Optional. Information for an Ultra-Low-Latency
-      multicast domain.
+      multicast domain. This is only available in specific locations and
+      allowlisted projects.
     uniqueId: Output only. [Output only] The Google-generated UUID for the
       resource. This value is unique across all multicast domain resources. If
       a domain is deleted and another with the same name is created, the new

@@ -49,9 +49,11 @@ from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.command_lib.run.compose import builder
+from googlecloudsdk.command_lib.run.compose import exceptions as compose_exceptions
+from googlecloudsdk.command_lib.run.compose import exit_codes
 from googlecloudsdk.command_lib.run.compose import tracker as compose_tracker
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
@@ -61,6 +63,7 @@ from googlecloudsdk.core.util import files
 
 # Maximum length for a GCS bucket name.
 _MAX_BUCKET_NAME_LENGTH = 63
+_RUN_COMPOSE_BUILD_METRIC = 'run_compose_build'
 
 
 def _generate_gcs_bucket_name(compose_project_name: str, region: str) -> str:
@@ -172,8 +175,9 @@ class Config:
   def handle(self, bucket_name: str, region: str) -> None:
     """Handles the creation of resources for the config."""
     if not self.name:
-      raise exceptions.Error(
-          f'Config declared without a name, but name is required: {self.file}'
+      raise compose_exceptions.GcloudResourcesError(
+          f'Config declared without a name, but name is required: {self.file}',
+          exit_codes.CONFIG_INVALID,
       )
     log.debug('Handling config: %s', self.name)
     gcs_handler = GcsHandler(bucket_name, region)
@@ -181,8 +185,9 @@ class Config:
     self.bucket_name = bucket_name
     source = self.file
     if not source or not os.path.exists(source):
-      raise exceptions.Error(
-          f"Config source '{source}' for config '{self.name}' does not exist."
+      raise compose_exceptions.GcloudResourcesError(
+          f"Config source '{source}' for config '{self.name}' does not exist.",
+          exit_codes.CONFIG_INVALID,
       )
 
     source_basename = os.path.basename(source)
@@ -191,7 +196,10 @@ class Config:
     if os.path.isfile(source):
       gcs_handler.upload_file(gcs_path, source)
     else:
-      raise exceptions.Error(f"Config source path '{source}' is not a file.")
+      raise compose_exceptions.GcloudResourcesError(
+          f"Config source path '{source}' is not a file.",
+          exit_codes.CONFIG_INVALID,
+      )
 
   def to_dict(self) -> Dict[str, Any]:
     """Serializes the ConfigConfig instance to a dictionary."""
@@ -228,9 +236,10 @@ class BindMountConfig:
     gcs_handler.ensure_bucket()
     source = self.source
     if not source or not os.path.exists(source):
-      raise exceptions.Error(
+      raise compose_exceptions.GcloudResourcesError(
           f"Bind mount source '{source}' for service '{service_name}' does not"
-          ' exist.'
+          ' exist.',
+          exit_codes.BIND_MOUNT_SOURCE_INVALID,
       )
 
     # Resolve the source path to handle cases like '.', './', etc. consistently.
@@ -246,8 +255,9 @@ class BindMountConfig:
     elif os.path.isfile(source):
       gcs_handler.upload_file(gcs_path, source)
     else:
-      raise exceptions.Error(
-          f"Source path '{source}' is not a file or directory."
+      raise compose_exceptions.GcloudResourcesError(
+          f"Source path '{source}' is not a file or directory.",
+          exit_codes.BIND_MOUNT_SOURCE_INVALID,
       )
 
   def to_dict(self) -> Dict[str, Any]:
@@ -308,8 +318,9 @@ class GcsHandler:
           f"Ensured bucket '{bucket_name}' exists in region '{self.region}'."
       )
     except Exception as e:
-      raise exceptions.Error(
-          f"Failed to create bucket '{bucket_name}': {e}"
+      raise compose_exceptions.GcloudResourcesError(
+          f"Failed to create bucket '{bucket_name}': {e}",
+          exit_codes.GCS_BUCKET_CREATE_FAILED,
       )
 
     # Add IAM policy binding for the compute service account
@@ -330,8 +341,9 @@ class GcsHandler:
           f" '{bucket_name}'."
       )
     except Exception as e:
-      raise exceptions.Error(
-          f"Failed to set IAM policy on bucket '{bucket_name}': {e}"
+      raise compose_exceptions.GcloudResourcesError(
+          f"Failed to set IAM policy on bucket '{bucket_name}': {e}",
+          exit_codes.GCS_BUCKET_IAM_FAILED,
       )
 
   def upload_directory(
@@ -341,7 +353,10 @@ class GcsHandler:
   ) -> None:
     """Uploads a directory to GCS."""
     if not os.path.isdir(source_path):
-      raise exceptions.Error(f"Source path '{source_path}' is not a directory.")
+      raise compose_exceptions.GcloudResourcesError(
+          f"Source path '{source_path}' is not a directory.",
+          exit_codes.GCS_UPLOAD_SOURCE_INVALID,
+      )
 
     for root, _, files_in_dir in os.walk(source_path):
       for file_name in files_in_dir:
@@ -360,7 +375,10 @@ class GcsHandler:
   def upload_file(self, gcs_path: str, source_path: str) -> None:
     """Uploads a single file to GCS."""
     if not os.path.isfile(source_path):
-      raise exceptions.Error(f"Source path '{source_path}' is not a file.")
+      raise compose_exceptions.GcloudResourcesError(
+          f"Source path '{source_path}' is not a file.",
+          exit_codes.GCS_UPLOAD_SOURCE_INVALID,
+      )
     object_ref = storage_util.ObjectReference(self.bucket_name, gcs_path)
     self._gcs_client.CopyFileToGCS(source_path, object_ref)
     log.debug(
@@ -518,19 +536,21 @@ class ResourcesConfig:
       The ResourcesConfig instance after handling the resources.
     """
     if not self.project:
-      raise exceptions.Error(
+      raise compose_exceptions.GcloudError(
           'Project name is missing in Compose file, but is required when'
-          ' using volumes or configs.'
+          ' using volumes or configs.',
+          exit_codes.PROJECT_NAME_MISSING,
       )
     if self.source_builds:
-      builder.handle(
-          self.source_builds,
-          repo,
-          self.project,
-          region,
-          tracker,
-          no_build,
-      )
+      with metrics.RecordDuration(_RUN_COMPOSE_BUILD_METRIC):
+        builder.handle(
+            self.source_builds,
+            repo,
+            self.project,
+            region,
+            tracker,
+            no_build,
+        )
 
     log.debug('Starting resource handling for project: %s', self.project)
     if self.secrets:
@@ -627,13 +647,22 @@ def _create_secret_and_add_version(
 ) -> None:
   """Creates a secret if it doesn't exist and adds a version from a file."""
   if not config.name or not config.file or not config.mount:
-    raise ValueError('Secret name, file path and mount name are required.')
+    raise compose_exceptions.GcloudResourcesError(
+        'Secret name, file path and mount name are required.',
+        exit_codes.SECRET_CONFIG_INCOMPLETE,
+    )
 
   if not os.path.exists(config.file):
-    raise ValueError(f'Secret file not found: {config.file}')
+    raise compose_exceptions.GcloudResourcesError(
+        f'Secret file not found: {config.file}',
+        exit_codes.SECRET_FILE_NOT_FOUND,
+    )
 
   secrets_client = secrets_api.Secrets()
-  project = properties.VALUES.core.project.Get(required=True)
+  try:
+    project = properties.VALUES.core.project.Get(required=True)
+  except properties.RequiredPropertyError as e:
+    raise compose_exceptions.GcloudError(str(e), exit_codes.PROJECT_NOT_SET)
   secret_ref = resources.REGISTRY.Parse(
       config.name,
       params={'projectsId': project},
@@ -681,8 +710,9 @@ def _create_secret_and_add_version(
           f" '{config.name}'."
       )
   except Exception as e:
-    raise exceptions.Error(
-        f"Failed to set IAM policy on secret '{config.name}': {e}"
+    raise compose_exceptions.GcloudResourcesError(
+        f"Failed to set IAM policy on secret '{config.name}': {e}",
+        exit_codes.SECRET_IAM_FAILED,
     )
 
   # Add secret version
@@ -712,7 +742,10 @@ def _create_secret_and_add_version(
 def _get_project_number() -> str:
   """Retrieves the project number for the current project."""
 
-  project_id = properties.VALUES.core.project.Get(required=True)
+  try:
+    project_id = properties.VALUES.core.project.Get(required=True)
+  except properties.RequiredPropertyError as e:
+    raise compose_exceptions.GcloudError(str(e), exit_codes.PROJECT_NOT_SET)
   project_ref = resources.REGISTRY.Parse(
       project_id, collection='cloudresourcemanager.projects'
   )
@@ -734,7 +767,10 @@ def deploy_application(
     args: The arguments passed to the command.
     release_track: The release track of the command.
   """
-  project = properties.VALUES.core.project.Get(required=True)
+  try:
+    project = properties.VALUES.core.project.Get(required=True)
+  except properties.RequiredPropertyError as e:
+    raise compose_exceptions.GcloudError(str(e), exit_codes.PROJECT_NOT_SET)
 
   run_messages = apis.GetMessagesModule(
       global_methods.SERVERLESS_API_NAME,
@@ -744,11 +780,13 @@ def deploy_application(
   try:
     service_dict = yaml.load_path(yaml_file_path)
     if not service_dict:
-      raise exceptions.Error(f"Could not parse YAML file '{yaml_file_path}'.")
+      raise compose_exceptions.DeployError(
+          f"Could not parse YAML file '{yaml_file_path}'.",
+          exit_codes.DEPLOY_YAML_PARSE_FAILED)
   except (files.Error, yaml.Error) as e:
-    raise exceptions.Error(
-        f"Failed to read or parse YAML file '{yaml_file_path}': {e}"
-    )
+    raise compose_exceptions.DeployError(
+        f"Failed to read or parse YAML file '{yaml_file_path}': {e}",
+        exit_codes.DEPLOY_YAML_PARSE_FAILED) from e
 
   new_service = None
   try:
@@ -768,7 +806,9 @@ def deploy_application(
     )
 
   if not new_service or not new_service.name:
-    raise exceptions.Error('Service name is missing in the YAML file.')
+    raise compose_exceptions.DeployError(
+        'Service name is missing in the YAML file.',
+        exit_codes.DEPLOY_SERVICE_NAME_MISSING)
 
   log.status.Print(
       f'Deploying service \'{new_service.name}\' in project \'{project}\''
@@ -809,16 +849,21 @@ def deploy_application(
         suppress_output=False,
         success_message=f"Service '{new_service.name}' has been deployed.",
     ) as tracker:
-      deployed_service = client.ReleaseService(
-          service_ref,
-          changes,
-          release_track,
-          tracker,
-          asyn=False,
-          allow_unauthenticated=allow_unauthenticated,
-          for_replace=True,
-          prefetch=existing_service,
-      )
+      try:
+        deployed_service = client.ReleaseService(
+            service_ref,
+            changes,
+            release_track,
+            tracker,
+            asyn=False,
+            allow_unauthenticated=allow_unauthenticated,
+            for_replace=True,
+            prefetch=existing_service,
+        )
+      except serverless_exceptions.HttpError as e:
+        raise compose_exceptions.DeployError(
+            str(e), exit_codes.DEPLOY_API_ERROR
+        ) from e
   if (
       deployed_service
       and deployed_service.status

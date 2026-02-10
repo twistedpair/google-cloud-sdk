@@ -5706,9 +5706,6 @@ class GoogleCloudDocumentaiV1beta3Dataset(_messages.Message):
       `projects/{project}/locations/{location}/processors/{processor}/dataset`
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
-    spannerIndexingConfig: Optional. A lightweight indexing source with low
-      latency and high reliability, but lacking advanced features like CMEK
-      and content-based search.
     state: Required. State of the dataset. Ignored when updating dataset.
     unmanagedDatasetConfig: Optional. Unmanaged dataset configuration. Use
       this configuration if the dataset documents are managed by the document
@@ -5734,9 +5731,8 @@ class GoogleCloudDocumentaiV1beta3Dataset(_messages.Message):
   name = _messages.StringField(3)
   satisfiesPzi = _messages.BooleanField(4)
   satisfiesPzs = _messages.BooleanField(5)
-  spannerIndexingConfig = _messages.MessageField('GoogleCloudDocumentaiV1beta3DatasetSpannerIndexingConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  unmanagedDatasetConfig = _messages.MessageField('GoogleCloudDocumentaiV1beta3DatasetUnmanagedDatasetConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  unmanagedDatasetConfig = _messages.MessageField('GoogleCloudDocumentaiV1beta3DatasetUnmanagedDatasetConfig', 7)
 
 
 class GoogleCloudDocumentaiV1beta3DatasetDocumentWarehouseConfig(_messages.Message):
@@ -5763,10 +5759,6 @@ class GoogleCloudDocumentaiV1beta3DatasetGCSManagedConfig(_messages.Message):
   """
 
   gcsPrefix = _messages.MessageField('GoogleCloudDocumentaiV1beta3GcsPrefix', 1)
-
-
-class GoogleCloudDocumentaiV1beta3DatasetSpannerIndexingConfig(_messages.Message):
-  r"""Configuration specific to spanner-based indexing."""
 
 
 class GoogleCloudDocumentaiV1beta3DatasetUnmanagedDatasetConfig(_messages.Message):

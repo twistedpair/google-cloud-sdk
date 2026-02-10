@@ -39,7 +39,6 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import retry
 
@@ -671,10 +670,8 @@ def GetCredentials(access_boundary_json):
   cred = c_store.Load(
       None, allow_account_impersonation=True)
   c_store.Refresh(cred)
-  if c_creds.IsOauth2ClientCredentials(cred):
-    token = cred.access_token
-  else:
-    token = cred.token
+
+  token = cred.token
   if not token:
     raise exceptions.PersonalAuthError(
         'No access token could be obtained from the current credentials.')

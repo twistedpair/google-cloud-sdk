@@ -2422,7 +2422,7 @@ Can be invoked either in the primary or secondary scope.
     def Update(self, request, global_params=None):
       r"""Updates the specified disk with the data included in the request.
 The update is performed only on selected fields included as part
-of update-mask. Only the following fields can be modified: user_license.
+of update-mask.
 
       Args:
         request: (ComputeDisksUpdateRequest) input message
@@ -17362,8 +17362,7 @@ Can be invoked either in the primary or secondary scope.
 
     def Update(self, request, global_params=None):
       r"""Update the specified disk with the data included in the request. Update is.
-performed only on selected fields included as part of update-mask. Only the
-following fields can be modified: user_license.
+performed only on selected fields included as part of update-mask.
 
       Args:
         request: (ComputeRegionDisksUpdateRequest) input message

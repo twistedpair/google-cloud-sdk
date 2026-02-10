@@ -21,6 +21,31 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class ClientCache(_messages.Message):
+  r"""Client caching settings of a connector.
+
+  Fields:
+    entityIdIncluded: Optional. A field that, if true, means that responses
+      served by this connector will include entityIds in GraphQL response
+      extensions. This helps the client SDK cache responses in an improved
+      way, known as "normalized caching", if caching is enabled on the client.
+      Each entityId is a stable key based on primary key values. Therefore,
+      this field should only be set to true if the primary keys of accessed
+      tables do not contain sensitive information.
+    strictValidationEnabled: Optional. A field that, if true, enables stricter
+      validation on the connector source code to make sure the operation
+      response shapes are suitable for client-side caching. This can include
+      additional errors and warnings. For example, using the same alias for
+      different fields is disallowed, as it may cause conflicts or confusion
+      with normalized caching. (This field is off by default for
+      compatibility, but enabling it is highly recommended to catch common
+      caching pitfalls.)
+  """
+
+  entityIdIncluded = _messages.BooleanField(1)
+  strictValidationEnabled = _messages.BooleanField(2)
+
+
 class CloudSqlInstance(_messages.Message):
   r"""Settings for CloudSQL instance configuration.
 
@@ -41,6 +66,7 @@ class Connector(_messages.Message):
 
   Fields:
     annotations: Optional. Stores small amounts of arbitrary data.
+    clientCache: Optional. The client cache settings of the connector.
     createTime: Output only. [Output only] Create time stamp.
     displayName: Optional. Mutable human-readable name. 63 character limit.
     etag: Output only. This checksum is computed by the server based on the
@@ -108,15 +134,37 @@ class Connector(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  reconciling = _messages.BooleanField(7)
-  source = _messages.MessageField('Source', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  clientCache = _messages.MessageField('ClientCache', 2)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  source = _messages.MessageField('Source', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class DataConnectProperties(_messages.Message):
+  r"""Data Connect specific properties for a path under response.data.
+
+  Fields:
+    entityId: A single Entity ID. Set if the path points to a single entity.
+    entityIds: A list of Entity IDs. Set if the path points to an array of
+      entities. An ID is present for each element of the array at the
+      corresponding index.
+    maxAge: The server-suggested duration before data under path is considered
+      stale.
+    path: The path under response.data where the rest of the fields apply.
+      Each element may be a string (field name) or number (array index). The
+      root of response.data is denoted by the empty list `[]`.
+  """
+
+  entityId = _messages.StringField(1)
+  entityIds = _messages.StringField(2, repeated=True)
+  maxAge = _messages.StringField(3)
+  path = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
 
 
 class Datasource(_messages.Message):
@@ -192,6 +240,7 @@ class ExecuteMutationResponse(_messages.Message):
   Fields:
     data: The result of executing the requested operation.
     errors: Errors of this response.
+    extensions: Additional response information.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -220,6 +269,7 @@ class ExecuteMutationResponse(_messages.Message):
 
   data = _messages.MessageField('DataValue', 1)
   errors = _messages.MessageField('GraphqlError', 2, repeated=True)
+  extensions = _messages.MessageField('GraphqlResponseExtensions', 3)
 
 
 class ExecuteQueryRequest(_messages.Message):
@@ -274,6 +324,7 @@ class ExecuteQueryResponse(_messages.Message):
   Fields:
     data: The result of executing the requested operation.
     errors: Errors of this response.
+    extensions: Additional response information.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -302,6 +353,7 @@ class ExecuteQueryResponse(_messages.Message):
 
   data = _messages.MessageField('DataValue', 1)
   errors = _messages.MessageField('GraphqlError', 2, repeated=True)
+  extensions = _messages.MessageField('GraphqlResponseExtensions', 3)
 
 
 class File(_messages.Message):
@@ -1234,7 +1286,9 @@ class GraphqlResponse(_messages.Message):
       Result-Format)
     errors: Errors of this response. If the data entry in the response is not
       present, the errors entry must be present. It conforms to
-      https://spec.graphql.org/draft/#sec-Errors.
+      https://spec.graphql.org/draft/#sec-Errors .
+    extensions: Additional response information. It conforms to
+      https://spec.graphql.org/draft/#sec-Extensions .
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1269,6 +1323,19 @@ class GraphqlResponse(_messages.Message):
 
   data = _messages.MessageField('DataValue', 1)
   errors = _messages.MessageField('GraphqlError', 2, repeated=True)
+  extensions = _messages.MessageField('GraphqlResponseExtensions', 3)
+
+
+class GraphqlResponseExtensions(_messages.Message):
+  r"""GraphqlResponseExtensions contains additional information of
+  `GraphqlResponse` or `ExecuteQueryResponse`.
+
+  Fields:
+    dataConnect: Data Connect specific GraphQL extension, a list of paths and
+      properties.
+  """
+
+  dataConnect = _messages.MessageField('DataConnectProperties', 1, repeated=True)
 
 
 class HttpGraphql(_messages.Message):

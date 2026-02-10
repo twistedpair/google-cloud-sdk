@@ -1020,6 +1020,9 @@ class CloudRunMetadata(_messages.Message):
       `projects/{project}/locations/{location}/services/{service}`.
     serviceUrls: Output only. The Cloud Run Service urls that are associated
       with a `Rollout`.
+    workerPool: Output only. The Cloud Run worker pool associated with a
+      `Rollout`. Format is
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
   """
 
   job = _messages.StringField(1)
@@ -1027,6 +1030,7 @@ class CloudRunMetadata(_messages.Message):
   revision = _messages.StringField(3)
   service = _messages.StringField(4)
   serviceUrls = _messages.StringField(5, repeated=True)
+  workerPool = _messages.StringField(6)
 
 
 class CloudRunRenderMetadata(_messages.Message):
@@ -1042,11 +1046,15 @@ class CloudRunRenderMetadata(_messages.Message):
     service: Output only. The name of the Cloud Run Service in the rendered
       manifest. Format is
       `projects/{project}/locations/{location}/services/{service}`.
+    workerPool: Output only. The name of the Cloud Run Worker Pool in the
+      rendered manifest. Format is
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
   """
 
   job = _messages.StringField(1)
   revision = _messages.StringField(2)
   service = _messages.StringField(3)
+  workerPool = _messages.StringField(4)
 
 
 class CloudServiceMesh(_messages.Message):

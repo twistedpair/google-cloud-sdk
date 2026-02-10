@@ -448,6 +448,17 @@ class Collections(enum.Enum):
       ['securityPolicy'],
       True
   )
+  ORGANIZATIONSNAPSHOTRECYCLEBINPOLICY = (
+      'organizationSnapshotRecycleBinPolicy',
+      '{+organization}/global/snapshotRecycleBinPolicy',
+      {
+          '':
+              'organizations/{organizationsId}/global/'
+              'snapshotRecycleBinPolicy',
+      },
+      ['organization'],
+      True
+  )
   PACKETMIRRORINGS = (
       'packetMirrorings',
       'projects/{project}/regions/{region}/packetMirrorings/{packetMirroring}',
@@ -893,6 +904,13 @@ class Collections(enum.Enum):
       'projects/{project}/global/snapshotGroups/{snapshotGroup}',
       {},
       ['project', 'snapshotGroup'],
+      True
+  )
+  SNAPSHOTRECYCLEBINPOLICY = (
+      'snapshotRecycleBinPolicy',
+      'projects/{project}/global/snapshotRecycleBinPolicy',
+      {},
+      ['project'],
       True
   )
   SNAPSHOTSETTINGS = (

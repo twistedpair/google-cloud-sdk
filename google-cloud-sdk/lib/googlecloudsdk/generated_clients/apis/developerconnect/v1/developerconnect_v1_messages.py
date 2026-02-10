@@ -40,6 +40,7 @@ class AccountConnector(_messages.Message):
       ector_id}`.
     oauthStartUri: Output only. Start OAuth flow by clicking on this URL.
     providerOauthConfig: Optional. Provider OAuth config.
+    proxyConfig: Optional. Configuration for the http and git proxy features.
     updateTime: Output only. The timestamp when the accountConnector was
       updated.
   """
@@ -101,7 +102,8 @@ class AccountConnector(_messages.Message):
   name = _messages.StringField(6)
   oauthStartUri = _messages.StringField(7)
   providerOauthConfig = _messages.MessageField('ProviderOAuthConfig', 8)
-  updateTime = _messages.StringField(9)
+  proxyConfig = _messages.MessageField('ProxyConfig', 9)
+  updateTime = _messages.StringField(10)
 
 
 class AppHubService(_messages.Message):
@@ -2604,21 +2606,15 @@ class ProviderOAuthConfig(_messages.Message):
       GITLAB: GitLab provider. Scopes can be found at
         https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-
         access-token-scopes
-      GOOGLE: Deprecated: This provider is no longer supported. Google
-        provider. Recommended scopes:
+      GOOGLE: Google provider. Recommended scopes:
         "https://www.googleapis.com/auth/drive.readonly",
         "https://www.googleapis.com/auth/documents.readonly"
-      SENTRY: Deprecated: This provider is no longer supported. Sentry
-        provider. Scopes can be found at
+      SENTRY: Sentry provider. Scopes can be found at
         https://docs.sentry.io/api/permissions/
-      ROVO: Deprecated: This provider is no longer supported. Rovo provider.
-        Must select the "rovo" scope.
-      NEW_RELIC: Deprecated: This provider is no longer supported. New Relic
-        provider. No scopes are allowed.
-      DATASTAX: Deprecated: This provider is no longer supported. Datastax
-        provider. No scopes are allowed.
-      DYNATRACE: Deprecated: This provider is no longer supported. Dynatrace
-        provider.
+      ROVO: Rovo provider. Must select the "rovo" scope.
+      NEW_RELIC: New Relic provider. No scopes are allowed.
+      DATASTAX: Datastax provider. No scopes are allowed.
+      DYNATRACE: Dynatrace provider.
     """
     SYSTEM_PROVIDER_UNSPECIFIED = 0
     GITHUB = 1
@@ -2632,6 +2628,18 @@ class ProviderOAuthConfig(_messages.Message):
 
   scopes = _messages.StringField(1, repeated=True)
   systemProviderId = _messages.EnumField('SystemProviderIdValueValuesEnum', 2)
+
+
+class ProxyConfig(_messages.Message):
+  r"""The proxy configuration.
+
+  Fields:
+    enabled: Optional. Setting this to true allows the git and http proxies to
+      perform actions on behalf of the user configured under the account
+      connector.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class RuntimeConfig(_messages.Message):
@@ -2836,21 +2844,15 @@ class StartOAuthResponse(_messages.Message):
       GITLAB: GitLab provider. Scopes can be found at
         https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-
         access-token-scopes
-      GOOGLE: Deprecated: This provider is no longer supported. Google
-        provider. Recommended scopes:
+      GOOGLE: Google provider. Recommended scopes:
         "https://www.googleapis.com/auth/drive.readonly",
         "https://www.googleapis.com/auth/documents.readonly"
-      SENTRY: Deprecated: This provider is no longer supported. Sentry
-        provider. Scopes can be found at
+      SENTRY: Sentry provider. Scopes can be found at
         https://docs.sentry.io/api/permissions/
-      ROVO: Deprecated: This provider is no longer supported. Rovo provider.
-        Must select the "rovo" scope.
-      NEW_RELIC: Deprecated: This provider is no longer supported. New Relic
-        provider. No scopes are allowed.
-      DATASTAX: Deprecated: This provider is no longer supported. Datastax
-        provider. No scopes are allowed.
-      DYNATRACE: Deprecated: This provider is no longer supported. Dynatrace
-        provider.
+      ROVO: Rovo provider. Must select the "rovo" scope.
+      NEW_RELIC: New Relic provider. No scopes are allowed.
+      DATASTAX: Datastax provider. No scopes are allowed.
+      DYNATRACE: Dynatrace provider.
     """
     SYSTEM_PROVIDER_UNSPECIFIED = 0
     GITHUB = 1

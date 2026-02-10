@@ -103,6 +103,7 @@ class EntraIdCertForPrint:
     ssl_cert: The Entra ID certificate.
     status: The status of the certificate.
   """
+
   ssl_cert: Any
   status: Any
 
@@ -2586,9 +2587,7 @@ def ClearActiveDirectoryDNSServers(parser, hidden=False):
   parser.add_argument(
       '--clear-active-directory-dns-servers',
       required=False,
-      help=(
-          'Removes the list of DNS Servers from the Active Directory Config.'
-      ),
+      help='Removes the list of DNS Servers from the Active Directory Config.',
       hidden=hidden,
       **kwargs
   )
@@ -2981,8 +2980,10 @@ def AddReadPoolAutoScaleConfig(parser, hidden=False):
   read_pool_auto_scale_group.add_argument(
       '--auto-scale-enabled',
       action=arg_parsers.StoreTrueFalseAction,
-      help='Enables read pool auto scaling. Supports automatically increasing'
-      ' and decreasing the read pool\'s node count based on need.',
+      help=(
+          'Enables read pool auto scaling. Supports automatically increasing'
+          " and decreasing the read pool's node count based on need."
+      ),
   )
   read_pool_auto_scale_group.add_argument(
       '--auto-scale-min-node-count',
@@ -3312,8 +3313,8 @@ def AddConnectionPoolFlags(parser, update=False):
       ' https://cloud.google.com/sql/docs/mysql/managed-connection-pooling#configuration-options'
       ' for MySQL and'
       ' https://cloud.google.com/sql/docs/postgres/managed-connection-pooling#configuration-options'
-      ' for PostgreSQL. (e.g.,'
-      ' `--connection-pool-flags max_pool_size=1000,max_client_connections=20`)'
+      ' for PostgreSQL. (e.g., `--connection-pool-flags'
+      ' max_pool_size=1000,max_client_connections=20`)'
   )
   if update:
     help_ += (
@@ -3621,18 +3622,14 @@ def AddSqlServerEntraId(parser, hidden=False):
   entraid_group.add_argument(
       '--entra-id-tenant-id',
       required=True,
-      help=(
-          'Set the Entraid tenant ID. '
-      ),
+      help='Set the Entraid tenant ID. ',
       hidden=hidden,
   )
 
   entraid_group.add_argument(
       '--entra-id-application-id',
       required=True,
-      help=(
-          'Set the Entraid application ID. '
-      ),
+      help='Set the Entraid application ID. ',
       hidden=hidden,
   )
 
@@ -3823,8 +3820,7 @@ def AddDataApiAccess(parser):
       '--data-api-access',
       choices={
           'DATA_API_ACCESS_UNSPECIFIED': (
-              'Unspecified mode, effectively the same as'
-              ' `DISALLOW_DATA_API`.'
+              'Unspecified mode, effectively the same as `DISALLOW_DATA_API`.'
           ),
           'DISALLOW_DATA_API': (
               'Disallow using ExecuteSql API to connect to the instance.'
@@ -3842,19 +3838,32 @@ def AddDataApiAccess(parser):
   )
 
 
-def AddServerCertificateRotationMode(parser):
+def AddServerCertificateRotationMode(parser, hidden=False):
   """Adds the '--server-certificate-rotation-mode' flag to the parser.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   help_text = 'Set the server certificate rotation mode of the instance.'
   parser.add_argument(
       '--server-certificate-rotation-mode',
+      choices={
+          'NO_AUTOMATIC_ROTATION': (
+              'No automatic server certificate rotation. Server certificates'
+              ' must be rotated manually.'
+          ),
+          'AUTOMATIC_ROTATION_DURING_MAINTENANCE': (
+              'Automatic server certificate rotation during Cloud SQL'
+              ' scheduled maintenance or self-service maintenance updates.'
+              ' Requires `server_ca_mode` to be `GOOGLE_MANAGED_CAS_CA` or'
+              ' `CUSTOMER_MANAGED_CAS_CA`.'
+          ),
+      },
       required=False,
       default=None,
       help=help_text,
-      hidden=True,
+      hidden=hidden,
   )
 
 

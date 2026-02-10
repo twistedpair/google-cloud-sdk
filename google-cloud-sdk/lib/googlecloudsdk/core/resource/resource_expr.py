@@ -304,9 +304,6 @@ class Backend(object):
   def ExprNotRE(self, key, operand, transform=None):
     return _ExprNotRE(self, key, operand, transform)
 
-  def IsRewriter(self):
-    return False
-
 
 # _Expr* class instantiations are done by the Backend.Expr* methods.
 

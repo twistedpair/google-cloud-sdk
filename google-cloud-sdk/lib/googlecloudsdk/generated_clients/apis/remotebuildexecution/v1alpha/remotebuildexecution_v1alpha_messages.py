@@ -1588,6 +1588,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateKokoroInstanceRequest(
     tcaRestrictions: Optional. If tca_restrictions is ENABLED then the
       instance will have restrictions needed for building Trusted Core Access
       (TCA) compliant builds. DO NOT USE: In-Development feature.
+    validateOnly: Optional. If true, the request will be validated but not
+      executed.
   """
 
   class AdminOpsRestrictionsValueValuesEnum(_messages.Enum):
@@ -1635,6 +1637,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateKokoroInstanceRequest(
   instanceId = _messages.StringField(4)
   parent = _messages.StringField(5)
   tcaRestrictions = _messages.EnumField('TcaRestrictionsValueValuesEnum', 6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateTbiInstanceRequest(_messages.Message):
@@ -1727,13 +1730,16 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_mes
       characters long, contain only lowercase letters, digits, hyphens and
       underscores, start with a lowercase letter, and end with a lowercase
       letter or a digit.
+    validateOnly: Optional. If true, the request will be validated but not
+      executed.
     workerPool: Specifies the worker pool to create. The name in the worker
       pool, if specified, is ignored.
   """
 
   parent = _messages.StringField(1)
   poolId = _messages.StringField(2)
-  workerPool = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 3)
+  validateOnly = _messages.BooleanField(3)
+  workerPool = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 4)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteBackendIAMBindingRequest(_messages.Message):
@@ -2336,24 +2342,28 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateInstanceRequest(_messa
   r"""The request used for `UpdateInstance`.
 
   Fields:
-    instance: Specifies the instance to update.
-    loggingEnabled: Deprecated, use instance.logging_enabled instead. Whether
-      to enable Stackdriver logging for this instance.
-    name: Deprecated, use instance.Name instead. Name of the instance to
-      update. Format: `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
-    updateMask: The update mask applies to instance. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    instance: Required. Specifies the instance to update.
+    loggingEnabled: Optional. Deprecated: Use instance.logging_enabled
+      instead. Whether to enable Stackdriver logging for this instance.
+    name: Optional. Deprecated: Use instance.Name instead. Name of the
+      instance to update. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
+    updateMask: Optional. The update mask applies to instance. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask If an empty update_mask
       is provided, only the non-default valued field in the worker pool field
       will be updated. Note that in order to update a field to the default
       value (zero, false, empty string) an explicit update_mask must be
       provided.
+    validateOnly: Optional. If true, the request will be validated but not
+      executed.
   """
 
   instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1)
   loggingEnabled = _messages.BooleanField(2)
   name = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest(_messages.Message):
@@ -2367,11 +2377,14 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest(_mes
       will be updated. Note that in order to update a field to the default
       value (zero, false, empty string) an explicit update_mask must be
       provided.
+    validateOnly: Optional. If true, the request will be validated but not
+      executed.
     workerPool: Specifies the worker pool to update.
   """
 
   updateMask = _messages.StringField(1)
-  workerPool = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 2)
+  validateOnly = _messages.BooleanField(2)
+  workerPool = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 3)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Message):
@@ -3167,21 +3180,24 @@ class RemotebuildexecutionProjectsInstancesPatchRequest(_messages.Message):
     googleDevtoolsRemotebuildexecutionAdminV1alphaInstance: A
       GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance resource to be
       passed as the request body.
-    loggingEnabled: Deprecated, use instance.logging_enabled instead. Whether
-      to enable Stackdriver logging for this instance.
+    loggingEnabled: Optional. Deprecated: Use instance.logging_enabled
+      instead. Whether to enable Stackdriver logging for this instance.
     name: Output only. Instance resource name formatted as:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`. Name should not be
       populated when creating an instance since it is provided in the
       `instance_id` field.
-    name1: Deprecated, use instance.Name instead. Name of the instance to
-      update. Format: `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
-    updateMask: The update mask applies to instance. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    name1: Optional. Deprecated: Use instance.Name instead. Name of the
+      instance to update. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
+    updateMask: Optional. The update mask applies to instance. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask If an empty update_mask
       is provided, only the non-default valued field in the worker pool field
       will be updated. Note that in order to update a field to the default
       value (zero, false, empty string) an explicit update_mask must be
       provided.
+    validateOnly: Optional. If true, the request will be validated but not
+      executed.
   """
 
   googleDevtoolsRemotebuildexecutionAdminV1alphaInstance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1)
@@ -3189,6 +3205,7 @@ class RemotebuildexecutionProjectsInstancesPatchRequest(_messages.Message):
   name = _messages.StringField(3, required=True)
   name1 = _messages.StringField(4)
   updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class RemotebuildexecutionProjectsInstancesTestNotifyRequest(_messages.Message):

@@ -4719,6 +4719,8 @@ class Note(_messages.Message):
       used as a filter in list requests.
 
   Fields:
+    advisoryPublishTime: The timestamp when the advisory was first published
+      by the source feed.
     attestation: A note describing an attestation role.
     build: A note describing build provenance for a verifiable build.
     compliance: A note describing a compliance check.
@@ -4786,28 +4788,29 @@ class Note(_messages.Message):
     SBOM_REFERENCE = 12
     SECRET = 13
 
-  attestation = _messages.MessageField('AttestationNote', 1)
-  build = _messages.MessageField('BuildNote', 2)
-  compliance = _messages.MessageField('ComplianceNote', 3)
-  createTime = _messages.StringField(4)
-  deployment = _messages.MessageField('DeploymentNote', 5)
-  discovery = _messages.MessageField('DiscoveryNote', 6)
-  dsseAttestation = _messages.MessageField('DSSEAttestationNote', 7)
-  expirationTime = _messages.StringField(8)
-  image = _messages.MessageField('ImageNote', 9)
-  kind = _messages.EnumField('KindValueValuesEnum', 10)
-  longDescription = _messages.StringField(11)
-  name = _messages.StringField(12)
-  package = _messages.MessageField('PackageNote', 13)
-  relatedNoteNames = _messages.StringField(14, repeated=True)
-  relatedUrl = _messages.MessageField('RelatedUrl', 15, repeated=True)
-  sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
-  secret = _messages.MessageField('SecretNote', 17)
-  shortDescription = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  upgrade = _messages.MessageField('UpgradeNote', 20)
-  vulnerability = _messages.MessageField('VulnerabilityNote', 21)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 22)
+  advisoryPublishTime = _messages.StringField(1)
+  attestation = _messages.MessageField('AttestationNote', 2)
+  build = _messages.MessageField('BuildNote', 3)
+  compliance = _messages.MessageField('ComplianceNote', 4)
+  createTime = _messages.StringField(5)
+  deployment = _messages.MessageField('DeploymentNote', 6)
+  discovery = _messages.MessageField('DiscoveryNote', 7)
+  dsseAttestation = _messages.MessageField('DSSEAttestationNote', 8)
+  expirationTime = _messages.StringField(9)
+  image = _messages.MessageField('ImageNote', 10)
+  kind = _messages.EnumField('KindValueValuesEnum', 11)
+  longDescription = _messages.StringField(12)
+  name = _messages.StringField(13)
+  package = _messages.MessageField('PackageNote', 14)
+  relatedNoteNames = _messages.StringField(15, repeated=True)
+  relatedUrl = _messages.MessageField('RelatedUrl', 16, repeated=True)
+  sbomReference = _messages.MessageField('SBOMReferenceNote', 17)
+  secret = _messages.MessageField('SecretNote', 18)
+  shortDescription = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  upgrade = _messages.MessageField('UpgradeNote', 21)
+  vulnerability = _messages.MessageField('VulnerabilityNote', 22)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 23)
 
 
 class Occurrence(_messages.Message):

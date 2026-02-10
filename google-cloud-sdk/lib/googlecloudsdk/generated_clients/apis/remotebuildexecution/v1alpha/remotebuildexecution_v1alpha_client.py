@@ -488,7 +488,7 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
         method_id='remotebuildexecution.projects.instances.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['loggingEnabled', 'name1', 'updateMask'],
+        query_params=['loggingEnabled', 'name1', 'updateMask', 'validateOnly'],
         relative_path='v1alpha/{+name}',
         request_field='googleDevtoolsRemotebuildexecutionAdminV1alphaInstance',
         request_type_name='RemotebuildexecutionProjectsInstancesPatchRequest',

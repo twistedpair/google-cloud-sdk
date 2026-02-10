@@ -185,7 +185,8 @@ projects_locations_policy_porters_translations_source_policies:
 projects_locations_policy_porters_translations_translated_policies:
   name: translatedPolicy
   plural_name: translatedPolicies
-  collection: iam.projects.locations.policyPorters.translations.translatedPolicies
+  collection:
+    iam.projects.locations.policyPorters.translations.translatedPolicies
   attributes:
   - *project
   - *location

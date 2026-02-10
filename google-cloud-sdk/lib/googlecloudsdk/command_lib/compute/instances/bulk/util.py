@@ -207,11 +207,6 @@ def _GetPerInstanceProperties(
   )
 
 
-def _DictToAttachedDiskMessage(disk_dict, messages):
-  """Converts a Python dict to a Compute API AttachedDisk message."""
-  return encoding.JsonToMessage(messages.AttachedDisk, disk_dict)
-
-
 def _CreateInstanceFlexibilityPolicy(args, messages):
   """Creates an InstanceFlexibilityPolicy message from the given arguments."""
   instance_selections = []
@@ -226,29 +221,21 @@ def _CreateInstanceFlexibilityPolicy(args, messages):
   elif args.IsSpecified('instance_selection'):
     for instance_selection in args.instance_selection:
       name = instance_selection['name']
+      if isinstance(name, list):
+        name = name[0]
       machine_types = instance_selection['machine-type']
       rank = None
       if 'rank' in instance_selection:
         rank = instance_selection['rank']
+        if isinstance(rank, list):
+          rank = rank[0]
         rank = int(rank)
-      api_disks = []
-      if 'disk' in instance_selection:
-        for disk_dict in instance_selection['disk']:
-          try:
-            api_disks.append(_DictToAttachedDiskMessage(disk_dict, messages))
-          except InvalidArgumentException as e:
-            raise InvalidArgumentException(
-                'instance_selection',
-                f'Invalid disk format in instance selection "{name}": {e} -'
-                f' Received: {disk_dict}',
-            )
       _AddInstanceSelection(
           messages,
           instance_selections,
           name,
           machine_types,
           rank,
-          api_disks=api_disks if api_disks else None,
       )
   if not instance_selections:
     return None
@@ -263,7 +250,6 @@ def _AddInstanceSelection(
     instance_selection_name,
     machine_types,
     rank,
-    api_disks=None,
 ):
   """Adds instance selection to instance selections list."""
   for instance_selection in instance_selections:
@@ -286,8 +272,6 @@ def _AddInstanceSelection(
   )
   if rank is not None:
     instance_selection_payload.rank = rank
-  if api_disks:
-    instance_selection_payload.disks = api_disks
   instance_selections.append(
       messages.InstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
           key=instance_selection_name,

@@ -585,33 +585,29 @@ class DatastoreMountConfig(_messages.Message):
   r"""The Datastore Mount configuration
 
   Enums:
-    AccessModeValueValuesEnum: Optional. NFS is accessed by hosts in read mode
+    AccessModeValueValuesEnum: Optional. The access mode of the NFS volume.
       Optional. Default value used will be READ_WRITE
     NfsVersionValueValuesEnum: Optional. The NFS protocol supported by the NFS
       volume. Default value used will be NFS_V3
-    SecurityTypeValueValuesEnum: Optional. ONLY required when NFS 4.1 version
-      is used
 
   Fields:
-    accessMode: Optional. NFS is accessed by hosts in read mode Optional.
-      Default value used will be READ_WRITE
-    datastore: Required. The resource name of the datastore to unmount. The
-      datastore requested to be mounted should be in same region/zone as the
-      cluster. Resource names are schemeless URIs that follow the conventions
-      in https://cloud.google.com/apis/design/resource_names. For example:
+    accessMode: Optional. The access mode of the NFS volume. Optional. Default
+      value used will be READ_WRITE
+    datastore: Required. The resource name of the datastore to mount. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1/datastores/my-datastore`
     datastoreNetwork: Required. The network configuration for the datastore.
     fileShare: Output only. File share name.
     nfsVersion: Optional. The NFS protocol supported by the NFS volume.
       Default value used will be NFS_V3
-    securityType: Optional. ONLY required when NFS 4.1 version is used
     servers: Output only. Server IP addresses of the NFS volume. For NFS 3,
       you can only provide a single server IP address or DNS names.
   """
 
   class AccessModeValueValuesEnum(_messages.Enum):
-    r"""Optional. NFS is accessed by hosts in read mode Optional. Default
-    value used will be READ_WRITE
+    r"""Optional. The access mode of the NFS volume. Optional. Default value
+    used will be READ_WRITE
 
     Values:
       ACCESS_MODE_UNSPECIFIED: The default value. This value should never be
@@ -635,34 +631,31 @@ class DatastoreMountConfig(_messages.Message):
     NFS_VERSION_UNSPECIFIED = 0
     NFS_V3 = 1
 
-  class SecurityTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. ONLY required when NFS 4.1 version is used
-
-    Values:
-      SECURITY_TYPE_UNSPECIFIED: The default value. This value should never be
-        used.
-    """
-    SECURITY_TYPE_UNSPECIFIED = 0
-
   accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
   datastore = _messages.StringField(2)
   datastoreNetwork = _messages.MessageField('DatastoreNetwork', 3)
   fileShare = _messages.StringField(4)
   nfsVersion = _messages.EnumField('NfsVersionValueValuesEnum', 5)
-  securityType = _messages.EnumField('SecurityTypeValueValuesEnum', 6)
-  servers = _messages.StringField(7, repeated=True)
+  servers = _messages.StringField(6, repeated=True)
 
 
 class DatastoreNetwork(_messages.Message):
   r"""The network configuration for the datastore.
 
   Fields:
-    connectionCount: Optional. The number of connections of the NFS volume.
-      Spported from vsphere 8.0u1
-    mtu: Optional. The Maximal Transmission Unit (MTU) of the datastore.
-      System sets default MTU size. It prefers the VPC peering MTU, falling
-      back to the VEN MTU if no peering MTU is found. when detected, and
-      falling back to the VEN MTU otherwise.
+    connectionCount: Optional. connection_count is used to set multiple
+      connections from NFS client on ESXi host to NFS server. A higher number
+      of connections results in better performance on datastores. In
+      MountDatastore API by default max 4 connections are configured. User can
+      set value of connection_count between 1 to 4. Connection_count is
+      supported from vsphere 8.0u1 for earlier version 1 connection count is
+      set on the ESXi hosts.
+    mtu: Optional. MTU value is set on the VMKernel adapter for the NFS
+      traffic. By default standard 1500 MTU size is set in MountDatastore API
+      which is good for typical setups. However google VPC networks supports
+      jumbo MTU 8896. We recommend to tune this value based on the NFS traffic
+      performance. Performance can be determined using benchmarking I/O tools
+      like fio (Flexible I/O Tester) utility.
     networkPeering: Output only. The resource name of the network peering,
       used to access the file share by clients on private cloud. Resource
       names are schemeless URIs that follow the conventions in
@@ -2194,7 +2187,7 @@ class NfsDatastore(_messages.Message):
   r"""The NFS datastore configuration.
 
   Fields:
-    googleFileService: Google service file service configuration
+    googleFileService: Google file service configuration
     googleVmwareFileService: GCVE file service configuration
     thirdPartyFileService: Third party file service configuration
   """
@@ -3758,6 +3751,7 @@ class VmwareComponentUpgrade(_messages.Message):
       KMS_VM: KMS VM used for vsan encryption.
       WITNESS_VM: Witness VM in case of stretch PC.
       NSXT: nsxt
+      VM_TOOLS: Represents the VMware Tools component.
     """
     VMWARE_COMPONENT_TYPE_UNSPECIFIED = 0
     VCENTER = 1
@@ -3772,6 +3766,7 @@ class VmwareComponentUpgrade(_messages.Message):
     KMS_VM = 10
     WITNESS_VM = 11
     NSXT = 12
+    VM_TOOLS = 13
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the resource.
@@ -3904,6 +3899,7 @@ class VmwareUpgradeComponent(_messages.Message):
       WITNESS_VM: witness VM in case of stretch PC
       NSXT: nsxt
       CLUSTER: Cluster is used in case of BM
+      VM_TOOLS: VMware Tools.
     """
     VMWARE_COMPONENT_TYPE_UNSPECIFIED = 0
     VCENTER = 1
@@ -3919,6 +3915,7 @@ class VmwareUpgradeComponent(_messages.Message):
     WITNESS_VM = 11
     NSXT = 12
     CLUSTER = 13
+    VM_TOOLS = 14
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Component's upgrade state.

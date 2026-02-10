@@ -74,15 +74,16 @@ def _TransformTrafficPairs(
     traffic_pairs, service_url, service_ingress=None, service_iap=None
 ):
   """Transforms a List[TrafficTargetPair] into a marker class structure."""
-  traffic_section = cp.Section(
-      [cp.Table(_TransformTrafficPair(p) for p in traffic_pairs)]
-  )
   route_section = [cp.Labeled([('URL', service_url)])]
   if service_ingress is not None:
     route_section.append(cp.Labeled([('Ingress', service_ingress)]))
   if service_iap is not None:
     route_section.append(cp.Labeled([('Iap Enabled', service_iap)]))
-  route_section.append(cp.Labeled([('Traffic', traffic_section)]))
+  if traffic_pairs is not None:
+    traffic_section = cp.Section(
+        [cp.Table(_TransformTrafficPair(p) for p in traffic_pairs)]
+    )
+    route_section.append(cp.Labeled([('Traffic', traffic_section)]))
   return cp.Section(route_section, max_column_width=60)
 
 
@@ -109,6 +110,24 @@ def TransformRouteFields(service_record):
       '' if no_status else service_record.domain,
       _GetIngress(service_record),
       _GetIap(service_record),
+  )
+
+
+def TransformInstanceRouteFields(instance_record):
+  """Transforms an instance's route fields into a marker class structure.
+
+  Args:
+    instance_record: An Instance object.
+
+  Returns:
+    A custom printer marker object describing the route fields print format.
+  """
+  if not instance_record.urls:
+    return None
+  return _TransformTrafficPairs(
+      None,
+      instance_record.urls[0],
+      _GetIngress(instance_record),
   )
 
 

@@ -446,9 +446,6 @@ _KNOWN_ERRORS = {
     'http.client.ResponseNotReady': core_exceptions.NetworkIssueError,
     'http.client.BadStatusLine': core_exceptions.NetworkIssueError,
     'http.client.IncompleteRead': core_exceptions.NetworkIssueError,
-    'oauth2client.client.AccessTokenRefreshError': (
-        creds_exceptions.TokenRefreshError
-    ),
     'ssl.SSLError': core_exceptions.NetworkIssueError,
     'socket.error': core_exceptions.NetworkIssueError,
     'socket.timeout': core_exceptions.NetworkIssueError,

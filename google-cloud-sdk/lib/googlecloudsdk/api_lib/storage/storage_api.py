@@ -352,6 +352,7 @@ class StorageClient(object):
       enable_public_access_prevention=None,
       soft_delete_duration=None,
       cors=None,
+      labels=None,
   ):
     """Create a bucket if it does not already exist.
 
@@ -379,6 +380,7 @@ class StorageClient(object):
       cors: list, A list of CorsValueListEntry objects. The bucket's
         Cross-Origin Resource Sharing (CORS) configuration. If None, no CORS
         configuration will be set.
+      labels: dict, A dictionary of labels to apply to the bucket.
 
     Raises:
       api_exceptions.HttpError: If the bucket is not able to be created or is
@@ -428,6 +430,17 @@ class StorageClient(object):
             self.messages.Bucket.SoftDeletePolicyValue(
                 retentionDurationSeconds=soft_delete_duration
             )
+        )
+      if labels is not None:
+        label_values = []
+        for key, value in labels.items():
+          label_values.append(
+              self.messages.Bucket.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+          )
+        storage_buckets_insert_request.bucket.labels = (
+            self.messages.Bucket.LabelsValue(additionalProperties=label_values)
         )
       try:
         self.client.buckets.Insert(storage_buckets_insert_request)

@@ -276,40 +276,35 @@ class BackendBase(object):
 
   def ExprAND(self, left, right):
     """Returns an AND expression node."""
-    if left:
-      left = left.Rewrite()
-    if right:
-      right = right.Rewrite()
+    left_rewrite = left.Rewrite()
+    right_rewrite = right.Rewrite()
     # None AND x => x
-    if not left:
+    if not left_rewrite:
       self.partial_rewrite = True
-      return self.Expr(right) if right else None
+      return self.Expr(right_rewrite)
     # x AND None => x
-    if not right:
+    if not right_rewrite:
       self.complete = False
-      return self.Expr(left)
-    return self.Expr(self.RewriteAND(left, right))
+      return self.Expr(left_rewrite)
+    return self.Expr(self.RewriteAND(left_rewrite, right_rewrite))
 
   def ExprOR(self, left, right):
     """Returns an OR expression node."""
-    if left:
-      left = left.Rewrite()
+    left_rewrite = left.Rewrite()
     # None OR x => None
-    if not left:
+    if not left_rewrite:
       return self.Expr(None)
     # x OR None => None
-    if right:
-      right = right.Rewrite()
-    if not right:
+    right_rewrite = right.Rewrite()
+    if not right_rewrite:
       return self.Expr(None)
-    return self.Expr(self.RewriteOR(left, right))
+    return self.Expr(self.RewriteOR(left_rewrite, right_rewrite))
 
   def ExprNOT(self, expr):
-    if expr:
-      expr = expr.Rewrite()
-    if not expr:
+    expr_rewrite = expr.Rewrite()
+    if not expr_rewrite:
       return self.Expr(None)
-    return self.Expr(self.RewriteNOT(expr))
+    return self.Expr(self.RewriteNOT(expr_rewrite))
 
   def ExprGlobal(self, call):
     return self.Expr(self.RewriteGlobal(call))
@@ -343,9 +338,6 @@ class BackendBase(object):
 
   def ExprNotRE(self, key, operand, transform=None, args=None):
     return self.Term(key, '!~', operand, transform, args)
-
-  def IsRewriter(self):
-    return True
 
 
 class Backend(BackendBase):

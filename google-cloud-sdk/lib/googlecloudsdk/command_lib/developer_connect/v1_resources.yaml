@@ -66,6 +66,18 @@ projects_locations_insights_configs:
     attribute_name: insights_config
     help: The insightsConfig id of the {resource} resource.
   disable_auto_completers: true
+projects_locations_instances:
+  name: instance
+  plural_name: instances
+  collection: developerconnect.projects.locations.instances
+  attributes:
+  - *project
+  - *location
+  - &instance
+    parameter_name: instancesId
+    attribute_name: instance
+    help: The instance id of the {resource} resource.
+  disable_auto_completers: true
 projects_locations_connections_git_repository_links:
   name: gitRepositoryLink
   plural_name: gitRepositoryLinks

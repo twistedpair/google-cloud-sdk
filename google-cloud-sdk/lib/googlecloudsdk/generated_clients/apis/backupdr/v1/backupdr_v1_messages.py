@@ -965,6 +965,9 @@ class BackupPlan(_messages.Message):
       cases to be provided. An example description is the following: "This is
       a backup plan that performs a daily backup at 6pm and retains data for 3
       months". The description must be at most 2048 characters.
+    diskBackupPlanProperties: Optional. Defines optional properties specific
+      to backups of disk-based resources, such as Compute Engine Persistent
+      Disks. This includes settings like whether to perform a guest flush.
     etag: Optional. `etag` is returned from the service in the response. As a
       user of the service, you may provide an etag value in this field to
       prevent stale resources.
@@ -1043,17 +1046,18 @@ class BackupPlan(_messages.Message):
   backupVaultServiceAccount = _messages.StringField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  logRetentionDays = _messages.IntegerField(8)
-  maxCustomOnDemandRetentionDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  resourceType = _messages.StringField(11)
-  revisionId = _messages.StringField(12)
-  revisionName = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  supportedResourceTypes = _messages.StringField(15, repeated=True)
-  updateTime = _messages.StringField(16)
+  diskBackupPlanProperties = _messages.MessageField('DiskBackupPlanProperties', 6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  logRetentionDays = _messages.IntegerField(9)
+  maxCustomOnDemandRetentionDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  resourceType = _messages.StringField(12)
+  revisionId = _messages.StringField(13)
+  revisionName = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  supportedResourceTypes = _messages.StringField(16, repeated=True)
+  updateTime = _messages.StringField(17)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -3661,6 +3665,18 @@ class DataSourceReference(_messages.Message):
   dataSourceGcpResourceInfo = _messages.MessageField('DataSourceGcpResourceInfo', 6)
   name = _messages.StringField(7)
   totalStoredBytes = _messages.IntegerField(8)
+
+
+class DiskBackupPlanProperties(_messages.Message):
+  r"""--- DiskBackupPlanProperties Message ---
+
+  Fields:
+    guestFlush: Optional. Indicates whether to perform a guest flush operation
+      before taking a disk backup. When set to false, the system will create
+      crash-consistent backups. Default value is false.
+  """
+
+  guestFlush = _messages.BooleanField(1)
 
 
 class DiskBackupProperties(_messages.Message):

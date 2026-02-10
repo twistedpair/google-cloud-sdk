@@ -439,7 +439,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new FirewallEndpoint in a given project and location.
+      r"""Creates a new FirewallEndpoint in a given organization and location.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest) input message
@@ -466,7 +466,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Endpoint.
+      r"""Deletes a single org Endpoint.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsFirewallEndpointsDeleteRequest) input message
@@ -493,7 +493,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Endpoint.
+      r"""Gets details of a single org Endpoint.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsFirewallEndpointsGetRequest) input message
@@ -520,7 +520,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists FirewallEndpoints in a given project and location.
+      r"""Lists FirewallEndpoints in a given organization and location.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsFirewallEndpointsListRequest) input message
@@ -547,7 +547,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a single Endpoint.
+      r"""Update a single org Endpoint.
 
       Args:
         request: (NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest) input message
@@ -2631,7 +2631,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Endpoint.
+      r"""Deletes a single project Endpoint.
 
       Args:
         request: (NetworksecurityProjectsLocationsFirewallEndpointsDeleteRequest) input message
@@ -2658,7 +2658,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Endpoint.
+      r"""Gets details of a single project Endpoint.
 
       Args:
         request: (NetworksecurityProjectsLocationsFirewallEndpointsGetRequest) input message
@@ -2712,7 +2712,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a single Endpoint.
+      r"""Update a single project Endpoint.
 
       Args:
         request: (NetworksecurityProjectsLocationsFirewallEndpointsPatchRequest) input message

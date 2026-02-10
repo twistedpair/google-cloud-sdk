@@ -32,9 +32,11 @@ class CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSetting
   tingsRequest object.
 
   Fields:
-    name: Identifier. Name of the config would be of the format:
-      projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
-      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
+    name: Identifier. Name of the configuration, in the formats below: * For a
+      project: projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
+      * For a folder:
+      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings * For an
+      organization:
       organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
     quotaAdjusterSettings: A QuotaAdjusterSettings resource to be passed as
       the request body.
@@ -274,9 +276,11 @@ class CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterS
   terSettingsRequest object.
 
   Fields:
-    name: Identifier. Name of the config would be of the format:
-      projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
-      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
+    name: Identifier. Name of the configuration, in the formats below: * For a
+      project: projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
+      * For a folder:
+      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings * For an
+      organization:
       organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
     quotaAdjusterSettings: A QuotaAdjusterSettings resource to be passed as
       the request body.
@@ -515,9 +519,11 @@ class CloudquotasProjectsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettin
   ttingsRequest object.
 
   Fields:
-    name: Identifier. Name of the config would be of the format:
-      projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
-      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
+    name: Identifier. Name of the configuration, in the formats below: * For a
+      project: projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
+      * For a folder:
+      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings * For an
+      organization:
       organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
     quotaAdjusterSettings: A QuotaAdjusterSettings resource to be passed as
       the request body.
@@ -992,9 +998,11 @@ class QuotaAdjusterSettings(_messages.Message):
       organizations/{organization_id}, folders/{folder_id}, or can be
       'default' if no ancestor exists with enablement set. The value will be
       empty when enablement is directly set on this container.
-    name: Identifier. Name of the config would be of the format:
-      projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
-      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings
+    name: Identifier. Name of the configuration, in the formats below: * For a
+      project: projects/PROJECT_NUMBER/locations/global/quotaAdjusterSettings
+      * For a folder:
+      folders/FOLDER_NUMBER/locations/global/quotaAdjusterSettings * For an
+      organization:
       organizations/ORGANIZATION_NUMBER/locations/global/quotaAdjusterSettings
     updateTime: Output only. The timestamp when the QuotaAdjusterSettings
       resource was last updated.

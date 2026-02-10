@@ -648,6 +648,53 @@ class BlobStorageSettings(_messages.Message):
   blobStorageClass = _messages.EnumField('BlobStorageClassValueValuesEnum', 1)
 
 
+class BulkDeleteResourcesRequest(_messages.Message):
+  r"""Request to bulk delete FHIR resources.
+
+  Enums:
+    VersionConfigValueValuesEnum: Optional. Specifies which version of the
+      resources to delete.
+
+  Fields:
+    gcsDestination: Optional. The Cloud Storage output destination. The
+      Healthcare Service Agent account requires the
+      `roles/storage.objectAdmin` role on the Cloud Storage location. The
+      deleted resources outputs are organized by FHIR resource types. The
+      server creates one or more objects per resource type. Each object
+      contains newline delimited strings in the format
+      {resourceType}/{resourceId}.
+    type: Optional. String of comma-delimited FHIR resource types. If
+      provided, only resources of the specified resource type(s) will be
+      deleted.
+    until: Optional. If provided, only resources updated before or atthis time
+      are deleted. The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For
+      example, `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The
+      time must be specified to the second and include a time zone.
+    versionConfig: Optional. Specifies which version of the resources to
+      delete.
+  """
+
+  class VersionConfigValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies which version of the resources to delete.
+
+    Values:
+      VERSION_CONFIG_UNSPECIFIED: Unspecified version config. Defaults to ALL.
+      ALL: Delete the current version and all history versions.
+      CURRENT_ONLY: Delete the current version only and create a historical
+        version of the deleted resource.
+      HISTORY_ONLY: Delete all history versions only.
+    """
+    VERSION_CONFIG_UNSPECIFIED = 0
+    ALL = 1
+    CURRENT_ONLY = 2
+    HISTORY_ONLY = 3
+
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsDestination', 1)
+  type = _messages.StringField(2)
+  until = _messages.StringField(3)
+  versionConfig = _messages.EnumField('VersionConfigValueValuesEnum', 4)
+
+
 class BulkExportGcsDestination(_messages.Message):
   r"""The configuration for exporting to Cloud Storage using the bulk export
   API.
@@ -5050,6 +5097,21 @@ class HealthcareProjectsLocationsDatasetsFhirStoresApplyConsentsRequest(_message
   """
 
   applyConsentsRequest = _messages.MessageField('ApplyConsentsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresBulkDeleteRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresBulkDeleteRequest object.
+
+  Fields:
+    bulkDeleteResourcesRequest: A BulkDeleteResourcesRequest resource to be
+      passed as the request body.
+    name: Required. The name of the FHIR store to bulk delete resources from,
+      in the format of `projects/{project_id}/locations/{location_id}/datasets
+      /{dataset_id}/fhirStores/{fhir_store_id}`.
+  """
+
+  bulkDeleteResourcesRequest = _messages.MessageField('BulkDeleteResourcesRequest', 1)
   name = _messages.StringField(2, required=True)
 
 

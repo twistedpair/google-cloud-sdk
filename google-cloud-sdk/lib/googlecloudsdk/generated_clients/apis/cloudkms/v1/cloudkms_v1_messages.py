@@ -314,6 +314,9 @@ class AutokeyConfig(_messages.Message):
   r"""Cloud KMS Autokey configuration for a folder.
 
   Enums:
+    KeyProjectResolutionModeValueValuesEnum: Optional.
+      KeyProjectResolutionMode for the AutokeyConfig. Valid values are
+      `DEDICATED_KEY_PROJECT`, `RESOURCE_PROJECT`, or `DISABLED`.
     StateValueValuesEnum: Output only. The state for the AutokeyConfig.
 
   Fields:
@@ -331,10 +334,40 @@ class AutokeyConfig(_messages.Message):
       for this key project must be granted the `cloudkms.admin` role (or
       pertinent permissions). A request with an empty key project field will
       clear the configuration.
+    keyProjectResolutionMode: Optional. KeyProjectResolutionMode for the
+      AutokeyConfig. Valid values are `DEDICATED_KEY_PROJECT`,
+      `RESOURCE_PROJECT`, or `DISABLED`.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
-      `folders/{FOLDER_NUMBER}/autokeyConfig`
+      `folders/{FOLDER_NUMBER}/autokeyConfig` or
+      `projects/{PROJECT_NUMBER}/autokeyConfig`.
     state: Output only. The state for the AutokeyConfig.
   """
+
+  class KeyProjectResolutionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. KeyProjectResolutionMode for the AutokeyConfig. Valid values
+    are `DEDICATED_KEY_PROJECT`, `RESOURCE_PROJECT`, or `DISABLED`.
+
+    Values:
+      KEY_PROJECT_RESOLUTION_MODE_UNSPECIFIED: Default value.
+        KeyProjectResolutionMode when not specified will act as
+        `DEDICATED_KEY_PROJECT`.
+      DEDICATED_KEY_PROJECT: Keys are created in a dedicated project specified
+        by `key_project`.
+      RESOURCE_PROJECT: Keys are created in the same project as the resource
+        requesting the key. The `key_project` must not be set when this mode
+        is used.
+      DISABLED: Disables the AutokeyConfig. When this mode is set, any
+        AutokeyConfig from higher levels in the resource hierarchy are ignored
+        for this resource and its descendants. This setting can be overridden
+        by a more specific configuration at a lower level. For example, if
+        Autokey is disabled on a folder, it can be re-enabled on a sub-folder
+        or project within that folder by setting a different mode (e.g.,
+        DEDICATED_KEY_PROJECT or RESOURCE_PROJECT).
+    """
+    KEY_PROJECT_RESOLUTION_MODE_UNSPECIFIED = 0
+    DEDICATED_KEY_PROJECT = 1
+    RESOURCE_PROJECT = 2
+    DISABLED = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state for the AutokeyConfig.
@@ -354,8 +387,9 @@ class AutokeyConfig(_messages.Message):
 
   etag = _messages.StringField(1)
   keyProject = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  keyProjectResolutionMode = _messages.EnumField('KeyProjectResolutionModeValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Binding(_messages.Message):
@@ -575,7 +609,8 @@ class CloudkmsFoldersUpdateAutokeyConfigRequest(_messages.Message):
   Fields:
     autokeyConfig: A AutokeyConfig resource to be passed as the request body.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
-      `folders/{FOLDER_NUMBER}/autokeyConfig`
+      `folders/{FOLDER_NUMBER}/autokeyConfig` or
+      `projects/{PROJECT_NUMBER}/autokeyConfig`.
     updateMask: Required. Masks which fields of the AutokeyConfig to update,
       e.g. `keyProject`.
   """
@@ -1925,7 +1960,8 @@ class CloudkmsProjectsUpdateAutokeyConfigRequest(_messages.Message):
   Fields:
     autokeyConfig: A AutokeyConfig resource to be passed as the request body.
     name: Identifier. Name of the AutokeyConfig resource, e.g.
-      `folders/{FOLDER_NUMBER}/autokeyConfig`
+      `folders/{FOLDER_NUMBER}/autokeyConfig` or
+      `projects/{PROJECT_NUMBER}/autokeyConfig`.
     updateMask: Required. Masks which fields of the AutokeyConfig to update,
       e.g. `keyProject`.
   """

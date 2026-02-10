@@ -28,6 +28,8 @@ from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import serverless_operations
+from googlecloudsdk.command_lib.run.compose import exceptions as compose_exceptions
+from googlecloudsdk.command_lib.run.compose import exit_codes
 from googlecloudsdk.command_lib.run.compose import tracker as tracker_stages
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -121,10 +123,15 @@ def handle(
       ))
     except submit_util.FailedBuildException as e:
       log.error(f'Build failed for container {container}: {e}')
-      raise
+      raise compose_exceptions.BuildError(
+          str(e), exit_codes.BUILD_FAILED
+      ) from e
     except exceptions.Error as e:
       log.error(f'An error occurred during build submission: {e}')
-      raise
+      raise compose_exceptions.BuildError(
+          f'An error occurred during build submission: {e}',
+          exit_codes.BUILD_SUBMISSION_ERROR,
+      ) from e
 
   if not build_ops:
     _save_source_fingerprints(fingerprints_to_save, project_name)
@@ -183,7 +190,9 @@ def handle(
   _save_source_fingerprints(fingerprints_to_save, project_name)
 
   if num_build_successes != len(build_ops):
-    raise exceptions.Error('One or more container builds failed.')
+    raise compose_exceptions.BuildError(
+        'One or more container builds failed.', exit_codes.BUILD_FAILED
+    )
 
 
 def _save_source_fingerprints(
@@ -253,8 +262,9 @@ def _calculate_source_fingerprint(build_config: BuildConfig) -> str:
   if build_config.context is None:
     return ''
   if not os.path.isdir(build_config.context):
-    raise exceptions.Error(
-        f'Build context path is not a directory: {build_config.context}'
+    raise compose_exceptions.BuildError(
+        f'Build context path is not a directory: {build_config.context}',
+        exit_codes.BUILD_CONTEXT_INVALID,
     )
 
   sha1 = hashlib.sha256()
@@ -380,9 +390,10 @@ def _handle_no_build(
   with serverless_operations.Connect(conn_context) as client:
     existing_service = client.GetService(service_ref)
   if not existing_service:
-    raise exceptions.Error(
+    raise compose_exceptions.BuildError(
         '--no-build cannot be used for the first deployment of service'
-        f" '{project_name}'."
+        f" '{project_name}'.",
+        exit_codes.BUILD_NO_BUILD_INVALID,
     )
   container_to_image_map = {}
   if existing_service and existing_service.template.spec.containers:

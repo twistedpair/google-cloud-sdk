@@ -4932,6 +4932,8 @@ class Note(_messages.Message):
       used as a filter in list requests.
 
   Fields:
+    advisoryPublishTime: The timestamp when the advisory was first published
+      by the source.
     attestationAuthority: A note describing an attestation role.
     baseImage: A note describing a base image.
     build: A note describing build provenance for a verifiable build.
@@ -5005,30 +5007,31 @@ class Note(_messages.Message):
     SBOM_REFERENCE = 14
     SECRET = 15
 
-  attestationAuthority = _messages.MessageField('Authority', 1)
-  baseImage = _messages.MessageField('Basis', 2)
-  build = _messages.MessageField('Build', 3)
-  createTime = _messages.StringField(4)
-  deployable = _messages.MessageField('Deployable', 5)
-  discovery = _messages.MessageField('Discovery', 6)
-  expirationTime = _messages.StringField(7)
-  intoto = _messages.MessageField('InToto', 8)
-  kind = _messages.EnumField('KindValueValuesEnum', 9)
-  longDescription = _messages.StringField(10)
-  name = _messages.StringField(11)
-  package = _messages.MessageField('Package', 12)
-  relatedNoteNames = _messages.StringField(13, repeated=True)
-  relatedUrl = _messages.MessageField('RelatedUrl', 14, repeated=True)
-  sbom = _messages.MessageField('DocumentNote', 15)
-  sbomReference = _messages.MessageField('SBOMReferenceNote', 16)
-  secret = _messages.MessageField('SecretNote', 17)
-  shortDescription = _messages.StringField(18)
-  spdxFile = _messages.MessageField('FileNote', 19)
-  spdxPackage = _messages.MessageField('PackageInfoNote', 20)
-  spdxRelationship = _messages.MessageField('RelationshipNote', 21)
-  updateTime = _messages.StringField(22)
-  vulnerability = _messages.MessageField('Vulnerability', 23)
-  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 24)
+  advisoryPublishTime = _messages.StringField(1)
+  attestationAuthority = _messages.MessageField('Authority', 2)
+  baseImage = _messages.MessageField('Basis', 3)
+  build = _messages.MessageField('Build', 4)
+  createTime = _messages.StringField(5)
+  deployable = _messages.MessageField('Deployable', 6)
+  discovery = _messages.MessageField('Discovery', 7)
+  expirationTime = _messages.StringField(8)
+  intoto = _messages.MessageField('InToto', 9)
+  kind = _messages.EnumField('KindValueValuesEnum', 10)
+  longDescription = _messages.StringField(11)
+  name = _messages.StringField(12)
+  package = _messages.MessageField('Package', 13)
+  relatedNoteNames = _messages.StringField(14, repeated=True)
+  relatedUrl = _messages.MessageField('RelatedUrl', 15, repeated=True)
+  sbom = _messages.MessageField('DocumentNote', 16)
+  sbomReference = _messages.MessageField('SBOMReferenceNote', 17)
+  secret = _messages.MessageField('SecretNote', 18)
+  shortDescription = _messages.StringField(19)
+  spdxFile = _messages.MessageField('FileNote', 20)
+  spdxPackage = _messages.MessageField('PackageInfoNote', 21)
+  spdxRelationship = _messages.MessageField('RelationshipNote', 22)
+  updateTime = _messages.StringField(23)
+  vulnerability = _messages.MessageField('Vulnerability', 24)
+  vulnerabilityAssessment = _messages.MessageField('VulnerabilityAssessmentNote', 25)
 
 
 class Occurrence(_messages.Message):

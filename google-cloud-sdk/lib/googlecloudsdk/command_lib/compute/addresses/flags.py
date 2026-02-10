@@ -198,7 +198,11 @@ def AddIPv6EndPointType(parser):
       """)
 
 
-def AddPurpose(parser, support_psc_google_apis):
+def AddPurpose(
+    parser,
+    support_psc_google_apis,
+    support_passthrough_lb_availability_groups=False,
+):
   """Adds purpose flag."""
   choices = [
       'VPC_PEERING', 'SHARED_LOADBALANCER_VIP', 'GCE_ENDPOINT',
@@ -206,6 +210,11 @@ def AddPurpose(parser, support_psc_google_apis):
   ]
   if support_psc_google_apis:
     choices.append('PRIVATE_SERVICE_CONNECT')
+  if support_passthrough_lb_availability_groups:
+    choices.extend([
+        'PASSTHROUGH_LOAD_BALANCER_AVAILABILITY_GROUP0',
+        'PASSTHROUGH_LOAD_BALANCER_AVAILABILITY_GROUP1',
+    ])
   parser.add_argument(
       '--purpose',
       choices=choices,

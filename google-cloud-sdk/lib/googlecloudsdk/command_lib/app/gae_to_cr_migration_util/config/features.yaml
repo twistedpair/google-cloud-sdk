@@ -86,8 +86,17 @@ range_limited:
   severity: minor
   reason: Cloud Run supports basic scaling values between 0 and 1000.
   flags:
-  - --min-instances
   - --max-instances
+- path:
+    admin_api: basicScaling.minInstances
+    app_yaml: basic_scaling.min_instances
+  range:
+    max: 1000
+    min: 0
+  severity: minor
+  reason: Cloud Run supports basic scaling values between 0 and 1000.
+  flags:
+  - --min-instances
 - path:
     admin_api: automaticScaling.maxConcurrentRequests
     app_yaml: automatic_scaling.max_concurrent_requests

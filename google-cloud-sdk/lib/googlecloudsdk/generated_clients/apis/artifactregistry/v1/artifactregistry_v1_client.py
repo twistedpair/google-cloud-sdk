@@ -1759,7 +1759,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def GetPlatformLogsConfig(self, request, global_params=None):
-      r"""Retrieves the platform logs config for the project or repository.
+      r"""Retrieves the platform logs config for the project or repository. Will be deprecated in favor of GetProjectConfig and GetRepository.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesGetPlatformLogsConfigRequest) input message
@@ -1921,7 +1921,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def UpdatePlatformLogsConfig(self, request, global_params=None):
-      r"""Updates the platform logs config for the project or repository.
+      r"""Updates the platform logs config for the project or repository. Will be deprecated in favor of UpdateProjectConfig and UpdateRepository.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesUpdatePlatformLogsConfigRequest) input message
@@ -1985,7 +1985,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def GetPlatformLogsConfig(self, request, global_params=None):
-      r"""Retrieves the platform logs config for the project or repository.
+      r"""Retrieves the platform logs config for the project or repository. Will be deprecated in favor of GetProjectConfig and GetRepository.
 
       Args:
         request: (ArtifactregistryProjectsLocationsGetPlatformLogsConfigRequest) input message
@@ -2008,6 +2008,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsGetPlatformLogsConfigRequest',
         response_type_name='PlatformLogsConfig',
+        supports_download=False,
+    )
+
+    def GetProjectConfig(self, request, global_params=None):
+      r"""Retrieves the project configuration.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsGetProjectConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetProjectConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetProjectConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/projectConfig',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.getProjectConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsGetProjectConfigRequest',
+        response_type_name='ProjectConfig',
         supports_download=False,
     )
 
@@ -2066,7 +2093,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     )
 
     def UpdatePlatformLogsConfig(self, request, global_params=None):
-      r"""Updates the platform logs config for the project or repository.
+      r"""Updates the platform logs config for the project or repository. Will be deprecated in favor of UpdateProjectConfig and UpdateRepository.
 
       Args:
         request: (ArtifactregistryProjectsLocationsUpdatePlatformLogsConfigRequest) input message
@@ -2089,6 +2116,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         request_field='platformLogsConfig',
         request_type_name='ArtifactregistryProjectsLocationsUpdatePlatformLogsConfigRequest',
         response_type_name='PlatformLogsConfig',
+        supports_download=False,
+    )
+
+    def UpdateProjectConfig(self, request, global_params=None):
+      r"""Updates the project configuration.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsUpdateProjectConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateProjectConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateProjectConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/projectConfig',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.updateProjectConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='projectConfig',
+        request_type_name='ArtifactregistryProjectsLocationsUpdateProjectConfigRequest',
+        response_type_name='ProjectConfig',
         supports_download=False,
     )
 

@@ -15,18 +15,19 @@
 """Rollout plans utility functions."""
 
 import json
-from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 
 
-def LoadWavesFromFileAndAddToRequest(file_path):
+def LoadWavesFromFileAndAddToRequest(file_path, messages):
   """Loads waves from the specified file, parses, and converts to messages."""
   try:
     content = files.ReadFileContents(file_path)
   except files.Error as e:
-    raise exceptions.BadFileException(f'Could not read file [{file_path}]: {e}')
+    raise calliope_exceptions.BadFileException(
+        f'Failed to read contents of file [{file_path}]: {e}'
+    )
 
   try:
     if file_path.lower().endswith('.json'):
@@ -34,14 +35,13 @@ def LoadWavesFromFileAndAddToRequest(file_path):
     else:  # Assume YAML
       waves_data = yaml.load(content)
   except Exception as e:
-    raise exceptions.BadFileException(
+    raise calliope_exceptions.BadFileException(
         f'Failed to parse contents of file [{file_path}]: {e}'
     )
 
   if not isinstance(waves_data, list):
     raise ValueError('The waves file must contain a LIST of wave definitions.')
 
-  messages = apis.GetMessagesModule('compute', 'alpha')
   try:
     wave_messages = [
         _DictToWaveMessage(wave_dict, messages) for wave_dict in waves_data

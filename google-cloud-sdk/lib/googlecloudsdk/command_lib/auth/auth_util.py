@@ -23,6 +23,7 @@ import json
 import os
 import textwrap
 
+from google.auth import environment_vars as auth_env_vars
 from google.auth import jwt
 from googlecloudsdk.api_lib.auth import exceptions as auth_exceptions
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
@@ -36,9 +37,6 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-from oauth2client import client
-from oauth2client import service_account
-from oauth2client.contrib import gce as oauth2client_gce
 
 
 SERVICEUSAGE_PERMISSION = 'serviceusage.services.use'
@@ -54,24 +52,20 @@ class AddQuotaProjectError(c_creds.ADCError):
 
 def IsGceAccountCredentials(cred):
   """Checks if the credential is a Compute Engine service account credential."""
-  # Import only when necessary to decrease the startup time. Move it to
-  # global once google-auth is ready to replace oauth2client.
+  # Import only when necessary to decrease the startup time.
   # pylint: disable=g-import-not-at-top
   import google.auth.compute_engine as google_auth_gce
 
-  return (isinstance(cred, oauth2client_gce.AppAssertionCredentials) or
-          isinstance(cred, google_auth_gce.credentials.Credentials))
+  return isinstance(cred, google_auth_gce.credentials.Credentials)
 
 
 def IsServiceAccountCredential(cred):
   """Checks if the credential is a service account credential."""
-  # Import only when necessary to decrease the startup time. Move it to
-  # global once google-auth is ready to replace oauth2client.
+  # Import only when necessary to decrease the startup time.
   # pylint: disable=g-import-not-at-top
   import google.oauth2.service_account as google_auth_service_account
 
-  return (isinstance(cred, service_account.ServiceAccountCredentials) or
-          isinstance(cred, google_auth_service_account.Credentials))
+  return isinstance(cred, google_auth_service_account.Credentials)
 
 
 def IsImpersonationCredential(cred):
@@ -98,7 +92,7 @@ def PromptIfADCEnvVarIsSet():
           To use these credentials, unset this environment variable before
           running your application.
           """.format(
-              envvar=client.GOOGLE_APPLICATION_CREDENTIALS,
+              envvar=auth_env_vars.CREDENTIALS,
               override_file=override_file,
               default_file=config.ADCFilePath()))
     console_io.PromptContinue(
@@ -241,8 +235,7 @@ def DumpADC(credentials, quota_project_disabled=False):
   """Dumps the given credentials to ADC file.
 
   Args:
-     credentials: a credentials from oauth2client or google-auth libraries, the
-       credentials to dump.
+     credentials: a google-auth credential, the credentials to dump.
      quota_project_disabled: bool, If quota project is explicitly disabled by
        users using flags.
   """
@@ -260,8 +253,7 @@ def DumpADCOptionalQuotaProject(credentials):
   permission on the quota project..
 
   Args:
-     credentials: a credentials from oauth2client or google-auth libraries, the
-       credentials to dump.
+     credentials: a google-auth credentials, the credentials to dump.
   """
   adc_path = c_creds.ADC(credentials).DumpADCToFile()
   LogADCIsWritten(adc_path)

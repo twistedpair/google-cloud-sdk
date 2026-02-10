@@ -136,6 +136,9 @@ def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
           ],
       )
   ]
+  labels = {
+      'used-by': 'cloudrun',
+  }
 
   try:
     log.debug(f'Creating bucket {bucket} in region {region}')
@@ -146,6 +149,7 @@ def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
         check_ownership=True,
         cors=cors,
         enable_uniform_level_access=True,
+        labels=labels,
     )
     return bucket
   except (
@@ -171,6 +175,7 @@ def _GetOrCreateBucket(gcs_client, region, bucket_name=None):
           check_ownership=True,
           cors=cors,
           enable_uniform_level_access=True,
+          labels=labels,
       )
       return random_bucket
     raise e

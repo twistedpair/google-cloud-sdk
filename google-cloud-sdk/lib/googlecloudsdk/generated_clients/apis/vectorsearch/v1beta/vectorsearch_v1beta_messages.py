@@ -186,7 +186,7 @@ class GoogleCloudVectorsearchV1betaAggregateDataObjectsResponse(_messages.Messag
     AggregateResultsValueListEntry: A AggregateResultsValueListEntry object.
 
   Fields:
-    aggregateResults: The aggregated results of the query.
+    aggregateResults: Output only. The aggregated results of the query.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -232,7 +232,7 @@ class GoogleCloudVectorsearchV1betaBatchCreateDataObjectsResponse(_messages.Mess
   r"""Response message for DataObjectService.BatchCreateDataObjects.
 
   Fields:
-    dataObjects: DataObjects created.
+    dataObjects: Output only. DataObjects created.
   """
 
   dataObjects = _messages.MessageField('GoogleCloudVectorsearchV1betaDataObject', 1, repeated=True)
@@ -845,9 +845,9 @@ class GoogleCloudVectorsearchV1betaQueryDataObjectsResponse(_messages.Message):
   r"""Response message for DataObjectSearchService.QueryDataObjects.
 
   Fields:
-    dataObjects: The list of dataObjects that match the query.
-    nextPageToken: A token to retrieve next page of results. Pass to
-      DataObjectSearchService.QueryDataObjectsRequest.page_token to obtain
+    dataObjects: Output only. The list of dataObjects that match the query.
+    nextPageToken: Output only. A token to retrieve next page of results. Pass
+      to DataObjectSearchService.QueryDataObjectsRequest.page_token to obtain
       that page.
   """
 
@@ -986,7 +986,8 @@ class GoogleCloudVectorsearchV1betaSearchResult(_messages.Message):
 
   Fields:
     dataObject: Output only. The matching data object.
-    distance: Output only. The similarity distance.
+    distance: Output only. Similarity distance or ranker score returned by
+      BatchSearchDataObjects.
   """
 
   dataObject = _messages.MessageField('GoogleCloudVectorsearchV1betaDataObject', 1)
@@ -997,7 +998,7 @@ class GoogleCloudVectorsearchV1betaSemanticSearch(_messages.Message):
   r"""Defines a semantic search operation.
 
   Enums:
-    TaskTypeValueValuesEnum: Optional. The task type of the query embedding.
+    TaskTypeValueValuesEnum: Required. The task type of the query embedding.
 
   Messages:
     FilterValue: Optional. A JSON filter expression, e.g. {"genre": {"$eq":
@@ -1014,12 +1015,12 @@ class GoogleCloudVectorsearchV1betaSemanticSearch(_messages.Message):
     searchText: Required. The query text, which is used to generate an
       embedding according to the embedding model specified in the collection
       config.
-    taskType: Optional. The task type of the query embedding.
+    taskType: Required. The task type of the query embedding.
     topK: Optional. The number of data objects to return.
   """
 
   class TaskTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The task type of the query embedding.
+    r"""Required. The task type of the query embedding.
 
     Values:
       EMBEDDING_TASK_TYPE_UNSPECIFIED: Unspecified task type.

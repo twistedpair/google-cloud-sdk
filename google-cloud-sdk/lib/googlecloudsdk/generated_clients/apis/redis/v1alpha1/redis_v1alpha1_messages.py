@@ -1625,7 +1625,7 @@ class DatabaseResourceId(_messages.Message):
 
 
 class DatabaseResourceMetadata(_messages.Message):
-  r"""Common model for database resource instance metadata. Next ID: 30
+  r"""Common model for database resource instance metadata. Next ID: 31
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
@@ -1677,6 +1677,7 @@ class DatabaseResourceMetadata(_messages.Message):
       resource. It must be resource name of a Cloud Resource Manager project
       with the format of "/", such as "projects/123". For GCP provided
       resources, number should be project number.
+    resourceFlags: Optional. List of resource flags for the database resource.
     resourceName: Required. Different from DatabaseResourceId.unique_id, a
       resource name can be reused over time. That is, after a resource named
       "ABC" is deleted, the name "ABC" can be used to to create a new resource
@@ -1701,6 +1702,7 @@ class DatabaseResourceMetadata(_messages.Message):
       SUSPENDED: When instance is suspended
       DELETED: Instance is deleted.
       STATE_OTHER: For rest of the other category
+      STOPPED: Instance is in STOPPED state.
     """
     STATE_UNSPECIFIED = 0
     HEALTHY = 1
@@ -1708,6 +1710,7 @@ class DatabaseResourceMetadata(_messages.Message):
     SUSPENDED = 3
     DELETED = 4
     STATE_OTHER = 5
+    STOPPED = 6
 
   class EditionValueValuesEnum(_messages.Enum):
     r"""Optional. Edition represents whether the instance is ENTERPRISE or
@@ -1738,6 +1741,7 @@ class DatabaseResourceMetadata(_messages.Message):
       SUSPENDED: When instance is suspended
       DELETED: Instance is deleted.
       STATE_OTHER: For rest of the other category
+      STOPPED: Instance is in STOPPED state.
     """
     STATE_UNSPECIFIED = 0
     HEALTHY = 1
@@ -1745,6 +1749,7 @@ class DatabaseResourceMetadata(_messages.Message):
     SUSPENDED = 3
     DELETED = 4
     STATE_OTHER = 5
+    STOPPED = 6
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The type of the instance. Specified at creation time.
@@ -1818,12 +1823,13 @@ class DatabaseResourceMetadata(_messages.Message):
   primaryResourceLocation = _messages.StringField(19)
   product = _messages.MessageField('Product', 20)
   resourceContainer = _messages.StringField(21)
-  resourceName = _messages.StringField(22)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 23)
-  tagsSet = _messages.MessageField('Tags', 24)
-  updationTime = _messages.StringField(25)
-  userLabelSet = _messages.MessageField('UserLabels', 26)
-  zone = _messages.StringField(27)
+  resourceFlags = _messages.MessageField('ResourceFlags', 22, repeated=True)
+  resourceName = _messages.StringField(23)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueValuesEnum', 24)
+  tagsSet = _messages.MessageField('Tags', 25)
+  updationTime = _messages.StringField(26)
+  userLabelSet = _messages.MessageField('UserLabels', 27)
+  zone = _messages.StringField(28)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -4855,6 +4861,18 @@ class RescheduleMaintenanceRequest(_messages.Message):
   scheduleTime = _messages.StringField(2)
 
 
+class ResourceFlags(_messages.Message):
+  r"""Message type for storing resource flags.
+
+  Fields:
+    key: Optional. Key of the resource flag.
+    value: Optional. Value of the resource flag.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class ResourceMaintenanceDenySchedule(_messages.Message):
   r"""Deny maintenance period for the database resource. It specifies the time
   range during which the maintenance cannot start. This is configured by the
@@ -4882,6 +4900,9 @@ class ResourceMaintenanceInfo(_messages.Message):
   Fields:
     denyMaintenanceSchedules: Optional. List of Deny maintenance period for
       the database resource.
+    isInstanceStopped: Optional. Whether the instance is in stopped state.
+      This information is temporarily being captured in maintenanceInfo, till
+      STOPPED state is supported by DB Center.
     maintenanceSchedule: Optional. Maintenance window for the database
       resource.
     maintenanceState: Output only. Current state of maintenance on the
@@ -4891,6 +4912,9 @@ class ResourceMaintenanceInfo(_messages.Message):
     upcomingMaintenance: Optional. Upcoming maintenance for the database
       resource. This field is populated once SLM generates and publishes
       upcoming maintenance window.
+    versionUpdateTime: Optional. This field will contain the date when the
+      last version update was applied to the database resource. This will be
+      used to calculate the age of the maintenance version.
   """
 
   class MaintenanceStateValueValuesEnum(_messages.Enum):
@@ -4915,10 +4939,12 @@ class ResourceMaintenanceInfo(_messages.Message):
     ERROR = 6
 
   denyMaintenanceSchedules = _messages.MessageField('ResourceMaintenanceDenySchedule', 1, repeated=True)
-  maintenanceSchedule = _messages.MessageField('ResourceMaintenanceSchedule', 2)
-  maintenanceState = _messages.EnumField('MaintenanceStateValueValuesEnum', 3)
-  maintenanceVersion = _messages.StringField(4)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 5)
+  isInstanceStopped = _messages.BooleanField(2)
+  maintenanceSchedule = _messages.MessageField('ResourceMaintenanceSchedule', 3)
+  maintenanceState = _messages.EnumField('MaintenanceStateValueValuesEnum', 4)
+  maintenanceVersion = _messages.StringField(5)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 6)
+  versionUpdateTime = _messages.StringField(7)
 
 
 class ResourceMaintenanceSchedule(_messages.Message):

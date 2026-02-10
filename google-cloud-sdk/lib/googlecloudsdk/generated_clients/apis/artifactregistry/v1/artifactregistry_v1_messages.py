@@ -91,6 +91,17 @@ class ArtifactregistryProjectsLocationsGetPlatformLogsConfigRequest(_messages.Me
   name = _messages.StringField(1, required=True)
 
 
+class ArtifactregistryProjectsLocationsGetProjectConfigRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsGetProjectConfigRequest object.
+
+  Fields:
+    name: Required. The name of the project's logging configuration:
+      projects/{project}/locations/{location}/projectConfig
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ArtifactregistryProjectsLocationsGetRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsGetRequest object.
 
@@ -1246,6 +1257,23 @@ class ArtifactregistryProjectsLocationsUpdatePlatformLogsConfigRequest(_messages
 
   name = _messages.StringField(1, required=True)
   platformLogsConfig = _messages.MessageField('PlatformLogsConfig', 2)
+  updateMask = _messages.StringField(3)
+
+
+class ArtifactregistryProjectsLocationsUpdateProjectConfigRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsUpdateProjectConfigRequest object.
+
+  Fields:
+    name: Identifier. The name of the project's configuration. Always of the
+      form: projects/{project}/locations/{location}/projectConfig
+    projectConfig: A ProjectConfig resource to be passed as the request body.
+    updateMask: Optional. Field mask to support partial updates. See
+      https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask for
+      more details.
+  """
+
+  name = _messages.StringField(1, required=True)
+  projectConfig = _messages.MessageField('ProjectConfig', 2)
   updateMask = _messages.StringField(3)
 
 
@@ -3204,6 +3232,19 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class ProjectConfig(_messages.Message):
+  r"""The Artifact Registry logging configurations that apply to a Project.
+
+  Fields:
+    name: Identifier. The name of the project's configuration. Always of the
+      form: projects/{project}/locations/{location}/projectConfig
+    platformLogsConfig: Optional. Configuration for platform logs.
+  """
+
+  name = _messages.StringField(1)
+  platformLogsConfig = _messages.MessageField('PlatformLogsConfig', 2)
+
+
 class ProjectSettings(_messages.Message):
   r"""The Artifact Registry settings that apply to a Project.
 
@@ -3427,6 +3468,7 @@ class Repository(_messages.Message):
       names must be unique.
     networkConfig: Optional. Config for the routing/network configuration of
       the repository.
+    platformLogsConfig: Optional. Configuration for platform logs.
     registryUri: Output only. The repository endpoint, for example: `us-
       docker.pkg.dev/my-proj/my-repo`.
     remoteRepositoryConfig: Configuration specific for a Remote Repository.
@@ -3564,15 +3606,16 @@ class Repository(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 11)
   name = _messages.StringField(12)
   networkConfig = _messages.MessageField('NetworkConfig', 13)
-  registryUri = _messages.StringField(14)
-  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 15)
-  satisfiesPzi = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  sbomConfig = _messages.MessageField('SbomConfig', 18)
-  sizeBytes = _messages.IntegerField(19)
-  updateTime = _messages.StringField(20)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 21)
-  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 22)
+  platformLogsConfig = _messages.MessageField('PlatformLogsConfig', 14)
+  registryUri = _messages.StringField(15)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 16)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  sbomConfig = _messages.MessageField('SbomConfig', 19)
+  sizeBytes = _messages.IntegerField(20)
+  updateTime = _messages.StringField(21)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 22)
+  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 23)
 
 
 class SbomConfig(_messages.Message):

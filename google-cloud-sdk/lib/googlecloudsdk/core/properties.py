@@ -511,6 +511,8 @@ class _Sections(object):
       Cloud SDK.
     transcoder: Section, The section containing transcoder properties for the
       Cloud SDK.
+    vector_search: Section, The section containing vector search properties for
+      the Cloud SDK.
     vmware: Section, The section containing vmware properties for the Cloud SDK.
     web3: Section, the section containing web3 properties for the Cloud SDK.
     workflows: Section, The section containing workflows properties for the
@@ -606,6 +608,7 @@ class _Sections(object):
     self.transfer = _SectionTransfer()
     self.transport = _SectionTransport()
     self.transcoder = _SectionTranscoder()
+    self.vector_search = _SectionVectorSearch()
     self.vmware = _SectionVmware()
     self.web3 = _SectionWeb3()
     self.workflows = _SectionWorkflows()
@@ -689,6 +692,7 @@ class _Sections(object):
         self.test,
         self.transport,
         self.transcoder,
+        self.vector_search,
         self.vmware,
         self.web3,
         self.workflows,
@@ -1494,7 +1498,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.transferappliance = self._Add(
         'transferappliance', command='gcloud transfer appliances')
     self.vectorsearch = self._Add(
-        'vectorsearch', command='gcloud vectorsearch', hidden=True)
+        'vectorsearch', command='gcloud vector-search')
     self.vision = self._Add('vision', command='gcloud ml vision')
     self.vmmigration = self._Add('vmmigration', command='gcloud migration vms')
     self.vmwareengine = self._Add('vmwareengine', command='gcloud vmware')
@@ -4088,6 +4092,18 @@ class _SectionTransport(_Section):
 
   def __init__(self):
     super(_SectionTransport, self).__init__('transport', hidden=True)
+
+
+class _SectionVectorSearch(_Section):
+  """Contains the properties for the command group 'vector-search' section."""
+
+  def __init__(self):
+    super(_SectionVectorSearch, self).__init__('vector_search')
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with '
+        'Vector Search resources. When a `--location` flag is required '
+        'but not provided, the command will fall back to this value, if set.')
 
 
 class _SectionVmware(_Section):

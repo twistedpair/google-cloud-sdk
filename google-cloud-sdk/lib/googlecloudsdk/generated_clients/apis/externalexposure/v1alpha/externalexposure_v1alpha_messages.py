@@ -26,6 +26,16 @@ class Empty(_messages.Message):
 
 
 
+class ExternalexposureFoldersLocationsGetRequest(_messages.Message):
+  r"""A ExternalexposureFoldersLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ExternalexposureFoldersLocationsGetScanMetricsRequest(_messages.Message):
   r"""A ExternalexposureFoldersLocationsGetScanMetricsRequest object.
 
@@ -35,6 +45,97 @@ class ExternalexposureFoldersLocationsGetScanMetricsRequest(_messages.Message):
       folders/{folder}/locations/{location}/scanMetrics
       organizations/{organization}/locations/{location}/scanMetrics {location}
       must be "global".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ExternalexposureFoldersLocationsListRequest(_messages.Message):
+  r"""A ExternalexposureFoldersLocationsListRequest object.
+
+  Fields:
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class ExternalexposureFoldersLocationsOperationsCancelRequest(_messages.Message):
+  r"""A ExternalexposureFoldersLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ExternalexposureFoldersLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A ExternalexposureFoldersLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ExternalexposureFoldersLocationsOperationsGetRequest(_messages.Message):
+  r"""A ExternalexposureFoldersLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ExternalexposureFoldersLocationsOperationsListRequest(_messages.Message):
+  r"""A ExternalexposureFoldersLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
+
+
+class ExternalexposureOrganizationsLocationsGetRequest(_messages.Message):
+  r"""A ExternalexposureOrganizationsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
   """
 
   name = _messages.StringField(1, required=True)
@@ -52,6 +153,87 @@ class ExternalexposureOrganizationsLocationsGetScanMetricsRequest(_messages.Mess
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ExternalexposureOrganizationsLocationsListRequest(_messages.Message):
+  r"""A ExternalexposureOrganizationsLocationsListRequest object.
+
+  Fields:
+    extraLocationTypes: Optional. Do not use this field. It is unsupported and
+      is ignored unless explicitly documented otherwise. This is primarily for
+      internal usage.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  extraLocationTypes = _messages.StringField(1, repeated=True)
+  filter = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class ExternalexposureOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A ExternalexposureOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ExternalexposureOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A ExternalexposureOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ExternalexposureOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A ExternalexposureOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ExternalexposureOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A ExternalexposureOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    returnPartialSuccess: When set to `true`, operations that are reachable
+      are returned as normal, and those that are unreachable are returned in
+      the ListOperationsResponse.unreachable field. This can only be `true`
+      when reading across collections. For example, when `parent` is set to
+      `"projects/example/locations/-"`. This field is not supported by default
+      and will result in an `UNIMPLEMENTED` error if set unless explicitly
+      documented otherwise in service or product specific documentation.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  returnPartialSuccess = _messages.BooleanField(5)
 
 
 class ExternalexposureProjectsLocationsGetRequest(_messages.Message):

@@ -364,83 +364,6 @@ def AddBulkCreateNetworkingArgs(
   )
 
 
-class QuotedArgObject(arg_parsers.ArgObject):
-  """ArgObject that strips surrounding quotes from input."""
-
-  def __call__(self, value):
-    if not value:
-      return super(QuotedArgObject, self).__call__(value)
-    # Strip single quotes if present (common in shell-like syntax)
-    if len(value) >= 2 and value.startswith("'") and value.endswith("'"):
-      value = value[1:-1]
-    # Strip double quotes if present
-    elif len(value) >= 2 and value.startswith('"') and value.endswith('"'):
-      value = value[1:-1]
-    return super(QuotedArgObject, self).__call__(value)
-
-
-class DeclarativeArgDict(arg_parsers.ArgDict):
-  """ArgDict with a clean representation for error messages."""
-
-  def __repr__(self):
-    return 'InstanceSelection'
-
-
-def AddInstanceFlexibilityPolicyArgs(parser):
-  """Adds instance flexibility policy arguments to the parser."""
-  mutex_group = parser.add_mutually_exclusive_group()
-  mutex_group.add_argument(
-      '--instance-selection-machine-types',
-      type=arg_parsers.ArgList(),
-      metavar='MACHINE_TYPE',
-      help="""
-      Specifies a list of machine types to consider for instance creation.
-      The bulk create operation will attempt to create instances from this list
-      based on capacity availability.
-      This flag is only valid when a region is specified.
-      """,
-  )
-
-  instance_selection_spec = {
-      'name': str,
-      'rank': int,
-      'machine-type': arg_parsers.ArgList(),
-      'disk': arg_parsers.ArgList(
-          element_type=QuotedArgObject(),
-          includes_json=True,
-      ),
-  }
-
-  mutex_group.add_argument(
-      '--instance-selection',
-      metavar=(
-          'name=NAME,rank=RANK,machine-type=[MACHINE_TYPE,],disk=DISK_JSON,...'
-      ),
-      type=DeclarativeArgDict(spec=instance_selection_spec, includes_json=True),
-      action=arg_parsers.FlattenAction(),
-      help="""
-      Specifies a list of machine types to consider for instance creation.
-      The bulk create operation will attempt to create instances from this list
-      based on capacity availability.
-      This flag is only valid when a region is specified.
-
-      Keys for each instance selection:
-
-      name: (Required) A unique name for this instance selection group.
-      machine-type: (Required) A comma-separated list of machine types to include in this group (e.g., machine-type=n1-standard-1,n1-standard-2).
-      rank: (Optional) An integer representing the priority. Lower ranks are preferred. Defaults to 0.
-      disk: (Optional) A comma-separated list of JSON strings defining a disk to attach or override, conforming to the Compute Engine AttachedDisk API structure. Example: disk='{"deviceName": "boot-disk", "boot": true}','{"deviceName": "data-disk", "boot": false}'
-
-      If you provide multiple machine types or disks, their values will be comma-separated, which conflicts with parsing of instance selection properties.
-      In such case, you need to choose a different delimiter for instance selection properties, like ';',
-      by prefixing the value with '^DL^' where DL is your delimiter.
-      Example:
-      --instance-selection="^;^name=n1;machine-type=t1,t2;disk='{"d":1}','{"d":2}'"
-      See https://cloud.google.com/sdk/gcloud/reference/topic/escaping for details.
-      """,
-  )
-
-
 def ValidateInstanceFlexibilityArgs(args):
   """Validates args supplied to --instance-selection-machine-types."""
   flexibility_policy_args = [
@@ -626,7 +549,7 @@ def AddCommonBulkInsertArgs(
   if support_skip_guest_os_shutdown:
     instances_flags.AddSkipGuestOsShutdownArgs(parser)
   if support_instance_flexibility_policy:
-    AddInstanceFlexibilityPolicyArgs(parser)
+    compute_flags.AddInstanceFlexibilityPolicyArgs(parser)
   if support_workload_identity_config:
     instances_flags.AddWorkloadIdentityConfigArgs(parser)
 

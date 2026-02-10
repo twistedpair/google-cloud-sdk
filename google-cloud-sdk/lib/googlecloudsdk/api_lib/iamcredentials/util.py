@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import datetime
 import json
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -30,7 +29,6 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transport
-from oauth2client import client
 
 
 IAM_ENDPOINT_GDU = 'https://iamcredentials.googleapis.com/'
@@ -145,15 +143,6 @@ class ImpersonationAccessTokenProvider(object):
   This supports the interface required by the core/credentials module.
   """
 
-  def GetElevationAccessToken(self, service_account_id, scopes):
-    if ',' in service_account_id:
-      raise InvalidImpersonationAccount(
-          'More than one service accounts were specified, '
-          'which is not supported.')
-    response = GenerateAccessToken(service_account_id, scopes)
-    return ImpersonationCredentials(
-        service_account_id, response.accessToken, response.expireTime, scopes)
-
   def GetElevationIdToken(self, service_account_id, audience, include_email):
     return GenerateIdToken(service_account_id, audience, include_email)
 
@@ -252,9 +241,7 @@ class ImpersonationAccessTokenProvider(object):
     # pylint: disable=g-import-not-at-top
     from google.auth import impersonated_credentials as google_auth_impersonated_credentials
     # pylint: enable=g-import-not-at-top
-    return isinstance(cred, ImpersonationCredentials) or isinstance(
-        cred, google_auth_impersonated_credentials.Credentials
-    )
+    return isinstance(cred, google_auth_impersonated_credentials.Credentials)
 
   @classmethod
   def PerformIamEndpointsOverride(cls):
@@ -292,26 +279,3 @@ class ImpersonationAccessTokenProvider(object):
             effective_iam_endpoint,
         )
     )
-
-
-class ImpersonationCredentials(client.OAuth2Credentials):
-  """Implementation of a credential that refreshes using the iamcredentials API.
-  """
-  _EXPIRY_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-  def __init__(self, service_account_id, access_token, token_expiry, scopes):
-    self._service_account_id = service_account_id
-    token_expiry = self._ConvertExpiryTime(token_expiry)
-    super(ImpersonationCredentials, self).__init__(
-        access_token, None, None, None, token_expiry, None, None, scopes=scopes)
-
-  def _refresh(self, http):
-    # client.OAuth2Credentials converts scopes into a set, so we need to convert
-    # back to a list before making the API request.
-    response = GenerateAccessToken(self._service_account_id, list(self.scopes))
-    self.access_token = response.accessToken
-    self.token_expiry = self._ConvertExpiryTime(response.expireTime)
-
-  def _ConvertExpiryTime(self, value):
-    return datetime.datetime.strptime(value,
-                                      ImpersonationCredentials._EXPIRY_FORMAT)

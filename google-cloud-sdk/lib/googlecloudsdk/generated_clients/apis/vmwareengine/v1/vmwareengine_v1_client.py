@@ -140,7 +140,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `Datastore` resource in a given project and location. Datastores are regional resources.
+      r"""Creates a new `Datastore` resource in a given project and location.
 
       Args:
         request: (VmwareengineProjectsLocationsDatastoresCreateRequest) input message
@@ -1202,7 +1202,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def MountDatastore(self, request, global_params=None):
-      r"""Mounts a `Datastore` on a cluster resource Datastores are zonal resources.
+      r"""Mounts a `Datastore` on a cluster resource.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersMountDatastoreRequest) input message
@@ -1310,7 +1310,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def UnmountDatastore(self, request, global_params=None):
-      r"""Mounts a `Datastore` on a cluster resource Datastores are zonal resources.
+      r"""Unmounts a `Datastore` on a cluster resource.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersUnmountDatastoreRequest) input message

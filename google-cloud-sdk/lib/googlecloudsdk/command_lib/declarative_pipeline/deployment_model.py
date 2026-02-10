@@ -45,11 +45,21 @@ AnyResource = ResourceProfileModel | DataprocClusterModel
 
 
 @dataclasses.dataclass
+class ArtifactStorageModel:
+  """Model for artifact_storage."""
+
+  bucket: str
+  path_prefix: str
+
+
+@dataclasses.dataclass
 class EnvironmentModel:
   """Model for environment."""
   project: str
   region: str
   resources: list[AnyResource]
+  composer_environment: str | None = None
+  artifact_storage: ArtifactStorageModel | None = None
   variables: dict[str, str] | None = None
 
 
@@ -67,12 +77,27 @@ def _build_resource(resource_def: Mapping[str, Any]) -> AnyResource:
   return model(**resource_def)
 
 
+def _build_artifact_storage(
+    storage_def: Mapping[str, Any] | None,
+) -> ArtifactStorageModel | None:
+  """Builds ArtifactStorageModel, handling None input gracefully."""
+  if not storage_def:
+    return None
+  return ArtifactStorageModel(**storage_def)
+
+
 def _build_environment(env_def: Mapping[str, Any]) -> EnvironmentModel:
-  resources = [_build_resource(r) for r in env_def.get('resources', [])]
+  raw_resources = env_def.get('resources', [])
+  if isinstance(raw_resources, dict):
+    raw_resources = [raw_resources]
+  resources = [_build_resource(r) for r in raw_resources]
+  artifact_storage = _build_artifact_storage(env_def.get('artifact_storage'))
   return EnvironmentModel(
       project=env_def['project'],
       region=env_def['region'],
+      composer_environment=env_def.get('composer_environment'),
       resources=resources,
+      artifact_storage=artifact_storage,
       variables=env_def.get('variables'),
   )
 

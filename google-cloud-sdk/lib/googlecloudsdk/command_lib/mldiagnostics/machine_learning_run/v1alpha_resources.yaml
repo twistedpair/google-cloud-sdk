@@ -1,0 +1,77 @@
+# -*- coding: utf-8 -*- #
+# Copyright 2026 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+projects:
+  name: project
+  plural_name: projects
+  collection: hypercomputecluster.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project id of the {resource} resource.
+    property: core/project
+  disable_auto_completers: true
+projects_locations:
+  name: location
+  plural_name: locations
+  collection: hypercomputecluster.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location id of the {resource} resource.
+    property: compute/region
+  disable_auto_completers: true
+projects_locations_machine_learning_runs:
+  name: machine_learning_run
+  plural_name: machine_learning_runs
+  collection: hypercomputecluster.projects.locations.machineLearningRuns
+  attributes:
+  - *project
+  - *location
+  - &machine_learning_run
+    parameter_name: machineLearningRunsId
+    attribute_name: machine-learning-run
+    help: The machine learning run id of the {resource} resource.
+disable_auto_completers: false
+projects_locations_machine_learning_runs_profiler_targets:
+  name: profilerTarget
+  plural_name: profilerTargets
+  collection:
+    hypercomputecluster.projects.locations.machineLearningRuns.profilerTargets
+  attributes:
+  - *project
+  - *location
+  - *machine_learning_run
+  - &profilerTarget
+    parameter_name: profilerTargetsId
+    attribute_name: profiler-target
+    help: The profilerTarget id of the {resource} resource.
+  disable_auto_completers: false
+projects_locations_machine_learning_runs_profiler_sessions:
+  name: profilerSession
+  plural_name: profilerSessions
+  collection:
+    hypercomputecluster.projects.locations.machineLearningRuns.profilerSessions
+  attributes:
+  - *project
+  - *location
+  - *machine_learning_run
+  - &profilerSession
+    parameter_name: profilerSessionsId
+    attribute_name: profiler-session
+    help: The profilerSession id of the {resource} resource.
+  disable_auto_completers: false

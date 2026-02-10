@@ -38,7 +38,6 @@ def GenerateIdToken(impersonate_service_account: bool = False):
   # str | None, account is either a user account or google service account.
   account = None
 
-  # oauth2client.client.OAuth2Credentials |
   # core.credentials.google_auth_credentials.Credentials
   cred = store.Load(
       # if account is None, implicitly retrieves properties.VALUES.core.account

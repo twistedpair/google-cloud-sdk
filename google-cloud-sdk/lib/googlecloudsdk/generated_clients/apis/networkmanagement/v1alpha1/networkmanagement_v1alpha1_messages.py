@@ -1406,6 +1406,9 @@ class DropInfo(_messages.Message):
       HYBRID_SUBNET_NO_ROUTE: Packet is dropped because no matching route was
         found in the hybrid subnet.
       GKE_NETWORK_POLICY: Packet is dropped by GKE Network Policy.
+      NO_VALID_ROUTE_FROM_GOOGLE_MANAGED_NETWORK_TO_DESTINATION: Packet is
+        dropped because there is no valid matching route from the network of
+        the Google-managed service to the destination.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1517,6 +1520,7 @@ class DropInfo(_messages.Message):
     HYBRID_SUBNET_REGION_MISMATCH = 107
     HYBRID_SUBNET_NO_ROUTE = 108
     GKE_NETWORK_POLICY = 109
+    NO_VALID_ROUTE_FROM_GOOGLE_MANAGED_NETWORK_TO_DESTINATION = 110
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)
@@ -4185,12 +4189,16 @@ class ProviderTag(_messages.Message):
       WEB_PATH: Web path.
       MONITORING_POLICY: Monitoring policy.
       MONITORING_POINT: Monitoring point.
+      MONITORING_POINT_RULE: Monitoring point rule.
+      MONITORING_POINT_RULE_AUTO: Monitoring point rule automatic.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     NETWORK_PATH = 1
     WEB_PATH = 2
     MONITORING_POLICY = 3
     MONITORING_POINT = 4
+    MONITORING_POINT_RULE = 5
+    MONITORING_POINT_RULE_AUTO = 6
 
   category = _messages.StringField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)

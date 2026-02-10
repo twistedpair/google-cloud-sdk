@@ -37,6 +37,7 @@ _VALID_LOCATIONS = frozenset([
     'australia-southeast1',
     'europe-north1',
     'europe-west1',
+    'europe-west15',
     'europe-west2',
     'europe-west3',
     'europe-west4',

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import datetime
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -32,6 +33,8 @@ _API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.GA: 'v1',
 }
 _API_NAME = 'networksecurity'
+ORG_OPERATIONS_COLLECTION = 'networksecurity.organizations.locations.operations'
+PROJECT_OPERATIONS_COLLECTION = 'networksecurity.projects.locations.operations'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
@@ -53,22 +56,67 @@ def GetApiVersion(release_track=base.ReleaseTrack.GA):
   return _API_VERSION_FOR_TRACK.get(release_track)
 
 
+def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.ALPHA):
+  api_version = GetApiVersion(release_track)
+  return apis.GetEffectiveApiEndpoint(_API_NAME, api_version)
+
+
 class Client:
   """API client for security profile group commands."""
 
-  def __init__(self, release_track):
+  def __init__(self, release_track, project_scope=False):
     self._client = GetClientInstance(release_track)
-    self._security_profile_group_client = (
-        self._client.organizations_locations_securityProfileGroups
-    )
-    self._operations_client = self._client.organizations_locations_operations
-    self._locations_client = self._client.organizations_locations
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
     self.api_version = _API_VERSION_FOR_TRACK.get(release_track)
     self._resource_parser.RegisterApiByName(
         _API_NAME, _API_VERSION_FOR_TRACK.get(release_track)
     )
+
+    if project_scope:
+      self._security_profile_group_client = (
+          self._client.projects_locations_securityProfileGroups
+      )
+      self._operations_client = self._client.projects_locations_operations
+      self._locations_client = self._client.projects_locations
+      self._operations_collection = PROJECT_OPERATIONS_COLLECTION
+      self._create_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfileGroupsCreateRequest
+      )
+      self._get_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfileGroupsGetRequest
+      )
+      self._list_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfileGroupsListRequest
+      )
+      self._patch_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfileGroupsPatchRequest
+      )
+      self._delete_request = (
+          self.messages.NetworksecurityProjectsLocationsSecurityProfileGroupsDeleteRequest
+      )
+    else:
+      self._security_profile_group_client = (
+          self._client.organizations_locations_securityProfileGroups
+      )
+      self._operations_client = self._client.organizations_locations_operations
+      self._locations_client = self._client.organizations_locations
+      self._operations_collection = ORG_OPERATIONS_COLLECTION
+      self._create_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsCreateRequest
+      )
+      self._get_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsGetRequest
+      )
+      self._list_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsListRequest
+      )
+      self._patch_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsPatchRequest
+      )
+      self._delete_request = (
+          self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsDeleteRequest
+      )
 
   def WaitForOperation(
       self,
@@ -111,7 +159,7 @@ class Client:
     """Operations to Resource used for `waiter.WaitFor`."""
     return self._resource_parser.ParseRelativeName(
         operation.name,
-        'networksecurity.organizations.locations.operations',
+        self._operations_collection,
         False,
         self.api_version,
     )
@@ -125,9 +173,7 @@ class Client:
     Returns:
       Security Profile Group object.
     """
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsGetRequest(
-        name=security_profile_group_name
-    )
+    api_request = self._get_request(name=security_profile_group_name)
     return self._security_profile_group_client.Get(api_request)
 
   def CreateSecurityProfileGroup(
@@ -160,7 +206,7 @@ class Client:
     if hasattr(security_profile_group, 'customInterceptProfile'):
       security_profile_group.customInterceptProfile = custom_intercept_profile
 
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsCreateRequest(
+    api_request = self._create_request(
         parent=parent,
         securityProfileGroup=security_profile_group,
         securityProfileGroupId=security_profile_group_id,
@@ -173,10 +219,26 @@ class Client:
       description,
       threat_prevention_profile,
       url_filtering_profile,
+      wildfire_analysis_profile,
       update_mask,
       labels=None,
   ):
-    """Calls the Patch Security Profile Group API."""
+    """Calls the Patch Security Profile Group API.
+
+    Args:
+      security_profile_group_name: The name of the security profile group to
+        update.
+      description: The description of the security profile group.
+      threat_prevention_profile: The threat prevention profile to associate.
+      url_filtering_profile: The URL filtering profile to associate.
+      wildfire_analysis_profile: The WildFire analysis profile to associate.
+      update_mask: A comma-separated string of fields to update.
+      labels: A dictionary of user-defined labels for the security profile
+        group.
+
+    Returns:
+      The operation returned by the Patch API.
+    """
     security_profile_group = self.messages.SecurityProfileGroup(
         name=security_profile_group_name,
         description=description,
@@ -186,10 +248,41 @@ class Client:
 
     if hasattr(security_profile_group, 'urlFilteringProfile'):
       security_profile_group.urlFilteringProfile = url_filtering_profile
+    if hasattr(security_profile_group, 'wildfireAnalysisProfile'):
+      security_profile_group.wildfireAnalysisProfile = wildfire_analysis_profile
 
-    api_request = self.messages.NetworksecurityOrganizationsLocationsSecurityProfileGroupsPatchRequest(
+    api_request = self._patch_request(
         name=security_profile_group_name,
         securityProfileGroup=security_profile_group,
         updateMask=update_mask,
     )
     return self._security_profile_group_client.Patch(api_request)
+
+  def DeleteSecurityProfileGroup(
+      self,
+      security_profile_group_name,
+  ):
+    """Calls the Delete Security Profile Group API."""
+    api_request = self._delete_request(
+        name=security_profile_group_name,
+    )
+    return self._security_profile_group_client.Delete(api_request)
+
+  def ListSecurityProfileGroups(
+      self,
+      parent,
+      limit=None,
+      page_size=None,
+  ):
+    """Calls the ListSecurityProfileGroups API."""
+    list_request = self._list_request(
+        parent=parent,
+    )
+    return list_pager.YieldFromList(
+        self._security_profile_group_client,
+        list_request,
+        batch_size=page_size,
+        limit=limit,
+        field='securityProfileGroups',
+        batch_size_attribute='pageSize',
+    )

@@ -104,3 +104,15 @@ organizations_locations_principal_access_boundary_policies:
     attribute_name: principal_access_boundary_policy
     help: The principalAccessBoundaryPolicy id of the {resource} resource.
   disable_auto_completers: false
+organizations_locations_regional_access_boundary_policies:
+  name: regionalAccessBoundaryPolicy
+  plural_name: regionalAccessBoundaryPolicies
+  collection: iam.organizations.locations.regionalAccessBoundaryPolicies
+  attributes:
+  - *organization
+  - *location
+  - &regionalAccessBoundaryPolicy
+    parameter_name: regionalAccessBoundaryPoliciesId
+    attribute_name: regional_access_boundary_policy
+    help: The regionalAccessBoundaryPolicy id of the {resource} resource.
+  disable_auto_completers: false

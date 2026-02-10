@@ -3389,6 +3389,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def BulkDelete(self, request, global_params=None):
+      r"""Bulk deletes the FHIR resources from the given FHIR store. This method returns an Operation that can be used to track the progress of the deletion by calling GetOperation. The success and secondary_success counters correspond to the deleted current version and historical versions, respectively.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresBulkDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:bulkDelete',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.bulkDelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:bulkDelete',
+        request_field='bulkDeleteResourcesRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresBulkDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ConfigureSearch(self, request, global_params=None):
       r"""Configure the search parameters for the FHIR store and reindex resources in the FHIR store according to the defined search parameters. The search parameters provided in this request will replace any previous search configuration. The target SearchParameter resources need to exist in the store before calling ConfigureSearch, otherwise an error will occur. This method returns an Operation that can be used to track the progress of the reindexing by calling GetOperation.
 

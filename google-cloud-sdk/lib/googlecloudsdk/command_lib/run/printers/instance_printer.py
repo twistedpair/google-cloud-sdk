@@ -20,9 +20,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.api_lib.run import instance
 from googlecloudsdk.command_lib.run.printers import container_and_volume_printer_util as container_util
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
+from googlecloudsdk.command_lib.run.printers import traffic_printer
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
 
@@ -52,15 +56,33 @@ class InstancePrinter(cp.CustomPrinterBase):
     output = []
     header = k8s_util.BuildHeader(record)
     labels = k8s_util.GetLabels(record.labels)
-    ready_message = k8s_util.FormatReadyMessage(record)
+
+    # The ready message should be the same as FormatReadyMessage but without the
+    # symbol.
+    ready_message = ''
+    if record.ready_condition and record.ready_condition['message']:
+      # We ignore the symbol here as it is already in the header.
+      _, color = record.ReadySymbolAndColor()
+      ready_message = console_attr.GetConsoleAttr().Colorize(
+          textwrap.fill(record.ready_condition['message'], 100),
+          color,
+      )
+
     if header:
       output.append(header)
-    output.append(' ')
     if labels:
       output.append(labels)
-      output.append(' ')
     if ready_message:
       output.append(ready_message)
+
+    output.append(' ')
+
+    # Only print URL and Ingress if URL is present.
+    route_fields = traffic_printer.TransformInstanceRouteFields(record)
+    if route_fields:
+      output.append(route_fields)
+      output.append(' ')
+
     output.append(container_util.GetContainers(record))
 
     return output

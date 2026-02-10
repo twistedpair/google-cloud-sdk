@@ -748,9 +748,6 @@ class ExecutionReference(_messages.Message):
 class ExecutionSpec(_messages.Message):
   r"""ExecutionSpec describes how the execution will look.
 
-  Enums:
-    PriorityTierValueValuesEnum: Optional. The priority tier of the execution.
-
   Fields:
     delayExecution: Optional. If true, the system will start the execution
       within the next 12 hours depending on available capacity.
@@ -760,7 +757,6 @@ class ExecutionSpec(_messages.Message):
       execution. The actual number of tasks running in steady state will be
       less than this number when there are fewer tasks waiting to be
       completed, i.e. when the work left to do is less than max parallelism.
-    priorityTier: Optional. The priority tier of the execution.
     taskCount: Optional. Specifies the desired number of tasks the execution
       should run. Setting to 1 means that parallelism is limited to 1 and the
       success of that task signals the success of the execution. Defaults to
@@ -768,26 +764,10 @@ class ExecutionSpec(_messages.Message):
     template: Optional. The template used to create tasks for this execution.
   """
 
-  class PriorityTierValueValuesEnum(_messages.Enum):
-    r"""Optional. The priority tier of the execution.
-
-    Values:
-      PRIORITY_TIER_UNSPECIFIED: The default value, uses STANDARD if not
-        specified.
-      STANDARD: The system will start the job as soon as possible.
-      FLEX: The system will start the job within the next 6 hours depending on
-        available capacity. Flex executions are limited to 12 hours of run
-        time.
-    """
-    PRIORITY_TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    FLEX = 2
-
   delayExecution = _messages.BooleanField(1)
   parallelism = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 3)
-  taskCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  template = _messages.MessageField('TaskTemplateSpec', 5)
+  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('TaskTemplateSpec', 4)
 
 
 class ExecutionStatus(_messages.Message):
@@ -2788,6 +2768,8 @@ class InstanceSpec(_messages.Message):
       identity of the running container, and determines what permissions the
       Instance has. If not provided, the Instance will use the project's
       default service account.
+    timeout: Optional. Duration the instance may be active before the system
+      will shut it down.
     volumes: Optional. List of volumes that can be mounted by containers
       belonging to the Instance.
   """
@@ -2821,7 +2803,8 @@ class InstanceSpec(_messages.Message):
   containers = _messages.MessageField('Container', 1, repeated=True)
   nodeSelector = _messages.MessageField('NodeSelectorValue', 2)
   serviceAccountName = _messages.StringField(3)
-  volumes = _messages.MessageField('Volume', 4, repeated=True)
+  timeout = _messages.StringField(4)
+  volumes = _messages.MessageField('Volume', 5, repeated=True)
 
 
 class InstanceSplit(_messages.Message):
@@ -3553,14 +3536,10 @@ class Overrides(_messages.Message):
   r"""RunJob Overrides that contains Execution fields to be overridden on the
   go.
 
-  Enums:
-    PriorityTierValueValuesEnum: Optional. The priority tier of the execution.
-
   Fields:
     containerOverrides: Per container override specification.
     delayExecution: Optional. If true, the system will start the execution
       within the next 12 hours depending on available capacity.
-    priorityTier: Optional. The priority tier of the execution.
     taskCount: The desired number of tasks the execution should run. Will
       replace existing task_count value.
     timeoutSeconds: Duration in seconds the task may be active before the
@@ -3568,26 +3547,10 @@ class Overrides(_messages.Message):
       containers. Will replace existing timeout_seconds value.
   """
 
-  class PriorityTierValueValuesEnum(_messages.Enum):
-    r"""Optional. The priority tier of the execution.
-
-    Values:
-      PRIORITY_TIER_UNSPECIFIED: The default value, uses STANDARD if not
-        specified.
-      STANDARD: The system will start the job as soon as possible.
-      FLEX: The system will start the job within the next 6 hours depending on
-        available capacity. Flex executions are limited to 12 hours of run
-        time.
-    """
-    PRIORITY_TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    FLEX = 2
-
   containerOverrides = _messages.MessageField('ContainerOverride', 1, repeated=True)
   delayExecution = _messages.BooleanField(2)
-  priorityTier = _messages.EnumField('PriorityTierValueValuesEnum', 3)
-  taskCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  timeoutSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  taskCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  timeoutSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class OwnerReference(_messages.Message):

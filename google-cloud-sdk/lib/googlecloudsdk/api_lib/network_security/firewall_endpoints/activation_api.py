@@ -65,10 +65,12 @@ class Client:
   """API client for FWP activation commands.
 
   Attributes:
+    release_track: The release track of the API.
     messages: API messages class, The Firewall Plus API messages.
   """
 
   def __init__(self, release_track, project_scope=False):
+    self.release_track = release_track
     self._client = GetClientInstance(release_track)
     self.messages = GetMessagesModule(release_track)
     self._resource_parser = resources.Registry()
@@ -131,10 +133,114 @@ class Client:
         targetFirewallAttachment=target_firewall_attachment,
     )
 
-  def _ParseEndpointSettings(self, enable_jumbo_frames):
-    return self.messages.FirewallEndpointEndpointSettings(
-        jumboFramesEnabled=enable_jumbo_frames,
-    )
+  def _ParseEndpointSettings(
+      self,
+      enable_jumbo_frames=None,
+      content_cloud_region=None,
+      block_partial_http=None,
+  ):
+    """Returns FirewallEndpointEndpointSettings message."""
+    if self.release_track == base.ReleaseTrack.ALPHA:
+      if all(
+          arg is None
+          for arg in [
+              enable_jumbo_frames,
+              content_cloud_region,
+              block_partial_http,
+          ]
+      ):
+        return None
+      region_enum = None
+      if content_cloud_region:
+        region_enum = self.messages.FirewallEndpointEndpointSettings.ContentCloudRegionValueValuesEnum(
+            content_cloud_region
+        )
+      return self.messages.FirewallEndpointEndpointSettings(
+          jumboFramesEnabled=enable_jumbo_frames,
+          contentCloudRegion=region_enum,
+          httpPartialResponseBlocked=block_partial_http,
+      )
+    else:
+      if enable_jumbo_frames is None:
+        return None
+      return self.messages.FirewallEndpointEndpointSettings(
+          jumboFramesEnabled=enable_jumbo_frames,
+      )
+
+  def _ParseWildfireSettings(
+      self,
+      enabled,
+      wildfire_region=None,
+      wildfire_lookup_timeout=None,
+      wildfire_lookup_action_str=None,
+      wildfire_analysis_timeout=None,
+      wildfire_analysis_action_str=None,
+      enable_wildfire_analysis_logging=None,
+  ):
+    """Returns a WildfireSettings message."""
+    if self.release_track == base.ReleaseTrack.ALPHA:
+      rt_action_enum = (
+          self.messages.FirewallEndpointWildfireSettings.WildfireRealtimeLookupTimeoutActionValueValuesEnum
+      )
+      ica_action_enum = (
+          self.messages.FirewallEndpointWildfireSettingsWildfireInlineCloudAnalysisSettings.TimeoutActionValueValuesEnum
+      )
+      ws_region_enum = (
+          self.messages.FirewallEndpointWildfireSettings.WildfireRegionValueValuesEnum
+      )
+      lookup_action = None
+      if wildfire_lookup_action_str:
+        lookup_action = rt_action_enum(wildfire_lookup_action_str)
+      analysis_action = None
+      if wildfire_analysis_action_str:
+        analysis_action = ica_action_enum(wildfire_analysis_action_str)
+      region = None
+      if wildfire_region:
+        region = ws_region_enum(wildfire_region)
+      submission_timeout_logging_disabled = None
+      if enable_wildfire_analysis_logging is not None:
+        submission_timeout_logging_disabled = (
+            not enable_wildfire_analysis_logging
+        )
+      return self.messages.FirewallEndpointWildfireSettings(
+          enabled=enabled,
+          wildfireRegion=region,
+          wildfireRealtimeLookupDuration=str(wildfire_lookup_timeout)
+          if wildfire_lookup_timeout
+          else None,
+          wildfireRealtimeLookupTimeoutAction=lookup_action,
+          wildfireInlineCloudAnalysisSettings=self.messages.FirewallEndpointWildfireSettingsWildfireInlineCloudAnalysisSettings(
+              maxAnalysisDuration=str(wildfire_analysis_timeout)
+              if wildfire_analysis_timeout
+              else None,
+              timeoutAction=analysis_action,
+              submissionTimeoutLoggingDisabled=submission_timeout_logging_disabled,
+          ),
+      )
+    else:
+      rt_action_enum = (
+          self.messages.WildfireSettings.WildfireRealtimeLookupTimeoutActionValueValuesEnum
+      )
+      ica_action_enum = (
+          self.messages.WildfireInlineCloudAnalysisSettings.TimeoutActionValueValuesEnum
+      )
+      lookup_action = None
+      if wildfire_lookup_action_str:
+        lookup_action = rt_action_enum(wildfire_lookup_action_str)
+      analysis_action = None
+      if wildfire_analysis_action_str:
+        analysis_action = ica_action_enum(wildfire_analysis_action_str)
+      return self.messages.WildfireSettings(
+          enabled=enabled,
+          wildfireRegion=wildfire_region,
+          wildfireRealtimeLookupDuration=wildfire_lookup_timeout,
+          wildfireRealtimeLookupTimeoutAction=lookup_action,
+          wildfireInlineCloudAnalysisSettings=self.messages.WildfireInlineCloudAnalysisSettings(
+              maxAnalysisDuration=wildfire_analysis_timeout,
+              timeoutAction=analysis_action,
+              timeoutLoggingDisabled=enable_wildfire_analysis_logging,
+          ),
+      )
 
   def CreateEndpoint(
       self,
@@ -146,6 +252,15 @@ class Client:
       endpoint_type=None,
       target_firewall_attachment=None,
       labels=None,
+      enable_wildfire=None,
+      wildfire_region=None,
+      content_cloud_region=None,
+      wildfire_lookup_timeout=None,
+      wildfire_lookup_action=None,
+      wildfire_analysis_timeout=None,
+      wildfire_analysis_action=None,
+      enable_wildfire_analysis_logging=None,
+      block_partial_http=None,
   ):
     """Calls the CreateEndpoint API."""
 
@@ -166,9 +281,25 @@ class Client:
           description=description,
           billingProjectId=billing_project_id,
       )
-    if enable_jumbo_frames is not None:
-      endpoint.endpointSettings = self._ParseEndpointSettings(
-          enable_jumbo_frames
+    endpoint_settings = self._ParseEndpointSettings(
+        enable_jumbo_frames=enable_jumbo_frames,
+        content_cloud_region=content_cloud_region,
+        block_partial_http=block_partial_http,
+    )
+    if endpoint_settings:
+      endpoint.endpointSettings = endpoint_settings
+    if (
+        self.release_track == base.ReleaseTrack.ALPHA
+        and enable_wildfire is not None
+    ):
+      endpoint.wildfireSettings = self._ParseWildfireSettings(
+          enabled=enable_wildfire,
+          wildfire_region=wildfire_region,
+          wildfire_lookup_timeout=wildfire_lookup_timeout,
+          wildfire_lookup_action_str=wildfire_lookup_action,
+          wildfire_analysis_timeout=wildfire_analysis_timeout,
+          wildfire_analysis_action_str=wildfire_analysis_action,
+          enable_wildfire_analysis_logging=enable_wildfire_analysis_logging,
       )
     create_request = self._create_request(
         firewallEndpoint=endpoint, firewallEndpointId=name, parent=parent

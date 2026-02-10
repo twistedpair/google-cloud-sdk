@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import yaml
 
 module = dataplex_api.GetMessageModule()
 
@@ -72,6 +73,52 @@ def CreateEntryReferences(entry_references_content):
         'The entry references file must contain exactly two entries.'
     )
   return entry_references_message
+
+
+def Create(args: parser_extensions.Namespace):
+  """Create an EntryLink."""
+  entry_link_ref = args.CONCEPTS.entry_link.Parse()
+  # Read and parse the entry_references.yaml file
+  try:
+    entry_references_content = yaml.load_path(args.entry_references)
+  except (IOError, yaml.Error) as e:
+    raise exceptions.BadFileException(
+        'entry-references', f'Error reading or parsing YAML file: {e}'
+    )
+  if not entry_references_content:
+    raise exceptions.BadFileException(
+        'entry-references', 'The entry references file is empty.'
+    )
+
+  # Create the list of entry references objects
+  entry_references_message = CreateEntryReferences(
+      entry_references_content=entry_references_content
+  )
+
+  dataplex_client = dataplex_api.GetClientInstance()
+  entry_link_response = dataplex_client.projects_locations_entryGroups_entryLinks.Create(
+      dataplex_api.GetMessageModule().DataplexProjectsLocationsEntryGroupsEntryLinksCreateRequest(
+          entryLinkId=entry_link_ref.Name(),
+          parent=entry_link_ref.Parent().RelativeName(),
+          googleCloudDataplexV1EntryLink=dataplex_api.GetMessageModule().GoogleCloudDataplexV1EntryLink(
+              entryLinkType=args.entry_link_type,
+              entryReferences=entry_references_message,
+              name=entry_link_ref.RelativeName(),
+              aspects=_GetArgValueOrNone(args, 'aspects'),
+          ),
+      )
+  )
+  log.CreatedResource(
+      entry_link_response.name,
+      details=(
+          'Content entry link in project [{0}] with location [{1}] in entry'
+          ' group [{2}]'.format(
+              entry_link_ref.projectsId,
+              entry_link_ref.locationsId,
+              entry_link_ref.entryGroupsId,
+          )
+      ),
+  )
 
 
 def _GenerateAspectKeys(

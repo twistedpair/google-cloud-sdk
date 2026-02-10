@@ -1816,6 +1816,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   r"""The configuration information for configuring a Private IP Cloud
   Composer environment.
 
+  Enums:
+    NetworkingTypeValueValuesEnum: Optional. Networking type for the
+      environment, either private or public.
+
   Fields:
     cloudComposerConnectionSubnetwork: Optional. When specified, the
       environment will use Private Service Connect instead of VPC peerings to
@@ -1853,6 +1857,8 @@ class PrivateEnvironmentConfig(_messages.Message):
       `IPAllocationPolicy.service_ipv4_cidr_block`.
     networkingConfig: Optional. Configuration for the network connections
       configuration in the environment.
+    networkingType: Optional. Networking type for the environment, either
+      private or public.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
@@ -1865,6 +1871,20 @@ class PrivateEnvironmentConfig(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
   """
 
+  class NetworkingTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Networking type for the environment, either private or
+    public.
+
+    Values:
+      NETWORKING_TYPE_UNSPECIFIED: Default networking type.
+      PRIVATE: Private IP Cloud Composer environment with no access to the
+        internet.
+      PUBLIC: Cloud Composer environment with access to the internet.
+    """
+    NETWORKING_TYPE_UNSPECIFIED = 0
+    PRIVATE = 1
+    PUBLIC = 2
+
   cloudComposerConnectionSubnetwork = _messages.StringField(1)
   cloudComposerNetworkIpv4CidrBlock = _messages.StringField(2)
   cloudComposerNetworkIpv4ReservedRange = _messages.StringField(3)
@@ -1873,9 +1893,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   enablePrivateEnvironment = _messages.BooleanField(6)
   enablePrivatelyUsedPublicIps = _messages.BooleanField(7)
   networkingConfig = _messages.MessageField('NetworkingConfig', 8)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 9)
-  webServerIpv4CidrBlock = _messages.StringField(10)
-  webServerIpv4ReservedRange = _messages.StringField(11)
+  networkingType = _messages.EnumField('NetworkingTypeValueValuesEnum', 9)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 10)
+  webServerIpv4CidrBlock = _messages.StringField(11)
+  webServerIpv4ReservedRange = _messages.StringField(12)
 
 
 class RecoveryConfig(_messages.Message):

@@ -6687,7 +6687,7 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
       against.
     description: Optional. Description of the rule. The maximum length is
       1,024 characters.
-    dimension: Required. The dimension a rule belongs to. Results are also
+    dimension: Optional. The dimension a rule belongs to. Results are also
       aggregated at the dimension level. Custom dimension name is supported
       with all uppercase letters and maximum length of 30 characters.
     ignoreNull: Optional. Rows with null values will automatically fail a

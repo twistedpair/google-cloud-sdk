@@ -6269,8 +6269,11 @@ class RuntimeUpdatableParams(_messages.Message):
   during job creation.
 
   Fields:
-    acceptableBacklogDuration: Optional. The backlog threshold duration in
-      seconds for autoscaling. Value must be non-negative.
+    acceptableBacklogDuration: Optional. Deprecated: Use `autoscaling_tier`
+      instead. The backlog threshold duration in seconds for autoscaling.
+      Value must be non-negative.
+    autoscalingTier: Optional. The backlog threshold tier for autoscaling.
+      Value must be one of "low-latency", "medium-latency", or "high-latency".
     maxNumWorkers: The maximum number of workers to cap autoscaling at. This
       field is currently only supported for Streaming Engine jobs.
     minNumWorkers: The minimum number of workers to scale down to. This field
@@ -6284,9 +6287,10 @@ class RuntimeUpdatableParams(_messages.Message):
   """
 
   acceptableBacklogDuration = _messages.StringField(1)
-  maxNumWorkers = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minNumWorkers = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  workerUtilizationHint = _messages.FloatField(4)
+  autoscalingTier = _messages.StringField(2)
+  maxNumWorkers = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minNumWorkers = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  workerUtilizationHint = _messages.FloatField(5)
 
 
 class SDKInfo(_messages.Message):

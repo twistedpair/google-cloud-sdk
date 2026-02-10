@@ -25,8 +25,8 @@ from googlecloudsdk.core import resources
 
 API_NAME = 'hypercomputecluster'
 ALPHA_API_VERSION = 'v1alpha'
-
 TRACK_TO_API_VERSION = {base.ReleaseTrack.ALPHA: ALPHA_API_VERSION}
+
 
 OPERATIONS_COLLECTION = 'hypercomputecluster.projects.locations.operations'
 
@@ -34,17 +34,15 @@ OPERATIONS_COLLECTION = 'hypercomputecluster.projects.locations.operations'
 def GetApiVersion(release_track=base.ReleaseTrack.GA) -> str:
   """Returns the API version for the given release track."""
   if release_track not in TRACK_TO_API_VERSION:
-    raise calliope_exceptions.ToolException(
-        f'Unsupported release track: {release_track}'
-    )
+    raise ValueError(f'Unsupported release track: {release_track}')
   return TRACK_TO_API_VERSION[release_track]
 
 
 def GetReleaseTrack(api_version=ALPHA_API_VERSION) -> base.ReleaseTrack:
   """Returns the API version for the given release track."""
   if api_version not in TRACK_TO_API_VERSION.values():
-    raise calliope_exceptions.ToolException(
-        f'Unsupported API version: {api_version}'
+    raise ValueError(
+        f'Unsupported API version for release track: {api_version}'
     )
   return [
       key for key, value in TRACK_TO_API_VERSION.items() if value == api_version

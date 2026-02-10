@@ -49,8 +49,7 @@ def IsServiceAccountConfig(content_json):
 
 def CredentialsFromAdcDictGoogleAuth(json_key):
   """Creates google-auth creds from a dict of application default creds."""
-  # Import only when necessary to decrease the startup time. Move it to
-  # global once google-auth is ready to replace oauth2client.
+  # Import only when necessary to decrease the startup time.
   # pylint: disable=g-import-not-at-top
   from google.oauth2 import service_account as google_auth_service_account
   # pylint: enable=g-import-not-at-top

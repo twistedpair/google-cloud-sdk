@@ -4145,6 +4145,16 @@ class IncrementalResultStats(_messages.Message):
   Fields:
     disabledReason: Output only. Reason why incremental query results are/were
       not written by the query.
+    disabledReasonDetails: Output only. Additional human-readable
+      clarification, if available, for DisabledReason.
+    firstIncrementalRowTime: Output only. The time at which the first
+      incremental result was written. If the query needed to restart
+      internally, this only describes the final attempt.
+    incrementalRowCount: Output only. Number of rows that were in the latest
+      result set before query completion.
+    lastIncrementalRowTime: Output only. The time at which the last
+      incremental result was written. Does not include the final result
+      written after query completion.
     resultSetLastModifyTime: Output only. The time at which the result table's
       contents were modified. May be absent if no results have been written or
       the query has completed.
@@ -4168,8 +4178,12 @@ class IncrementalResultStats(_messages.Message):
     UNSUPPORTED_OPERATOR = 2
 
   disabledReason = _messages.EnumField('DisabledReasonValueValuesEnum', 1)
-  resultSetLastModifyTime = _messages.StringField(2)
-  resultSetLastReplaceTime = _messages.StringField(3)
+  disabledReasonDetails = _messages.StringField(2)
+  firstIncrementalRowTime = _messages.StringField(3)
+  incrementalRowCount = _messages.IntegerField(4)
+  lastIncrementalRowTime = _messages.StringField(5)
+  resultSetLastModifyTime = _messages.StringField(6)
+  resultSetLastReplaceTime = _messages.StringField(7)
 
 
 class IndexPruningStats(_messages.Message):

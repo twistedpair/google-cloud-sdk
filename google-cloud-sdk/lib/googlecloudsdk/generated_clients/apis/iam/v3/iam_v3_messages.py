@@ -73,6 +73,21 @@ class GoogleIamV3ListPrincipalAccessBoundaryPoliciesResponse(_messages.Message):
   principalAccessBoundaryPolicies = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicy', 2, repeated=True)
 
 
+class GoogleIamV3ListRegionalAccessBoundaryPoliciesResponse(_messages.Message):
+  r"""Response message for ListRegionalAccessBoundaryPolicies method.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    regionalAccessBoundaryPolicies: The list of regional access boundary
+      policies.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalAccessBoundaryPolicies = _messages.MessageField('GoogleIamV3RegionalAccessBoundaryPolicy', 2, repeated=True)
+
+
 class GoogleIamV3OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -172,9 +187,11 @@ class GoogleIamV3PolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
+      REGIONAL_ACCESS_BOUNDARY: Regional access boundary policy kind.
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
+    REGIONAL_ACCESS_BOUNDARY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -365,8 +382,124 @@ class GoogleIamV3PrincipalAccessBoundaryPolicyRule(_messages.Message):
   resources = _messages.StringField(3, repeated=True)
 
 
+class GoogleIamV3RegionalAccessBoundaryPolicy(_messages.Message):
+  r"""An IAM regional access boundary policy resource.
+
+  Messages:
+    AnnotationsValue: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+
+  Fields:
+    annotations: Optional. User defined annotations. See
+      https://google.aip.dev/148#annotations for more details such as format
+      and size limitations
+    createTime: Output only. The time when the regional access boundary policy
+      was created.
+    details: Optional. The details for the regional access boundary policy.
+    displayName: Optional. The display name of the regional access boundary
+      policy. Must be less than or equal to 63 characters.
+    etag: Optional. The etag for the regional access boundary policy. If this
+      is provided on update, it must match the etag of the policy on the
+      server.
+    name: Identifier. The name of the regional access boundary policy. The
+      following format is supported: `organizations/{organization_id}/location
+      s/{location}/regionalAccessBoundaryPolicies/{policy_id}`
+    uid: Output only. The globally unique ID of the regional access boundary
+      policy.
+    updateTime: Output only. The time when the regional access boundary policy
+      was most recently updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User defined annotations. See
+    https://google.aip.dev/148#annotations for more details such as format and
+    size limitations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  details = _messages.MessageField('GoogleIamV3RegionalAccessBoundaryPolicyDetails', 3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class GoogleIamV3RegionalAccessBoundaryPolicyDetails(_messages.Message):
+  r"""Regional access boundary policy details
+
+  Fields:
+    rules: Required. The regional access boundary policy rules. Only one rule
+      is supported at this time, requests with more than one will be rejected
+      as invalid.
+  """
+
+  rules = _messages.MessageField('GoogleIamV3RegionalAccessBoundaryPolicyRule', 1, repeated=True)
+
+
+class GoogleIamV3RegionalAccessBoundaryPolicyRule(_messages.Message):
+  r"""Regional Access Boundary policy rule defines authorized operating
+  locations for customer identities and resources. This rule acts as a firm
+  guardrail, ensuring that access is denied for any identity and resource
+  operating outside of these specified locations.
+
+  Fields:
+    description: Optional. The description of the regional access boundary
+      policy rule. Must be less than or equal to 256 characters.
+    locations: Describes the list of authorized locations. It is in the format
+      of value groups with the following syntax:
+      "//GoogleValueGroups/Locations/LOCATION" Where LOCATION can either be
+      "Mandatory/version_number_here" (the locations which are required for
+      inclusion for all customers) or a specific country-based location. Note
+      the Mandatory Locations value group will be versioned to allow Google to
+      remove locations from this group without causing breaking changes.
+      Examples: "//GoogleValueGroups/Locations/Mandatory/v1".
+      "//GoogleValueGroups/Locations/US". "//GoogleValueGroups/Locations/JP".
+  """
+
+  description = _messages.StringField(1)
+  locations = _messages.StringField(2, repeated=True)
+
+
 class GoogleIamV3SearchPrincipalAccessBoundaryPolicyBindingsResponse(_messages.Message):
   r"""Response message for SearchPrincipalAccessBoundaryPolicyBindings rpc.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    policyBindings: The policy bindings that reference the specified policy.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policyBindings = _messages.MessageField('GoogleIamV3PolicyBinding', 2, repeated=True)
+
+
+class GoogleIamV3SearchRegionalAccessBoundaryPolicyBindingsResponse(_messages.Message):
+  r"""Response message for SearchRegionalAccessBoundaryPolicyBindings rpc.
 
   Fields:
     nextPageToken: Optional. A token, which can be sent as `page_token` to
@@ -1045,6 +1178,138 @@ class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesSearchPolicyBindin
       `SearchPrincipalAccessBoundaryPolicyBindingsRequest` call. Provide this
       to retrieve the subsequent page. When paginating, all other parameters
       provided to `SearchPrincipalAccessBoundaryPolicyBindingsRequest` must
+      match the call that provided the page token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class IamOrganizationsLocationsRegionalAccessBoundaryPoliciesCreateRequest(_messages.Message):
+  r"""A IamOrganizationsLocationsRegionalAccessBoundaryPoliciesCreateRequest
+  object.
+
+  Fields:
+    googleIamV3RegionalAccessBoundaryPolicy: A
+      GoogleIamV3RegionalAccessBoundaryPolicy resource to be passed as the
+      request body.
+    parent: Required. The parent resource, which owns the collection of
+      regional access boundary policies. Format:
+      `organizations/{organization_id}/locations/{location}`
+    regionalAccessBoundaryPolicyId: Optional. The ID to use for this regional
+      access boundary policy, which will become the final component of the
+      policy's resource name. This value should be 4-63 characters, and valid
+      characters are `[a-z0-9-]`. If not specified, a server-generated random
+      ID will be used.
+    validateOnly: Optional. If set, validate the request and preview the
+      creation, but do not actually post it.
+  """
+
+  googleIamV3RegionalAccessBoundaryPolicy = _messages.MessageField('GoogleIamV3RegionalAccessBoundaryPolicy', 1)
+  parent = _messages.StringField(2, required=True)
+  regionalAccessBoundaryPolicyId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class IamOrganizationsLocationsRegionalAccessBoundaryPoliciesDeleteRequest(_messages.Message):
+  r"""A IamOrganizationsLocationsRegionalAccessBoundaryPoliciesDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The etag of the policy. If this is provided, it must match
+      the server's etag.
+    force: Optional. If set to true, the request will force the deletion of
+      the Policy even if the Policy references PolicyBindings.
+    name: Required. The name of the policy to delete. Format: `organizations/{
+      organization_id}/locations/{location}/regionalAccessBoundaryPolicies/{po
+      licy_id}`
+    validateOnly: Optional. If set, validate the request and preview the
+      deletion, but do not actually post it.
+  """
+
+  etag = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class IamOrganizationsLocationsRegionalAccessBoundaryPoliciesGetRequest(_messages.Message):
+  r"""A IamOrganizationsLocationsRegionalAccessBoundaryPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the policy to retrieve. Format: `organizations
+      /{organization_id}/locations/{location}/regionalAccessBoundaryPolicies/{
+      policy_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamOrganizationsLocationsRegionalAccessBoundaryPoliciesListRequest(_messages.Message):
+  r"""A IamOrganizationsLocationsRegionalAccessBoundaryPoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of regional access boundary
+      policies to return. The service may return fewer than this value. If
+      unspecified, at most 50 regional access boundary policies will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListRegionalAccessBoundaryPolicies` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListRegionalAccessBoundaryPolicies` must match the call that provided
+      the page token.
+    parent: Required. The parent resource, which owns the collection of
+      regional access boundary policies. Format:
+      `organizations/{organization_id}/locations/{location}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class IamOrganizationsLocationsRegionalAccessBoundaryPoliciesPatchRequest(_messages.Message):
+  r"""A IamOrganizationsLocationsRegionalAccessBoundaryPoliciesPatchRequest
+  object.
+
+  Fields:
+    googleIamV3RegionalAccessBoundaryPolicy: A
+      GoogleIamV3RegionalAccessBoundaryPolicy resource to be passed as the
+      request body.
+    name: Identifier. The name of the regional access boundary policy. The
+      following format is supported: `organizations/{organization_id}/location
+      s/{location}/regionalAccessBoundaryPolicies/{policy_id}`
+    updateMask: Optional. The list of fields to update
+    validateOnly: Optional. If set, validate the request and preview the
+      update, but do not actually post it.
+  """
+
+  googleIamV3RegionalAccessBoundaryPolicy = _messages.MessageField('GoogleIamV3RegionalAccessBoundaryPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class IamOrganizationsLocationsRegionalAccessBoundaryPoliciesSearchPolicyBindingsRequest(_messages.Message):
+  r"""A IamOrganizationsLocationsRegionalAccessBoundaryPoliciesSearchPolicyBin
+  dingsRequest object.
+
+  Fields:
+    name: Required. The name of the regional access boundary policy. Format: `
+      organizations/{organization_id}/locations/{location}/regionalAccessBound
+      aryPolicies/{policy_id}`
+    pageSize: Optional. The maximum number of policy bindings to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      policy bindings will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `SearchRegionalAccessBoundaryPolicyBindingsRequest` call. Provide this
+      to retrieve the subsequent page. When paginating, all other parameters
+      provided to `SearchRegionalAccessBoundaryPolicyBindingsRequest` must
       match the call that provided the page token.
   """
 

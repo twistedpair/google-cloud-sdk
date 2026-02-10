@@ -135,6 +135,7 @@ class ModelGardenClient(object):
       spot,
       reservation_affinity,
       use_dedicated_endpoint,
+      disable_dedicated_endpoint,
       enable_fast_tryout,
       container_image_uri=None,
       container_command=None,
@@ -168,6 +169,7 @@ class ModelGardenClient(object):
       spot: Whether to deploy the model on Spot VMs.
       reservation_affinity: The reservation affinity to use.
       use_dedicated_endpoint: Whether to use a dedicated endpoint.
+      disable_dedicated_endpoint: Whether to disable the dedicated endpoint.
       enable_fast_tryout: Whether to enable fast tryout.
       container_image_uri: Immutable. URI of the Docker image to be used as the
         custom container for serving predictions. This URI must identify an
@@ -343,6 +345,11 @@ class ModelGardenClient(object):
     Returns:
       The deploy long-running operation.
     """
+    if use_dedicated_endpoint and disable_dedicated_endpoint:
+      raise ValueError(
+          'use_dedicated_endpoint and disable_dedicated_endpoint cannot both be'
+          ' True.'
+      )
     container_spec = None
     if container_image_uri:
       container_spec = (
@@ -449,6 +456,7 @@ class ModelGardenClient(object):
         self._messages.GoogleCloudAiplatformV1beta1DeployRequestEndpointConfig(
             endpointDisplayName=endpoint_display_name,
             dedicatedEndpointEnabled=use_dedicated_endpoint,
+            dedicatedEndpointDisabled=disable_dedicated_endpoint,
         )
     )
     deploy_request.deployConfig = self._messages.GoogleCloudAiplatformV1beta1DeployRequestDeployConfig(

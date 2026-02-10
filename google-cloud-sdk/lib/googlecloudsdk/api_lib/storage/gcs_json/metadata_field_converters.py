@@ -246,7 +246,12 @@ def process_bucket_iam_configuration(
     iam_metadata = messages.Bucket.IamConfigurationValue()
 
   if public_access_prevention_boolean is not None:
-    if public_access_prevention_boolean:
+    # A cleared public_access_prevention value defaults to 'inherited'.
+    if (
+        public_access_prevention_boolean
+        and public_access_prevention_boolean
+        is not user_request_args_factory.CLEAR
+    ):
       public_access_prevention_string = 'enforced'
     else:
       public_access_prevention_string = 'inherited'

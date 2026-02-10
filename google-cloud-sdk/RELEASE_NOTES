@@ -5,6 +5,112 @@ Copyright 2014-2026 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 556.0.0 (2026-02-10)
+
+### Google Cloud CLI
+
+* Fixed `--filter` parsing errors in `gcloud compute` list commands when filter
+  expression contained "region" or "zone" as a substring somewhere in a
+  parenthesized sub-expression.
+
+### AI
+
+* Added support for `--disable-dedicated-endpoint` to `gcloud ai model-garden models deploy`.
+
+### App Engine
+
+* Promoted `gcloud app migrate-to-run` to beta.
+* Updated the Java SDK to version 4.0.1 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v4.0.1>.
+
+### BigQuery
+
+* Added a `queryId` in the `execution` metadata of `RunQueryRpc` return value if a job was not created.
+* Added support for `labels` in `RunQueryRpc` method.
+* Improved stack trace format for Python UDF error messages.
+* Fixed a bug where Google Cloud CLI config properties would not be read correctly.
+* Fixed a bug where a failed Data Transfer config update would display a Success message.
+
+### Cloud Backup DR
+
+* Added `--clear-encryption-key` flag to `gcloud backup-dr backups restore compute` to revert the CMEK encryption of disks of a VM to GMEK encryption.
+* Added `kms-key` property to `--create-disk` flag to support encryption of restored disk with a Customer Managed Encryption Key (CMEK).
+
+### Cloud Run
+
+* Added warning message for orgless project while deploying cloud-run service with IAP enabled.
+
+### Cloud SQL
+
+* Promoted `--server-certificate-rotation-mode` flag to GA in `gcloud sql instances create` and `patch` command.
+* Updated help text for `--server-certificate-rotation-mode` flag.
+
+### Compute Engine
+
+* Unhided `gcloud compute advice capacity` command in alpha.
+* Fix bug with updating standby target size to `0` when calling
+  `gcloud beta compute instance-groups managed update` with flags
+  `--stopped-size` or `--suspended-size`.
+  * Added `--resource-manager-tags` flag to `gcloud compute machine-images create` in beta.
+* Added `--resource-manager-tags` flag to `gcloud compute machine-images create` in v1.
+* Promoted `gcloud compute rollout-plans` command group to beta.
+
+### Compute Firewall Policy Rules
+
+*   Promoted new values for `--policy-type` flag of `gcloud compute network-firewall-policies create` to beta.
+
+### Developer Connect
+
+*   Added flag `--secure-source-manager-instance-config` to `gcloud developer-connect connections create` and `gcloud developer-connect connections update`.
+*   Non-scm providers for developer-connect account-connectors will not be deprecated.
+
+### GKE Hub
+
+* Promoted `container fleet workload-identity` methods to beta.
+
+### Kpt
+
+* Updated kpt to v1.0.0-beta.60. See <https://github.com/kptdev/kpt/releases/tag/v1.0.0-beta.60> for more details.
+
+### Kubernetes Engine
+
+* Announced General Availability (GA) of support for the Image Streaming and
+Secondary Boot Disk feature on Ubuntu node images (`UBUNTU_CONTAINERD`) within
+Google Kubernetes Engine. This allows clusters using Ubuntu nodes to benefit
+from faster container startups by streaming image data.
+*   Updated the help text for `--enable-image-streaming` flag
+(in `gcloud container clusters create/update` and
+`gcloud container node-pools create/update`). The enhanced help text now
+directs users to the public documentation for detailed version requirements and
+usage instructions for Image Streaming with both `UBUNTU_CONTAINERD` and
+`COS_CONTAINERD` node images.
+*   Updated the help text for `--secondary-boot-disk` flag
+(in `gcloud container node-pools create`). The help text now provides links to
+the public documentation for detailed version requirements and usage
+instructions across different node image types, including `UBUNTU_CONTAINERD`.
+* Added flag option `--autopilot-general-profile` to
+  `gcloud container clusters create`, `create-auto` and `update`commands.
+  Accepted values are: `none`, `no-performance`. This flag allows specifying the
+  Autopilot general compute profile for a cluster, available on clusters running
+  version 1.32 or later. For more information, see <https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview#autopilot-compute-platform>.
+
+### Network Connectivity
+
+*   Fix `gcloud beta network-connectivity transports profiles` by adding REGION
+    as a column on `list`, and align on `--region` flag for `describe`.
+*   Marked `advertised-routes` as optional in `gcloud beta network-connectivity
+    transports create`.
+
+### Vector Search
+
+* Added `gcloud beta vector-search` which allows for basic CRUDL operations on Vector Search 2.0 resources.
+* Added support for Data Objects aggregation, query and search.
+* Added `vector_search/location` property to set default region for `gcloud beta vector-search` commands.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 555.0.0 (2026-02-03)
 
 ### Google Cloud CLI
@@ -92,7 +198,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     metastore services create`. Use single region metastore instead.
 
 
-### Cloud Code
+### BigLake
 
 * Promoted `gcloud biglake iceberg` to beta.
 

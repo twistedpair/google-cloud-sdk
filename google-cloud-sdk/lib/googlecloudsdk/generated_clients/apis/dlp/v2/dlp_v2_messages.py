@@ -5074,7 +5074,8 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   Enums:
     ExclusionTypeValueValuesEnum: If set to EXCLUSION_TYPE_EXCLUDE this
       infoType will not cause a finding to be returned. It still can be used
-      for rules matching.
+      for rules matching. Not supported for the
+      `metadata_key_value_expression` and `prompt` CustomInfoType.
     LikelihoodValueValuesEnum: Likelihood to return for this CustomInfoType.
       This base value can be altered by a detection rule if the finding meets
       the criteria specified by the rule. Defaults to `VERY_LIKELY` if not
@@ -5083,10 +5084,13 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   Fields:
     detectionRules: Set of detection rules to apply to all findings of this
       CustomInfoType. Rules are applied in order that they are specified. Not
-      supported for the `surrogate_type` CustomInfoType.
+      supported for the `surrogate_type`, `metadata_key_value_expression`, and
+      `prompt` CustomInfoType.
     dictionary: A list of phrases to detect as a CustomInfoType.
     exclusionType: If set to EXCLUSION_TYPE_EXCLUDE this infoType will not
       cause a finding to be returned. It still can be used for rules matching.
+      Not supported for the `metadata_key_value_expression` and `prompt`
+      CustomInfoType.
     infoType: CustomInfoType can either be a new infoType, or an extension of
       built-in infoType, when the name matches one of existing infoTypes and
       that infoType is specified in `InspectContent.info_types` field.
@@ -5109,7 +5113,9 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
 
   class ExclusionTypeValueValuesEnum(_messages.Enum):
     r"""If set to EXCLUSION_TYPE_EXCLUDE this infoType will not cause a
-    finding to be returned. It still can be used for rules matching.
+    finding to be returned. It still can be used for rules matching. Not
+    supported for the `metadata_key_value_expression` and `prompt`
+    CustomInfoType.
 
     Values:
       EXCLUSION_TYPE_UNSPECIFIED: A finding of this custom info type will not

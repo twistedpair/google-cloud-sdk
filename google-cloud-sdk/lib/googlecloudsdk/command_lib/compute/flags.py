@@ -19,10 +19,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import copy
 import enum
 import functools
 import re
+from typing import Any
 
 from googlecloudsdk.api_lib.compute import filter_rewrite
 from googlecloudsdk.api_lib.compute.regions import service as regions_service
@@ -1108,3 +1110,89 @@ def AddEraseVssSignature(parser, resource):
               See https://cloud.google.com/sdk/gcloud/reference/compute/disks/snapshot#--guest-flush
            """.format(resource=resource)
   )
+
+
+def AddInstanceFlexibilityPolicyArgs(
+    parser: Any,
+    is_update: bool = False,
+) -> None:
+  """Adds instance flexibility policy args."""
+  parser.add_argument(
+      '--instance-selection-machine-types',
+      type=arg_parsers.ArgList(),
+      metavar='MACHINE_TYPE',
+      help=(
+          'Machine types that are used to create VMs. If not provided, the'
+          ' machine type specified in the instance template is used.'
+      ),
+  )
+  parser.add_argument(
+      '--instance-selection',
+      help=(
+          'Named selection of machine types with an optional rank. '
+          'For example,'
+          ' `--instance-selection="name=instance-selection-1,machine-type=e2-standard-8,machine-type=t2d-standard-8,rank=0"`'
+      ),
+      metavar='name=NAME,machine-type=MACHINE_TYPE[,machine-type=MACHINE_TYPE...][,rank=RANK]',
+      type=ArgMultiValueDict(),
+      action=arg_parsers.FlattenAction(),
+  )
+  if is_update:
+    parser.add_argument(
+        '--remove-instance-selections-all',
+        action='store_true',
+        help=(
+            'Remove all instance selections from the instance flexibility'
+            ' policy.'
+        ),
+    )
+    parser.add_argument(
+        '--remove-instance-selections',
+        type=arg_parsers.ArgList(),
+        metavar='INSTANCE_SELECTION_NAME',
+        help=(
+            'Remove specific instance selections from the instance flexibility'
+            ' policy.'
+        ),
+    )
+
+
+class ArgMultiValueDict:
+  """Converts argument values into multi-valued mappings.
+
+  Values for repeated keys are collected in a list. Ensures all values are
+  key-value pairs and handles invalid cases.
+  """
+
+  def __init__(self):
+    ops = '='
+    key_op_value_pattern = r'([^\s{ops}]+)\s*{ops}\s*(.*)'.format(ops=ops)
+    self._key_op_value = re.compile(key_op_value_pattern, re.DOTALL)
+
+  def __call__(self, arg_value):
+    arg_list = [item.strip() for item in arg_value.split(',')]
+    arg_dict = collections.OrderedDict()
+    for arg in arg_list:
+      # Enforce key-value pair structure
+      if '=' not in arg:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
+      match = self._key_op_value.match(arg)
+      if not match:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
+      key, value = match.group(1).strip(), match.group(2).strip()
+      if not key or not value:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
+      # Prevent values from containing '='
+      if '=' in value:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
+      arg_dict.setdefault(key, []).append(value)
+
+    return arg_dict

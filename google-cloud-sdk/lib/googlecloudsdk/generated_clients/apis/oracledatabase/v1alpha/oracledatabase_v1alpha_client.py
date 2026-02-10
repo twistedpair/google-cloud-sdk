@@ -343,6 +343,33 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListRefreshableClones(self, request, global_params=None):
+      r"""Lists the refreshable clones for a given Autonomous Database.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsAutonomousDatabasesListRefreshableClonesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAutonomousDatabaseRefreshableClonesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRefreshableClones')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRefreshableClones.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/autonomousDatabases/{autonomousDatabasesId}:listRefreshableClones',
+        http_method='GET',
+        method_id='oracledatabase.projects.locations.autonomousDatabases.listRefreshableClones',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}:listRefreshableClones',
+        request_field='',
+        request_type_name='OracledatabaseProjectsLocationsAutonomousDatabasesListRefreshableClonesRequest',
+        response_type_name='ListAutonomousDatabaseRefreshableClonesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the parameters of a single Autonomous Database.
 
@@ -2113,6 +2140,33 @@ class OracledatabaseV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsListRequest',
         response_type_name='ListGoldenGateConnectionAssignmentsResponse',
+        supports_download=False,
+    )
+
+    def Test(self, request, global_params=None):
+      r"""Tests a single GoldenGateConnectionAssignment.
+
+      Args:
+        request: (OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsTestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestGoldenGateConnectionAssignmentResponse) The response message.
+      """
+      config = self.GetMethodConfig('Test')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Test.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/goldenGateConnectionAssignments/{goldenGateConnectionAssignmentsId}:test',
+        http_method='POST',
+        method_id='oracledatabase.projects.locations.goldenGateConnectionAssignments.test',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:test',
+        request_field='testGoldenGateConnectionAssignmentRequest',
+        request_type_name='OracledatabaseProjectsLocationsGoldenGateConnectionAssignmentsTestRequest',
+        response_type_name='TestGoldenGateConnectionAssignmentResponse',
         supports_download=False,
     )
 

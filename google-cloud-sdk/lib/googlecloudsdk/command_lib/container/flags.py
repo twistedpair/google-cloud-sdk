@@ -1960,6 +1960,61 @@ To read more about node-taints, see https://cloud.google.com/kubernetes-engine/d
   )
 
 
+# TODO(b/480021770): ydubovskoi@ Unhide the flag once the feature is ready.
+def AddNodeArchitectureTaintBehaviorFlag(
+    parser, for_node_pool=False, for_update=False, hidden=True
+):
+  """Adds a --node-architecture-taint-behavior flag to the given parser."""
+
+  supported_values = """
+  Supported values:
+    * unspecified: Default behavior, currently the same as `arm`.
+    * arm: kubernetes.io/arch=arm:NoSchedule taint will be added for ARM nodes.
+    * none: No architecture taint will be applied.
+  """
+
+  if for_node_pool:
+    if for_update:
+      help_text = """\
+Control how architecture taint should be applied to nodes in an existing node pool.
+""" + supported_values + """
+
+Examples:
+
+  $ {command} node-pool-1 --cluster=example-cluster --node-architecture-taint-behavior=none
+"""
+    else:
+      help_text = """\
+Control how architecture taint should be applied to nodes in a new node pool.
+""" + supported_values + """
+
+Examples:
+
+  $ {command} node-pool-1 --cluster=example-cluster --node-architecture-taint-behavior=none
+"""
+  else:
+    help_text = """\
+Control how architecture taint should be applied to nodes in default node pool(s) in new
+cluster.
+""" + supported_values + """
+
+Examples:
+
+  $ {command} example-cluster --node-architecture-taint-behavior=none
+"""
+  help_text += """
+To read more about node-taints, see https://cloud.google.com/kubernetes-engine/docs/node-taints.
+"""
+
+  parser.add_argument(
+      '--node-architecture-taint-behavior',
+      choices=['unspecified', 'arm', 'none'],
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
 def AddPreemptibleFlag(parser, for_node_pool=False, suppressed=False):
   """Adds a --preemptible flag to parser."""
   if for_node_pool:
@@ -5962,7 +6017,9 @@ https://docs.cloud.google.com/compute/docs/about-confidential-vm.""".format(
   )
 
 
-def AddConfidentialNodeTypeFlag(parser, for_node_pool=False, is_update=False):
+def AddConfidentialNodeTypeFlag(
+    parser, *, for_node_pool=False, is_update=False, hidden=False
+):
   """Adds --confidential-node-type flag to the parser."""
   target = 'node pool' if for_node_pool else 'cluster'
 
@@ -5988,6 +6045,7 @@ https://docs.cloud.google.com/compute/docs/about-confidential-vm.""".format(
       choices=choices,
       default=None,
       help=help_text,
+      hidden=hidden,
   )
 
 
@@ -6303,9 +6361,28 @@ Specifies whether to enable GCFS on {}.""".format(target)
 
 def AddEnableImageStreamingFlag(parser, for_node_pool=False):
   """Adds the argument to handle image streaming configurations."""
-  target = 'node pool' if for_node_pool else 'cluster'
-  help_text = """\
-Specifies whether to enable image streaming on {}.""".format(target)
+  if for_node_pool:
+    help_text = """\
+Enable Image Streaming for the node pool, allowing nodes to stream container
+image data from Artifact Registry on demand to reduce container start times.
+This setting overrides the cluster-level Image Streaming default for this
+specific node pool.
+
+See [Image Streaming documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/image-streaming)
+for full requirements (including version, API enablement and Artifact Registry usage).
+To disable Image Streaming for the node pool, use `--no-enable-image-streaming`.
+"""
+  else:
+    help_text = """\
+Enable Image Streaming for the cluster, allowing nodes to stream container
+image data from Artifact Registry on demand to reduce container start times.
+This flag sets the default for new node pools. It is enabled by default on
+Autopilot clusters.
+
+See [Image Streaming documentation](https://cloud.google.com/kubernetes-engine/docs/how-to/image-streaming)
+for full requirements (including version, API enablement and Artifact Registry usage).
+To disable Image Streaming for the cluster, use `--no-enable-image-streaming`.
+"""
   parser.add_argument(
       '--enable-image-streaming',
       help=help_text,
@@ -6531,6 +6608,21 @@ def AddNodePoolEnablePrivateNodes(parser):
       default=None,
       action='store_true',
       help=help_text,
+  )
+
+
+def AddNodePoolDatapathProviderFlags(parser, hidden=True):
+  """Adds node pool datapath provider flags to parser."""
+  parser.add_argument(
+      '--datapath-provider',
+      choices={
+          'advanced-datapath': 'ADVANCED_DATAPATH',
+          'dataplane-v2': 'ADVANCED_DATAPATH',
+          'legacy-datapath': 'LEGACY_DATAPATH',
+          'dataplane-v1': 'LEGACY_DATAPATH',
+      },
+      hidden=hidden,
+      help="""Specifies the datapath provider for the cluster.""",
   )
 
 
@@ -7300,12 +7392,24 @@ def AddSecondaryBootDisksArgs(
       ),
       metavar='disk-image=DISK_IMAGE,[mode=MODE]',
       help="""\
-      Attaches secondary boot disks to all nodes.
+Attaches secondary boot disks to all nodes in the node pool. Secondary Boot
+Disks (SBD) can accelerate container startup times by preloading container
+images or data onto disks attached to the nodes. Learn more about
+[Using Secondary Boot Disks](https://cloud.google.com/kubernetes-engine/docs/how-to/data-container-image-preloading)
+for full requirements (including version, API enablement and source disk images).
 
-      *disk-image*::: (Required) The full resource path to the source disk image to create the secondary boot disks from.
+The value for this flag is a list of key=value pairs. Available keys are:
 
-      *mode*::: (Optional) The configuration mode for the secondary boot disks. The default value is "CONTAINER_IMAGE_CACHE".
-      """,
+*disk-image*::: (Required) The full resource path to the source disk image to
+create the secondary boot disks from
+(e.g., `projects/my-project/global/images/my-disk-image`).
+
+*mode*::: (Optional) The mode of the secondary boot disk. Supported values are:
+  * `CONTAINER_IMAGE_CACHE`: The disk is used to cache container images.
+    This is the default if not specified.
+  * `DATA`: The disk is used to preload arbitrary data, accessible via
+    `hostPath` volume mounts.
+""",
   )
 
 
@@ -8504,7 +8608,7 @@ Use `--no-enable-slice-controller` to disable.
   )
 
 
-def AddAutopilotGeneralProfileFlag(parser, hidden=True):
+def AddAutopilotGeneralProfileFlag(parser, hidden=False):
   """Adds the --autopilot-general-profile flag to parser."""
   help_text = """\
   Sets the Autopilot general profile for the cluster; possible values are `none` and `no-performance`.

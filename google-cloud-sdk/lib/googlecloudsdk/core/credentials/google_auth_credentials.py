@@ -33,7 +33,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
-from oauth2client import client as oauth2client_client
 from pyu2f import errors as pyu2f_errors
 import six
 from six.moves import http_client
@@ -331,9 +330,10 @@ def _HandleErrorResponse(response_body):
 
   error_code = error_data.get('error')
   error_subtype = error_data.get('error_subtype')
-  if error_code == oauth2client_client.REAUTH_NEEDED_ERROR and (
-      error_subtype == oauth2client_client.REAUTH_NEEDED_ERROR_INVALID_RAPT or
-      error_subtype == oauth2client_client.REAUTH_NEEDED_ERROR_RAPT_REQUIRED):
+  # From google_auth_reauth._REAUTH_NEEDED_ERROR_ types
+  if error_code == 'invalid_grant' and (
+      error_subtype == 'invalid_rapt' or
+      error_subtype == 'rapt_required'):
     raise ReauthRequiredError('reauth is required.')
   try:
     google_auth_client._handle_error_response(error_data, False)  # pylint: disable=protected-access

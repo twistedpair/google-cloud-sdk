@@ -170,6 +170,14 @@ def AddCreateDiskArg(parser, required=True):
           zone must be the same as the instance zone.
 
           *device-name*: Device name of the disk from the source instance.
+
+          *kms-key*: The Cloud KMS key resource name to be used for encryption.
+          If supplied, it will encrypt the disk with the given key,
+          if not supplied, the restored disk will use the encryption
+          of the disk from the source instance.
+          The `device-name` field must be provided for `kms-key` to take effect.
+          Format:
+          'projects/{project}/locations/{location}/keyRings/{ring}/cryptoKeys/{key}'
           """,
   )
 
@@ -761,12 +769,12 @@ def AddInstanceKmsKeyArg(parser, required=False):
 def AddClearEncryptionKeyArg(parser):
   """Clear encryption key override for the disk."""
   helptext = """\
-      The restored disk reverts to GMEK (CMEK is disabled).
+      Clears the CMEK encryption of the restored disks and defaults to GMEK
+      unless the kms-key is specified in the --create-disk flag.
       """
   parser.add_argument(
       '--clear-encryption-key',
       action='store_true',
       required=False,
       help=helptext,
-      hidden=True,
   )

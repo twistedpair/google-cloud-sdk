@@ -303,6 +303,33 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Disable(self, request, global_params=None):
+      r"""DisableZonalProject disables a single ZonalProject from the zone.
+
+      Args:
+        request: (EdgecontainerOrganizationsLocationsZonesZonalProjectsDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/zones/{zonesId}/zonalProjects/{zonalProjectsId}:disable',
+        http_method='POST',
+        method_id='edgecontainer.organizations.locations.zones.zonalProjects.disable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:disable',
+        request_field='disableZonalProjectRequest',
+        request_type_name='EdgecontainerOrganizationsLocationsZonesZonalProjectsDisableRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Enable(self, request, global_params=None):
       r"""EnableZonalProject enables consumer project on the zone.
 

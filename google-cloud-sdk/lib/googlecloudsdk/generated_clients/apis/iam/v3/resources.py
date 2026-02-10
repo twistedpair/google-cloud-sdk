@@ -108,6 +108,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_REGIONALACCESSBOUNDARYPOLICIES = (
+      'organizations.locations.regionalAccessBoundaryPolicies',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'regionalAccessBoundaryPolicies/'
+              '{regionalAccessBoundaryPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

@@ -7399,6 +7399,7 @@ class RolloutSequence(_messages.Message):
     name: Identifier. Name of the rollout sequence in the format of:
       projects/{PROJECT_ID}/locations/global/rolloutSequences/{NAME}
     stages: Required. Ordered list of stages that constitutes this Rollout.
+    state: Output only. State of the Rollout Sequence as a whole.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all Rollout Sequence resources. If a Rollout Sequence resource is
       deleted and another resource with the same name is created, it gets a
@@ -7438,8 +7439,63 @@ class RolloutSequence(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   stages = _messages.MessageField('Stage', 7, repeated=True)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  state = _messages.MessageField('RolloutSequenceState', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class RolloutSequenceState(_messages.Message):
+  r"""State and reasons of the Rollout Sequence.
+
+  Enums:
+    LifecycleStateValueValuesEnum: Output only. Lifecycle state of the Rollout
+      Sequence.
+    StateReasonsValueListEntryValuesEnum:
+
+  Fields:
+    lifecycleState: Output only. Lifecycle state of the Rollout Sequence.
+    stateReasons: Output only. StateReason represents the reason for the
+      Rollout Sequence state.
+  """
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Lifecycle state of the Rollout Sequence.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The default value. This value is used if
+        the state is omitted.
+      LIFECYCLE_STATE_ACTIVE: The Rollout Sequence is active.
+      LIFECYCLE_STATE_INACTIVE: The Rollout Sequence is inactive.
+      LIFECYCLE_STATE_WARNING: The Rollout Sequence has warnings.
+      LIFECYCLE_STATE_ERROR: The Rollout Sequence has errors.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    LIFECYCLE_STATE_ACTIVE = 1
+    LIFECYCLE_STATE_INACTIVE = 2
+    LIFECYCLE_STATE_WARNING = 3
+    LIFECYCLE_STATE_ERROR = 4
+
+  class StateReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""StateReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      STATE_REASON_UNSPECIFIED: Default unspecified value.
+      FLEET_FEATURE_DELETED_ERROR: A fleet feature is deleted.
+      FLEET_DELETED_ERROR: A fleet is deleted.
+      EMPTY_STAGE_WARNING: A stage is empty.
+      MIXED_RELEASE_CHANNELS_WARNING: Mixed release channels in the sequence.
+      INTERNAL_ERROR: Internal error, for example when host project is soft-
+        deleted.
+    """
+    STATE_REASON_UNSPECIFIED = 0
+    FLEET_FEATURE_DELETED_ERROR = 1
+    FLEET_DELETED_ERROR = 2
+    EMPTY_STAGE_WARNING = 3
+    MIXED_RELEASE_CHANNELS_WARNING = 4
+    INTERNAL_ERROR = 5
+
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 1)
+  stateReasons = _messages.EnumField('StateReasonsValueListEntryValuesEnum', 2, repeated=True)
 
 
 class RolloutStage(_messages.Message):

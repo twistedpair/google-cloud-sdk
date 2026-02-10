@@ -380,8 +380,8 @@ class BiglakeIcebergV1RestcatalogV1ProjectsCatalogsNamespacesTablesUpdateIceberg
   bergTableRequest object.
 
   Fields:
-    name: Required. Table to commit in the format:
-      `projects/{project_id}/namespaces/{namespace}/tables/{table}`.
+    name: Required. Table to commit in the format: `projects/{projectId}/catal
+      ogs/{catalogId}/namespaces/{namespace}/tables/{table}`.
     updateIcebergTableRequest: A UpdateIcebergTableRequest resource to be
       passed as the request body.
   """
@@ -750,6 +750,8 @@ class IcebergCatalog(_messages.Message):
     biglake_service_account: Output only. The service account used for
       credential vending, output only. Might be empty if Credential vending
       was never enabled for the catalog.
+    biglake_service_account_id: Output only. The unique ID of the service
+      account. This is used for federation scenarios.
     catalog_type: Required. The catalog type. Required for
       CreateIcebergCatalog.
     create_time: Output only. When the catalog was created.
@@ -816,15 +818,16 @@ class IcebergCatalog(_messages.Message):
 
   additional_locations = _messages.StringField(1, repeated=True)
   biglake_service_account = _messages.StringField(2)
-  catalog_type = _messages.EnumField('CatalogTypeValueValuesEnum', 3)
-  create_time = _messages.StringField(4)
-  credential_mode = _messages.EnumField('CredentialModeValueValuesEnum', 5)
-  default_location = _messages.StringField(6)
-  description = _messages.StringField(7)
-  name = _messages.StringField(8)
-  replicas = _messages.MessageField('Replica', 9, repeated=True)
-  storage_regions = _messages.StringField(10, repeated=True)
-  update_time = _messages.StringField(11)
+  biglake_service_account_id = _messages.StringField(3)
+  catalog_type = _messages.EnumField('CatalogTypeValueValuesEnum', 4)
+  create_time = _messages.StringField(5)
+  credential_mode = _messages.EnumField('CredentialModeValueValuesEnum', 6)
+  default_location = _messages.StringField(7)
+  description = _messages.StringField(8)
+  name = _messages.StringField(9)
+  replicas = _messages.MessageField('Replica', 10, repeated=True)
+  storage_regions = _messages.StringField(11, repeated=True)
+  update_time = _messages.StringField(12)
 
 
 class IcebergCatalogConfig(_messages.Message):
@@ -1337,6 +1340,8 @@ encoding.AddCustomJsonFieldMapping(
     IcebergCatalog, 'additional_locations', 'additional-locations')
 encoding.AddCustomJsonFieldMapping(
     IcebergCatalog, 'biglake_service_account', 'biglake-service-account')
+encoding.AddCustomJsonFieldMapping(
+    IcebergCatalog, 'biglake_service_account_id', 'biglake-service-account-id')
 encoding.AddCustomJsonFieldMapping(
     IcebergCatalog, 'catalog_type', 'catalog-type')
 encoding.AddCustomJsonFieldMapping(

@@ -826,8 +826,7 @@ def get_cleared_bucket_fields(request_config):
   elif resource_args.log_object_prefix == user_request_args_factory.CLEAR:
     cleared_fields.append('logging.logObjectPrefix')
 
-  if resource_args.public_access_prevention == user_request_args_factory.CLEAR:
-    cleared_fields.append('iamConfiguration.publicAccessPrevention')
+  # A cleared public_access_prevention value defaults to 'inherited'.
 
   if resource_args.retention_period == user_request_args_factory.CLEAR:
     cleared_fields.append('retentionPolicy')

@@ -95,6 +95,13 @@ class Instance(container_resource.ContainerResource):
     )
 
   @property
+  def urls(self):
+    """Return the URLs of this instance."""
+    if self._m.status and self._m.status.urls:
+      return self._m.status.urls
+    return []
+
+  @property
   def status(self):
     """Return the status of this instance."""
     ready_cond = self.conditions.get(self.READY_CONDITION, None)

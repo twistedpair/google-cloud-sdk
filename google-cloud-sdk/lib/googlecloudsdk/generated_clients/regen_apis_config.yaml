@@ -208,6 +208,9 @@ apis:
     v1:
       discovery_doc: biglake_v1.json
       default: true
+    delta_v1:
+      discovery_doc: biglake_delta_v1.json
+      default: false
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
@@ -293,6 +296,8 @@ apis:
     v1beta:
       discovery_doc: cloudapiregistry_v1beta.json
       default: true
+    v1:
+      discovery_doc: cloudapiregistry_v1.json
   cloudasset:
     v1:
       default: true
@@ -981,6 +986,8 @@ apis:
       resources:
         projects.locations:
           path: projects/{projectsId}/locations/{locationsId}
+    v1beta:
+      discovery_doc: hypercomputecluster_v1beta.json
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json
@@ -2610,4 +2617,3 @@ canonical_surfaces:
   vectorsearch:
     name: vectorsearch
     command: vector-search
-    hidden: true

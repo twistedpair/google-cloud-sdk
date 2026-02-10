@@ -370,9 +370,6 @@ def AddEntryLinkAspectFlags(
             data:
               aspectField1: someValue
               aspectField2: someOtherValue
-          project-id2.us-central1.my-aspect-type2:
-            data:
-              aspectField3: someValue3
         ```
         """,
         type=dataplex_parsers.ParseEntryLinkAspects,  # Use the EntryLink parser

@@ -20,13 +20,12 @@ from __future__ import unicode_literals
 
 from apitools.base.py import http_wrapper as apitools_http_wrapper
 
+from google.auth import exceptions as google_auth_exceptions
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.calliope import exceptions as calliope_errors
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
-
-import oauth2client
 
 
 def _no_op_callback(unused_response, unused_object):
@@ -81,10 +80,8 @@ def launch_retriable(download_stream,
   def _should_retry_resumable_download(exc_type, exc_value, exc_traceback,
                                        state):
     converted_error, _ = calliope_errors.ConvertKnownError(exc_value)
-    if isinstance(exc_value, oauth2client.client.HttpAccessTokenRefreshError):
-      if exc_value.status < 500 and exc_value.status != 429:
-        # Not server error or too many requests error.
-        return False
+    if isinstance(exc_value, google_auth_exceptions.RefreshError):
+      return exc_value.retryable
     elif not (isinstance(converted_error, core_exceptions.NetworkIssueError) or
               isinstance(converted_error, cloud_errors.RetryableApiError)):
       # Not known transient network error.

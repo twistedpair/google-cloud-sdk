@@ -1097,9 +1097,8 @@ class Binding(_messages.Message):
 
 
 class ClientScope(_messages.Message):
-  r"""Client scope represents the application, project, etc.
-
-  subject to this binding's restrictions.
+  r"""Client scope represents the application, project, etc. subject to this
+  binding's restrictions.
 
   Fields:
     restrictedClientApplication: Optional. The application that is subject to
@@ -2063,7 +2062,6 @@ class Principal(_messages.Message):
 
 class Project(_messages.Message):
   r"""A GCP project which contains applications and resources that users can
-
   access.
 
   Fields:

@@ -224,3 +224,186 @@ def AddUpdateBillingProjectArg(
       metavar="BILLING_PROJECT",
       action=actions.StoreProperty(properties.VALUES.billing.quota_project),
   )
+
+
+def AddEnableWildfireArg(
+    parser,
+):
+  """Adds --enable-wildfire flag.
+
+  It corresponds to the proto field:
+  google.cloud.networksecurity.v1main.FirewallEndpoint.WildfireSettings.enabled
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--enable-wildfire",
+      action="store_true",
+      required=False,
+      help=(
+          "If set to true, enable WildFire functionality on the endpoint. Use"
+          " --enable-wildfire to enable. To disable, use --no-enable-wildfire."
+      ),
+  )
+
+
+def AddWildfireRegionArg(
+    parser,
+):
+  """Adds --wildfire-region flag."""
+  parser.add_argument(
+      "--wildfire-region",
+      required=False,
+      help=(
+          "The region WildFire submissions from this endpoint will be sent to"
+          " for analysis by WildFire. Defaults to the nearest available region."
+      ),
+  )
+
+
+def AddContentCloudRegionArg(
+    parser,
+):
+  """Adds --content-cloud-region flag."""
+  parser.add_argument(
+      "--content-cloud-region",
+      required=False,
+      help=(
+          "The content cloud region the endpoint will use. Defaults to the"
+          " nearest available region."
+      ),
+  )
+
+
+def AddWildfireLookupTimeoutArg(
+    parser,
+):
+  """Adds --wildfire-lookup-timeout flag.
+
+  It corresponds to the proto field:
+  google.cloud.networksecurity.v1main.FirewallEndpoint.WildfireSettings
+  .wildfire_realtime_lookup_duration.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--wildfire-lookup-timeout",
+      type=int,
+      required=False,
+      help=(
+          "The timeout (in milliseconds) to hold a file while the WildFire real"
+          " time signature cloud performs a signature lookup."
+      ),
+  )
+
+
+def AddWildfireLookupActionArg(
+    parser,
+):
+  """Adds --wildfire-lookup-action flag.
+
+  It corresponds to the proto field:
+  google.cloud.networksecurity.v1main.FirewallEndpoint.WildfireSettings
+  .wildfire_realtime_lookup_timeout_action.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--wildfire-lookup-action",
+      choices=["ALLOW", "DENY"],
+      required=False,
+      help=(
+          "The action to take on WildFire real time signature lookup timeout."
+      ),
+  )
+
+
+def AddWildfireAnalysisTimeoutArg(
+    parser,
+):
+  """Adds --wildfire-analysis-timeout flag.
+
+  It corresponds to the proto field:
+  google.cloud.networksecurity.v1main.FirewallEndpoint.WildfireSettings.WildfireInlineCloudAnalysisSettings
+  .max_analysis_duration.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--wildfire-analysis-timeout",
+      type=int,
+      required=False,
+      help=(
+          "The timeout (in milliseconds) on a file being held while WildFire"
+          " inline cloud analysis is performed."
+      ),
+  )
+
+
+def AddWildfireAnalysisActionArg(
+    parser,
+):
+  """Adds --wildfire-analysis-action flag.
+
+  It corresponds to the proto field:
+  google.cloud.networksecurity.v1main.FirewallEndpoint.WildfireSettings.WildfireInlineCloudAnalysisSettings.timeout_action.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--wildfire-analysis-action",
+      choices=["ALLOW", "DENY"],
+      required=False,
+      help="The action to take on WildFire inline cloud analysis timeout.",
+  )
+
+
+def AddEnableWildfireAnalysisLoggingArg(
+    parser,
+):
+  """Adds enable-wildfire-analysis-logging flag.
+
+  It corresponds to the proto field:
+  google.cloud.networksecurity.v1main.FirewallEndpoint.WildfireSettings.WildfireInlineCloudAnalysisSettings
+  .timeout_logging_disabled.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--enable-wildfire-analysis-logging",
+      action="store_true",
+      required=False,
+      help=(
+          "Whether to disable WildFire submission log generation for files that"
+          " timeout during WildFire inline cloud analysis. Defaults to false."
+      ),
+  )
+
+
+def AddBlockPartialHttpArg(
+    parser,
+):
+  """Adds --block-partial-http flag.
+
+  It corresponds to the proto field:
+  google.cloud.networksecurity.v1main.FirewallEndpoint.EndpointSettings
+  .http_partial_response_blocked.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      "--block-partial-http",
+      action="store_true",
+      required=False,
+      help=(
+          "Whether the endpoint will block HTTP partial responses. Defaults to"
+          " false."
+      ),
+  )

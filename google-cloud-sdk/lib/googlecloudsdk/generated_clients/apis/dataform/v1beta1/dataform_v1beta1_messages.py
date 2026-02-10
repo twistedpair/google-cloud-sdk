@@ -3242,7 +3242,7 @@ class Relation(_messages.Message):
     connection: Optional. The connection specifying the credentials to be used
       to read and write to external storage, such as Cloud Storage. The
       connection can have the form `{project}.{location}.{connection_id}` or
-      `projects/{project}/locations/{location}/connections/{connection_id}",
+      `projects/{project}/locations/{location}/connections/{connection_id}`,
       or be set to DEFAULT.
     dependencyTargets: A list of actions that this action depends on.
     disabled: Whether this action is disabled (i.e. should not be run).

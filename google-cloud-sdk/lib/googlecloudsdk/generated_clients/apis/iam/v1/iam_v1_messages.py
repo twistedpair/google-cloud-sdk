@@ -5773,10 +5773,12 @@ class WorkforcePoolProvider(_messages.Message):
       user signs in and at regular intervals during the user's active session.
       Each user identity in the workforce identity pool must map to a unique
       Microsoft Entra ID user.
-    extraAttributesOauth2Client: Optional. The configuration for OAuth 2.0
-      client used to get the additional user attributes. This should be used
-      when users can't get the desired claims in authentication credentials.
-      Currently, this configuration is only supported with OIDC protocol.
+    extraAttributesOauth2Client: Optional. Defines the configuration for the
+      OAuth 2.0 client that is used to get the additional user attributes in a
+      separate backchannel call to the identity provider. This should be used
+      when users can't get the required claims in authentication credentials.
+      Currently, the OAuth 2.0 protocol is the only supported authorization
+      method for this backchannel call.
     name: Identifier. The resource name of the provider. Format: `locations/{l
       ocation}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     oidc: An OpenID Connect 1.0 identity provider configuration.

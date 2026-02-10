@@ -523,6 +523,7 @@ def Deploy(
         spot=args.spot,
         reservation_affinity=args.reservation_affinity,
         use_dedicated_endpoint=args.use_dedicated_endpoint,
+        disable_dedicated_endpoint=args.disable_dedicated_endpoint,
         enable_fast_tryout=args.enable_fast_tryout,
         container_image_uri=args.container_image_uri,
         container_command=args.container_command,

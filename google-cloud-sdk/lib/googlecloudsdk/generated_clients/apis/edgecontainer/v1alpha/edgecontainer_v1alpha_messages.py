@@ -653,6 +653,18 @@ class DisableServiceAccountKeyResponse(_messages.Message):
   keyId = _messages.StringField(2)
 
 
+class DisableZonalProjectRequest(_messages.Message):
+  r"""Disables a zonal project.
+
+  Fields:
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class DisableZonalServiceRequest(_messages.Message):
   r"""Disable ZonalService Request. The API will remove access for the service
   producers.
@@ -856,6 +868,21 @@ class EdgecontainerOrganizationsLocationsZonesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class EdgecontainerOrganizationsLocationsZonesZonalProjectsDisableRequest(_messages.Message):
+  r"""A EdgecontainerOrganizationsLocationsZonesZonalProjectsDisableRequest
+  object.
+
+  Fields:
+    disableZonalProjectRequest: A DisableZonalProjectRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the zonal project to disable from a
+      zone.
+  """
+
+  disableZonalProjectRequest = _messages.MessageField('DisableZonalProjectRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class EdgecontainerOrganizationsLocationsZonesZonalProjectsEnableRequest(_messages.Message):
@@ -1797,6 +1824,9 @@ class IdentityProvider(_messages.Message):
   r"""Represents an identity provider resource which represents the identity
   provider configuration for the organization.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the identity provider.
+
   Messages:
     LabelsValue: Optional. Labels associated with this resource.
 
@@ -1810,12 +1840,34 @@ class IdentityProvider(_messages.Message):
       E.g. organizations/{organization}/locations/{location}/identityProviders
       /{identity_provider}
     oidcConfig: The OIDC provider configuration.
+    proxyUri: Optional. The proxy URI for reaching identity provider.
     samlConfig: The SAML provider configuration.
+    state: Output only. The state of the identity provider.
     updateTime: Output only. The time when the identity provider was last
       updated.
     zoneId: The zone id of the target zone of the infra cluster for which the
       identity provider is to be configured.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the identity provider.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      CREATING: The identity provider is in CREATING state.
+      RUNNING: The identity provider is in RUNNING state.
+      DELETING: The identity provider is in DELETING state.
+      ERROR: The identity provider is in ERROR state.
+      REPAIRING: The identity provider is in REPAIRING state.
+      DELETED: The identity provider is in DELETED state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    RUNNING = 2
+    DELETING = 3
+    ERROR = 4
+    REPAIRING = 5
+    DELETED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1847,9 +1899,11 @@ class IdentityProvider(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   oidcConfig = _messages.MessageField('OIDCProviderConfig', 6)
-  samlConfig = _messages.MessageField('SAMLProviderConfig', 7)
-  updateTime = _messages.StringField(8)
-  zoneId = _messages.StringField(9)
+  proxyUri = _messages.StringField(7)
+  samlConfig = _messages.MessageField('SAMLProviderConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  zoneId = _messages.StringField(11)
 
 
 class Ingress(_messages.Message):

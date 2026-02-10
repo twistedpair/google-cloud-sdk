@@ -6820,6 +6820,8 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       can be made (using the `quota` setting). **Note:** The `api_resources`
       setting cannot be specified for both the API product and operation
       group; otherwise the call will fail.
+    payloadOperationGroup: Optional. Configuration used to group Apigee
+      proxies with payload-based operations.
     proxies: Comma-separated list of API proxy names to which this API product
       is bound. By specifying API proxies, you can associate resources in the
       API product with specific API proxies, preventing developers from
@@ -6905,13 +6907,14 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   llmQuotaTimeUnit = _messages.StringField(14)
   name = _messages.StringField(15)
   operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 16)
-  proxies = _messages.StringField(17, repeated=True)
-  quota = _messages.StringField(18)
-  quotaCounterScope = _messages.EnumField('QuotaCounterScopeValueValuesEnum', 19)
-  quotaInterval = _messages.StringField(20)
-  quotaTimeUnit = _messages.StringField(21)
-  scopes = _messages.StringField(22, repeated=True)
-  space = _messages.StringField(23)
+  payloadOperationGroup = _messages.MessageField('GoogleCloudApigeeV1PayloadOperationGroup', 17)
+  proxies = _messages.StringField(18, repeated=True)
+  quota = _messages.StringField(19)
+  quotaCounterScope = _messages.EnumField('QuotaCounterScopeValueValuesEnum', 20)
+  quotaInterval = _messages.StringField(21)
+  quotaTimeUnit = _messages.StringField(22)
+  scopes = _messages.StringField(23, repeated=True)
+  space = _messages.StringField(24)
 
 
 class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
@@ -11848,6 +11851,51 @@ class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
   projectIds = _messages.StringField(4, repeated=True)
 
 
+class GoogleCloudApigeeV1PayloadOperation(_messages.Message):
+  r"""Represents a single operation identifier extracted from payload.
+
+  Fields:
+    operation: Required. The extracted operation name. e.g. "tools/list",
+      "tools/call/get_weather". Wildcards (*) are not supported in operation
+      name.
+  """
+
+  operation = _messages.StringField(1)
+
+
+class GoogleCloudApigeeV1PayloadOperationConfig(_messages.Message):
+  r"""Binds operations within a payload to a proxy and its associated quota
+  enforcement.
+
+  Fields:
+    apiSource: Required. Name of the API proxy with which the payload
+      operations and quota are associated.
+    attributes: Optional. Custom attributes associated with the operation.
+    operations: Required. List of payload operations to which quota will be
+      applied.
+    quota: Optional. Quota parameters to be enforced for the operations and
+      API source combination. If none are specified, quota enforcement will
+      not be done unless defined at the API Product level.
+  """
+
+  apiSource = _messages.StringField(1)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
+  operations = _messages.MessageField('GoogleCloudApigeeV1PayloadOperation', 3, repeated=True)
+  quota = _messages.MessageField('GoogleCloudApigeeV1Quota', 4)
+
+
+class GoogleCloudApigeeV1PayloadOperationGroup(_messages.Message):
+  r"""A list of payload operation configuration details associated with Apigee
+  API proxies.
+
+  Fields:
+    operationConfigs: Required. List of operation configurations for Apigee
+      API proxies that are associated with this API product.
+  """
+
+  operationConfigs = _messages.MessageField('GoogleCloudApigeeV1PayloadOperationConfig', 1, repeated=True)
+
+
 class GoogleCloudApigeeV1PodStatus(_messages.Message):
   r"""A GoogleCloudApigeeV1PodStatus object.
 
@@ -12876,7 +12924,7 @@ class GoogleCloudApigeeV1RuntimeConfig(_messages.Message):
 
 
 class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
-  r"""NEXT ID: 8 RuntimeTraceConfig defines the configurations for distributed
+  r"""NEXT ID: 9 RuntimeTraceConfig defines the configurations for distributed
   trace in an environment.
 
   Enums:
@@ -12893,6 +12941,13 @@ class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
       exporters.
     name: Name of the trace config in the following format:
       `organizations/{org}/environment/{env}/traceConfig`
+    openTelemetryProtocolEnabled: If `true`, the runtime uses OpenTelemetry
+      Protocol (OTLP) to send trace data. Configuration Requirements (if
+      `open_telemetry_protocol_enabled` is `true`): - Allowed `Exporter`s:
+      `CLOUD_TRACE` or `OPEN_TELEMETRY_COLLECTOR`. - If `Exporter` is
+      `OPEN_TELEMETRY_COLLECTOR`: - `endpoint` refers to a valid OTLP
+      collector URL. - If `Exporter` is `CLOUD_TRACE`: - `endpoint` refers to
+      a valid project ID
     overrides: List of trace configuration overrides for spicific API proxies.
     revisionCreateTime: The timestamp that the revision was created or
       updated.
@@ -12920,10 +12975,11 @@ class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
   endpoint = _messages.StringField(1)
   exporter = _messages.EnumField('ExporterValueValuesEnum', 2)
   name = _messages.StringField(3)
-  overrides = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfigOverride', 4, repeated=True)
-  revisionCreateTime = _messages.StringField(5)
-  revisionId = _messages.StringField(6)
-  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceSamplingConfig', 7)
+  openTelemetryProtocolEnabled = _messages.BooleanField(4)
+  overrides = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfigOverride', 5, repeated=True)
+  revisionCreateTime = _messages.StringField(6)
+  revisionId = _messages.StringField(7)
+  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceSamplingConfig', 8)
 
 
 class GoogleCloudApigeeV1RuntimeTraceConfigOverride(_messages.Message):

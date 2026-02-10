@@ -234,6 +234,37 @@ class UpdateCommand(UpdateCommandMixin, calliope_base.UpdateCommand):
   Because Features updates are often bespoke actions, there is no default
   `Run` override like some of the other classes.
   """
+  ORIGIN_FLAG = calliope_base.Argument(
+      '--origin',
+      type=lambda origin: origin.lower(),
+      choices=['fleet'],
+      help=(
+          'Update the configuration of the target membership(s) to the'
+          ' [fleet-default membership configuration]('
+          'https://docs.cloud.google.com/kubernetes-engine/fleet-management/docs/manage-features).'
+          ' Errors if the fleet-default membership configuration is not set;'
+          ' see the `--fleet-default-member-config` flag.'
+      ),
+  )
+
+  def sync_memberships_to_fleet_default(self, memberships):
+    # TODO(b/471048574): Switch to v2 API if it ever supports syncing to FDC.
+    membership_specs = self.messages.Feature.MembershipSpecsValue(
+        additionalProperties=[
+            self.messages.Feature.MembershipSpecsValue.AdditionalProperty(
+                key=m,
+                value=self.messages.MembershipFeatureSpec(
+                    origin=self.messages.Origin(
+                        type=self.messages.Origin.TypeValueValuesEnum.FLEET,
+                    )
+                )
+            )
+            for m in memberships
+        ]
+    )
+    return self.Update(['membership_specs'], self.messages.Feature(
+        membershipSpecs=membership_specs
+    ))
 
 
 class DisableCommand(UpdateCommandMixin, calliope_base.DeleteCommand):

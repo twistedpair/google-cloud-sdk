@@ -96,6 +96,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.nodeTemplates = self.NodeTemplatesService(self)
     self.nodeTypes = self.NodeTypesService(self)
     self.organizationSecurityPolicies = self.OrganizationSecurityPoliciesService(self)
+    self.organizationSnapshotRecycleBinPolicy = self.OrganizationSnapshotRecycleBinPolicyService(self)
     self.packetMirrorings = self.PacketMirroringsService(self)
     self.previewFeatures = self.PreviewFeaturesService(self)
     self.projects = self.ProjectsService(self)
@@ -153,6 +154,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.securityPolicies = self.SecurityPoliciesService(self)
     self.serviceAttachments = self.ServiceAttachmentsService(self)
     self.snapshotGroups = self.SnapshotGroupsService(self)
+    self.snapshotRecycleBinPolicy = self.SnapshotRecycleBinPolicyService(self)
     self.snapshotSettings = self.SnapshotSettingsService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
@@ -2485,7 +2487,7 @@ Can be invoked either in the primary or secondary scope.
     def Update(self, request, global_params=None):
       r"""Updates the specified disk with the data included in the request.
 The update is performed only on selected fields included as part
-of update-mask. Only the following fields can be modified: user_license.
+of update-mask.
 
       Args:
         request: (ComputeDisksUpdateRequest) input message
@@ -4631,6 +4633,20 @@ deleted if there are backend services referencing it.
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
 
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
+
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsInsertRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -5197,6 +5213,32 @@ that triggers in the backend.
         supports_download=False,
     )
 
+    def GetVmExtension(self, request, global_params=None):
+      r"""Retrieves details of a specific VM extension.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesGetVmExtensionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlobalVmExtension) The response message.
+      """
+      config = self.GetMethodConfig('GetVmExtension')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVmExtension.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.getVmExtension',
+        ordered_params=['project', 'extensionName'],
+        path_params=['extensionName', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/vmExtensions/{extensionName}',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesGetVmExtensionRequest',
+        response_type_name='GlobalVmExtension',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a new project level GlobalVmExtensionPolicy.
 
@@ -5246,6 +5288,33 @@ that triggers in the backend.
         request_field='',
         request_type_name='ComputeGlobalVmExtensionPoliciesListRequest',
         response_type_name='GlobalVmExtensionPolicyList',
+        supports_download=False,
+    )
+
+    def ListVmExtensions(self, request, global_params=None):
+      r"""Lists all VM extensions within a specific zone for a project.
+This is a read-only API.
+
+      Args:
+        request: (ComputeGlobalVmExtensionPoliciesListVmExtensionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GlobalListVmExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListVmExtensions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListVmExtensions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.globalVmExtensionPolicies.listVmExtensions',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/vmExtensions',
+        request_field='',
+        request_type_name='ComputeGlobalVmExtensionPoliciesListVmExtensionsRequest',
+        response_type_name='GlobalListVmExtensionsResponse',
         supports_download=False,
     )
 
@@ -8695,6 +8764,33 @@ policy or resource exists.
         supports_download=False,
     )
 
+    def GetVmExtensionState(self, request, global_params=None):
+      r"""Retrieves details of a specific VM extension state.
+This is a read-only API.
+
+      Args:
+        request: (ComputeInstancesGetVmExtensionStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmExtensionState) The response message.
+      """
+      config = self.GetMethodConfig('GetVmExtensionState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVmExtensionState.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instances.getVmExtensionState',
+        ordered_params=['project', 'zone', 'instance', 'extensionName'],
+        path_params=['extensionName', 'instance', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/vmExtensionStates/{extensionName}',
+        request_field='',
+        request_type_name='ComputeInstancesGetVmExtensionStateRequest',
+        response_type_name='VmExtensionState',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates an instance resource in the specified project using the data.
 included in the request.
@@ -8776,6 +8872,33 @@ referrers to VM instances.
         request_field='',
         request_type_name='ComputeInstancesListReferrersRequest',
         response_type_name='InstanceListReferrers',
+        supports_download=False,
+    )
+
+    def ListVmExtensionStates(self, request, global_params=None):
+      r"""Lists all VM extensions states for a specific instance.
+This is a read-only API.
+
+      Args:
+        request: (ComputeInstancesListVmExtensionStatesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVmExtensionStatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListVmExtensionStates')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListVmExtensionStates.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instances.listVmExtensionStates',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/vmExtensionStates',
+        request_field='',
+        request_type_name='ComputeInstancesListVmExtensionStatesRequest',
+        response_type_name='ListVmExtensionStatesResponse',
         supports_download=False,
     )
 
@@ -12709,6 +12832,20 @@ group.
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
 
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
+
       Args:
         request: (ComputeNetworkEndpointGroupsInsertRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -15121,6 +15258,70 @@ instead.
         relative_path='locations/global/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
         request_type_name='ComputeOrganizationSecurityPoliciesRemoveRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class OrganizationSnapshotRecycleBinPolicyService(base_api.BaseApiService):
+    """Service class for the organizationSnapshotRecycleBinPolicy resource."""
+
+    _NAME = 'organizationSnapshotRecycleBinPolicy'
+
+    def __init__(self, client):
+      super(ComputeAlpha.OrganizationSnapshotRecycleBinPolicyService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified SnapshotRecycleBinPolicy.
+
+      Args:
+        request: (ComputeOrganizationSnapshotRecycleBinPolicyGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotRecycleBinPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='organizations/{organizationsId}/global/snapshotRecycleBinPolicy',
+        http_method='GET',
+        method_id='compute.organizationSnapshotRecycleBinPolicy.get',
+        ordered_params=['organization'],
+        path_params=['organization'],
+        query_params=[],
+        relative_path='{+organization}/global/snapshotRecycleBinPolicy',
+        request_field='',
+        request_type_name='ComputeOrganizationSnapshotRecycleBinPolicyGetRequest',
+        response_type_name='SnapshotRecycleBinPolicy',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the SnapshotRecycleBinPolicy.
+
+      Args:
+        request: (ComputeOrganizationSnapshotRecycleBinPolicyPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='organizations/{organizationsId}/global/snapshotRecycleBinPolicy',
+        http_method='PATCH',
+        method_id='compute.organizationSnapshotRecycleBinPolicy.patch',
+        ordered_params=['organization'],
+        path_params=['organization'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='{+organization}/global/snapshotRecycleBinPolicy',
+        request_field='snapshotRecycleBinPolicy',
+        request_type_name='ComputeOrganizationSnapshotRecycleBinPolicyPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17669,7 +17870,7 @@ regional CompositeHealthCheck.
         request: (ComputeRegionCompositeHealthChecksGetHealthRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (CompositeHealthChecksGetHealthResponse) The response message.
+        (CompositeHealthCheckHealth) The response message.
       """
       config = self.GetMethodConfig('GetHealth')
       return self._RunMethod(
@@ -17684,7 +17885,7 @@ regional CompositeHealthCheck.
         relative_path='projects/{project}/regions/{region}/compositeHealthChecks/{compositeHealthCheck}/getHealth',
         request_field='',
         request_type_name='ComputeRegionCompositeHealthChecksGetHealthRequest',
-        response_type_name='CompositeHealthChecksGetHealthResponse',
+        response_type_name='CompositeHealthCheckHealth',
         supports_download=False,
     )
 
@@ -18390,8 +18591,7 @@ Can be invoked either in the primary or secondary scope.
 
     def Update(self, request, global_params=None):
       r"""Update the specified disk with the data included in the request. Update is.
-performed only on selected fields included as part of update-mask. Only the
-following fields can be modified: user_license.
+performed only on selected fields included as part of update-mask.
 
       Args:
         request: (ComputeRegionDisksUpdateRequest) input message
@@ -19157,6 +19357,33 @@ To prevent failure, Google recommends that you set the
         request_field='',
         request_type_name='ComputeRegionHealthSourcesGetRequest',
         response_type_name='HealthSource',
+        supports_download=False,
+    )
+
+    def GetHealth(self, request, global_params=None):
+      r"""Gets the most recent health check results for this.
+regional HealthSource.
+
+      Args:
+        request: (ComputeRegionHealthSourcesGetHealthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthSourceHealth) The response message.
+      """
+      config = self.GetMethodConfig('GetHealth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHealth.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionHealthSources.getHealth',
+        ordered_params=['project', 'region', 'healthSource'],
+        path_params=['healthSource', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/healthSources/{healthSource}/getHealth',
+        request_field='',
+        request_type_name='ComputeRegionHealthSourcesGetHealthRequest',
+        response_type_name='HealthSourceHealth',
         supports_download=False,
     )
 
@@ -21379,6 +21606,20 @@ deleted if it is configured as a backend of a backend service.
     def Insert(self, request, global_params=None):
       r"""Creates a network endpoint group in the specified project using the.
 parameters that are included in the request.
+
+Note: Use the following APIs to manage network endpoint groups:
+   
+   - 
+   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity
+   NEGs): zonal
+   API
+   - 
+   To manage NEGs with regional scope (such as regional internet NEGs,
+   serverless NEGs, Private Service Connect NEGs): regional
+   API
+   - 
+   To manage NEGs with global scope (such as global internet NEGs):global
+   API
 
       Args:
         request: (ComputeRegionNetworkEndpointGroupsInsertRequest) input message
@@ -24835,6 +25076,33 @@ behaviour for this method.
         supports_download=False,
     )
 
+    def GetVersion(self, request, global_params=None):
+      r"""Allows customers to get SBOM versions of a reservation slot.
+
+      Args:
+        request: (ComputeReservationSlotsGetVersionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('GetVersion')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVersion.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{project}/zones/{zone}/reservations/{reservationsId}/reservationBlocks/{reservationBlocksId}/reservationSubBlocks/{reservationSubBlocksId}/reservationSlots/{reservationSlot}/getVersion',
+        http_method='POST',
+        method_id='compute.reservationSlots.getVersion',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSlot'],
+        path_params=['parentName', 'project', 'reservationSlot', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/{+parentName}/reservationSlots/{reservationSlot}/getVersion',
+        request_field='reservationSlotsGetVersionRequest',
+        request_type_name='ComputeReservationSlotsGetVersionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Retrieves a list of reservation slots under a single reservation.
 
@@ -24895,6 +25163,32 @@ behaviour for this method.
         request_field='',
         request_type_name='ComputeReservationSubBlocksGetRequest',
         response_type_name='ReservationSubBlocksGetResponse',
+        supports_download=False,
+    )
+
+    def GetVersion(self, request, global_params=None):
+      r"""Allows customers to get SBOM versions of a reservation subBlock.
+
+      Args:
+        request: (ComputeReservationSubBlocksGetVersionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('GetVersion')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVersion.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.reservationSubBlocks.getVersion',
+        ordered_params=['project', 'zone', 'parentName', 'reservationSubBlock'],
+        path_params=['parentName', 'project', 'reservationSubBlock', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/{parentName}/reservationSubBlocks/{reservationSubBlock}/getVersion',
+        request_field='reservationSubBlocksGetVersionRequest',
+        request_type_name='ComputeReservationSubBlocksGetVersionRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -25756,6 +26050,58 @@ Replaces any existing policy.
         request_field='',
         request_type_name='ComputeRolloutsListRequest',
         response_type_name='RolloutsListResponse',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      r"""Pauses a Rollout.
+
+      Args:
+        request: (ComputeRolloutsPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.rollouts.pause',
+        ordered_params=['project', 'rollout'],
+        path_params=['project', 'rollout'],
+        query_params=['etag', 'requestId'],
+        relative_path='projects/{project}/global/rollouts/{rollout}/pause',
+        request_field='',
+        request_type_name='ComputeRolloutsPauseRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resumes a Rollout.
+
+      Args:
+        request: (ComputeRolloutsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.rollouts.resume',
+        ordered_params=['project', 'rollout'],
+        path_params=['project', 'rollout'],
+        query_params=['etag', 'requestId'],
+        relative_path='projects/{project}/global/rollouts/{rollout}/resume',
+        request_field='',
+        request_type_name='ComputeRolloutsResumeRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -27332,6 +27678,68 @@ Replaces any existing policy.
         supports_download=False,
     )
 
+  class SnapshotRecycleBinPolicyService(base_api.BaseApiService):
+    """Service class for the snapshotRecycleBinPolicy resource."""
+
+    _NAME = 'snapshotRecycleBinPolicy'
+
+    def __init__(self, client):
+      super(ComputeAlpha.SnapshotRecycleBinPolicyService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified SnapshotRecycleBinPolicy.
+
+      Args:
+        request: (ComputeSnapshotRecycleBinPolicyGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotRecycleBinPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.snapshotRecycleBinPolicy.get',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='projects/{project}/global/snapshotRecycleBinPolicy',
+        request_field='',
+        request_type_name='ComputeSnapshotRecycleBinPolicyGetRequest',
+        response_type_name='SnapshotRecycleBinPolicy',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the SnapshotRecycleBinPolicy.
+
+      Args:
+        request: (ComputeSnapshotRecycleBinPolicyPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.snapshotRecycleBinPolicy.patch',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/global/snapshotRecycleBinPolicy',
+        request_field='snapshotRecycleBinPolicy',
+        request_type_name='ComputeSnapshotRecycleBinPolicyPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class SnapshotSettingsService(base_api.BaseApiService):
     """Service class for the snapshotSettings resource."""
 
@@ -27490,6 +27898,34 @@ snapshots.
         request_field='',
         request_type_name='ComputeSnapshotsGetRequest',
         response_type_name='Snapshot',
+        supports_download=False,
+    )
+
+    def GetEffectiveRecycleBinRule(self, request, global_params=None):
+      r"""Returns the effective recycle bin rule for a snapshot by merging org and.
+project level rules. If no rules are defined at org and project level, the
+standard default rule is returned.
+
+      Args:
+        request: (ComputeSnapshotsGetEffectiveRecycleBinRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotsGetEffectiveRecycleBinRuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveRecycleBinRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveRecycleBinRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.snapshots.getEffectiveRecycleBinRule',
+        ordered_params=['project', 'snapshot'],
+        path_params=['project', 'snapshot'],
+        query_params=[],
+        relative_path='projects/{project}/global/snapshots/{snapshot}/getEffectiveRecycleBinRule',
+        request_field='',
+        request_type_name='ComputeSnapshotsGetEffectiveRecycleBinRuleRequest',
+        response_type_name='SnapshotsGetEffectiveRecycleBinRuleResponse',
         supports_download=False,
     )
 
@@ -32152,6 +32588,32 @@ following the provisioning.
         supports_download=False,
     )
 
+    def GetVmExtension(self, request, global_params=None):
+      r"""Retrieves details of a specific VM extension.
+
+      Args:
+        request: (ComputeZoneVmExtensionPoliciesGetVmExtensionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmExtension) The response message.
+      """
+      config = self.GetMethodConfig('GetVmExtension')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVmExtension.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.zoneVmExtensionPolicies.getVmExtension',
+        ordered_params=['project', 'zone', 'extensionName'],
+        path_params=['extensionName', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/vmExtensions/{extensionName}',
+        request_field='',
+        request_type_name='ComputeZoneVmExtensionPoliciesGetVmExtensionRequest',
+        response_type_name='VmExtension',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a new zone-level VM extension policy within a project.
 
@@ -32201,6 +32663,33 @@ following the provisioning.
         request_field='',
         request_type_name='ComputeZoneVmExtensionPoliciesListRequest',
         response_type_name='VmExtensionPolicyList',
+        supports_download=False,
+    )
+
+    def ListVmExtensions(self, request, global_params=None):
+      r"""Lists all VM extensions within a specific zone for a project.
+This is a read-only API.
+
+      Args:
+        request: (ComputeZoneVmExtensionPoliciesListVmExtensionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVmExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListVmExtensions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListVmExtensions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.zoneVmExtensionPolicies.listVmExtensions',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/vmExtensions',
+        request_field='',
+        request_type_name='ComputeZoneVmExtensionPoliciesListVmExtensionsRequest',
+        response_type_name='ListVmExtensionsResponse',
         supports_download=False,
     )
 

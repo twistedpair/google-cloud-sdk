@@ -957,6 +957,9 @@ class DropInfo(_messages.Message):
         route matched within this hybrid subnet.
       HYBRID_SUBNET_NO_ROUTE: Packet is dropped because no matching route was
         found in the hybrid subnet.
+      NO_VALID_ROUTE_FROM_GOOGLE_MANAGED_NETWORK_TO_DESTINATION: Packet is
+        dropped because there is no valid matching route from the network of
+        the Google-managed service to the destination.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1061,6 +1064,7 @@ class DropInfo(_messages.Message):
     NCC_ROUTE_WITHIN_HYBRID_SUBNET_UNSUPPORTED = 100
     HYBRID_SUBNET_REGION_MISMATCH = 101
     HYBRID_SUBNET_NO_ROUTE = 102
+    NO_VALID_ROUTE_FROM_GOOGLE_MANAGED_NETWORK_TO_DESTINATION = 103
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationGeolocationCode = _messages.StringField(2)

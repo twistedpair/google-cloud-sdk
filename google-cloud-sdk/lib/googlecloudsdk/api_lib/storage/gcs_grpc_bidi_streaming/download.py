@@ -20,6 +20,7 @@ from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
+import binascii
 import io
 from typing import Any, Callable, Tuple
 
@@ -29,6 +30,10 @@ from googlecloudsdk.api_lib.storage import gcs_download
 from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import retry_util as grpc_retry_util
 from googlecloudsdk.api_lib.storage.gcs_grpc_bidi_streaming import retry_util
+from googlecloudsdk.command_lib.storage import errors as storage_errors
+from googlecloudsdk.command_lib.storage import fast_crc32c_util
+from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import log
 
 
@@ -106,6 +111,93 @@ def _get_bidi_read_object_request(
   )
 
 
+def _update_digesters(digesters, data, chunk_crc32c=None):
+  """Updates digesters with data."""
+  for hash_algorithm, hash_object in digesters.items():
+    if (
+        isinstance(hash_object, fast_crc32c_util.DeferredCrc32c)
+        or hash_algorithm != hash_util.HashAlgorithm.CRC32C
+        or chunk_crc32c is None
+    ):
+      hash_object.update(data)
+    else:
+      digesters[hash_util.HashAlgorithm.CRC32C] = (
+          crc32c.get_crc32c_from_checksum(
+              crc32c.concat_checksums(
+                  int.from_bytes(hash_object.digest(), 'big'),
+                  chunk_crc32c,
+                  len(data),
+                  )
+              )
+          )
+
+
+def _should_validate_chunk_integrity(digesters):
+  """Returns true if chunk integrity should be validated."""
+  if not digesters:
+    return False
+  for hash_algorithm, hash_object in digesters.items():
+    # Perform chunk validation only when CRC32C is requested and the hash
+    # object is not a DeferredCrc32c.
+    # TODO: b/479490828 - Add support for DeferredCrc32c when partial
+    # checksumming is supported.
+    if (
+        hash_algorithm != hash_util.HashAlgorithm.CRC32C
+        or isinstance(hash_object, fast_crc32c_util.DeferredCrc32c)
+    ):
+      return False
+  return True
+
+
+def _validate_chunk_integrity(crc32c_hash, data):
+  """Validates integrity of a single chunk by comparing CRC32C hashes.
+
+  If there is a mismatch, it raises HashMismatchError. This error
+  is not retried by download retry logic, and will cause the download to fail.
+  The download task runner is responsible for deleting partially downloaded
+  files in case of such failures.
+
+  Args:
+    crc32c_hash (int): The server-provided CRC32C hash of the chunk.
+    data (bytes): The chunk data.
+
+  Returns:
+    int: The calculated CRC32C checksum if validation is successful.
+    None: If chunk validation could not be performed due to an unexpected
+      exception.
+
+  Raises:
+    storage_errors.HashMismatchError: If chunk integrity check fails.
+  """
+  log.debug('Validating chunk integrity for CRC32C: %s', crc32c_hash)
+  try:
+    hasher = crc32c.get_crc32c()
+    hasher.update(data)
+    calculated_crc32c = crc32c.get_checksum(hasher)
+    if crc32c_hash != calculated_crc32c:
+      expected_bytes = crc32c_hash.to_bytes(4, byteorder='big')
+      calculated_bytes = calculated_crc32c.to_bytes(4, byteorder='big')
+      log.error(
+          'Mismatch for chunk! Expected CRC32C: %s (%s), Actual CRC32C: %s'
+          ' (%s).',
+          crc32c_hash,
+          binascii.hexlify(expected_bytes),
+          calculated_crc32c,
+          binascii.hexlify(calculated_bytes),
+      )
+      raise storage_errors.HashMismatchError(
+          'Transferred chunk CRC32C does not match.'
+      )
+    return calculated_crc32c
+  except storage_errors.HashMismatchError:
+    raise
+  except Exception as e:  # pylint: disable=broad-except
+    log.debug('Could not perform chunk validation for CRC32C: %s', e)
+    # If we can't validate the chunk, we should continue the download without
+    # failing the entire operation.
+    return None
+
+
 def _process_data_from_bidi_read_object_rpc(
     gapic_client,
     cloud_resource,
@@ -156,6 +248,11 @@ def _process_data_from_bidi_read_object_rpc(
         for object_range_data in bidi_read_object_response.object_data_ranges:
           data = object_range_data.checksummed_data.content
           if data:
+            chunk_crc32c = None
+            if _should_validate_chunk_integrity(digesters):
+              chunk_crc32c = _validate_chunk_integrity(
+                  object_range_data.checksummed_data.crc32c, data)
+
             try:
               download_stream.write(data)
             except BrokenPipeError:
@@ -166,8 +263,7 @@ def _process_data_from_bidi_read_object_rpc(
               raise
 
             if digesters:
-              for hash_object in digesters.values():
-                hash_object.update(data)
+              _update_digesters(digesters, data, chunk_crc32c)
 
             processed_bytes += len(data)
             if progress_callback:

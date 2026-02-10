@@ -910,6 +910,7 @@ class CreateClusterOptions(object):
       autopilot_general_profile=None,
       maintenance_minor_version_disruption_interval=None,
       maintenance_patch_version_disruption_interval=None,
+      node_architecture_taint_behavior=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -948,6 +949,7 @@ class CreateClusterOptions(object):
     self.autoprovisioning_network_tags = autoprovisioning_network_tags
     self.node_labels = node_labels
     self.node_taints = node_taints
+    self.node_architecture_taint_behavior = node_architecture_taint_behavior
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -1803,6 +1805,7 @@ class CreateNodePoolOptions(object):
       respect_pdb_during_node_pool_deletion=None,
       enable_lustre_multi_nic=None,
       subnetwork=None,
+      node_architecture_taint_behavior=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1821,6 +1824,7 @@ class CreateNodePoolOptions(object):
     self.labels = labels
     self.node_labels = node_labels
     self.node_taints = node_taints
+    self.node_architecture_taint_behavior = node_architecture_taint_behavior
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
@@ -1980,6 +1984,8 @@ class UpdateNodePoolOptions(object):
       node_drain_pdb_timeout=None,
       respect_pdb_during_node_pool_deletion=None,
       enable_lustre_multi_nic=None,
+      datapath_provider=None,
+      node_architecture_taint_behavior=None,
   ):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -2000,6 +2006,7 @@ class UpdateNodePoolOptions(object):
     self.labels = labels
     self.node_labels = node_labels
     self.node_taints = node_taints
+    self.node_architecture_taint_behavior = node_architecture_taint_behavior
     self.tags = tags
     self.enable_private_nodes = enable_private_nodes
     self.enable_gcfs = enable_gcfs
@@ -2044,6 +2051,7 @@ class UpdateNodePoolOptions(object):
         respect_pdb_during_node_pool_deletion
     )
     self.enable_lustre_multi_nic = enable_lustre_multi_nic
+    self.datapath_provider = datapath_provider
 
   def IsAutoscalingUpdate(self):
     return (
@@ -2073,6 +2081,7 @@ class UpdateNodePoolOptions(object):
         or self.labels is not None
         or self.node_labels is not None
         or self.node_taints is not None
+        or self.node_architecture_taint_behavior is not None
         or self.tags is not None
         or self.enable_private_nodes is not None
         or self.enable_gcfs is not None
@@ -2107,6 +2116,7 @@ class UpdateNodePoolOptions(object):
         or self.node_drain_pdb_timeout is not None
         or self.respect_pdb_during_node_pool_deletion is not None
         or self.enable_lustre_multi_nic is not None
+        or self.datapath_provider is not None
     )
 
 
@@ -3655,6 +3665,9 @@ class APIAdapter(object):
     _AddLabelsToNodeConfig(node_config, options)
     _AddMetadataToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
+    _AddNodeArchitectureTaintBehaviorToNodeConfig(
+        self.messages.TaintConfig, node_config, options
+    )
 
     if options.resource_manager_tags is not None:
       tags = options.resource_manager_tags
@@ -6527,6 +6540,9 @@ class APIAdapter(object):
     _AddLabelsToNodeConfig(node_config, options)
     _AddNodeLabelsToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
+    _AddNodeArchitectureTaintBehaviorToNodeConfig(
+        self.messages.TaintConfig, node_config, options
+    )
 
     if options.resource_manager_tags is not None:
       tags = options.resource_manager_tags
@@ -7179,6 +7195,15 @@ class APIAdapter(object):
       node_taints = self.messages.NodeTaints()
       node_taints.taints = taints
       update_request.taints = node_taints
+    elif options.node_architecture_taint_behavior is not None:
+      if update_request.taintConfig is None:
+        update_request.taintConfig = self.messages.TaintConfig()
+      update_request.taintConfig.architectureTaintBehavior = (
+          _ArchitectureTaintBehaviorEnum(
+              self.messages.TaintConfig.ArchitectureTaintBehaviorValueValuesEnum,
+              options.node_architecture_taint_behavior,
+          )
+      )
     elif options.tags is not None:
       node_tags = self.messages.NetworkTags()
       node_tags.tags = options.tags
@@ -7209,6 +7234,17 @@ class APIAdapter(object):
       network_config.networkPerformanceConfig = (
           self._GetNetworkPerformanceConfig(options)
       )
+      update_request.nodeNetworkConfig = network_config
+    elif options.datapath_provider is not None:
+      network_config = self.messages.NodeNetworkConfig()
+      if options.datapath_provider in ['advanced-datapath', 'dataplane-v2']:
+        network_config.datapathProvider = (
+            self.messages.NodeNetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
+        )
+      elif options.datapath_provider in ['legacy-datapath', 'dataplane-v1']:
+        network_config.datapathProvider = (
+            self.messages.NodeNetworkConfig.DatapathProviderValueValuesEnum.LEGACY_DATAPATH
+        )
       update_request.nodeNetworkConfig = network_config
     elif options.enable_confidential_nodes is not None:
       confidential_nodes = self.messages.ConfidentialNodes(
@@ -11200,6 +11236,36 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
     props.append(labels.AdditionalProperty(key=key, value=value))
   labels.additionalProperties = props
   node_config.labels = labels
+
+
+def _ArchitectureTaintBehaviorEnum(taint_enum, api_value):
+  """Returns the ArchitectureTaintBehavior enum value for the given API value."""
+  if api_value == 'unspecified':
+    return (
+        taint_enum.ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED
+    )
+  elif api_value == 'none':
+    return taint_enum.NONE
+  elif api_value == 'arm':
+    return taint_enum.ARM
+
+
+def _AddNodeArchitectureTaintBehaviorToNodeConfig(
+    taint_config_class, node_config, options
+):
+  """Add nodeArchitectureTaintBehavior to nodeConfig."""
+  if options.node_architecture_taint_behavior is None:
+    return
+
+  if node_config.taintConfig is None:
+    node_config.taintConfig = taint_config_class()
+
+  node_config.taintConfig.architectureTaintBehavior = (
+      _ArchitectureTaintBehaviorEnum(
+          taint_config_class.ArchitectureTaintBehaviorValueValuesEnum,
+          options.node_architecture_taint_behavior
+      )
+  )
 
 
 def _AddLinuxNodeConfigToNodeConfig(node_config, options, messages):

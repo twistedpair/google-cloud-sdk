@@ -1820,8 +1820,7 @@ def AddInvokerIamCheckFlag(parser):
       '--invoker-iam-check',
       action=arg_parsers.StoreTrueFalseAction,
       help=(
-          'Optionally disable invoker IAM checks. This feature is available by'
-          ' invitation only. More info at '
+          'Optionally disable invoker IAM checks. More info at '
           'https://cloud.google.com/run/docs/securing/managing-access#invoker_check.'
       ),
   )
@@ -3566,6 +3565,17 @@ def GetInstanceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   changes = _GetConfigurationChanges(args, release_track=release_track)
   if 'gpu_type' in args and args.gpu_type:
     changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
+
+  if FlagIsExplicitlySet(args, 'ingress'):
+    changes.append(_GetIngressChanges(args))
+  if FlagIsExplicitlySet(args, 'port'):
+    changes.append(config_changes.ContainerPortChange(port=args.port))
+  if FlagIsExplicitlySet(args, 'invoker_iam_check'):
+    changes.append(
+        config_changes.InvokerIamChange(
+            invoker_iam_check=args.invoker_iam_check
+        )
+    )
 
   _PrependClientNameAndVersionChange(args, changes)
 

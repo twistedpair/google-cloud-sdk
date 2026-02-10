@@ -272,6 +272,11 @@ class Backup(_messages.Message):
         Enterprise.
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
+      SQLSERVER_2025_STANDARD: The database version is SQL Server 2025
+        Standard.
+      SQLSERVER_2025_ENTERPRISE: The database version is SQL Server 2025
+        Enterprise.
+      SQLSERVER_2025_EXPRESS: The database version is SQL Server 2025 Express.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -324,6 +329,9 @@ class Backup(_messages.Message):
     SQLSERVER_2022_ENTERPRISE = 48
     SQLSERVER_2022_EXPRESS = 49
     SQLSERVER_2022_WEB = 50
+    SQLSERVER_2025_STANDARD = 51
+    SQLSERVER_2025_ENTERPRISE = 52
+    SQLSERVER_2025_EXPRESS = 53
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this backup.
@@ -691,6 +699,11 @@ class BackupRun(_messages.Message):
         Enterprise.
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
+      SQLSERVER_2025_STANDARD: The database version is SQL Server 2025
+        Standard.
+      SQLSERVER_2025_ENTERPRISE: The database version is SQL Server 2025
+        Enterprise.
+      SQLSERVER_2025_EXPRESS: The database version is SQL Server 2025 Express.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -743,6 +756,9 @@ class BackupRun(_messages.Message):
     SQLSERVER_2022_ENTERPRISE = 48
     SQLSERVER_2022_EXPRESS = 49
     SQLSERVER_2022_WEB = 50
+    SQLSERVER_2025_STANDARD = 51
+    SQLSERVER_2025_ENTERPRISE = 52
+    SQLSERVER_2025_EXPRESS = 53
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of this run.
@@ -1096,6 +1112,11 @@ class ConnectSettings(_messages.Message):
         Enterprise.
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
+      SQLSERVER_2025_STANDARD: The database version is SQL Server 2025
+        Standard.
+      SQLSERVER_2025_ENTERPRISE: The database version is SQL Server 2025
+        Enterprise.
+      SQLSERVER_2025_EXPRESS: The database version is SQL Server 2025 Express.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -1148,6 +1169,9 @@ class ConnectSettings(_messages.Message):
     SQLSERVER_2022_ENTERPRISE = 48
     SQLSERVER_2022_EXPRESS = 49
     SQLSERVER_2022_WEB = 50
+    SQLSERVER_2025_STANDARD = 51
+    SQLSERVER_2025_ENTERPRISE = 52
+    SQLSERVER_2025_EXPRESS = 53
 
   class MdxProtocolSupportValueListEntryValuesEnum(_messages.Enum):
     r"""MdxProtocolSupportValueListEntryValuesEnum enum type.
@@ -1527,6 +1551,11 @@ class DatabaseInstance(_messages.Message):
         Enterprise.
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
+      SQLSERVER_2025_STANDARD: The database version is SQL Server 2025
+        Standard.
+      SQLSERVER_2025_ENTERPRISE: The database version is SQL Server 2025
+        Enterprise.
+      SQLSERVER_2025_EXPRESS: The database version is SQL Server 2025 Express.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -1579,6 +1608,9 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2022_ENTERPRISE = 48
     SQLSERVER_2022_EXPRESS = 49
     SQLSERVER_2022_WEB = 50
+    SQLSERVER_2025_STANDARD = 51
+    SQLSERVER_2025_ENTERPRISE = 52
+    SQLSERVER_2025_EXPRESS = 53
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1663,6 +1695,11 @@ class DatabaseInstance(_messages.Message):
         Enterprise.
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
+      SQLSERVER_2025_STANDARD: The database version is SQL Server 2025
+        Standard.
+      SQLSERVER_2025_ENTERPRISE: The database version is SQL Server 2025
+        Enterprise.
+      SQLSERVER_2025_EXPRESS: The database version is SQL Server 2025 Express.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -1715,6 +1752,9 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2022_ENTERPRISE = 48
     SQLSERVER_2022_EXPRESS = 49
     SQLSERVER_2022_WEB = 50
+    SQLSERVER_2025_STANDARD = 51
+    SQLSERVER_2025_ENTERPRISE = 52
+    SQLSERVER_2025_EXPRESS = 53
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1793,6 +1833,8 @@ class DatabaseInstance(_messages.Message):
         denied access to
       CLOUD_SQL_FREE_TRIAL_EXPIRED: The Cloud SQL free trial for the instance
         has expired.
+      FDC_IFTRIAL_EXPIRED: Indicates that the Firebase Data Connect free trial
+        instance has expired.
     """
     SQL_SUSPENSION_REASON_UNSPECIFIED = 0
     BILLING_ISSUE = 1
@@ -1800,6 +1842,7 @@ class DatabaseInstance(_messages.Message):
     OPERATIONAL_ISSUE = 3
     KMS_KEY_ISSUE = 4
     CLOUD_SQL_FREE_TRIAL_EXPIRED = 5
+    FDC_IFTRIAL_EXPIRED = 6
 
   class FailoverReplicaValue(_messages.Message):
     r"""The name and status of the failover replica.
@@ -2617,6 +2660,11 @@ class Flag(_messages.Message):
         Enterprise.
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
+      SQLSERVER_2025_STANDARD: The database version is SQL Server 2025
+        Standard.
+      SQLSERVER_2025_ENTERPRISE: The database version is SQL Server 2025
+        Enterprise.
+      SQLSERVER_2025_EXPRESS: The database version is SQL Server 2025 Express.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -2669,6 +2717,9 @@ class Flag(_messages.Message):
     SQLSERVER_2022_ENTERPRISE = 48
     SQLSERVER_2022_EXPRESS = 49
     SQLSERVER_2022_WEB = 50
+    SQLSERVER_2025_STANDARD = 51
+    SQLSERVER_2025_ENTERPRISE = 52
+    SQLSERVER_2025_EXPRESS = 53
 
   class FlagScopeValueValuesEnum(_messages.Enum):
     r"""Scope of flag.
@@ -4478,6 +4529,11 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
         Enterprise.
       SQLSERVER_2022_EXPRESS: The database version is SQL Server 2022 Express.
       SQLSERVER_2022_WEB: The database version is SQL Server 2022 Web.
+      SQLSERVER_2025_STANDARD: The database version is SQL Server 2025
+        Standard.
+      SQLSERVER_2025_ENTERPRISE: The database version is SQL Server 2025
+        Enterprise.
+      SQLSERVER_2025_EXPRESS: The database version is SQL Server 2025 Express.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -4530,6 +4586,9 @@ class PreCheckMajorVersionUpgradeContext(_messages.Message):
     SQLSERVER_2022_ENTERPRISE = 48
     SQLSERVER_2022_EXPRESS = 49
     SQLSERVER_2022_WEB = 50
+    SQLSERVER_2025_STANDARD = 51
+    SQLSERVER_2025_ENTERPRISE = 52
+    SQLSERVER_2025_EXPRESS = 53
 
   kind = _messages.StringField(1)
   preCheckResponse = _messages.MessageField('PreCheckResponse', 2, repeated=True)

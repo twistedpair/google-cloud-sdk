@@ -33,12 +33,15 @@ class ScalingTypeAppYaml(enum.Enum):
 
 
 _SCALING_FEATURE_KEYS_ALLOWED_LIST = frozendict.frozendict({
-    ScalingTypeAppYaml.AUTOMATIC_SCALING: [
+    ScalingTypeAppYaml.AUTOMATIC_SCALING: (
         'automatic_scaling.min_instances',
         'automatic_scaling.max_instances',
-    ],
-    ScalingTypeAppYaml.MANUAL_SCALING: ['manual_scaling.instances'],
-    ScalingTypeAppYaml.BASIC_SCALING: ['basic_scaling.max_instances'],
+    ),
+    ScalingTypeAppYaml.MANUAL_SCALING: ('manual_scaling.instances',),
+    ScalingTypeAppYaml.BASIC_SCALING: (
+        'basic_scaling.max_instances',
+        'basic_scaling.min_instances',
+    ),
 })
 
 

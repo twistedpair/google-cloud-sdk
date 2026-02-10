@@ -152,9 +152,6 @@ class GoogleCloudRecommenderV1alpha2Impact(_messages.Message):
   Fields:
     category: Category that is being targeted.
     costProjection: Use with CategoryType.COST
-    impactComponents: If populated, the impact contains multiple components.
-      In this case, the top-level impact contains aggregated values and each
-      component contains per-service details.
     reliabilityProjection: Use with CategoryType.RELIABILITY
     securityProjection: Use with CategoryType.SECURITY
     service: The service that this impact is associated with.
@@ -185,11 +182,10 @@ class GoogleCloudRecommenderV1alpha2Impact(_messages.Message):
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   costProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2CostProjection', 2)
-  impactComponents = _messages.MessageField('GoogleCloudRecommenderV1alpha2Impact', 3, repeated=True)
-  reliabilityProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2ReliabilityProjection', 4)
-  securityProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2SecurityProjection', 5)
-  service = _messages.StringField(6)
-  sustainabilityProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2SustainabilityProjection', 7)
+  reliabilityProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2ReliabilityProjection', 3)
+  securityProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2SecurityProjection', 4)
+  service = _messages.StringField(5)
+  sustainabilityProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2SustainabilityProjection', 6)
 
 
 class GoogleCloudRecommenderV1alpha2Insight(_messages.Message):

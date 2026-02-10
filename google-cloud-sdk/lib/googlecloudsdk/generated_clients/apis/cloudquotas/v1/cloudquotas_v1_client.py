@@ -75,7 +75,7 @@ class CloudquotasV1(base_api.BaseApiClient):
           }
 
     def GetQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for getting QuotaAdjusterSettings based on the request.
+      r"""Gets the QuotaAdjusterSettings for the specified resource.
 
       Args:
         request: (CloudquotasFoldersLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest) input message
@@ -102,7 +102,7 @@ class CloudquotasV1(base_api.BaseApiClient):
     )
 
     def UpdateQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for updating QuotaAdjusterSettings based on the request.
+      r"""Updates the QuotaAdjusterSettings for the specified resource.
 
       Args:
         request: (CloudquotasFoldersLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest) input message
@@ -435,7 +435,7 @@ class CloudquotasV1(base_api.BaseApiClient):
           }
 
     def GetQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for getting QuotaAdjusterSettings based on the request.
+      r"""Gets the QuotaAdjusterSettings for the specified resource.
 
       Args:
         request: (CloudquotasOrganizationsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest) input message
@@ -462,7 +462,7 @@ class CloudquotasV1(base_api.BaseApiClient):
     )
 
     def UpdateQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for updating QuotaAdjusterSettings based on the request.
+      r"""Updates the QuotaAdjusterSettings for the specified resource.
 
       Args:
         request: (CloudquotasOrganizationsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest) input message
@@ -795,7 +795,7 @@ class CloudquotasV1(base_api.BaseApiClient):
           }
 
     def GetQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for getting QuotaAdjusterSettings based on the request.
+      r"""Gets the QuotaAdjusterSettings for the specified resource.
 
       Args:
         request: (CloudquotasProjectsLocationsQuotaAdjusterSettingsGetQuotaAdjusterSettingsRequest) input message
@@ -822,7 +822,7 @@ class CloudquotasV1(base_api.BaseApiClient):
     )
 
     def UpdateQuotaAdjusterSettings(self, request, global_params=None):
-      r"""RPC Method for updating QuotaAdjusterSettings based on the request.
+      r"""Updates the QuotaAdjusterSettings for the specified resource.
 
       Args:
         request: (CloudquotasProjectsLocationsQuotaAdjusterSettingsUpdateQuotaAdjusterSettingsRequest) input message
